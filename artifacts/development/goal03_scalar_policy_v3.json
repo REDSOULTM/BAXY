@@ -1,0 +1,6974 @@
+{
+  "corpus": {
+    "path": "artifacts\\development\\goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+  },
+  "in_catalog": {
+    "rate": 0.6129032258064516,
+    "retrieved": 109,
+    "rows": 124,
+    "selected_expected": 76
+  },
+  "latency_seconds": {
+    "max": 1.069518300006166,
+    "p50": 0.44308715000079246,
+    "p90": 0.7747613999963505,
+    "rows": 160
+  },
+  "out_of_catalog": {
+    "honest_abstentions": 19,
+    "rate": 0.5277777777777778,
+    "rows": 36
+  },
+  "prompt_sha256": "c70c5900067774ff87a08c77864fe33160fc144a158181ac9072ac3f784756f8",
+  "rows": [
+    {
+      "candidate_operations": [
+        "audio.volume.adjust",
+        "backup.verify",
+        "window.resize",
+        "audio.volume",
+        "message.recipient.resolve",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "audio.status",
+        "note.trash",
+        "window.maximize",
+        "email.latest.read",
+        "system.settings.adjust",
+        "backup.list",
+        "audio.mute",
+        "wifi.ensure.connected",
+        "message.send",
+        "media.control",
+        "notification.list.due",
+        "task.resolve.exact",
+        "window.minimize",
+        "media.seek.relative",
+        "note.search",
+        "game.purchase.prepare",
+        "email.latest.reply",
+        "note.list",
+        "input.pointer.control",
+        "note.read",
+        "reminder.resolve.exact"
+      ],
+      "case_id": "aud-01",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.42393570000422187,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.volume.adjust"
+      ],
+      "selected_wire_operations": [
+        "audio.volume.adjust"
+      ],
+      "sentinel_mixed": false,
+      "text": "che ponelo mas bajito que estoy en una llamada"
+    },
+    {
+      "candidate_operations": [
+        "audio.mute",
+        "audio.status",
+        "audio.volume",
+        "audio.volume.adjust",
+        "audio.microphone.mute",
+        "media.play.exact",
+        "media.seek.relative",
+        "media.status",
+        "window.resize",
+        "media.play.query",
+        "routine.read",
+        "media.control",
+        "system.settings.adjust",
+        "window.minimize",
+        "routine.delete",
+        "game.install.prepare",
+        "system.status",
+        "routine.restore",
+        "system.settings.set",
+        "task.delete",
+        "game.install.cancel",
+        "app.close",
+        "game.launch",
+        "window.move",
+        "media.play.youtube",
+        "network.port.list",
+        "game.install.cancel.active",
+        "input.select.all"
+      ],
+      "case_id": "aud-02",
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5607897000008961,
+      "selected_expected": false,
+      "selected_operations": [
+        "audio.volume.adjust"
+      ],
+      "selected_wire_operations": [
+        "audio.volume.adjust"
+      ],
+      "sentinel_mixed": false,
+      "text": "dejame el sonido a la mitad"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "audio.mute",
+        "app.close",
+        "audio.volume",
+        "wifi.disconnect",
+        "routine.read",
+        "audio.microphone.mute",
+        "routine.delete",
+        "input.select.all",
+        "task.resolve.exact",
+        "game.install.prepare",
+        "window.minimize",
+        "filesystem.search",
+        "routine.restore",
+        "window.resize",
+        "app.installed",
+        "network.status",
+        "game.install.cancel.active",
+        "window.resolve",
+        "system.power",
+        "media.play.exact",
+        "routine.resolve.exact",
+        "reminder.resolve.exact",
+        "notification.list.due",
+        "audio.volume.adjust",
+        "backup.list",
+        "system.status",
+        "message.recipient.resolve"
+      ],
+      "case_id": "aud-03",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.39507279999088496,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.mute"
+      ],
+      "selected_wire_operations": [
+        "audio.mute"
+      ],
+      "sentinel_mixed": false,
+      "text": "kill the sound completely, I need silence"
+    },
+    {
+      "candidate_operations": [
+        "audio.microphone.mute"
+      ],
+      "case_id": "aud-04",
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.314298700002837,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.microphone.mute"
+      ],
+      "selected_wire_operations": [
+        "audio.microphone.mute"
+      ],
+      "sentinel_mixed": false,
+      "text": "mutea el mic que ya vuelvo"
+    },
+    {
+      "candidate_operations": [
+        "audio.status"
+      ],
+      "case_id": "aud-05",
+      "expected_operations": [
+        "audio.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.26395700000284705,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.status"
+      ],
+      "selected_wire_operations": [
+        "audio.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "como esta el sonido ahora mismo"
+    },
+    {
+      "candidate_operations": [
+        "audio.mute",
+        "audio.status",
+        "routine.read",
+        "audio.volume",
+        "wifi.disconnect",
+        "network.status",
+        "routine.restore",
+        "window.resize",
+        "window.minimize",
+        "app.installed",
+        "game.install.prepare",
+        "filesystem.search",
+        "routine.delete",
+        "audio.microphone.mute",
+        "backup.list",
+        "audio.volume.adjust",
+        "backup.verify",
+        "note.search",
+        "reminder.list",
+        "task.resolve.exact",
+        "note.create",
+        "app.close",
+        "routine.resolve.exact",
+        "game.install.cancel.active",
+        "package.install.prepare",
+        "filesystem.write.text",
+        "notification.list.due",
+        "wifi.ensure.connected"
+      ],
+      "case_id": "aud-06",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4991096000012476,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.volume.adjust"
+      ],
+      "selected_wire_operations": [
+        "audio.volume.adjust"
+      ],
+      "sentinel_mixed": false,
+      "text": "turn it up a bit, I can barely hear it"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "audio.mute",
+        "audio.microphone.mute",
+        "app.close",
+        "notification.list.due",
+        "window.minimize",
+        "audio.volume",
+        "audio.volume.adjust",
+        "clipboard.paste",
+        "routine.delete",
+        "media.control",
+        "reminder.resolve.exact",
+        "system.power",
+        "system.process.terminate.named",
+        "window.maximize",
+        "window.resolve",
+        "window.resize",
+        "network.port.list",
+        "browser.page.read",
+        "system.settings.set",
+        "clipboard.write.text",
+        "capture.active.window",
+        "notification.cancel.latest",
+        "media.play.exact",
+        "notification.cancel.at",
+        "filesystem.search",
+        "input.keyboard.status",
+        "task.resolve.exact"
+      ],
+      "case_id": "aud-07",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.676646099993377,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.mute"
+      ],
+      "selected_wire_operations": [
+        "audio.mute"
+      ],
+      "sentinel_mixed": false,
+      "text": "quitale el silencio a los parlantes"
+    },
+    {
+      "candidate_operations": [],
+      "case_id": "aud-08",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": false,
+      "seconds": 8.999923011288047e-07,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "baja el volume tres puntos nomas"
+    },
+    {
+      "candidate_operations": [
+        "note.list"
+      ],
+      "case_id": "app-01",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.2752164999983506,
+      "selected_expected": false,
+      "selected_operations": [
+        "note.list"
+      ],
+      "selected_wire_operations": [
+        "note.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "necesito el bloc de notas"
+    },
+    {
+      "candidate_operations": [
+        "message.recipient.resolve",
+        "system.status",
+        "wifi.disconnect",
+        "network.status",
+        "wifi.connect",
+        "wifi.status",
+        "wifi.ensure.connected",
+        "media.play.exact",
+        "notification.dismiss",
+        "filesystem.known.duplicates",
+        "media.status",
+        "filesystem.move",
+        "routine.restore",
+        "filesystem.copy",
+        "filesystem.search",
+        "game.install.cancel.active",
+        "bluetooth.device.pair",
+        "app.installed",
+        "backup.verify",
+        "task.reopen",
+        "browser.page.read",
+        "notification.list.due",
+        "system.identity",
+        "system.application.crash.diagnose",
+        "audio.status",
+        "email.latest.read",
+        "web.search",
+        "media.control"
+      ],
+      "case_id": "app-02",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.8040766000049189,
+      "selected_expected": true,
+      "selected_operations": [
+        "app.installed"
+      ],
+      "selected_wire_operations": [
+        "app.installed"
+      ],
+      "sentinel_mixed": false,
+      "text": "do I have discord on this machine"
+    },
+    {
+      "candidate_operations": [
+        "app.close",
+        "window.restore",
+        "window.minimize",
+        "window.move",
+        "window.maximize",
+        "window.focus",
+        "capture.active.window",
+        "window.resolve",
+        "window.resize",
+        "input.keyboard.open",
+        "input.keyboard.status",
+        "system.power",
+        "window.active",
+        "window.application.status",
+        "browser.control",
+        "system.recyclebin.empty",
+        "input.key.press",
+        "clipboard.paste",
+        "audio.mute",
+        "game.install.cancel.active",
+        "system.process.terminate.named",
+        "audio.microphone.mute",
+        "audio.status",
+        "notification.cancel.at",
+        "notification.list.due",
+        "wifi.ensure.connected",
+        "filesystem.folder.open",
+        "input.pointer.control"
+      ],
+      "case_id": "app-03",
+      "expected_operations": [
+        "app.close"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.48918530000082683,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.resolve"
+      ],
+      "selected_wire_operations": [
+        "window.resolve"
+      ],
+      "sentinel_mixed": false,
+      "text": "cierrame la ventana que tengo adelante"
+    },
+    {
+      "candidate_operations": [
+        "app.open",
+        "app.installed",
+        "clipboard.write.text",
+        "clipboard.read.text",
+        "clipboard.paste",
+        "note.list",
+        "input.keyboard.open",
+        "audio.volume",
+        "filesystem.hash",
+        "game.launch",
+        "game.install.prepare",
+        "backup.verify",
+        "input.pointer.control",
+        "browser.navigate.named",
+        "filesystem.folder.open",
+        "filesystem.file.open.latest",
+        "window.focus",
+        "office.document.read",
+        "wifi.ensure.connected",
+        "routine.resolve.exact",
+        "game.purchase.prepare",
+        "system.settings.set",
+        "game.install.cancel.active",
+        "task.reopen",
+        "window.minimize",
+        "input.select.all",
+        "email.latest.read",
+        "clipboard.copy"
+      ],
+      "case_id": "app-04",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.41105540000717156,
+      "selected_expected": true,
+      "selected_operations": [
+        "app.open"
+      ],
+      "selected_wire_operations": [
+        "app.open"
+      ],
+      "sentinel_mixed": false,
+      "text": "abrime el calculator porfa"
+    },
+    {
+      "candidate_operations": [
+        "game.install.status",
+        "game.install.commit",
+        "game.install.named",
+        "game.install.cancel",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.catalog.list",
+        "app.installed",
+        "game.install.prepare",
+        "system.status",
+        "package.install.commit",
+        "package.install.prepare",
+        "browser.navigate.named",
+        "browser.page.read",
+        "streaming.navigate",
+        "audio.status",
+        "browser.navigate",
+        "game.launch",
+        "filesystem.search",
+        "media.control",
+        "task.search",
+        "system.settings.status",
+        "media.status",
+        "browser.control",
+        "network.status",
+        "game.purchase.commit",
+        "filesystem.path.ensure.absent",
+        "wifi.status"
+      ],
+      "case_id": "app-05",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4329394999949727,
+      "selected_expected": false,
+      "selected_operations": [
+        "game.installed.named"
+      ],
+      "selected_wire_operations": [
+        "game.installed.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "is steam even installed here"
+    },
+    {
+      "candidate_operations": [
+        "window.active",
+        "media.play.query",
+        "audio.status",
+        "wifi.ensure.connected",
+        "media.play.exact",
+        "window.focus",
+        "app.open",
+        "task.search",
+        "media.seek.relative",
+        "browser.control",
+        "app.installed",
+        "system.settings.set",
+        "package.install.prepare",
+        "window.minimize",
+        "window.restore",
+        "task.create",
+        "package.install.commit",
+        "note.create",
+        "media.status",
+        "game.install.cancel.active",
+        "media.control",
+        "game.purchase.prepare",
+        "audio.volume",
+        "clipboard.paste",
+        "window.resize",
+        "backup.known.restore.latest",
+        "routine.delete",
+        "game.install.prepare"
+      ],
+      "case_id": "win-01",
+      "expected_operations": [
+        "window.active"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.8798150999937207,
+      "selected_expected": true,
+      "selected_operations": [
+        "window.active"
+      ],
+      "selected_wire_operations": [
+        "window.active"
+      ],
+      "sentinel_mixed": false,
+      "text": "que tengo en primer plano ahora"
+    },
+    {
+      "candidate_operations": [
+        "window.resize",
+        "window.maximize",
+        "window.minimize",
+        "window.focus",
+        "window.restore",
+        "window.move",
+        "window.resolve",
+        "window.active",
+        "app.close",
+        "audio.status",
+        "window.application.status",
+        "browser.page.read",
+        "notification.list.due",
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "game.install.cancel.active",
+        "app.installed",
+        "filesystem.folder.open",
+        "system.recyclebin.empty",
+        "backup.verify",
+        "media.status",
+        "routine.read",
+        "package.install.prepare",
+        "filesystem.move",
+        "task.reopen",
+        "input.keyboard.status",
+        "input.keyboard.open",
+        "capture.active.window"
+      ],
+      "case_id": "win-02",
+      "expected_operations": [
+        "window.maximize"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.7747613999963505,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.focus"
+      ],
+      "selected_wire_operations": [
+        "window.focus"
+      ],
+      "sentinel_mixed": false,
+      "text": "hazme grande esta ventana que no veo nada"
+    },
+    {
+      "candidate_operations": [
+        "input.key.press",
+        "input.keyboard.open",
+        "app.close",
+        "window.resolve",
+        "input.pointer.control",
+        "window.restore",
+        "window.resize",
+        "window.minimize",
+        "window.maximize",
+        "window.move",
+        "task.reopen",
+        "message.send",
+        "input.keyboard.status",
+        "window.focus",
+        "app.installed",
+        "message.recipient.resolve",
+        "system.power",
+        "package.install.prepare",
+        "filesystem.folder.open",
+        "task.restore",
+        "window.application.status",
+        "notification.list.due",
+        "task.search",
+        "task.update",
+        "media.control",
+        "task.delete",
+        "task.complete",
+        "system.application.crash.diagnose"
+      ],
+      "case_id": "win-03",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4806322999938857,
+      "selected_expected": true,
+      "selected_operations": [
+        "window.minimize"
+      ],
+      "selected_wire_operations": [
+        "window.minimize"
+      ],
+      "sentinel_mixed": false,
+      "text": "send this window down to the taskbar"
+    },
+    {
+      "candidate_operations": [
+        "window.move",
+        "window.resize",
+        "window.focus",
+        "window.minimize",
+        "window.maximize",
+        "input.pointer.control",
+        "app.close",
+        "input.keyboard.open",
+        "window.resolve",
+        "window.restore",
+        "input.key.press",
+        "window.active",
+        "filesystem.folder.open",
+        "input.keyboard.status",
+        "input.select.all",
+        "input.keyboard.layout",
+        "capture.active.window",
+        "browser.control",
+        "app.open",
+        "window.application.status",
+        "system.settings.adjust",
+        "wifi.ensure.connected",
+        "filesystem.sandbox.diff.named",
+        "browser.tabs.list",
+        "system.recyclebin.empty",
+        "app.installed",
+        "routine.read",
+        "browser.navigate.named"
+      ],
+      "case_id": "win-04",
+      "expected_operations": [
+        "window.move"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.43789030000334606,
+      "selected_expected": true,
+      "selected_operations": [
+        "window.move"
+      ],
+      "selected_wire_operations": [
+        "window.move"
+      ],
+      "sentinel_mixed": false,
+      "text": "corre la ventana a la esquina de arriba a la izquierda"
+    },
+    {
+      "candidate_operations": [
+        "window.resize",
+        "window.move",
+        "window.maximize",
+        "window.minimize",
+        "window.resolve",
+        "window.focus",
+        "window.restore",
+        "capture.active.window",
+        "app.installed",
+        "app.close",
+        "package.install.commit",
+        "filesystem.write.text",
+        "package.install.prepare",
+        "window.active",
+        "input.pointer.control",
+        "audio.volume",
+        "backup.known.create",
+        "window.application.status",
+        "game.purchase.prepare",
+        "backup.verify",
+        "audio.status",
+        "notification.list.due",
+        "system.status",
+        "app.open",
+        "filesystem.folder.open",
+        "input.select.all",
+        "audio.volume.adjust",
+        "audio.mute"
+      ],
+      "case_id": "win-05",
+      "expected_operations": [
+        "window.resize"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.42711839999537915,
+      "selected_expected": true,
+      "selected_operations": [
+        "window.resize"
+      ],
+      "selected_wire_operations": [
+        "window.resize"
+      ],
+      "sentinel_mixed": false,
+      "text": "make this window eight hundred by six hundred"
+    },
+    {
+      "candidate_operations": [
+        "window.focus",
+        "window.restore",
+        "window.minimize",
+        "window.maximize",
+        "window.move",
+        "input.keyboard.open",
+        "input.pointer.control",
+        "window.resize",
+        "input.keyboard.status",
+        "window.resolve",
+        "window.active",
+        "app.close",
+        "input.key.press",
+        "filesystem.folder.open",
+        "browser.control",
+        "input.keyboard.layout",
+        "window.application.status",
+        "input.select.all",
+        "package.install.commit",
+        "capture.active.window",
+        "browser.navigate.named",
+        "package.install.prepare",
+        "browser.navigate",
+        "browser.page.read",
+        "app.installed",
+        "app.open",
+        "game.install.prepare",
+        "clipboard.paste"
+      ],
+      "case_id": "win-06",
+      "expected_operations": [
+        "window.focus",
+        "window.resolve"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.7874044999916805,
+      "selected_expected": true,
+      "selected_operations": [
+        "window.focus"
+      ],
+      "selected_wire_operations": [
+        "window.focus"
+      ],
+      "sentinel_mixed": false,
+      "text": "trae la ventana de chrome al frente"
+    },
+    {
+      "candidate_operations": [
+        "window.focus",
+        "window.application.status",
+        "filesystem.folder.open",
+        "media.play.exact",
+        "media.play.query",
+        "input.keyboard.open",
+        "capture.active.window",
+        "app.open",
+        "app.close",
+        "window.restore",
+        "audio.microphone.mute",
+        "window.minimize",
+        "input.keyboard.status",
+        "window.resize",
+        "window.maximize",
+        "window.resolve",
+        "window.active",
+        "app.installed",
+        "media.control",
+        "audio.mute",
+        "window.move",
+        "media.status",
+        "system.recyclebin.empty",
+        "backup.known.create",
+        "clipboard.paste",
+        "input.key.press",
+        "audio.status",
+        "package.install.prepare"
+      ],
+      "case_id": "win-07",
+      "expected_operations": [
+        "window.application.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4243045000039274,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.active"
+      ],
+      "selected_wire_operations": [
+        "window.active"
+      ],
+      "sentinel_mixed": false,
+      "text": "spotify tiene alguna ventana abierta"
+    },
+    {
+      "candidate_operations": [
+        "window.resize",
+        "window.maximize",
+        "window.minimize",
+        "window.application.status",
+        "window.restore",
+        "window.resolve",
+        "capture.active.window",
+        "window.focus",
+        "window.move",
+        "filesystem.folder.open",
+        "input.keyboard.status",
+        "input.keyboard.open",
+        "app.close",
+        "window.active",
+        "app.open",
+        "input.pointer.control",
+        "game.install.named",
+        "audio.status",
+        "input.select.all",
+        "game.install.cancel.active",
+        "filesystem.file.open.latest",
+        "task.delete",
+        "media.status",
+        "backup.verify",
+        "game.install.status",
+        "filesystem.known.trash.named",
+        "app.installed",
+        "wifi.status"
+      ],
+      "case_id": "win-08",
+      "expected_operations": [
+        "window.restore"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 1.069518300006166,
+      "selected_expected": true,
+      "selected_operations": [
+        "window.restore"
+      ],
+      "selected_wire_operations": [
+        "window.restore"
+      ],
+      "sentinel_mixed": false,
+      "text": "devuelvele el tamano normal a la ventana"
+    },
+    {
+      "candidate_operations": [
+        "routine.read",
+        "window.move",
+        "system.status",
+        "input.select.all",
+        "task.search",
+        "task.reopen",
+        "window.active",
+        "routine.resolve.exact",
+        "input.pointer.control",
+        "task.complete",
+        "system.identity",
+        "audio.volume",
+        "system.process.terminate.named",
+        "game.install.cancel.active",
+        "audio.status",
+        "game.install.status",
+        "window.resize",
+        "routine.restore",
+        "media.seek.relative",
+        "system.process.list",
+        "window.maximize",
+        "game.purchase.prepare",
+        "note.search",
+        "window.focus",
+        "game.launch",
+        "window.resolve",
+        "window.minimize",
+        "routine.delete"
+      ],
+      "case_id": "sys-01",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.8886800999898696,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.status"
+      ],
+      "selected_wire_operations": [
+        "system.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "como anda la maquina en general"
+    },
+    {
+      "candidate_operations": [
+        "system.time",
+        "task.create",
+        "media.seek.relative",
+        "email.latest.reply",
+        "notification.schedule",
+        "notification.cancel.at",
+        "browser.page.read",
+        "game.install.cancel.active",
+        "audio.status",
+        "game.purchase.prepare",
+        "notification.list.due",
+        "browser.navigate",
+        "calendar.event.create",
+        "window.focus",
+        "calendar.event.list",
+        "note.search",
+        "media.status",
+        "audio.mute",
+        "game.launch",
+        "web.search",
+        "system.application.crash.diagnose",
+        "window.restore",
+        "note.create",
+        "email.latest.read",
+        "routine.read",
+        "browser.control",
+        "system.power",
+        "browser.tabs.list"
+      ],
+      "case_id": "sys-02",
+      "expected_operations": [
+        "system.time"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.6931355999986408,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.time"
+      ],
+      "selected_wire_operations": [
+        "system.time"
+      ],
+      "sentinel_mixed": false,
+      "text": "que fecha y hora tenemos"
+    },
+    {
+      "candidate_operations": [
+        "system.application.crash.diagnose",
+        "app.installed",
+        "game.install.cancel.active",
+        "wifi.disconnect",
+        "app.close",
+        "game.install.prepare",
+        "game.install.cancel",
+        "wifi.ensure.connected",
+        "email.latest.read",
+        "routine.delete",
+        "wifi.status",
+        "window.restore",
+        "game.installed.named",
+        "message.recipient.resolve",
+        "window.application.status",
+        "notification.cancel.latest",
+        "game.launch",
+        "media.control",
+        "filesystem.file.open.latest",
+        "media.play.youtube",
+        "task.reopen",
+        "backup.known.verify.latest",
+        "backup.verify",
+        "email.latest.reply",
+        "audio.mute",
+        "routine.restore",
+        "filesystem.search",
+        "window.resize"
+      ],
+      "case_id": "sys-03",
+      "expected_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.5829795999889029,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "selected_wire_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "sentinel_mixed": false,
+      "text": "which apps crashed on me lately"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.commit",
+        "app.installed",
+        "game.install.cancel.active",
+        "game.launch",
+        "notification.list.due",
+        "peripheral.print",
+        "game.install.cancel",
+        "package.install.commit",
+        "wifi.ensure.connected",
+        "game.install.prepare",
+        "backup.verify",
+        "task.reopen",
+        "game.purchase.prepare",
+        "message.send",
+        "routine.delete",
+        "system.status",
+        "game.install.commit",
+        "task.complete",
+        "system.recyclebin.empty",
+        "filesystem.trash.prepare",
+        "task.delete",
+        "audio.status",
+        "reminder.delete",
+        "task.restore",
+        "game.install.status",
+        "notification.dismiss",
+        "web.search",
+        "filesystem.move"
+      ],
+      "case_id": "sys-04",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.48259990000224207,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "trancame el equipo que me voy"
+    },
+    {
+      "candidate_operations": [
+        "system.status",
+        "system.process.list",
+        "notification.schedule",
+        "notification.list.due",
+        "reminder.restore",
+        "reminder.list",
+        "task.create",
+        "game.install.cancel.active",
+        "system.process.terminate.named",
+        "system.application.crash.diagnose",
+        "media.status",
+        "browser.control",
+        "audio.mute",
+        "reminder.create",
+        "reminder.delete",
+        "filesystem.move",
+        "game.install.cancel",
+        "filesystem.search",
+        "audio.microphone.mute",
+        "game.installed.named",
+        "game.install.named",
+        "backup.known.verify.latest",
+        "streaming.play.named",
+        "window.move",
+        "audio.status",
+        "routine.restore",
+        "filesystem.known.search",
+        "filesystem.trash.commit"
+      ],
+      "case_id": "sys-05",
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.33539619999646675,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "que programas se estan comiendo la memoria"
+    },
+    {
+      "candidate_operations": [
+        "app.close",
+        "routine.delete",
+        "routine.restore",
+        "window.restore",
+        "app.installed",
+        "audio.status",
+        "browser.page.read",
+        "routine.read",
+        "backup.verify",
+        "window.minimize",
+        "audio.mute",
+        "window.resolve",
+        "game.install.cancel.active",
+        "task.restore",
+        "filesystem.search",
+        "browser.navigate",
+        "window.resize",
+        "browser.control",
+        "task.reopen",
+        "window.maximize",
+        "game.install.prepare",
+        "system.process.terminate.named",
+        "wifi.disconnect",
+        "filesystem.trash.restore",
+        "system.status",
+        "backup.list",
+        "backup.restore",
+        "game.install.named"
+      ],
+      "case_id": "sys-06",
+      "expected_operations": [
+        "system.process.terminate.named"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.42615400000067893,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.process.terminate.named"
+      ],
+      "selected_wire_operations": [
+        "system.process.terminate.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "force quit chrome, it is frozen solid"
+    },
+    {
+      "candidate_operations": [
+        "system.recyclebin.empty",
+        "task.delete",
+        "reminder.delete",
+        "filesystem.trash.prepare",
+        "filesystem.trash.commit",
+        "filesystem.trash.restore",
+        "note.list",
+        "clipboard.write.text",
+        "filesystem.known.trash.named",
+        "clipboard.paste",
+        "peripheral.print",
+        "note.trash",
+        "filesystem.move",
+        "backup.known.verify.latest",
+        "filesystem.hash",
+        "backup.verify",
+        "filesystem.path.ensure.absent",
+        "window.restore",
+        "routine.delete",
+        "notification.list.due",
+        "audio.volume",
+        "note.restore",
+        "routine.restore",
+        "package.install.commit",
+        "backup.known.list",
+        "message.recipient.resolve",
+        "window.resize",
+        "filesystem.copy"
+      ],
+      "case_id": "sys-07",
+      "expected_operations": [
+        "system.recyclebin.empty"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4218218999885721,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.recyclebin.empty"
+      ],
+      "selected_wire_operations": [
+        "system.recyclebin.empty"
+      ],
+      "sentinel_mixed": false,
+      "text": "vaciame la papelera de reciclaje"
+    },
+    {
+      "candidate_operations": [
+        "system.settings.adjust",
+        "wifi.ensure.connected",
+        "audio.status",
+        "system.settings.set",
+        "audio.mute",
+        "browser.page.read",
+        "routine.read",
+        "system.settings.status",
+        "window.minimize",
+        "audio.volume",
+        "window.focus",
+        "media.play.youtube",
+        "audio.volume.adjust",
+        "media.control",
+        "system.status",
+        "window.resize",
+        "routine.delete",
+        "game.install.prepare",
+        "app.installed",
+        "window.resolve",
+        "media.status",
+        "window.move",
+        "input.pointer.control",
+        "audio.microphone.mute",
+        "routine.restore",
+        "streaming.play.named",
+        "clipboard.read.text",
+        "window.active"
+      ],
+      "case_id": "sys-08",
+      "expected_operations": [
+        "system.settings.adjust"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5193732000043383,
+      "selected_expected": false,
+      "selected_operations": [
+        "system.settings.status"
+      ],
+      "selected_wire_operations": [
+        "system.settings.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "subile un poco a la luz de la pantalla"
+    },
+    {
+      "candidate_operations": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust",
+        "audio.status",
+        "media.status",
+        "wifi.ensure.connected",
+        "wifi.status",
+        "system.status",
+        "media.play.youtube",
+        "browser.page.read",
+        "window.focus",
+        "game.install.cancel.active",
+        "window.resize",
+        "window.active",
+        "browser.control",
+        "window.maximize",
+        "media.play.exact",
+        "media.seek.relative",
+        "media.play.query",
+        "audio.mute",
+        "window.minimize",
+        "window.restore",
+        "media.control",
+        "network.status",
+        "wifi.connect",
+        "wifi.disconnect",
+        "system.power",
+        "audio.microphone.mute"
+      ],
+      "case_id": "sys-09",
+      "expected_operations": [
+        "system.settings.status"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4137883000075817,
+      "selected_expected": false,
+      "selected_operations": [
+        "system.status"
+      ],
+      "selected_wire_operations": [
+        "system.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "how bright is my screen right now"
+    },
+    {
+      "candidate_operations": [
+        "wifi.ensure.connected",
+        "wifi.connect",
+        "app.open",
+        "message.send",
+        "system.power",
+        "system.identity",
+        "app.installed",
+        "browser.navigate.named",
+        "notification.list.due",
+        "browser.page.read",
+        "game.install.cancel.active",
+        "backup.verify",
+        "browser.tabs.list",
+        "wifi.status",
+        "game.launch",
+        "input.pointer.control",
+        "wifi.profile.list",
+        "browser.navigate",
+        "input.keyboard.layout",
+        "game.install.commit",
+        "peripheral.list",
+        "input.visible.click",
+        "task.reopen",
+        "filesystem.search",
+        "message.recipient.resolve",
+        "window.focus",
+        "input.key.press",
+        "streaming.navigate"
+      ],
+      "case_id": "sys-10",
+      "expected_operations": [
+        "system.identity"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.444145599991316,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.identity"
+      ],
+      "selected_wire_operations": [
+        "system.identity"
+      ],
+      "sentinel_mixed": false,
+      "text": "con que usuario estoy entrado"
+    },
+    {
+      "candidate_operations": [
+        "system.status"
+      ],
+      "case_id": "sys-11",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.32979980000527576,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.status"
+      ],
+      "selected_wire_operations": [
+        "system.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "cuanta ram me queda libre"
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read",
+        "app.installed",
+        "browser.navigate.named",
+        "wifi.ensure.connected",
+        "note.list",
+        "browser.tabs.list",
+        "game.install.prepare",
+        "system.process.list",
+        "browser.navigate",
+        "input.key.press",
+        "email.latest.read",
+        "network.ping",
+        "note.search",
+        "system.status",
+        "game.install.cancel.active",
+        "package.install.commit",
+        "game.installed.named",
+        "audio.mute",
+        "wifi.disconnect",
+        "audio.status",
+        "routine.phrase.create",
+        "system.settings.set",
+        "system.power",
+        "game.launch",
+        "backup.verify",
+        "filesystem.hash",
+        "browser.control",
+        "filesystem.trash.commit"
+      ],
+      "case_id": "sys-12",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.42327869999280665,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "apaga la compu"
+    },
+    {
+      "candidate_operations": [
+        "network.status",
+        "wifi.ensure.connected",
+        "wifi.status",
+        "wifi.disconnect",
+        "network.dns.status",
+        "wifi.connect",
+        "browser.navigate.named",
+        "media.status",
+        "audio.status",
+        "streaming.navigate",
+        "browser.navigate",
+        "audio.mute",
+        "web.search",
+        "window.restore",
+        "note.list",
+        "network.ip.list",
+        "network.ping",
+        "game.installed.named",
+        "window.minimize",
+        "browser.page.read",
+        "note.create",
+        "note.read",
+        "game.install.cancel.active",
+        "backup.verify",
+        "wifi.connect.named",
+        "message.send",
+        "wifi.profile.list",
+        "filesystem.search"
+      ],
+      "case_id": "net-01",
+      "expected_operations": [
+        "network.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4157390000036685,
+      "selected_expected": true,
+      "selected_operations": [
+        "network.status"
+      ],
+      "selected_wire_operations": [
+        "network.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "tengo internet o no"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.search",
+        "web.search",
+        "filesystem.write.text",
+        "routine.read",
+        "filesystem.sandbox.diff.named",
+        "audio.status",
+        "window.resize",
+        "browser.page.read",
+        "note.search",
+        "task.resolve.exact",
+        "backup.verify",
+        "email.latest.read",
+        "app.installed",
+        "email.latest.reply",
+        "browser.navigate",
+        "task.reopen",
+        "task.search",
+        "wifi.ensure.connected",
+        "window.minimize",
+        "browser.tabs.list",
+        "audio.mute",
+        "routine.restore",
+        "network.status",
+        "filesystem.read.text",
+        "filesystem.known.duplicates",
+        "backup.restore",
+        "filesystem.hash",
+        "system.settings.set"
+      ],
+      "case_id": "net-02",
+      "expected_operations": [
+        "network.ping"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.403825000001234,
+      "selected_expected": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selected_wire_operations": [
+        "web.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "see if 8.8.8.8 answers"
+    },
+    {
+      "candidate_operations": [
+        "network.ip.list",
+        "network.status",
+        "network.ping",
+        "wifi.status",
+        "wifi.ensure.connected",
+        "wifi.profile.list",
+        "wifi.connect",
+        "wifi.disconnect",
+        "browser.navigate.named",
+        "network.dns.status",
+        "peripheral.scan",
+        "email.latest.read",
+        "browser.tabs.list",
+        "peripheral.print",
+        "browser.page.read",
+        "backup.verify",
+        "game.installed.named",
+        "note.read",
+        "backup.list",
+        "browser.navigate",
+        "message.send",
+        "wifi.connect.named",
+        "web.search",
+        "backup.known.verify.latest",
+        "peripheral.list",
+        "backup.known.create",
+        "game.install.status",
+        "message.recipient.resolve"
+      ],
+      "case_id": "net-03",
+      "expected_operations": [
+        "network.ip.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.47467239999969024,
+      "selected_expected": true,
+      "selected_operations": [
+        "network.ip.list"
+      ],
+      "selected_wire_operations": [
+        "network.ip.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "cual es mi direccion ip"
+    },
+    {
+      "candidate_operations": [
+        "game.installed.named",
+        "filesystem.search",
+        "network.dns.status",
+        "browser.navigate.named",
+        "browser.tabs.list",
+        "game.install.named",
+        "peripheral.list",
+        "system.process.terminate.named",
+        "filesystem.known.search",
+        "wifi.connect.named",
+        "window.move",
+        "app.installed",
+        "filesystem.sandbox.move.named",
+        "game.install.prepare",
+        "wifi.ensure.connected",
+        "filesystem.sandbox.append.named",
+        "network.ip.list",
+        "browser.navigate",
+        "filesystem.known.trash.named",
+        "window.restore",
+        "network.status",
+        "web.search",
+        "filesystem.list",
+        "filesystem.sandbox.diff.named",
+        "game.install.commit",
+        "game.install.cancel.active",
+        "window.resolve",
+        "network.port.list"
+      ],
+      "case_id": "net-04",
+      "expected_operations": [
+        "network.dns.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4764638000051491,
+      "selected_expected": true,
+      "selected_operations": [
+        "network.dns.status"
+      ],
+      "selected_wire_operations": [
+        "network.dns.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "que servidores de nombres estoy usando"
+    },
+    {
+      "candidate_operations": [
+        "network.port.list",
+        "audio.status",
+        "audio.mute",
+        "network.status",
+        "filesystem.search",
+        "audio.microphone.mute",
+        "email.latest.read",
+        "filesystem.list",
+        "media.play.query",
+        "reminder.list",
+        "browser.navigate.named",
+        "media.play.exact",
+        "peripheral.list",
+        "input.select.all",
+        "app.installed",
+        "audio.volume",
+        "input.pointer.control",
+        "notification.list.due",
+        "network.dns.status",
+        "wifi.disconnect",
+        "input.keyboard.status",
+        "browser.tabs.list",
+        "note.list",
+        "filesystem.known.search",
+        "note.search",
+        "media.control",
+        "streaming.navigate",
+        "office.document.read"
+      ],
+      "case_id": "net-05",
+      "expected_operations": [
+        "network.port.list"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.43841580000298563,
+      "selected_expected": true,
+      "selected_operations": [
+        "network.port.list"
+      ],
+      "selected_wire_operations": [
+        "network.port.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "what ports are listening on this box"
+    },
+    {
+      "candidate_operations": [
+        "network.ping",
+        "wifi.status",
+        "browser.navigate.named",
+        "wifi.ensure.connected",
+        "browser.navigate",
+        "system.settings.set",
+        "network.status",
+        "filesystem.write.text",
+        "note.list",
+        "browser.page.read",
+        "package.install.prepare",
+        "wifi.disconnect",
+        "browser.tabs.list",
+        "game.installed.named",
+        "filesystem.search",
+        "routine.delete",
+        "game.install.cancel.active",
+        "filesystem.copy",
+        "network.ip.list",
+        "network.dns.status",
+        "system.recyclebin.empty",
+        "media.status",
+        "streaming.navigate",
+        "filesystem.move",
+        "system.settings.status",
+        "notification.list.due",
+        "audio.status",
+        "wifi.connect"
+      ],
+      "case_id": "net-06",
+      "expected_operations": [
+        "wifi.ensure.connected",
+        "wifi.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.42579720000503585,
+      "selected_expected": false,
+      "selected_operations": [
+        "network.ping"
+      ],
+      "selected_wire_operations": [
+        "network.ping"
+      ],
+      "sentinel_mixed": false,
+      "text": "a que red inalambrica estoy pegado"
+    },
+    {
+      "candidate_operations": [
+        "wifi.ensure.connected",
+        "network.status",
+        "wifi.profile.list",
+        "network.dns.status",
+        "game.install.cancel.active",
+        "wifi.status",
+        "wifi.connect",
+        "email.latest.read",
+        "notification.list.due",
+        "network.ip.list",
+        "streaming.navigate",
+        "backup.list",
+        "window.restore",
+        "wifi.disconnect",
+        "browser.navigate.named",
+        "backup.verify",
+        "window.focus",
+        "media.status",
+        "office.document.read",
+        "web.search",
+        "window.active",
+        "routine.read",
+        "browser.navigate",
+        "browser.tabs.list",
+        "system.settings.set",
+        "backup.known.list",
+        "system.settings.status",
+        "clipboard.read.text"
+      ],
+      "case_id": "net-07",
+      "expected_operations": [
+        "wifi.profile.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.42729760000656825,
+      "selected_expected": true,
+      "selected_operations": [
+        "wifi.profile.list"
+      ],
+      "selected_wire_operations": [
+        "wifi.profile.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "mostrame las redes que tengo guardadas"
+    },
+    {
+      "candidate_operations": [
+        "wifi.disconnect",
+        "wifi.connect",
+        "wifi.status",
+        "wifi.ensure.connected",
+        "wifi.profile.list",
+        "wifi.connect.named",
+        "network.status",
+        "routine.delete",
+        "app.installed",
+        "routine.restore",
+        "bluetooth.device.pair",
+        "message.recipient.resolve",
+        "game.install.prepare",
+        "web.search",
+        "network.ip.list",
+        "notification.list.due",
+        "bluetooth.radio.set",
+        "app.close",
+        "audio.mute",
+        "notification.cancel.latest",
+        "network.port.list",
+        "game.install.cancel.active",
+        "notification.diagnose",
+        "backup.verify",
+        "system.application.crash.diagnose",
+        "media.control",
+        "network.ping",
+        "notification.dismiss"
+      ],
+      "case_id": "net-08",
+      "expected_operations": [
+        "wifi.disconnect"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.42587569999159314,
+      "selected_expected": true,
+      "selected_operations": [
+        "wifi.disconnect"
+      ],
+      "selected_wire_operations": [
+        "wifi.disconnect"
+      ],
+      "sentinel_mixed": false,
+      "text": "drop the wireless connection"
+    },
+    {
+      "candidate_operations": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.connect.named",
+        "wifi.disconnect",
+        "wifi.status",
+        "wifi.profile.list",
+        "network.status",
+        "peripheral.list",
+        "window.move",
+        "browser.tabs.list",
+        "input.pointer.control",
+        "bluetooth.device.list",
+        "network.dns.status",
+        "network.ping",
+        "network.port.list",
+        "bluetooth.radio.set",
+        "game.install.status",
+        "streaming.navigate",
+        "note.create",
+        "network.ip.list",
+        "backup.known.create",
+        "peripheral.print",
+        "browser.navigate.named",
+        "bluetooth.device.pair",
+        "browser.page.read",
+        "app.installed",
+        "window.minimize",
+        "browser.navigate"
+      ],
+      "case_id": "net-09",
+      "expected_operations": [
+        "wifi.connect",
+        "wifi.connect.named"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.447839100001147,
+      "selected_expected": true,
+      "selected_operations": [
+        "wifi.connect.named"
+      ],
+      "selected_wire_operations": [
+        "wifi.connect.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "conectate al wifi de casa"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "audio.mute",
+        "media.play.exact",
+        "media.play.query",
+        "audio.volume",
+        "wifi.ensure.connected",
+        "routine.read",
+        "note.search",
+        "audio.microphone.mute",
+        "note.read",
+        "web.search",
+        "notification.list.due",
+        "media.status",
+        "window.resize",
+        "note.trash",
+        "notification.schedule",
+        "audio.volume.adjust",
+        "game.install.cancel.active",
+        "office.document.read",
+        "reminder.list",
+        "note.create",
+        "system.settings.set",
+        "backup.verify",
+        "routine.phrase.create",
+        "note.update",
+        "message.send",
+        "window.move",
+        "note.list"
+      ],
+      "case_id": "med-01",
+      "expected_operations": [
+        "media.control"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4200525999913225,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "para lo que esta sonando"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "media.status",
+        "audio.mute",
+        "media.play.exact",
+        "media.play.query",
+        "wifi.ensure.connected",
+        "audio.microphone.mute",
+        "note.search",
+        "game.install.cancel.active",
+        "browser.navigate",
+        "filesystem.move",
+        "window.restore",
+        "browser.navigate.named",
+        "app.installed",
+        "audio.volume",
+        "game.install.status",
+        "note.create",
+        "filesystem.search",
+        "filesystem.write.text",
+        "game.installed.named",
+        "browser.page.read",
+        "media.play.youtube",
+        "filesystem.copy",
+        "note.update",
+        "window.minimize",
+        "backup.verify",
+        "media.control",
+        "routine.restore"
+      ],
+      "case_id": "med-02",
+      "expected_operations": [
+        "media.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4188254000036977,
+      "selected_expected": true,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selected_wire_operations": [
+        "media.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "que cancion es esta"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "game.purchase.prepare",
+        "game.install.prepare",
+        "clipboard.read.text",
+        "media.control",
+        "routine.read",
+        "audio.mute",
+        "game.purchase.commit",
+        "media.seek.relative",
+        "browser.page.read",
+        "game.install.cancel.active",
+        "routine.delete",
+        "window.minimize",
+        "browser.control",
+        "wifi.ensure.connected",
+        "system.time",
+        "routine.restore",
+        "media.play.exact",
+        "game.install.cancel",
+        "game.launch",
+        "audio.volume",
+        "clipboard.write.text",
+        "window.resize",
+        "task.delete",
+        "window.maximize",
+        "backup.verify",
+        "window.restore",
+        "input.pointer.control"
+      ],
+      "case_id": "med-03",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4293723000009777,
+      "selected_expected": true,
+      "selected_operations": [
+        "media.seek.relative"
+      ],
+      "selected_wire_operations": [
+        "media.seek.relative"
+      ],
+      "sentinel_mixed": false,
+      "text": "jump ahead thirty seconds"
+    },
+    {
+      "candidate_operations": [
+        "media.play.query",
+        "media.play.exact",
+        "backup.verify",
+        "input.pointer.control",
+        "audio.volume",
+        "system.settings.set",
+        "note.list",
+        "game.launch",
+        "audio.volume.adjust",
+        "filesystem.hash",
+        "game.install.prepare",
+        "streaming.navigate",
+        "note.search",
+        "wifi.disconnect",
+        "notification.list.due",
+        "media.control",
+        "app.installed",
+        "filesystem.search",
+        "note.create",
+        "message.recipient.resolve",
+        "game.install.cancel.active",
+        "audio.status",
+        "streaming.play.named",
+        "routine.phrase.create",
+        "filesystem.copy",
+        "game.installed.named",
+        "input.select.all",
+        "system.recyclebin.empty"
+      ],
+      "case_id": "med-04",
+      "expected_operations": [
+        "media.play.exact",
+        "media.play.query"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.6078177000017604,
+      "selected_expected": false,
+      "selected_operations": [
+        "streaming.navigate"
+      ],
+      "selected_wire_operations": [
+        "streaming.navigate"
+      ],
+      "sentinel_mixed": false,
+      "text": "ponme algo de bad bunny en spotify"
+    },
+    {
+      "candidate_operations": [
+        "media.play.query"
+      ],
+      "case_id": "med-05",
+      "expected_operations": [
+        "media.play.youtube"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.3070051999966381,
+      "selected_expected": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selected_wire_operations": [
+        "media.play.query"
+      ],
+      "sentinel_mixed": false,
+      "text": "play the tiny desk concert on youtube"
+    },
+    {
+      "candidate_operations": [
+        "audio.volume",
+        "audio.status",
+        "media.control",
+        "media.play.query",
+        "note.search",
+        "audio.mute",
+        "media.play.exact",
+        "audio.volume.adjust",
+        "browser.control",
+        "browser.navigate",
+        "notification.cancel.latest",
+        "browser.navigate.named",
+        "task.resolve.exact",
+        "note.create",
+        "browser.page.read",
+        "routine.read",
+        "filesystem.sandbox.diff.named",
+        "clipboard.write.text",
+        "notification.cancel.at",
+        "audio.microphone.mute",
+        "filesystem.hash",
+        "game.purchase.prepare",
+        "routine.resolve.exact",
+        "routine.phrase.create",
+        "streaming.play.named",
+        "message.recipient.resolve",
+        "filesystem.copy",
+        "task.delete"
+      ],
+      "case_id": "med-06",
+      "expected_operations": [
+        "media.control"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.7554384999966715,
+      "selected_expected": false,
+      "selected_operations": [
+        "media.play.exact"
+      ],
+      "selected_wire_operations": [
+        "media.play.exact"
+      ],
+      "sentinel_mixed": false,
+      "text": "pasa a la siguiente cancion"
+    },
+    {
+      "candidate_operations": [
+        "system.application.crash.diagnose",
+        "notification.cancel.at",
+        "app.installed",
+        "notification.list.due",
+        "note.search",
+        "system.settings.set",
+        "window.minimize",
+        "notification.diagnose",
+        "input.pointer.control",
+        "note.create",
+        "window.resize",
+        "window.restore",
+        "notification.schedule",
+        "reminder.resolve.exact",
+        "wifi.ensure.connected",
+        "audio.mute",
+        "package.install.commit",
+        "window.maximize",
+        "game.install.prepare",
+        "routine.read",
+        "app.open",
+        "browser.navigate.named",
+        "note.read",
+        "notification.dismiss",
+        "window.move",
+        "system.settings.adjust",
+        "browser.navigate",
+        "task.resolve.exact"
+      ],
+      "case_id": "not-01",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.8703850000019884,
+      "selected_expected": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selected_wire_operations": [
+        "notification.schedule"
+      ],
+      "sentinel_mixed": false,
+      "text": "apuntame que tengo que llamar al dentista"
+    },
+    {
+      "candidate_operations": [
+        "note.list"
+      ],
+      "case_id": "not-02",
+      "expected_operations": [
+        "note.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5455098999955226,
+      "selected_expected": true,
+      "selected_operations": [
+        "note.list"
+      ],
+      "selected_wire_operations": [
+        "note.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "que apuntes tengo guardados"
+    },
+    {
+      "candidate_operations": [
+        "note.search"
+      ],
+      "case_id": "not-03",
+      "expected_operations": [
+        "note.search"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.6347457999945618,
+      "selected_expected": true,
+      "selected_operations": [
+        "note.search"
+      ],
+      "selected_wire_operations": [
+        "note.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "find the note where I wrote the wifi password"
+    },
+    {
+      "candidate_operations": [
+        "note.list",
+        "notification.list.due",
+        "reminder.list",
+        "reminder.delete",
+        "task.delete",
+        "note.trash",
+        "note.search",
+        "note.restore",
+        "note.update",
+        "note.create",
+        "filesystem.trash.prepare",
+        "filesystem.list",
+        "backup.list",
+        "notification.cancel.latest",
+        "note.read",
+        "system.recyclebin.empty",
+        "reminder.resolve.exact",
+        "filesystem.trash.commit",
+        "browser.page.read",
+        "browser.tabs.list",
+        "filesystem.known.trash.named",
+        "audio.status",
+        "filesystem.trash.restore",
+        "backup.known.list",
+        "game.catalog.list",
+        "filesystem.search",
+        "audio.volume",
+        "email.latest.read"
+      ],
+      "case_id": "not-04",
+      "expected_operations": [
+        "note.trash"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.8204324999969685,
+      "selected_expected": true,
+      "selected_operations": [
+        "note.trash"
+      ],
+      "selected_wire_operations": [
+        "note.trash"
+      ],
+      "sentinel_mixed": false,
+      "text": "tira a la papelera la nota de la lista del super"
+    },
+    {
+      "candidate_operations": [
+        "note.read"
+      ],
+      "case_id": "not-05",
+      "expected_operations": [
+        "note.read"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.4193975000089267,
+      "selected_expected": true,
+      "selected_operations": [
+        "note.read"
+      ],
+      "selected_wire_operations": [
+        "note.read"
+      ],
+      "sentinel_mixed": false,
+      "text": "leeme la note que se llama ideas"
+    },
+    {
+      "candidate_operations": [
+        "note.create",
+        "backup.verify",
+        "note.update",
+        "package.install.commit",
+        "reminder.resolve.exact",
+        "task.resolve.exact",
+        "office.document.read",
+        "system.settings.set",
+        "peripheral.print",
+        "game.purchase.prepare",
+        "task.delete",
+        "notification.list.due",
+        "filesystem.write.text",
+        "window.resize",
+        "backup.known.verify.latest",
+        "note.read",
+        "message.send",
+        "reminder.delete",
+        "input.pointer.control",
+        "notification.cancel.at",
+        "system.settings.adjust",
+        "message.recipient.resolve",
+        "calendar.event.create",
+        "note.list",
+        "media.seek.relative",
+        "note.search",
+        "package.install.prepare",
+        "streaming.play.named"
+      ],
+      "case_id": "tsk-01",
+      "expected_operations": [
+        "task.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 1.0587615999975242,
+      "selected_expected": false,
+      "selected_operations": [
+        "note.create"
+      ],
+      "selected_wire_operations": [
+        "note.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "agregame al pendiente revisar el contrato"
+    },
+    {
+      "candidate_operations": [
+        "task.list",
+        "note.list",
+        "reminder.list",
+        "backup.list",
+        "notification.list.due",
+        "calendar.event.list",
+        "system.process.list",
+        "game.catalog.list",
+        "routine.list",
+        "task.search",
+        "filesystem.list",
+        "peripheral.list",
+        "system.status",
+        "browser.tabs.list",
+        "note.trash",
+        "task.create",
+        "wifi.profile.list",
+        "note.search",
+        "note.read",
+        "routine.read",
+        "backup.known.list",
+        "system.settings.set",
+        "task.resolve.exact",
+        "media.control",
+        "browser.page.read",
+        "note.restore",
+        "task.complete",
+        "note.update"
+      ],
+      "case_id": "tsk-02",
+      "expected_operations": [
+        "task.list"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.9955444999941392,
+      "selected_expected": true,
+      "selected_operations": [
+        "task.list"
+      ],
+      "selected_wire_operations": [
+        "task.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "what is on my to do list"
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.latest",
+        "task.delete",
+        "app.close",
+        "app.installed",
+        "filesystem.move",
+        "game.install.cancel",
+        "task.reopen",
+        "task.resolve.exact",
+        "game.purchase.prepare",
+        "filesystem.trash.restore",
+        "task.complete",
+        "browser.navigate",
+        "routine.delete",
+        "task.create",
+        "browser.navigate.named",
+        "note.create",
+        "filesystem.trash.commit",
+        "notification.cancel.at",
+        "reminder.resolve.exact",
+        "game.install.prepare",
+        "task.search",
+        "browser.page.read",
+        "routine.restore",
+        "filesystem.copy",
+        "window.restore",
+        "note.trash",
+        "game.install.named",
+        "system.process.terminate.named"
+      ],
+      "case_id": "tsk-03",
+      "expected_operations": [
+        "task.complete",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.7744584999891231,
+      "selected_expected": true,
+      "selected_operations": [
+        "task.complete"
+      ],
+      "selected_wire_operations": [
+        "task.complete"
+      ],
+      "sentinel_mixed": false,
+      "text": "da por terminada la tarea de pagar el arriendo"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.search",
+        "note.search",
+        "game.purchase.prepare",
+        "web.search",
+        "task.search",
+        "notification.list.due",
+        "game.purchase.commit",
+        "notification.cancel.at",
+        "backup.list",
+        "system.identity",
+        "browser.tabs.list",
+        "wifi.ensure.connected",
+        "email.latest.read",
+        "audio.status",
+        "browser.page.read",
+        "backup.verify",
+        "media.play.query",
+        "filesystem.list",
+        "routine.read",
+        "clipboard.read.text",
+        "message.send",
+        "system.settings.status",
+        "game.install.cancel.active",
+        "notification.cancel.latest",
+        "note.read",
+        "reminder.list",
+        "reminder.resolve.exact",
+        "system.settings.set"
+      ],
+      "case_id": "tsk-04",
+      "expected_operations": [
+        "task.search"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.7163297000079183,
+      "selected_expected": false,
+      "selected_operations": [
+        "note.search"
+      ],
+      "selected_wire_operations": [
+        "note.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "busca entre mis pendientes los que hablen del banco"
+    },
+    {
+      "candidate_operations": [
+        "task.search",
+        "task.delete",
+        "task.restore",
+        "task.resolve.exact",
+        "app.installed",
+        "task.update",
+        "task.list",
+        "game.install.cancel.active",
+        "wifi.disconnect",
+        "task.complete",
+        "system.status",
+        "browser.tabs.list",
+        "game.install.cancel",
+        "task.create",
+        "filesystem.search",
+        "browser.page.read",
+        "window.restore",
+        "window.application.status",
+        "filesystem.trash.restore",
+        "backup.verify",
+        "task.reopen",
+        "wifi.status",
+        "window.minimize",
+        "clipboard.write.text",
+        "backup.list",
+        "filesystem.move",
+        "routine.restore",
+        "package.install.prepare"
+      ],
+      "case_id": "tsk-05",
+      "expected_operations": [
+        "task.delete",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.8535437999962596,
+      "selected_expected": true,
+      "selected_operations": [
+        "task.delete"
+      ],
+      "selected_wire_operations": [
+        "task.delete"
+      ],
+      "sentinel_mixed": false,
+      "text": "borra el task de comprar cables"
+    },
+    {
+      "candidate_operations": [
+        "reminder.create"
+      ],
+      "case_id": "rem-01",
+      "expected_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.34915800001181196,
+      "selected_expected": true,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selected_wire_operations": [
+        "reminder.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "avisame manana a las nueve que tengo medico"
+    },
+    {
+      "candidate_operations": [
+        "reminder.list"
+      ],
+      "case_id": "rem-02",
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.43293299998913426,
+      "selected_expected": true,
+      "selected_operations": [
+        "reminder.list"
+      ],
+      "selected_wire_operations": [
+        "reminder.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "what reminders are set up"
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.at"
+      ],
+      "case_id": "rem-03",
+      "expected_operations": [
+        "notification.cancel.at",
+        "reminder.delete"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5280423999938648,
+      "selected_expected": true,
+      "selected_operations": [
+        "notification.cancel.at"
+      ],
+      "selected_wire_operations": [
+        "notification.cancel.at"
+      ],
+      "sentinel_mixed": false,
+      "text": "cancela la alarma de las siete de la manana"
+    },
+    {
+      "candidate_operations": [
+        "notification.schedule"
+      ],
+      "case_id": "rem-04",
+      "expected_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.4503578000003472,
+      "selected_expected": true,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selected_wire_operations": [
+        "notification.schedule"
+      ],
+      "sentinel_mixed": false,
+      "text": "ponme un alarm para las seis de la tarde"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.folder.open",
+        "filesystem.file.open.latest",
+        "filesystem.trash.restore",
+        "backup.known.verify.latest",
+        "filesystem.known.duplicates",
+        "system.recyclebin.empty",
+        "app.installed",
+        "filesystem.known.trash.named",
+        "backup.known.list",
+        "note.list",
+        "filesystem.trash.commit",
+        "filesystem.trash.prepare",
+        "filesystem.path.ensure.absent",
+        "game.install.prepare",
+        "backup.known.create",
+        "backup.list",
+        "filesystem.known.search",
+        "package.install.commit",
+        "browser.tabs.list",
+        "backup.verify",
+        "task.delete",
+        "game.install.cancel.active",
+        "package.install.prepare",
+        "filesystem.move",
+        "game.install.cancel",
+        "filesystem.search",
+        "filesystem.list",
+        "app.open"
+      ],
+      "case_id": "fs-01",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.6551838000013959,
+      "selected_expected": true,
+      "selected_operations": [
+        "filesystem.folder.open"
+      ],
+      "selected_wire_operations": [
+        "filesystem.folder.open"
+      ],
+      "sentinel_mixed": false,
+      "text": "abrime la carpeta de descargas"
+    },
+    {
+      "candidate_operations": [
+        "note.search",
+        "office.document.create",
+        "filesystem.known.search",
+        "filesystem.search",
+        "office.document.read",
+        "filesystem.sandbox.diff.named",
+        "note.list",
+        "browser.page.read",
+        "task.search",
+        "email.latest.read",
+        "note.read",
+        "backup.known.verify.latest",
+        "filesystem.folder.open",
+        "filesystem.file.open.latest",
+        "note.create",
+        "filesystem.known.trash.named",
+        "backup.list",
+        "clipboard.write.text",
+        "note.trash",
+        "peripheral.print",
+        "filesystem.write.text",
+        "filesystem.sandbox.move.named",
+        "backup.verify",
+        "filesystem.trash.commit",
+        "filesystem.sandbox.append.named",
+        "clipboard.read.text",
+        "browser.tabs.list",
+        "web.search"
+      ],
+      "case_id": "fs-02",
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.8201444000005722,
+      "selected_expected": true,
+      "selected_operations": [
+        "filesystem.known.search"
+      ],
+      "selected_wire_operations": [
+        "filesystem.known.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "look for a pdf with factura in the name in my documents"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.search"
+      ],
+      "case_id": "fs-03",
+      "expected_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.3493037000007462,
+      "selected_expected": false,
+      "selected_operations": [
+        "filesystem.known.search"
+      ],
+      "selected_wire_operations": [
+        "filesystem.known.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "hay archivos repetidos en descargas"
+    },
+    {
+      "candidate_operations": [
+        "note.list",
+        "filesystem.known.trash.named",
+        "task.delete",
+        "filesystem.trash.restore",
+        "reminder.delete",
+        "filesystem.trash.commit",
+        "note.search",
+        "filesystem.trash.prepare",
+        "note.trash",
+        "filesystem.file.open.latest",
+        "note.restore",
+        "notification.list.due",
+        "note.create",
+        "clipboard.write.text",
+        "audio.volume",
+        "filesystem.folder.open",
+        "filesystem.known.duplicates",
+        "note.update",
+        "system.recyclebin.empty",
+        "note.read",
+        "audio.status",
+        "filesystem.known.search",
+        "filesystem.move",
+        "filesystem.sandbox.append.named",
+        "filesystem.path.ensure.absent",
+        "backup.list",
+        "clipboard.read.text",
+        "office.document.read"
+      ],
+      "case_id": "fs-04",
+      "expected_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.6916905000107363,
+      "selected_expected": false,
+      "selected_operations": [
+        "filesystem.trash.commit"
+      ],
+      "selected_wire_operations": [
+        "filesystem.trash.commit"
+      ],
+      "sentinel_mixed": false,
+      "text": "manda a la papelera el archivo notas.txt de descargas"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.file.open.latest",
+        "filesystem.folder.open",
+        "app.installed",
+        "backup.known.verify.latest",
+        "filesystem.known.trash.named",
+        "backup.known.restore.latest",
+        "game.install.cancel",
+        "email.latest.read",
+        "email.latest.reply",
+        "filesystem.trash.restore",
+        "browser.navigate.named",
+        "game.install.cancel.active",
+        "audio.volume",
+        "filesystem.move",
+        "task.reopen",
+        "app.close",
+        "backup.list",
+        "filesystem.known.duplicates",
+        "filesystem.path.ensure.absent",
+        "browser.navigate",
+        "routine.delete",
+        "filesystem.trash.commit",
+        "filesystem.copy",
+        "filesystem.list",
+        "game.install.prepare",
+        "filesystem.sandbox.diff.named",
+        "task.delete",
+        "filesystem.write.text"
+      ],
+      "case_id": "fs-05",
+      "expected_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.618218399991747,
+      "selected_expected": true,
+      "selected_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "selected_wire_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "sentinel_mixed": false,
+      "text": "open the last file I downloaded"
+    },
+    {
+      "candidate_operations": [
+        "backup.known.create",
+        "package.install.commit",
+        "task.create",
+        "filesystem.trash.commit",
+        "package.install.prepare",
+        "reminder.create",
+        "backup.known.verify.latest",
+        "note.create",
+        "filesystem.trash.prepare",
+        "filesystem.file.open.latest",
+        "peripheral.print",
+        "routine.phrase.create",
+        "notification.list.due",
+        "task.complete",
+        "window.move",
+        "backup.known.list",
+        "filesystem.known.trash.named",
+        "backup.create",
+        "filesystem.create.directory",
+        "capture.screenshot",
+        "office.document.create",
+        "clipboard.write.text",
+        "system.process.list",
+        "task.update",
+        "note.list",
+        "browser.tabs.list",
+        "task.delete",
+        "game.install.commit"
+      ],
+      "case_id": "fs-06",
+      "expected_operations": [
+        "filesystem.create.directory"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.6173998000012944,
+      "selected_expected": true,
+      "selected_operations": [
+        "filesystem.create.directory"
+      ],
+      "selected_wire_operations": [
+        "filesystem.create.directory"
+      ],
+      "sentinel_mixed": false,
+      "text": "creame una carpeta que se llame proyectos"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.copy",
+        "filesystem.hash",
+        "filesystem.move",
+        "filesystem.sandbox.append.named",
+        "filesystem.read.text",
+        "filesystem.write.text",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.diff.named",
+        "task.resolve.exact",
+        "filesystem.search",
+        "filesystem.file.open.latest",
+        "note.search",
+        "backup.verify",
+        "backup.create",
+        "audio.volume",
+        "task.search",
+        "backup.list",
+        "browser.page.read",
+        "backup.known.verify.latest",
+        "filesystem.known.duplicates",
+        "task.reopen",
+        "filesystem.trash.commit",
+        "backup.known.list",
+        "reminder.resolve.exact",
+        "filesystem.known.trash.named",
+        "note.create",
+        "audio.status",
+        "note.list"
+      ],
+      "case_id": "fs-07",
+      "expected_operations": [
+        "filesystem.hash",
+        "filesystem.list",
+        "filesystem.search"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.5270558999909554,
+      "selected_expected": false,
+      "selected_operations": [
+        "filesystem.read.text"
+      ],
+      "selected_wire_operations": [
+        "filesystem.read.text"
+      ],
+      "sentinel_mixed": false,
+      "text": "sacale el hash al archivo reporte.txt"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.search",
+        "filesystem.file.open.latest",
+        "filesystem.folder.open",
+        "backup.known.verify.latest",
+        "filesystem.path.ensure.absent",
+        "backup.known.create",
+        "filesystem.known.trash.named",
+        "filesystem.trash.commit",
+        "filesystem.known.duplicates",
+        "peripheral.print",
+        "filesystem.copy",
+        "filesystem.move",
+        "filesystem.trash.prepare",
+        "filesystem.trash.restore",
+        "backup.known.list",
+        "task.delete",
+        "backup.known.restore.latest",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.diff.named",
+        "office.document.create",
+        "filesystem.hash",
+        "filesystem.list",
+        "note.list",
+        "filesystem.sandbox.append.named",
+        "backup.create",
+        "filesystem.search",
+        "system.recyclebin.empty",
+        "reminder.delete"
+      ],
+      "case_id": "fs-08",
+      "expected_operations": [
+        "filesystem.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5421991999901365,
+      "selected_expected": false,
+      "selected_operations": [
+        "filesystem.known.search"
+      ],
+      "selected_wire_operations": [
+        "filesystem.known.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "que archivos tengo en la carpeta de trabajo"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.write.text",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "filesystem.file.open.latest",
+        "filesystem.copy",
+        "message.recipient.resolve",
+        "peripheral.print",
+        "filesystem.read.text",
+        "filesystem.known.trash.named",
+        "filesystem.search",
+        "filesystem.sandbox.diff.named",
+        "backup.verify",
+        "backup.list",
+        "task.resolve.exact",
+        "routine.read",
+        "filesystem.hash",
+        "note.search",
+        "filesystem.sandbox.move.named",
+        "task.create",
+        "backup.restore",
+        "audio.status",
+        "filesystem.trash.restore",
+        "clipboard.write.text",
+        "note.read",
+        "audio.volume",
+        "filesystem.path.ensure.absent",
+        "note.list",
+        "task.search"
+      ],
+      "case_id": "fs-09",
+      "expected_operations": [
+        "filesystem.write.text"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.5489075999939814,
+      "selected_expected": true,
+      "selected_operations": [
+        "filesystem.write.text"
+      ],
+      "selected_wire_operations": [
+        "filesystem.write.text"
+      ],
+      "sentinel_mixed": false,
+      "text": "write hello into a file called saludo.txt"
+    },
+    {
+      "candidate_operations": [
+        "clipboard.copy",
+        "input.select.all",
+        "filesystem.trash.commit",
+        "email.latest.reply",
+        "task.complete",
+        "notification.dismiss",
+        "note.search",
+        "filesystem.trash.prepare",
+        "wifi.ensure.connected",
+        "game.purchase.prepare",
+        "routine.phrase.create",
+        "backup.list",
+        "note.update",
+        "office.document.read",
+        "clipboard.write.text",
+        "note.list",
+        "note.trash",
+        "web.search",
+        "office.document.create",
+        "routine.delete",
+        "backup.create",
+        "filesystem.copy",
+        "clipboard.read.text",
+        "peripheral.print",
+        "note.read",
+        "task.reopen",
+        "package.install.commit",
+        "email.latest.read"
+      ],
+      "case_id": "clp-01",
+      "expected_operations": [
+        "clipboard.copy"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4312186000024667,
+      "selected_expected": false,
+      "selected_operations": [
+        "clipboard.read.text"
+      ],
+      "selected_wire_operations": [
+        "clipboard.read.text"
+      ],
+      "sentinel_mixed": false,
+      "text": "copiame lo que tengo seleccionado"
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read",
+        "routine.read",
+        "window.resize",
+        "audio.status",
+        "task.resolve.exact",
+        "browser.control",
+        "reminder.list",
+        "reminder.resolve.exact",
+        "routine.resolve.exact",
+        "game.install.cancel.active",
+        "routine.phrase.create",
+        "game.purchase.prepare",
+        "web.search",
+        "browser.navigate",
+        "input.select.all",
+        "backup.verify",
+        "note.search",
+        "game.install.prepare",
+        "note.create",
+        "audio.mute",
+        "window.restore",
+        "window.minimize",
+        "wifi.ensure.connected",
+        "backup.list",
+        "browser.navigate.named",
+        "task.complete",
+        "media.status",
+        "network.ping"
+      ],
+      "case_id": "clp-02",
+      "expected_operations": [
+        "clipboard.paste"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.41909849998774007,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "pegalo aca"
+    },
+    {
+      "candidate_operations": [
+        "email.latest.reply",
+        "clipboard.copy",
+        "filesystem.copy",
+        "backup.list",
+        "backup.known.verify.latest",
+        "reminder.delete",
+        "note.search",
+        "clipboard.write.text",
+        "app.installed",
+        "filesystem.file.open.latest",
+        "task.delete",
+        "task.complete",
+        "note.trash",
+        "filesystem.trash.commit",
+        "email.latest.read",
+        "note.list",
+        "backup.known.restore.latest",
+        "audio.volume",
+        "filesystem.move",
+        "filesystem.trash.restore",
+        "task.update",
+        "audio.status",
+        "routine.delete",
+        "backup.create",
+        "filesystem.trash.prepare",
+        "task.restore",
+        "task.reopen",
+        "note.restore"
+      ],
+      "case_id": "clp-03",
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.5171763999969698,
+      "selected_expected": false,
+      "selected_operations": [
+        "clipboard.write.text"
+      ],
+      "selected_wire_operations": [
+        "clipboard.write.text"
+      ],
+      "sentinel_mixed": false,
+      "text": "what did I copy last"
+    },
+    {
+      "candidate_operations": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "clipboard.read.text",
+        "email.latest.read",
+        "note.list",
+        "email.latest.reply",
+        "peripheral.print",
+        "input.pointer.control",
+        "task.delete",
+        "message.send",
+        "reminder.delete",
+        "clipboard.copy",
+        "system.recyclebin.empty",
+        "filesystem.copy",
+        "filesystem.trash.commit",
+        "browser.page.read",
+        "browser.control",
+        "filesystem.trash.restore",
+        "message.recipient.resolve",
+        "backup.verify",
+        "browser.tabs.list",
+        "browser.navigate.named",
+        "filesystem.trash.prepare",
+        "office.document.create",
+        "routine.delete",
+        "filesystem.file.open.latest",
+        "backup.known.verify.latest",
+        "notification.list.due"
+      ],
+      "case_id": "clp-04",
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.464355499992962,
+      "selected_expected": true,
+      "selected_operations": [
+        "clipboard.write.text"
+      ],
+      "selected_wire_operations": [
+        "clipboard.write.text"
+      ],
+      "sentinel_mixed": false,
+      "text": "deja mi correo en el portapapeles"
+    },
+    {
+      "candidate_operations": [
+        "network.ping",
+        "app.installed",
+        "browser.page.read",
+        "game.purchase.commit",
+        "input.key.press",
+        "game.install.prepare",
+        "note.list",
+        "backup.list",
+        "game.installed.named",
+        "input.keyboard.status",
+        "browser.tabs.list",
+        "filesystem.search",
+        "network.status",
+        "input.keyboard.layout",
+        "input.select.all",
+        "input.pointer.control",
+        "notification.list.due",
+        "filesystem.move",
+        "network.ip.list",
+        "game.install.commit",
+        "package.install.commit",
+        "note.read",
+        "web.search",
+        "filesystem.copy",
+        "browser.navigate",
+        "wifi.connect",
+        "game.install.cancel.active",
+        "task.search"
+      ],
+      "case_id": "inp-01",
+      "expected_operations": [
+        "input.key.press"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.44329450000077486,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "dale enter"
+    },
+    {
+      "candidate_operations": [
+        "input.select.all"
+      ],
+      "case_id": "inp-02",
+      "expected_operations": [
+        "input.select.all"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.38772070000413805,
+      "selected_expected": true,
+      "selected_operations": [
+        "input.select.all"
+      ],
+      "selected_wire_operations": [
+        "input.select.all"
+      ],
+      "sentinel_mixed": false,
+      "text": "selecciona todo lo que hay ahi"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "routine.read",
+        "wifi.disconnect",
+        "window.resize",
+        "routine.delete",
+        "wifi.ensure.connected",
+        "reminder.list",
+        "app.installed",
+        "message.recipient.resolve",
+        "backup.verify",
+        "task.reopen",
+        "filesystem.list",
+        "note.read",
+        "game.install.prepare",
+        "notification.list.due",
+        "message.send",
+        "wifi.status",
+        "filesystem.search",
+        "audio.mute",
+        "note.search",
+        "note.list",
+        "window.minimize",
+        "media.status",
+        "task.create",
+        "network.status",
+        "game.purchase.prepare",
+        "wifi.profile.list",
+        "system.power"
+      ],
+      "case_id": "inp-03",
+      "expected_operations": [
+        "input.text.type"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.38131959999736864,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "type hello world for me"
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.open",
+        "input.keyboard.layout",
+        "clipboard.write.text",
+        "input.pointer.control",
+        "input.key.press",
+        "clipboard.read.text",
+        "window.move",
+        "capture.screenshot",
+        "audio.volume",
+        "app.installed",
+        "app.open",
+        "clipboard.paste",
+        "media.control",
+        "window.resize",
+        "audio.volume.adjust",
+        "peripheral.list",
+        "media.seek.relative",
+        "game.install.prepare",
+        "audio.mute",
+        "window.maximize",
+        "audio.microphone.mute",
+        "input.keyboard.status",
+        "capture.active.window",
+        "window.resolve",
+        "window.restore",
+        "window.minimize",
+        "input.select.all",
+        "window.focus"
+      ],
+      "case_id": "inp-04",
+      "expected_operations": [
+        "input.keyboard.open"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5894571999961045,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "sacame el teclado de pantalla"
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "input.keyboard.status",
+        "clipboard.write.text",
+        "input.pointer.control",
+        "clipboard.copy",
+        "clipboard.paste",
+        "app.installed",
+        "input.key.press",
+        "browser.page.read",
+        "audio.status",
+        "clipboard.read.text",
+        "note.search",
+        "system.settings.set",
+        "note.update",
+        "filesystem.write.text",
+        "peripheral.print",
+        "window.resize",
+        "peripheral.list",
+        "filesystem.read.text",
+        "note.create",
+        "filesystem.move",
+        "routine.delete",
+        "system.status",
+        "office.document.create",
+        "note.list",
+        "window.application.status",
+        "window.move"
+      ],
+      "case_id": "inp-05",
+      "expected_operations": [
+        "input.keyboard.layout"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.4607970000070054,
+      "selected_expected": false,
+      "selected_operations": [
+        "system.settings.set"
+      ],
+      "selected_wire_operations": [
+        "system.settings.set"
+      ],
+      "sentinel_mixed": false,
+      "text": "cambia el keyboard a espanol"
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read",
+        "routine.read",
+        "window.resize",
+        "audio.status",
+        "app.close",
+        "window.move",
+        "web.search",
+        "audio.mute",
+        "window.minimize",
+        "backup.list",
+        "task.resolve.exact",
+        "browser.control",
+        "input.pointer.control",
+        "office.document.read",
+        "system.status",
+        "note.search",
+        "backup.verify",
+        "window.restore",
+        "audio.volume",
+        "media.seek.relative",
+        "routine.delete",
+        "window.maximize",
+        "media.status",
+        "filesystem.search",
+        "app.installed",
+        "window.focus",
+        "game.purchase.prepare",
+        "filesystem.sandbox.diff.named"
+      ],
+      "case_id": "inp-06",
+      "expected_operations": [
+        "input.pointer.control"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.439219600011711,
+      "selected_expected": true,
+      "selected_operations": [
+        "input.pointer.control"
+      ],
+      "selected_wire_operations": [
+        "input.pointer.control"
+      ],
+      "sentinel_mixed": false,
+      "text": "scroll down a bit"
+    },
+    {
+      "candidate_operations": [
+        "input.visible.click",
+        "input.pointer.control",
+        "game.install.prepare",
+        "system.power",
+        "input.key.press",
+        "note.create",
+        "app.installed",
+        "browser.navigate",
+        "app.open",
+        "game.install.cancel.active",
+        "window.minimize",
+        "browser.navigate.named",
+        "note.search",
+        "routine.phrase.create",
+        "window.maximize",
+        "input.select.all",
+        "window.restore",
+        "audio.mute",
+        "backup.verify",
+        "window.focus",
+        "package.install.commit",
+        "app.close",
+        "browser.page.read",
+        "email.latest.reply",
+        "window.resize",
+        "routine.read",
+        "audio.status",
+        "wifi.disconnect"
+      ],
+      "case_id": "inp-07",
+      "expected_operations": [
+        "input.visible.click"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5260957999998936,
+      "selected_expected": true,
+      "selected_operations": [
+        "input.visible.click"
+      ],
+      "selected_wire_operations": [
+        "input.visible.click"
+      ],
+      "sentinel_mixed": false,
+      "text": "hazle clic al boton de aceptar"
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "input.keyboard.status",
+        "input.text.type",
+        "clipboard.write.text",
+        "note.search",
+        "browser.page.read",
+        "audio.mute",
+        "peripheral.list",
+        "filesystem.read.text",
+        "input.key.press",
+        "app.installed",
+        "ocr.read",
+        "input.pointer.control",
+        "audio.volume",
+        "filesystem.write.text",
+        "clipboard.read.text",
+        "audio.microphone.mute",
+        "task.search",
+        "office.document.read",
+        "window.move",
+        "audio.status",
+        "input.visible.click",
+        "system.settings.set",
+        "peripheral.print",
+        "browser.tabs.list",
+        "media.status",
+        "browser.navigate"
+      ],
+      "case_id": "inp-08",
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4554031000006944,
+      "selected_expected": false,
+      "selected_operations": [
+        "peripheral.list"
+      ],
+      "selected_wire_operations": [
+        "peripheral.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "en que idioma esta el teclado"
+    },
+    {
+      "candidate_operations": [
+        "window.focus",
+        "capture.screenshot",
+        "wifi.ensure.connected",
+        "clipboard.read.text",
+        "audio.volume",
+        "window.restore",
+        "routine.phrase.create",
+        "window.resize",
+        "media.control",
+        "app.open",
+        "media.play.exact",
+        "backup.verify",
+        "input.pointer.control",
+        "system.settings.adjust",
+        "window.maximize",
+        "system.status",
+        "filesystem.folder.open",
+        "media.status",
+        "app.installed",
+        "audio.volume.adjust",
+        "window.minimize",
+        "audio.status",
+        "office.document.read",
+        "media.seek.relative",
+        "window.active",
+        "message.recipient.resolve",
+        "window.application.status",
+        "game.launch"
+      ],
+      "case_id": "cap-01",
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5258933000004617,
+      "selected_expected": true,
+      "selected_operations": [
+        "capture.screenshot"
+      ],
+      "selected_wire_operations": [
+        "capture.screenshot"
+      ],
+      "sentinel_mixed": false,
+      "text": "sacame una foto de la pantalla"
+    },
+    {
+      "candidate_operations": [
+        "capture.active.window",
+        "app.close",
+        "window.focus",
+        "window.minimize",
+        "window.maximize",
+        "window.restore",
+        "browser.control",
+        "capture.screenshot",
+        "window.move",
+        "filesystem.folder.open",
+        "window.application.status",
+        "vision.describe",
+        "audio.status",
+        "input.select.all",
+        "clipboard.paste",
+        "window.resolve",
+        "package.install.prepare",
+        "audio.volume",
+        "backup.known.verify.latest",
+        "window.active",
+        "audio.mute",
+        "input.key.press",
+        "routine.phrase.create",
+        "input.keyboard.status",
+        "window.resize",
+        "input.keyboard.open",
+        "backup.list",
+        "clipboard.read.text"
+      ],
+      "case_id": "cap-02",
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.44287980000081006,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.active"
+      ],
+      "selected_wire_operations": [
+        "window.active"
+      ],
+      "sentinel_mixed": false,
+      "text": "captura nada mas la ventana de adelante"
+    },
+    {
+      "candidate_operations": [
+        "clipboard.read.text",
+        "browser.page.read",
+        "office.document.read",
+        "routine.read",
+        "filesystem.read.text",
+        "email.latest.read",
+        "clipboard.write.text",
+        "note.read",
+        "note.search",
+        "filesystem.write.text",
+        "task.resolve.exact",
+        "audio.status",
+        "audio.mute",
+        "ocr.read",
+        "network.status",
+        "message.send",
+        "system.identity",
+        "capture.screenshot",
+        "filesystem.sandbox.diff.named",
+        "media.status",
+        "email.latest.reply",
+        "task.update",
+        "reminder.resolve.exact",
+        "app.close",
+        "backup.list",
+        "audio.volume",
+        "task.search",
+        "message.recipient.resolve"
+      ],
+      "case_id": "cap-03",
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.42057349999959115,
+      "selected_expected": true,
+      "selected_operations": [
+        "ocr.read"
+      ],
+      "selected_wire_operations": [
+        "ocr.read"
+      ],
+      "sentinel_mixed": false,
+      "text": "read the text out of that screenshot"
+    },
+    {
+      "candidate_operations": [
+        "vision.describe",
+        "capture.active.window",
+        "routine.phrase.create",
+        "capture.screenshot",
+        "ocr.read",
+        "package.install.commit",
+        "browser.control",
+        "game.purchase.prepare",
+        "app.open",
+        "input.select.all",
+        "window.active",
+        "filesystem.copy",
+        "notification.list.due",
+        "browser.navigate",
+        "game.purchase.commit",
+        "peripheral.scan",
+        "note.search",
+        "browser.page.read",
+        "filesystem.trash.commit",
+        "app.installed",
+        "filesystem.folder.open",
+        "wifi.ensure.connected",
+        "note.list",
+        "notification.dismiss",
+        "window.focus",
+        "routine.read",
+        "backup.known.verify.latest",
+        "audio.volume"
+      ],
+      "case_id": "cap-04",
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.40590899999369867,
+      "selected_expected": true,
+      "selected_operations": [
+        "vision.describe"
+      ],
+      "selected_wire_operations": [
+        "vision.describe"
+      ],
+      "sentinel_mixed": false,
+      "text": "describime que se ve en la captura"
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read",
+        "media.status",
+        "web.search",
+        "browser.navigate.named",
+        "office.document.read",
+        "window.move",
+        "window.resize",
+        "browser.control",
+        "note.search",
+        "wifi.ensure.connected",
+        "window.restore",
+        "browser.navigate",
+        "routine.read",
+        "filesystem.search",
+        "window.minimize",
+        "task.resolve.exact",
+        "window.active",
+        "audio.volume",
+        "peripheral.print",
+        "window.resolve",
+        "filesystem.move",
+        "app.installed",
+        "filesystem.known.search",
+        "audio.status",
+        "wifi.status",
+        "window.maximize",
+        "wifi.profile.list",
+        "backup.verify"
+      ],
+      "case_id": "brw-01",
+      "expected_operations": [
+        "browser.navigate",
+        "browser.navigate.named"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.41807350001181476,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "llevame a wikipedia"
+    },
+    {
+      "candidate_operations": [
+        "backup.restore",
+        "routine.delete",
+        "backup.list",
+        "backup.verify",
+        "browser.control",
+        "routine.restore",
+        "note.search",
+        "window.resize",
+        "browser.page.read",
+        "clipboard.write.text",
+        "window.restore",
+        "app.close",
+        "reminder.delete",
+        "routine.read",
+        "task.delete",
+        "task.reopen",
+        "app.installed",
+        "web.search",
+        "audio.mute",
+        "backup.known.verify.latest",
+        "audio.status",
+        "note.restore",
+        "task.restore",
+        "note.update",
+        "window.move",
+        "filesystem.trash.restore",
+        "peripheral.print",
+        "filesystem.sandbox.diff.named"
+      ],
+      "case_id": "brw-02",
+      "expected_operations": [
+        "browser.control"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.41497939999680966,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.restore"
+      ],
+      "selected_wire_operations": [
+        "window.restore"
+      ],
+      "sentinel_mixed": false,
+      "text": "go back one page"
+    },
+    {
+      "candidate_operations": [
+        "browser.tabs.list"
+      ],
+      "case_id": "brw-03",
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.3048216000024695,
+      "selected_expected": true,
+      "selected_operations": [
+        "browser.tabs.list"
+      ],
+      "selected_wire_operations": [
+        "browser.tabs.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "que pestanas tengo abiertas"
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read",
+        "game.purchase.commit",
+        "audio.status",
+        "note.read",
+        "browser.control",
+        "web.search",
+        "routine.delete",
+        "routine.read",
+        "browser.navigate",
+        "note.search",
+        "routine.restore",
+        "routine.phrase.create",
+        "window.resize",
+        "audio.mute",
+        "app.installed",
+        "game.purchase.prepare",
+        "note.trash",
+        "task.search",
+        "network.status",
+        "browser.navigate.named",
+        "note.list",
+        "office.document.read",
+        "game.install.cancel.active",
+        "media.status",
+        "game.install.prepare",
+        "wifi.ensure.connected",
+        "filesystem.search",
+        "vision.describe"
+      ],
+      "case_id": "brw-04",
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.42821319999347907,
+      "selected_expected": true,
+      "selected_operations": [
+        "browser.page.read"
+      ],
+      "selected_wire_operations": [
+        "browser.page.read"
+      ],
+      "sentinel_mixed": false,
+      "text": "what does this page actually say"
+    },
+    {
+      "candidate_operations": [
+        "game.catalog.list"
+      ],
+      "case_id": "gam-01",
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4051173999905586,
+      "selected_expected": true,
+      "selected_operations": [
+        "game.catalog.list"
+      ],
+      "selected_wire_operations": [
+        "game.catalog.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "que juegos tengo instalados"
+    },
+    {
+      "candidate_operations": [
+        "game.install.cancel.active",
+        "game.launch",
+        "media.control",
+        "game.install.cancel",
+        "notification.cancel.latest",
+        "app.installed",
+        "browser.page.read",
+        "browser.control",
+        "notification.list.due",
+        "notification.cancel.at",
+        "filesystem.search",
+        "task.resolve.exact",
+        "task.search",
+        "routine.delete",
+        "game.install.named",
+        "window.minimize",
+        "calendar.event.list",
+        "game.install.prepare",
+        "web.search",
+        "input.pointer.control",
+        "audio.status",
+        "notification.dismiss",
+        "reminder.list",
+        "routine.restore",
+        "wifi.disconnect",
+        "browser.tabs.list",
+        "routine.read",
+        "game.purchase.prepare"
+      ],
+      "case_id": "gam-02",
+      "expected_operations": [
+        "game.launch"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.6577782000094885,
+      "selected_expected": true,
+      "selected_operations": [
+        "game.launch"
+      ],
+      "selected_wire_operations": [
+        "game.launch"
+      ],
+      "sentinel_mixed": false,
+      "text": "launch counter strike"
+    },
+    {
+      "candidate_operations": [
+        "game.installed.named",
+        "game.install.prepare",
+        "game.install.commit",
+        "game.install.cancel.active",
+        "game.install.cancel",
+        "game.install.named",
+        "game.install.status",
+        "package.install.commit",
+        "package.install.prepare",
+        "app.installed",
+        "game.launch",
+        "input.keyboard.layout",
+        "system.settings.set",
+        "audio.volume",
+        "input.keyboard.status",
+        "input.keyboard.open",
+        "window.resize",
+        "app.open",
+        "filesystem.file.open.latest",
+        "window.focus",
+        "window.restore",
+        "input.key.press",
+        "window.maximize",
+        "input.pointer.control",
+        "game.purchase.prepare",
+        "window.minimize",
+        "window.resolve",
+        "filesystem.folder.open"
+      ],
+      "case_id": "gam-03",
+      "expected_operations": [
+        "game.installed.named"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.5707452000060584,
+      "selected_expected": true,
+      "selected_operations": [
+        "game.installed.named"
+      ],
+      "selected_wire_operations": [
+        "game.installed.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "tengo instalado el hollow knight"
+    },
+    {
+      "candidate_operations": [
+        "game.install.cancel",
+        "game.install.cancel.active",
+        "game.install.status",
+        "game.installed.named",
+        "game.install.commit",
+        "game.install.named",
+        "game.catalog.list",
+        "game.install.prepare",
+        "package.install.commit",
+        "filesystem.folder.open",
+        "streaming.play.named",
+        "filesystem.known.duplicates",
+        "package.install.prepare",
+        "filesystem.file.open.latest",
+        "app.installed",
+        "filesystem.trash.restore",
+        "game.launch",
+        "backup.verify",
+        "filesystem.known.trash.named",
+        "filesystem.search",
+        "wifi.ensure.connected",
+        "streaming.navigate",
+        "system.settings.set",
+        "filesystem.sandbox.diff.named",
+        "system.power",
+        "filesystem.move",
+        "backup.known.verify.latest",
+        "browser.tabs.list"
+      ],
+      "case_id": "gam-04",
+      "expected_operations": [
+        "game.install.cancel",
+        "game.install.cancel.active"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.47472370001196396,
+      "selected_expected": true,
+      "selected_operations": [
+        "game.install.cancel.active"
+      ],
+      "selected_wire_operations": [
+        "game.install.cancel.active"
+      ],
+      "sentinel_mixed": false,
+      "text": "para la descarga que tiene steam corriendo"
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.device.pair",
+        "bluetooth.radio.set",
+        "bluetooth.device.list",
+        "game.install.prepare",
+        "email.latest.read",
+        "game.launch",
+        "game.installed.named",
+        "system.settings.set",
+        "audio.status",
+        "audio.mute",
+        "game.install.status",
+        "backup.verify",
+        "browser.navigate.named",
+        "game.install.named",
+        "wifi.ensure.connected",
+        "audio.volume",
+        "wifi.disconnect",
+        "filesystem.write.text",
+        "wifi.connect",
+        "app.installed",
+        "system.status",
+        "game.install.cancel.active",
+        "media.play.query",
+        "backup.known.verify.latest",
+        "wifi.status",
+        "media.play.exact",
+        "input.pointer.control",
+        "note.search"
+      ],
+      "case_id": "blu-01",
+      "expected_operations": [
+        "bluetooth.radio.set"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.431925400000182,
+      "selected_expected": true,
+      "selected_operations": [
+        "bluetooth.radio.set"
+      ],
+      "selected_wire_operations": [
+        "bluetooth.radio.set"
+      ],
+      "sentinel_mixed": false,
+      "text": "apagame el bluetooth"
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.device.list"
+      ],
+      "case_id": "blu-02",
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.3057935999968322,
+      "selected_expected": true,
+      "selected_operations": [
+        "bluetooth.device.list"
+      ],
+      "selected_wire_operations": [
+        "bluetooth.device.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "which bluetooth devices are around"
+    },
+    {
+      "candidate_operations": [
+        "system.status"
+      ],
+      "case_id": "per-01",
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.2820875000033993,
+      "selected_expected": false,
+      "selected_operations": [
+        "system.status"
+      ],
+      "selected_wire_operations": [
+        "system.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "que cosas tengo conectadas al equipo"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.copy",
+        "backup.create",
+        "office.document.create",
+        "backup.known.create",
+        "filesystem.file.open.latest",
+        "filesystem.move",
+        "peripheral.print",
+        "filesystem.trash.commit",
+        "backup.known.verify.latest",
+        "filesystem.sandbox.move.named",
+        "filesystem.hash",
+        "filesystem.known.trash.named",
+        "email.latest.reply",
+        "filesystem.trash.restore",
+        "clipboard.copy",
+        "backup.verify",
+        "capture.screenshot",
+        "note.create",
+        "clipboard.write.text",
+        "filesystem.sandbox.diff.named",
+        "filesystem.read.text",
+        "filesystem.sandbox.append.named",
+        "filesystem.trash.prepare",
+        "filesystem.write.text",
+        "backup.known.list",
+        "note.list",
+        "filesystem.search",
+        "note.search"
+      ],
+      "case_id": "bak-01",
+      "expected_operations": [
+        "backup.known.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.48849329999939073,
+      "selected_expected": false,
+      "selected_operations": [
+        "backup.create"
+      ],
+      "selected_wire_operations": [
+        "backup.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "hazme una copia de seguridad de documentos"
+    },
+    {
+      "candidate_operations": [
+        "backup.list"
+      ],
+      "case_id": "bak-02",
+      "expected_operations": [
+        "backup.known.list",
+        "backup.list"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.6173743000108516,
+      "selected_expected": true,
+      "selected_operations": [
+        "backup.list"
+      ],
+      "selected_wire_operations": [
+        "backup.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "list the backups you have made"
+    },
+    {
+      "candidate_operations": [
+        "notification.schedule",
+        "browser.control",
+        "notification.list.due",
+        "task.create",
+        "task.search",
+        "audio.status",
+        "system.time",
+        "notification.cancel.at",
+        "system.settings.set",
+        "media.play.query",
+        "media.seek.relative",
+        "media.status",
+        "game.purchase.prepare",
+        "browser.page.read",
+        "notification.cancel.latest",
+        "reminder.create",
+        "note.search",
+        "backup.known.verify.latest",
+        "note.list",
+        "routine.read",
+        "window.restore",
+        "system.process.list",
+        "calendar.event.list",
+        "task.complete",
+        "media.control",
+        "window.resize",
+        "window.minimize",
+        "media.play.exact"
+      ],
+      "case_id": "cal-01",
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.8113465000060387,
+      "selected_expected": true,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selected_wire_operations": [
+        "calendar.event.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "que tengo en la agenda para hoy"
+    },
+    {
+      "candidate_operations": [
+        "routine.read",
+        "reminder.list",
+        "game.purchase.prepare",
+        "window.resize",
+        "notification.list.due",
+        "routine.phrase.create",
+        "task.reopen",
+        "window.move",
+        "window.minimize",
+        "task.resolve.exact",
+        "media.seek.relative",
+        "routine.resolve.exact",
+        "window.maximize",
+        "task.create",
+        "notification.cancel.at",
+        "window.restore",
+        "routine.delete",
+        "reminder.resolve.exact",
+        "filesystem.sandbox.diff.named",
+        "routine.restore",
+        "media.play.exact",
+        "audio.status",
+        "notification.schedule",
+        "system.process.list",
+        "filesystem.search",
+        "media.control",
+        "task.update",
+        "system.settings.set"
+      ],
+      "case_id": "cal-02",
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.5861811999930069,
+      "selected_expected": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selected_wire_operations": [
+        "notification.schedule"
+      ],
+      "sentinel_mixed": false,
+      "text": "agendame una reunion manana de diez a once"
+    },
+    {
+      "candidate_operations": [
+        "email.latest.read"
+      ],
+      "case_id": "eml-01",
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.5385901999979978,
+      "selected_expected": true,
+      "selected_operations": [
+        "email.latest.read"
+      ],
+      "selected_wire_operations": [
+        "email.latest.read"
+      ],
+      "sentinel_mixed": false,
+      "text": "read me the last email that came in"
+    },
+    {
+      "candidate_operations": [
+        "email.latest.reply",
+        "email.latest.read",
+        "window.restore",
+        "notification.cancel.latest",
+        "app.close",
+        "message.send",
+        "wifi.ensure.connected",
+        "note.search",
+        "browser.navigate",
+        "input.pointer.control",
+        "game.install.cancel.active",
+        "notification.dismiss",
+        "task.complete",
+        "audio.volume",
+        "backup.known.verify.latest",
+        "notification.list.due",
+        "media.seek.relative",
+        "window.resize",
+        "note.create",
+        "reminder.resolve.exact",
+        "task.reopen",
+        "window.focus",
+        "system.application.crash.diagnose",
+        "media.control",
+        "reminder.delete",
+        "message.recipient.resolve",
+        "filesystem.search",
+        "browser.navigate.named"
+      ],
+      "case_id": "eml-02",
+      "expected_operations": [
+        "email.latest.reply"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.6259872999944491,
+      "selected_expected": false,
+      "selected_operations": [
+        "email.latest.read"
+      ],
+      "selected_wire_operations": [
+        "email.latest.read"
+      ],
+      "sentinel_mixed": false,
+      "text": "contestale al ultimo correo que ya lo vi"
+    },
+    {
+      "candidate_operations": [],
+      "case_id": "msg-01",
+      "expected_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 8.00006091594696e-07,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "mandale un mensaje a juan diciendo que llego tarde"
+    },
+    {
+      "candidate_operations": [
+        "office.document.create",
+        "peripheral.print",
+        "note.search",
+        "backup.known.create",
+        "note.create",
+        "office.document.read",
+        "task.search",
+        "clipboard.write.text",
+        "system.settings.set",
+        "filesystem.write.text",
+        "backup.create",
+        "routine.phrase.create",
+        "reminder.create",
+        "note.list",
+        "capture.screenshot",
+        "task.update",
+        "backup.known.verify.latest",
+        "browser.page.read",
+        "input.key.press",
+        "window.move",
+        "note.update",
+        "task.create",
+        "browser.tabs.list",
+        "filesystem.sandbox.append.named",
+        "filesystem.trash.commit",
+        "task.delete",
+        "app.close",
+        "input.text.type"
+      ],
+      "case_id": "off-01",
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4871429999911925,
+      "selected_expected": true,
+      "selected_operations": [
+        "office.document.create"
+      ],
+      "selected_wire_operations": [
+        "office.document.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "creame un documento de word en blanco"
+    },
+    {
+      "candidate_operations": [
+        "app.installed",
+        "package.install.commit",
+        "game.install.prepare",
+        "package.install.prepare",
+        "game.install.commit",
+        "system.status",
+        "game.install.status",
+        "game.installed.named",
+        "media.status",
+        "game.install.cancel.active",
+        "vision.describe",
+        "filesystem.file.open.latest",
+        "backup.verify",
+        "game.install.cancel",
+        "streaming.play.named",
+        "filesystem.folder.open",
+        "audio.volume",
+        "wifi.connect",
+        "capture.screenshot",
+        "browser.control",
+        "game.install.named",
+        "media.control",
+        "filesystem.search",
+        "media.play.youtube",
+        "filesystem.write.text",
+        "input.pointer.control",
+        "streaming.navigate",
+        "filesystem.hash"
+      ],
+      "case_id": "pkg-01",
+      "expected_operations": [
+        "package.install.commit",
+        "package.install.prepare"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4648159000062151,
+      "selected_expected": true,
+      "selected_operations": [
+        "package.install.commit"
+      ],
+      "selected_wire_operations": [
+        "package.install.commit"
+      ],
+      "sentinel_mixed": false,
+      "text": "install vlc on this machine"
+    },
+    {
+      "candidate_operations": [
+        "streaming.play.named"
+      ],
+      "case_id": "str-01",
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.470647000009194,
+      "selected_expected": true,
+      "selected_operations": [
+        "streaming.play.named"
+      ],
+      "selected_wire_operations": [
+        "streaming.play.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "pon la casa de papel en netflix"
+    },
+    {
+      "candidate_operations": [
+        "web.search"
+      ],
+      "case_id": "web-01",
+      "expected_operations": [
+        "web.search"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.2660839999880409,
+      "selected_expected": true,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selected_wire_operations": [
+        "web.search"
+      ],
+      "sentinel_mixed": false,
+      "text": "busca en internet cuanto mide el everest"
+    },
+    {
+      "candidate_operations": [
+        "routine.list"
+      ],
+      "case_id": "rou-01",
+      "expected_operations": [
+        "routine.list"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.29043629999796394,
+      "selected_expected": true,
+      "selected_operations": [
+        "routine.list"
+      ],
+      "selected_wire_operations": [
+        "routine.list"
+      ],
+      "sentinel_mixed": false,
+      "text": "que rutinas tengo configuradas"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "audio.mute",
+        "audio.volume.adjust",
+        "audio.volume",
+        "audio.microphone.mute",
+        "media.status",
+        "routine.delete",
+        "media.play.exact",
+        "routine.restore",
+        "backup.verify",
+        "wifi.ensure.connected",
+        "window.minimize",
+        "media.control",
+        "system.status",
+        "browser.page.read",
+        "routine.read",
+        "media.play.query",
+        "backup.list",
+        "window.resize",
+        "window.maximize",
+        "media.play.youtube",
+        "office.document.read",
+        "filesystem.move",
+        "window.restore",
+        "filesystem.write.text",
+        "filesystem.search",
+        "system.settings.set",
+        "wifi.disconnect"
+      ],
+      "case_id": "aud-09",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.39862449999782257,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.volume.adjust"
+      ],
+      "selected_wire_operations": [
+        "audio.volume.adjust"
+      ],
+      "sentinel_mixed": false,
+      "text": "esta muy fuerte el audio, bajalo"
+    },
+    {
+      "candidate_operations": [
+        "system.status"
+      ],
+      "case_id": "sys-13",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.30761380000330973,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.status"
+      ],
+      "selected_wire_operations": [
+        "system.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "cuanto storage me queda en el disco"
+    },
+    {
+      "candidate_operations": [
+        "window.minimize",
+        "app.installed",
+        "routine.delete",
+        "routine.read",
+        "window.resize",
+        "audio.status",
+        "game.purchase.prepare",
+        "game.install.cancel.active",
+        "wifi.disconnect",
+        "routine.restore",
+        "backup.list",
+        "system.status",
+        "window.maximize",
+        "notification.list.due",
+        "game.install.prepare",
+        "task.search",
+        "app.close",
+        "input.select.all",
+        "package.install.prepare",
+        "audio.mute",
+        "task.reopen",
+        "system.settings.set",
+        "network.status",
+        "wifi.ensure.connected",
+        "note.list",
+        "task.create",
+        "media.seek.relative",
+        "task.restore"
+      ],
+      "case_id": "win-09",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.43756479999865405,
+      "selected_expected": false,
+      "selected_operations": [
+        "app.close"
+      ],
+      "selected_wire_operations": [
+        "app.close"
+      ],
+      "sentinel_mixed": false,
+      "text": "minimize everything I have open right now"
+    },
+    {
+      "candidate_operations": [
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "window.restore",
+        "app.installed",
+        "web.search",
+        "browser.navigate.named",
+        "wifi.status",
+        "backup.verify",
+        "browser.navigate",
+        "wifi.connect",
+        "window.move",
+        "note.search",
+        "media.play.youtube",
+        "browser.page.read",
+        "network.dns.status",
+        "window.resize",
+        "game.install.cancel.active",
+        "media.seek.relative",
+        "message.send",
+        "network.status",
+        "note.create",
+        "window.minimize",
+        "media.status",
+        "streaming.play.named",
+        "filesystem.move",
+        "streaming.navigate",
+        "browser.tabs.list",
+        "window.maximize"
+      ],
+      "case_id": "net-10",
+      "expected_operations": [
+        "network.ping",
+        "network.status"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.41331329999957234,
+      "selected_expected": true,
+      "selected_operations": [
+        "network.status"
+      ],
+      "selected_wire_operations": [
+        "network.status"
+      ],
+      "sentinel_mixed": false,
+      "text": "chequea si el internet anda"
+    },
+    {
+      "candidate_operations": [
+        "audio.volume",
+        "audio.mute",
+        "audio.status",
+        "media.seek.relative",
+        "media.play.exact",
+        "window.restore",
+        "note.search",
+        "routine.restore",
+        "window.resize",
+        "media.control",
+        "window.minimize",
+        "media.status",
+        "backup.verify",
+        "audio.microphone.mute",
+        "task.reopen",
+        "window.focus",
+        "reminder.list",
+        "routine.delete",
+        "note.create",
+        "window.maximize",
+        "message.recipient.resolve",
+        "audio.volume.adjust",
+        "media.play.youtube",
+        "game.install.cancel.active",
+        "browser.control",
+        "window.move",
+        "media.play.query",
+        "task.resolve.exact"
+      ],
+      "case_id": "med-07",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.41222230000130367,
+      "selected_expected": true,
+      "selected_operations": [
+        "media.seek.relative"
+      ],
+      "selected_wire_operations": [
+        "media.seek.relative"
+      ],
+      "sentinel_mixed": false,
+      "text": "retrocede diez segundos la cancion"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.folder.open",
+        "filesystem.file.open.latest",
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "filesystem.path.ensure.absent",
+        "backup.known.list",
+        "filesystem.move",
+        "filesystem.trash.restore",
+        "note.list",
+        "backup.verify",
+        "system.recyclebin.empty",
+        "wifi.profile.list",
+        "browser.tabs.list",
+        "filesystem.hash",
+        "filesystem.copy",
+        "filesystem.trash.prepare",
+        "filesystem.known.search",
+        "filesystem.list",
+        "capture.active.window",
+        "filesystem.known.trash.named",
+        "app.open",
+        "window.focus",
+        "wifi.ensure.connected",
+        "app.installed",
+        "backup.list",
+        "filesystem.trash.commit",
+        "backup.create",
+        "task.delete"
+      ],
+      "case_id": "fs-10",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4911842000001343,
+      "selected_expected": false,
+      "selected_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "selected_wire_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "abrime la carpeta de imagenes"
+    },
+    {
+      "candidate_operations": [
+        "app.installed",
+        "system.application.crash.diagnose",
+        "app.close",
+        "window.minimize",
+        "wifi.disconnect",
+        "window.move",
+        "system.power",
+        "window.resolve",
+        "window.restore",
+        "media.status",
+        "window.maximize",
+        "input.keyboard.open",
+        "filesystem.search",
+        "system.recyclebin.empty",
+        "wifi.connect",
+        "wifi.status",
+        "filesystem.folder.open",
+        "audio.microphone.mute",
+        "window.resize",
+        "game.install.cancel",
+        "system.status",
+        "game.install.cancel.active",
+        "wifi.profile.list",
+        "input.key.press",
+        "input.pointer.control",
+        "audio.mute",
+        "capture.active.window",
+        "routine.delete"
+      ],
+      "case_id": "sys-14",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.4571869999927003,
+      "selected_expected": true,
+      "selected_operations": [
+        "system.power"
+      ],
+      "selected_wire_operations": [
+        "system.power"
+      ],
+      "sentinel_mixed": false,
+      "text": "log me out of windows"
+    },
+    {
+      "candidate_operations": [
+        "browser.navigate.named",
+        "game.launch",
+        "browser.navigate",
+        "app.installed",
+        "window.maximize",
+        "window.minimize",
+        "window.restore",
+        "window.resize",
+        "window.focus",
+        "browser.page.read",
+        "browser.tabs.list",
+        "browser.control",
+        "wifi.ensure.connected",
+        "game.install.prepare",
+        "filesystem.folder.open",
+        "window.resolve",
+        "game.install.cancel",
+        "input.keyboard.open",
+        "window.move",
+        "input.pointer.control",
+        "game.install.cancel.active",
+        "window.application.status",
+        "wifi.connect",
+        "app.open",
+        "filesystem.file.open.latest",
+        "filesystem.search",
+        "filesystem.move",
+        "game.install.status"
+      ],
+      "case_id": "app-06",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.42796110000927,
+      "selected_expected": false,
+      "selected_operations": [
+        "browser.navigate.named"
+      ],
+      "selected_wire_operations": [
+        "browser.navigate.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "arrancame el navegador"
+    },
+    {
+      "candidate_operations": [
+        "wifi.connect",
+        "wifi.status",
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "backup.verify",
+        "wifi.profile.list",
+        "network.status",
+        "email.latest.read",
+        "app.installed",
+        "message.recipient.resolve",
+        "filesystem.copy",
+        "filesystem.write.text",
+        "filesystem.search",
+        "filesystem.read.text",
+        "window.restore",
+        "peripheral.print",
+        "filesystem.hash",
+        "filesystem.trash.restore",
+        "filesystem.move",
+        "routine.restore",
+        "note.create",
+        "routine.delete",
+        "notification.cancel.latest",
+        "system.settings.set",
+        "app.close",
+        "wifi.connect.named",
+        "backup.list",
+        "note.list"
+      ],
+      "case_id": "not-06",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.6428206999989925,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "jot down that the router password is on the fridge"
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.latest",
+        "task.reopen",
+        "notification.cancel.at",
+        "task.delete",
+        "task.update",
+        "game.purchase.prepare",
+        "app.close",
+        "task.complete",
+        "window.restore",
+        "task.restore",
+        "email.latest.read",
+        "task.search",
+        "note.restore",
+        "reminder.resolve.exact",
+        "backup.verify",
+        "note.read",
+        "task.create",
+        "routine.delete",
+        "system.power",
+        "notification.list.due",
+        "game.launch",
+        "task.resolve.exact",
+        "note.create",
+        "email.latest.reply",
+        "note.update",
+        "audio.status",
+        "reminder.delete",
+        "app.open"
+      ],
+      "case_id": "tsk-06",
+      "expected_operations": [
+        "task.reopen",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.4209878999972716,
+      "selected_expected": false,
+      "selected_operations": [
+        "app.open"
+      ],
+      "selected_wire_operations": [
+        "app.open"
+      ],
+      "sentinel_mixed": false,
+      "text": "volve a abrir la tarea de llamar al banco"
+    },
+    {
+      "candidate_operations": [
+        "app.open",
+        "media.play.query",
+        "media.play.exact",
+        "audio.mute",
+        "audio.volume",
+        "audio.status",
+        "note.create",
+        "backup.verify",
+        "game.install.prepare",
+        "audio.microphone.mute",
+        "note.list",
+        "audio.volume.adjust",
+        "game.launch",
+        "app.installed",
+        "game.purchase.prepare",
+        "window.focus",
+        "streaming.navigate",
+        "media.control",
+        "media.status",
+        "network.status",
+        "input.pointer.control",
+        "message.recipient.resolve",
+        "browser.navigate.named",
+        "filesystem.move",
+        "system.settings.set",
+        "window.minimize",
+        "wifi.ensure.connected",
+        "network.ping"
+      ],
+      "case_id": "cmp-01",
+      "expected_operations": [
+        "app.open",
+        "media.play.query"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": true,
+      "seconds": 0.42439800000283867,
+      "selected_expected": false,
+      "selected_operations": [
+        "streaming.navigate"
+      ],
+      "selected_wire_operations": [
+        "streaming.navigate"
+      ],
+      "sentinel_mixed": false,
+      "text": "abre spotify y ponme musica"
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot"
+      ],
+      "case_id": "cmp-02",
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read",
+        "vision.describe"
+      ],
+      "in_catalog": true,
+      "language": "es_en",
+      "retrieved": true,
+      "seconds": 0.2524701000074856,
+      "selected_expected": true,
+      "selected_operations": [
+        "capture.screenshot"
+      ],
+      "selected_wire_operations": [
+        "capture.screenshot"
+      ],
+      "sentinel_mixed": false,
+      "text": "saca un screenshot y decime que dice"
+    },
+    {
+      "candidate_operations": [
+        "audio.mute"
+      ],
+      "case_id": "cmp-03",
+      "expected_operations": [
+        "audio.mute",
+        "system.power"
+      ],
+      "in_catalog": true,
+      "language": "en",
+      "retrieved": true,
+      "seconds": 0.2783534999907715,
+      "selected_expected": true,
+      "selected_operations": [
+        "audio.mute"
+      ],
+      "selected_wire_operations": [
+        "audio.mute"
+      ],
+      "sentinel_mixed": false,
+      "text": "mute the audio and lock the machine"
+    },
+    {
+      "candidate_operations": [],
+      "case_id": "cmp-04",
+      "expected_operations": [
+        "note.create",
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "in_catalog": true,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 3.9998849388211966e-07,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "anota que hay reunion el jueves y avisame ese dia"
+    },
+    {
+      "candidate_operations": [
+        "task.resolve.exact",
+        "filesystem.write.text",
+        "backup.verify",
+        "message.send",
+        "task.search",
+        "window.resize",
+        "filesystem.read.text",
+        "game.purchase.prepare",
+        "window.move",
+        "web.search",
+        "task.update",
+        "window.restore",
+        "window.minimize",
+        "task.reopen",
+        "message.recipient.resolve",
+        "task.complete",
+        "browser.tabs.list",
+        "note.search",
+        "notification.list.due",
+        "task.delete",
+        "window.maximize",
+        "system.settings.set",
+        "audio.mute",
+        "task.create",
+        "filesystem.search",
+        "audio.status",
+        "clipboard.read.text",
+        "filesystem.move"
+      ],
+      "case_id": "ooc-01",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.39991430001100525,
+      "selected_expected": false,
+      "selected_operations": [
+        "task.create"
+      ],
+      "selected_wire_operations": [
+        "task.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "pide un taxi para las ocho"
+    },
+    {
+      "candidate_operations": [
+        "routine.read",
+        "game.purchase.prepare",
+        "note.list",
+        "system.settings.set",
+        "note.search",
+        "audio.status",
+        "notification.list.due",
+        "audio.mute",
+        "note.read",
+        "window.resize",
+        "media.play.exact",
+        "clipboard.read.text",
+        "system.time",
+        "media.seek.relative",
+        "reminder.list",
+        "app.close",
+        "browser.page.read",
+        "backup.verify",
+        "task.update",
+        "email.latest.reply",
+        "task.search",
+        "task.create",
+        "media.play.query",
+        "media.control",
+        "window.minimize",
+        "backup.list",
+        "window.restore",
+        "routine.delete"
+      ],
+      "case_id": "ooc-02",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.5087046999979066,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "book me a table for two tonight"
+    },
+    {
+      "candidate_operations": [
+        "peripheral.print",
+        "note.create",
+        "message.send",
+        "game.purchase.prepare",
+        "peripheral.scan",
+        "backup.verify",
+        "window.minimize",
+        "game.installed.named",
+        "browser.navigate.named",
+        "game.install.status",
+        "task.create",
+        "window.resize",
+        "window.restore",
+        "game.purchase.commit",
+        "wifi.disconnect",
+        "app.close",
+        "note.read",
+        "note.list",
+        "filesystem.search",
+        "task.complete",
+        "system.process.list",
+        "browser.tabs.list",
+        "package.install.commit",
+        "wifi.ensure.connected",
+        "window.maximize",
+        "system.power",
+        "game.launch",
+        "game.install.prepare"
+      ],
+      "case_id": "ooc-03",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.3547471000056248,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "pedime una pizza a domicilio"
+    },
+    {
+      "candidate_operations": [
+        "email.latest.read",
+        "app.close",
+        "message.send",
+        "email.latest.reply",
+        "audio.mute",
+        "message.recipient.resolve",
+        "audio.status",
+        "notification.cancel.at",
+        "media.play.query",
+        "game.purchase.prepare",
+        "media.play.exact",
+        "backup.verify",
+        "notification.cancel.latest",
+        "note.create",
+        "game.install.cancel.active",
+        "wifi.disconnect",
+        "reminder.resolve.exact",
+        "filesystem.search",
+        "reminder.list",
+        "notification.list.due",
+        "browser.page.read",
+        "notification.diagnose",
+        "window.resize",
+        "note.trash",
+        "app.installed",
+        "window.minimize",
+        "routine.phrase.create",
+        "audio.microphone.mute"
+      ],
+      "case_id": "ooc-04",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.4270632999978261,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "call my mother"
+    },
+    {
+      "candidate_operations": [
+        "backup.verify",
+        "game.purchase.prepare",
+        "message.send",
+        "filesystem.copy",
+        "note.search",
+        "game.purchase.commit",
+        "note.create",
+        "message.recipient.resolve",
+        "filesystem.move",
+        "filesystem.write.text",
+        "window.restore",
+        "audio.status",
+        "task.resolve.exact",
+        "browser.page.read",
+        "filesystem.search",
+        "window.resize",
+        "input.pointer.control",
+        "backup.create",
+        "package.install.commit",
+        "filesystem.hash",
+        "routine.delete",
+        "note.read",
+        "notification.list.due",
+        "email.latest.reply",
+        "filesystem.read.text",
+        "game.install.cancel.active",
+        "backup.list",
+        "peripheral.print"
+      ],
+      "case_id": "ooc-05",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4132023999991361,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "transfiere cincuenta dolares a mi hermano"
+    },
+    {
+      "candidate_operations": [
+        "window.focus",
+        "window.resolve",
+        "window.restore",
+        "audio.status",
+        "wifi.ensure.connected",
+        "window.minimize",
+        "system.settings.set",
+        "filesystem.list",
+        "window.maximize",
+        "system.settings.status",
+        "system.power",
+        "window.move",
+        "system.settings.adjust",
+        "window.resize",
+        "wifi.profile.list",
+        "audio.mute",
+        "routine.phrase.create",
+        "wifi.status",
+        "wifi.connect",
+        "game.launch",
+        "browser.page.read",
+        "routine.read",
+        "browser.tabs.list",
+        "audio.volume",
+        "input.keyboard.status",
+        "game.install.prepare",
+        "capture.active.window",
+        "window.active"
+      ],
+      "case_id": "ooc-06",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.32632409999496303,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.focus"
+      ],
+      "selected_wire_operations": [
+        "window.focus"
+      ],
+      "sentinel_mixed": false,
+      "text": "prende las luces del living"
+    },
+    {
+      "candidate_operations": [
+        "media.play.youtube",
+        "media.play.exact",
+        "streaming.navigate",
+        "media.play.query",
+        "streaming.play.named",
+        "media.status",
+        "audio.status",
+        "filesystem.copy",
+        "filesystem.write.text",
+        "filesystem.move",
+        "audio.volume",
+        "browser.control",
+        "backup.verify",
+        "audio.mute",
+        "task.update",
+        "input.pointer.control",
+        "window.resize",
+        "app.installed",
+        "wifi.ensure.connected",
+        "media.control",
+        "filesystem.known.duplicates",
+        "notification.list.due",
+        "message.recipient.resolve",
+        "filesystem.search",
+        "peripheral.print",
+        "game.install.prepare",
+        "filesystem.file.open.latest",
+        "browser.page.read"
+      ],
+      "case_id": "ooc-07",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.4243519000010565,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "upload this video to youtube"
+    },
+    {
+      "candidate_operations": [
+        "peripheral.print",
+        "office.document.create",
+        "filesystem.write.text",
+        "audio.volume",
+        "input.pointer.control",
+        "clipboard.write.text",
+        "routine.phrase.create",
+        "backup.known.create",
+        "office.document.read",
+        "filesystem.file.open.latest",
+        "peripheral.list",
+        "filesystem.create.directory",
+        "clipboard.read.text",
+        "filesystem.trash.prepare",
+        "backup.verify",
+        "filesystem.known.trash.named",
+        "note.create",
+        "filesystem.move",
+        "network.ping",
+        "filesystem.read.text",
+        "system.status",
+        "system.process.list",
+        "filesystem.folder.open",
+        "backup.create",
+        "browser.page.read",
+        "audio.status",
+        "game.installed.named",
+        "note.list"
+      ],
+      "case_id": "ooc-08",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.5986569999950007,
+      "selected_expected": false,
+      "selected_operations": [
+        "note.create"
+      ],
+      "selected_wire_operations": [
+        "note.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "formatea el pendrive"
+    },
+    {
+      "candidate_operations": [
+        "system.status",
+        "task.update",
+        "filesystem.file.open.latest",
+        "note.update",
+        "app.installed",
+        "wifi.ensure.connected",
+        "filesystem.sandbox.append.named",
+        "email.latest.read",
+        "wifi.connect",
+        "filesystem.move",
+        "backup.known.restore.latest",
+        "media.status",
+        "backup.verify",
+        "filesystem.write.text",
+        "routine.restore",
+        "task.reopen",
+        "audio.microphone.mute",
+        "wifi.status",
+        "system.settings.set",
+        "filesystem.known.trash.named",
+        "audio.mute",
+        "filesystem.sandbox.diff.named",
+        "email.latest.reply",
+        "input.pointer.control",
+        "backup.known.verify.latest",
+        "filesystem.search",
+        "package.install.prepare",
+        "media.play.exact"
+      ],
+      "case_id": "ooc-09",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.5275723999948241,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "update the bios on this laptop"
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.at",
+        "window.restore",
+        "backup.verify",
+        "window.move",
+        "audio.volume",
+        "filesystem.move",
+        "game.purchase.prepare",
+        "notification.cancel.latest",
+        "window.maximize",
+        "filesystem.copy",
+        "email.latest.read",
+        "task.resolve.exact",
+        "media.control",
+        "window.resize",
+        "message.recipient.resolve",
+        "window.minimize",
+        "audio.status",
+        "note.list",
+        "message.send",
+        "media.seek.relative",
+        "input.pointer.control",
+        "reminder.resolve.exact",
+        "input.keyboard.layout",
+        "email.latest.reply",
+        "reminder.delete",
+        "filesystem.search",
+        "browser.navigate.named",
+        "package.install.prepare"
+      ],
+      "case_id": "ooc-10",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.5448328999918886,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "sacame un pasaje de avion a madrid"
+    },
+    {
+      "candidate_operations": [
+        "package.install.commit",
+        "system.process.list",
+        "routine.phrase.create",
+        "filesystem.copy",
+        "package.install.prepare",
+        "filesystem.trash.commit",
+        "backup.create",
+        "task.complete",
+        "game.install.commit",
+        "browser.tabs.list",
+        "game.installed.named",
+        "backup.known.create",
+        "routine.read",
+        "browser.page.read",
+        "game.install.status",
+        "backup.known.verify.latest",
+        "task.search",
+        "routine.resolve.exact",
+        "window.minimize",
+        "system.status",
+        "routine.list",
+        "clipboard.write.text",
+        "filesystem.move",
+        "window.maximize",
+        "game.install.named",
+        "filesystem.file.open.latest",
+        "routine.delete",
+        "window.resolve"
+      ],
+      "case_id": "ooc-11",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es_en",
+      "retrieved": false,
+      "seconds": 0.6258590999932494,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "compilame el proyecto de rust"
+    },
+    {
+      "candidate_operations": [
+        "package.install.commit",
+        "game.install.commit",
+        "filesystem.trash.commit",
+        "game.purchase.commit",
+        "package.install.prepare",
+        "task.update",
+        "system.status",
+        "note.update",
+        "notification.dismiss",
+        "filesystem.move",
+        "task.complete",
+        "task.reopen",
+        "task.restore",
+        "game.purchase.prepare",
+        "system.settings.set",
+        "backup.verify",
+        "task.resolve.exact",
+        "notification.list.due",
+        "system.power",
+        "system.process.list",
+        "game.installed.named",
+        "task.search",
+        "game.install.status",
+        "window.resize",
+        "note.create",
+        "window.minimize",
+        "network.ping",
+        "window.restore"
+      ],
+      "case_id": "ooc-12",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.695164399992791,
+      "selected_expected": false,
+      "selected_operations": [
+        "package.install.commit"
+      ],
+      "selected_wire_operations": [
+        "package.install.commit"
+      ],
+      "sentinel_mixed": false,
+      "text": "commit and push my changes to git"
+    },
+    {
+      "candidate_operations": [
+        "system.status",
+        "app.installed",
+        "filesystem.trash.prepare",
+        "backup.verify",
+        "system.application.crash.diagnose",
+        "wifi.connect",
+        "filesystem.trash.commit",
+        "window.restore",
+        "filesystem.file.open.latest",
+        "wifi.ensure.connected",
+        "game.installed.named",
+        "task.delete",
+        "clipboard.paste",
+        "input.key.press",
+        "window.resolve",
+        "filesystem.search",
+        "game.install.cancel.active",
+        "browser.navigate.named",
+        "window.minimize",
+        "backup.known.verify.latest",
+        "input.pointer.control",
+        "peripheral.print",
+        "game.install.named",
+        "filesystem.known.trash.named",
+        "filesystem.copy",
+        "game.install.prepare",
+        "game.launch",
+        "filesystem.move"
+      ],
+      "case_id": "ooc-13",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.9381664999964414,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "pasale el antivirus al equipo"
+    },
+    {
+      "candidate_operations": [
+        "routine.restore",
+        "routine.delete",
+        "browser.page.read",
+        "filesystem.known.duplicates",
+        "system.application.crash.diagnose",
+        "wifi.disconnect",
+        "app.installed",
+        "filesystem.sandbox.diff.named",
+        "game.install.cancel.active",
+        "filesystem.trash.commit",
+        "filesystem.trash.restore",
+        "note.trash",
+        "audio.status",
+        "filesystem.write.text",
+        "audio.mute",
+        "filesystem.move",
+        "system.status",
+        "notification.list.due",
+        "backup.verify",
+        "filesystem.file.open.latest",
+        "filesystem.trash.prepare",
+        "window.resize",
+        "filesystem.read.text",
+        "filesystem.known.trash.named",
+        "media.status",
+        "window.restore",
+        "backup.known.restore.latest",
+        "system.settings.set"
+      ],
+      "case_id": "ooc-14",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.5627977999974973,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "desfragmenta el disco duro"
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot",
+        "system.status",
+        "window.resolve",
+        "backup.verify",
+        "input.pointer.control",
+        "window.move",
+        "app.installed",
+        "game.purchase.prepare",
+        "system.process.list",
+        "input.select.all",
+        "filesystem.search",
+        "window.minimize",
+        "wifi.ensure.connected",
+        "app.close",
+        "media.control",
+        "routine.resolve.exact",
+        "window.resize",
+        "task.reopen",
+        "wifi.connect",
+        "routine.phrase.create",
+        "network.ping",
+        "input.key.press",
+        "game.launch",
+        "media.seek.relative",
+        "vision.describe",
+        "routine.read",
+        "network.status",
+        "peripheral.list"
+      ],
+      "case_id": "ooc-15",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.401769999996759,
+      "selected_expected": false,
+      "selected_operations": [
+        "game.launch"
+      ],
+      "selected_wire_operations": [
+        "game.launch"
+      ],
+      "sentinel_mixed": false,
+      "text": "spin up a virtual machine"
+    },
+    {
+      "candidate_operations": [
+        "window.move",
+        "app.installed",
+        "window.resize",
+        "media.status",
+        "window.resolve",
+        "window.minimize",
+        "window.restore",
+        "window.maximize",
+        "input.key.press",
+        "window.application.status",
+        "clipboard.paste",
+        "audio.microphone.mute",
+        "window.focus",
+        "system.status",
+        "system.application.crash.diagnose",
+        "input.keyboard.open",
+        "filesystem.sandbox.diff.named",
+        "input.keyboard.status",
+        "game.install.cancel",
+        "filesystem.folder.open",
+        "package.install.prepare",
+        "system.recyclebin.empty",
+        "input.pointer.control",
+        "system.power",
+        "system.settings.set",
+        "game.install.prepare",
+        "filesystem.search",
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "ooc-16",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4536748999962583,
+      "selected_expected": false,
+      "selected_operations": [
+        "system.settings.set"
+      ],
+      "selected_wire_operations": [
+        "system.settings.set"
+      ],
+      "sentinel_mixed": false,
+      "text": "cambiame la contrasena de windows"
+    },
+    {
+      "candidate_operations": [
+        "streaming.play.named",
+        "media.play.youtube",
+        "media.play.exact",
+        "window.active",
+        "input.pointer.control",
+        "capture.screenshot",
+        "browser.control",
+        "window.resize",
+        "audio.volume",
+        "media.play.query",
+        "window.focus",
+        "capture.active.window",
+        "streaming.navigate",
+        "routine.phrase.create",
+        "system.settings.adjust",
+        "wifi.ensure.connected",
+        "input.keyboard.open",
+        "media.status",
+        "media.control",
+        "window.resolve",
+        "window.restore",
+        "audio.volume.adjust",
+        "window.maximize",
+        "clipboard.paste",
+        "window.move",
+        "window.minimize",
+        "system.application.crash.diagnose",
+        "notification.list.due"
+      ],
+      "case_id": "ooc-17",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.533964999995078,
+      "selected_expected": false,
+      "selected_operations": [
+        "capture.active.window"
+      ],
+      "selected_wire_operations": [
+        "capture.active.window"
+      ],
+      "sentinel_mixed": false,
+      "text": "grabame la pantalla en video"
+    },
+    {
+      "candidate_operations": [
+        "wifi.connect",
+        "network.status",
+        "wifi.ensure.connected",
+        "peripheral.print",
+        "wifi.disconnect",
+        "wifi.status",
+        "network.ping",
+        "browser.navigate.named",
+        "wifi.connect.named",
+        "input.pointer.control",
+        "office.document.create",
+        "browser.page.read",
+        "capture.screenshot",
+        "browser.navigate",
+        "peripheral.list",
+        "network.dns.status",
+        "backup.verify",
+        "system.status",
+        "system.power",
+        "wifi.profile.list",
+        "streaming.navigate",
+        "message.recipient.resolve",
+        "task.search",
+        "backup.known.create",
+        "note.list",
+        "app.installed",
+        "browser.tabs.list",
+        "email.latest.read"
+      ],
+      "case_id": "ooc-18",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.5306067999918014,
+      "selected_expected": false,
+      "selected_operations": [
+        "wifi.connect.named"
+      ],
+      "selected_wire_operations": [
+        "wifi.connect.named"
+      ],
+      "sentinel_mixed": false,
+      "text": "connect to my work vpn"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.duplicates",
+        "filesystem.sandbox.diff.named",
+        "filesystem.trash.commit",
+        "backup.verify",
+        "filesystem.sandbox.append.named",
+        "filesystem.create.directory",
+        "filesystem.copy",
+        "filesystem.known.trash.named",
+        "wifi.ensure.connected",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "filesystem.move",
+        "filesystem.search",
+        "filesystem.hash",
+        "backup.known.verify.latest",
+        "backup.create",
+        "system.status",
+        "peripheral.print",
+        "filesystem.file.open.latest",
+        "message.recipient.resolve",
+        "clipboard.read.text",
+        "filesystem.sandbox.move.named",
+        "audio.volume",
+        "backup.list",
+        "notification.list.due",
+        "window.restore",
+        "audio.mute",
+        "system.identity"
+      ],
+      "case_id": "ooc-19",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.7867230999981984,
+      "selected_expected": false,
+      "selected_operations": [
+        "filesystem.copy"
+      ],
+      "selected_wire_operations": [
+        "filesystem.copy"
+      ],
+      "sentinel_mixed": false,
+      "text": "cloname el disco duro a otro"
+    },
+    {
+      "candidate_operations": [
+        "system.recyclebin.empty",
+        "game.install.cancel.active",
+        "routine.read",
+        "audio.mute",
+        "audio.status",
+        "system.application.crash.diagnose",
+        "system.identity",
+        "game.install.prepare",
+        "filesystem.search",
+        "system.settings.set",
+        "browser.page.read",
+        "filesystem.copy",
+        "notification.list.due",
+        "app.installed",
+        "task.reopen",
+        "clipboard.read.text",
+        "office.document.read",
+        "filesystem.list",
+        "window.restore",
+        "routine.restore",
+        "game.launch",
+        "media.status",
+        "game.install.named",
+        "window.active",
+        "game.install.cancel",
+        "calendar.event.list",
+        "window.maximize",
+        "task.search"
+      ],
+      "case_id": "ooc-20",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4295892999944044,
+      "selected_expected": false,
+      "selected_operations": [
+        "window.restore"
+      ],
+      "selected_wire_operations": [
+        "window.restore"
+      ],
+      "sentinel_mixed": false,
+      "text": "riega las plantas del balcon"
+    },
+    {
+      "candidate_operations": [
+        "audio.status",
+        "system.settings.set",
+        "window.move",
+        "audio.volume",
+        "routine.read",
+        "window.resize",
+        "routine.delete",
+        "system.status",
+        "browser.page.read",
+        "app.installed",
+        "window.maximize",
+        "audio.mute",
+        "input.select.all",
+        "window.minimize",
+        "notification.schedule",
+        "notification.list.due",
+        "routine.restore",
+        "system.process.list",
+        "system.settings.status",
+        "routine.resolve.exact",
+        "system.settings.adjust",
+        "system.identity",
+        "system.power",
+        "web.search",
+        "note.search",
+        "game.install.cancel.active",
+        "media.control",
+        "reminder.list"
+      ],
+      "case_id": "ooc-21",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4149265000014566,
+      "selected_expected": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selected_wire_operations": [
+        "notification.schedule"
+      ],
+      "sentinel_mixed": false,
+      "text": "programa el aire acondicionado a veintidos grados"
+    },
+    {
+      "candidate_operations": [
+        "app.installed",
+        "streaming.navigate",
+        "game.install.cancel.active",
+        "filesystem.folder.open",
+        "filesystem.trash.restore",
+        "game.install.prepare",
+        "filesystem.search",
+        "browser.navigate.named",
+        "filesystem.move",
+        "routine.read",
+        "filesystem.file.open.latest",
+        "streaming.play.named",
+        "filesystem.sandbox.diff.named",
+        "media.status",
+        "game.install.cancel",
+        "audio.status",
+        "filesystem.known.trash.named",
+        "wifi.ensure.connected",
+        "browser.page.read",
+        "ocr.read",
+        "package.install.prepare",
+        "filesystem.copy",
+        "filesystem.known.duplicates",
+        "filesystem.write.text",
+        "browser.navigate",
+        "browser.control",
+        "filesystem.trash.commit",
+        "game.installed.named"
+      ],
+      "case_id": "ooc-22",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.922094499997911,
+      "selected_expected": false,
+      "selected_operations": [
+        "game.install.cancel.active"
+      ],
+      "selected_wire_operations": [
+        "game.install.cancel.active"
+      ],
+      "sentinel_mixed": false,
+      "text": "download this series over torrent"
+    },
+    {
+      "candidate_operations": [
+        "media.play.youtube",
+        "audio.volume",
+        "window.resize",
+        "routine.delete",
+        "audio.status",
+        "media.seek.relative",
+        "window.minimize",
+        "media.control",
+        "audio.mute",
+        "browser.control",
+        "routine.read",
+        "task.update",
+        "note.search",
+        "window.maximize",
+        "window.restore",
+        "media.play.exact",
+        "audio.volume.adjust",
+        "window.move",
+        "window.resolve",
+        "task.reopen",
+        "task.restore",
+        "browser.page.read",
+        "streaming.play.named",
+        "media.status",
+        "window.focus",
+        "routine.restore",
+        "task.resolve.exact",
+        "clipboard.write.text"
+      ],
+      "case_id": "ooc-23",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.6714540999964811,
+      "selected_expected": false,
+      "selected_operations": [
+        "media.seek.relative"
+      ],
+      "selected_wire_operations": [
+        "media.seek.relative"
+      ],
+      "sentinel_mixed": false,
+      "text": "editame el video y quitale los ultimos diez segundos"
+    },
+    {
+      "candidate_operations": [
+        "office.document.create",
+        "peripheral.print",
+        "clipboard.write.text",
+        "office.document.read",
+        "filesystem.write.text",
+        "note.create",
+        "input.pointer.control",
+        "filesystem.sandbox.append.named",
+        "filesystem.read.text",
+        "browser.page.read",
+        "package.install.commit",
+        "filesystem.move",
+        "clipboard.read.text",
+        "email.latest.read",
+        "note.search",
+        "window.resize",
+        "task.delete",
+        "filesystem.file.open.latest",
+        "backup.verify",
+        "system.settings.set",
+        "browser.navigate",
+        "email.latest.reply",
+        "backup.known.verify.latest",
+        "note.update",
+        "message.recipient.resolve",
+        "app.installed",
+        "window.move",
+        "browser.navigate.named"
+      ],
+      "case_id": "ooc-24",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es_en",
+      "retrieved": false,
+      "seconds": 0.42401370000152383,
+      "selected_expected": false,
+      "selected_operations": [
+        "office.document.create"
+      ],
+      "selected_wire_operations": [
+        "office.document.create"
+      ],
+      "sentinel_mixed": false,
+      "text": "convierteme este pdf a word"
+    },
+    {
+      "candidate_operations": [
+        "email.latest.read",
+        "message.send",
+        "backup.verify",
+        "note.list",
+        "notification.cancel.at",
+        "app.installed",
+        "wifi.disconnect",
+        "notification.list.due",
+        "peripheral.print",
+        "browser.navigate.named",
+        "input.pointer.control",
+        "wifi.connect",
+        "filesystem.move",
+        "filesystem.write.text",
+        "game.purchase.prepare",
+        "backup.list",
+        "task.resolve.exact",
+        "app.close",
+        "audio.mute",
+        "window.restore",
+        "message.recipient.resolve",
+        "browser.tabs.list",
+        "input.select.all",
+        "audio.status",
+        "wifi.profile.list",
+        "note.create",
+        "browser.navigate",
+        "routine.resolve.exact"
+      ],
+      "case_id": "ooc-25",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.49425719999999274,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "order me an uber to the airport"
+    },
+    {
+      "candidate_operations": [
+        "system.time",
+        "routine.restore",
+        "system.settings.set",
+        "task.create",
+        "window.resize",
+        "email.latest.reply",
+        "media.seek.relative",
+        "window.restore",
+        "window.maximize",
+        "routine.read",
+        "audio.status",
+        "notification.list.due",
+        "window.minimize",
+        "notification.cancel.at",
+        "media.status",
+        "task.delete",
+        "system.recyclebin.empty",
+        "routine.phrase.create",
+        "note.list",
+        "reminder.list",
+        "app.installed",
+        "browser.page.read",
+        "task.search",
+        "routine.delete",
+        "clipboard.paste",
+        "window.move",
+        "filesystem.trash.restore",
+        "task.reopen"
+      ],
+      "case_id": "ooc-26",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4048744999890914,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "reservame hora en la peluqueria"
+    },
+    {
+      "candidate_operations": [
+        "window.move",
+        "window.resize",
+        "filesystem.file.open.latest",
+        "clipboard.write.text",
+        "capture.screenshot",
+        "media.status",
+        "input.pointer.control",
+        "system.settings.set",
+        "system.status",
+        "backup.known.restore.latest",
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "app.installed",
+        "task.update",
+        "filesystem.move",
+        "window.restore",
+        "filesystem.sandbox.diff.named",
+        "backup.verify",
+        "filesystem.known.trash.named",
+        "routine.delete",
+        "office.document.create",
+        "clipboard.paste",
+        "filesystem.search",
+        "filesystem.trash.commit",
+        "filesystem.known.duplicates",
+        "audio.status",
+        "window.minimize",
+        "browser.page.read"
+      ],
+      "case_id": "ooc-27",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.4408135999983642,
+      "selected_expected": false,
+      "selected_operations": [
+        "system.settings.set"
+      ],
+      "selected_wire_operations": [
+        "system.settings.set"
+      ],
+      "sentinel_mixed": false,
+      "text": "cambiame el fondo de escritorio"
+    },
+    {
+      "candidate_operations": [
+        "filesystem.write.text",
+        "system.status",
+        "filesystem.create.directory",
+        "filesystem.copy",
+        "backup.verify",
+        "filesystem.read.text",
+        "backup.known.create",
+        "filesystem.list",
+        "backup.create",
+        "filesystem.known.duplicates",
+        "backup.known.verify.latest",
+        "filesystem.file.open.latest",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "task.complete",
+        "input.key.press",
+        "filesystem.hash",
+        "task.reopen",
+        "filesystem.folder.open",
+        "wifi.connect",
+        "note.search",
+        "app.installed",
+        "capture.screenshot",
+        "filesystem.search",
+        "filesystem.known.trash.named",
+        "clipboard.read.text",
+        "backup.known.restore.latest",
+        "ocr.read"
+      ],
+      "case_id": "ooc-28",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.42277000000467524,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "encrypt this whole drive with bitlocker"
+    },
+    {
+      "candidate_operations": [
+        "office.document.read",
+        "message.send",
+        "peripheral.print",
+        "task.create",
+        "note.list",
+        "task.resolve.exact",
+        "office.document.create",
+        "task.delete",
+        "reminder.resolve.exact",
+        "notification.list.due",
+        "routine.phrase.create",
+        "browser.navigate.named",
+        "reminder.list",
+        "email.latest.reply",
+        "task.search",
+        "reminder.delete",
+        "routine.resolve.exact",
+        "email.latest.read",
+        "window.resize",
+        "filesystem.move",
+        "window.move",
+        "window.resolve",
+        "note.search",
+        "filesystem.copy",
+        "app.close",
+        "task.update",
+        "clipboard.read.text",
+        "routine.read"
+      ],
+      "case_id": "ooc-29",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.42719329999818,
+      "selected_expected": false,
+      "selected_operations": [
+        "office.document.read"
+      ],
+      "selected_wire_operations": [
+        "office.document.read"
+      ],
+      "sentinel_mixed": false,
+      "text": "mandame flores a la oficina"
+    },
+    {
+      "candidate_operations": [
+        "game.install.prepare",
+        "filesystem.move",
+        "filesystem.copy",
+        "task.resolve.exact",
+        "game.launch",
+        "game.install.cancel.active",
+        "system.application.crash.diagnose",
+        "backup.verify",
+        "filesystem.sandbox.move.named",
+        "routine.phrase.create",
+        "web.search",
+        "app.installed",
+        "filesystem.search",
+        "game.purchase.prepare",
+        "routine.read",
+        "window.minimize",
+        "wifi.disconnect",
+        "media.play.exact",
+        "routine.restore",
+        "package.install.prepare",
+        "window.resize",
+        "task.create",
+        "note.create",
+        "filesystem.sandbox.append.named",
+        "filesystem.sandbox.diff.named",
+        "routine.delete",
+        "window.resolve",
+        "filesystem.trash.prepare"
+      ],
+      "case_id": "ooc-30",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es_en",
+      "retrieved": false,
+      "seconds": 0.4113156999956118,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "hazme un deploy a produccion"
+    },
+    {
+      "candidate_operations": [
+        "message.recipient.resolve",
+        "app.installed",
+        "wifi.disconnect",
+        "backup.verify",
+        "app.close",
+        "email.latest.read",
+        "wifi.connect",
+        "system.power",
+        "wifi.ensure.connected",
+        "routine.delete",
+        "wifi.status",
+        "bluetooth.device.pair",
+        "game.install.prepare",
+        "game.launch",
+        "system.status",
+        "wifi.profile.list",
+        "note.read",
+        "notification.list.due",
+        "audio.mute",
+        "filesystem.search",
+        "notification.cancel.at",
+        "game.install.cancel.active",
+        "system.application.crash.diagnose",
+        "audio.microphone.mute",
+        "routine.read",
+        "message.send",
+        "note.create",
+        "audio.status"
+      ],
+      "case_id": "ooc-31",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.4017444000055548,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "unlock my phone for me"
+    },
+    {
+      "candidate_operations": [
+        "game.installed.named",
+        "reminder.delete",
+        "notification.list.due",
+        "reminder.resolve.exact",
+        "reminder.create",
+        "reminder.list",
+        "note.list",
+        "game.purchase.prepare",
+        "media.play.exact",
+        "message.send",
+        "filesystem.search",
+        "notification.schedule",
+        "browser.navigate.named",
+        "task.search",
+        "task.reopen",
+        "reminder.restore",
+        "message.recipient.resolve",
+        "task.create",
+        "window.minimize",
+        "backup.verify",
+        "network.ping",
+        "task.complete",
+        "note.create",
+        "note.trash",
+        "note.read",
+        "task.resolve.exact",
+        "task.update",
+        "notification.cancel.at"
+      ],
+      "case_id": "ooc-32",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.40325529999972787,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "llamame un plomero para manana"
+    },
+    {
+      "candidate_operations": [
+        "wifi.ensure.connected",
+        "peripheral.print",
+        "window.resize",
+        "app.installed",
+        "backup.verify",
+        "window.focus",
+        "audio.volume",
+        "system.settings.set",
+        "input.pointer.control",
+        "game.install.prepare",
+        "clipboard.read.text",
+        "filesystem.write.text",
+        "window.maximize",
+        "filesystem.copy",
+        "note.create",
+        "browser.navigate.named",
+        "media.play.exact",
+        "note.list",
+        "window.move",
+        "office.document.read",
+        "window.minimize",
+        "window.active",
+        "game.launch",
+        "package.install.commit",
+        "game.install.status",
+        "filesystem.move",
+        "office.document.create",
+        "routine.read"
+      ],
+      "case_id": "ooc-33",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.427914799991413,
+      "selected_expected": false,
+      "selected_operations": [
+        "peripheral.print"
+      ],
+      "selected_wire_operations": [
+        "peripheral.print"
+      ],
+      "sentinel_mixed": false,
+      "text": "imprimeme en 3d esta figura"
+    },
+    {
+      "candidate_operations": [
+        "system.status",
+        "window.resize",
+        "system.settings.set",
+        "window.maximize",
+        "system.power",
+        "game.install.cancel.active",
+        "filesystem.folder.open",
+        "clipboard.paste",
+        "game.install.prepare",
+        "window.minimize",
+        "system.process.list",
+        "wifi.ensure.connected",
+        "app.installed",
+        "window.focus",
+        "input.pointer.control",
+        "game.install.cancel",
+        "browser.control",
+        "media.seek.relative",
+        "media.control",
+        "routine.restore",
+        "window.move",
+        "wifi.connect",
+        "routine.delete",
+        "game.purchase.prepare",
+        "ocr.read",
+        "filesystem.file.open.latest",
+        "window.resolve",
+        "wifi.disconnect"
+      ],
+      "case_id": "ooc-34",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "en",
+      "retrieved": false,
+      "seconds": 0.4449153000023216,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "overclock the graphics card"
+    },
+    {
+      "candidate_operations": [
+        "media.play.exact",
+        "media.play.query",
+        "system.status",
+        "backup.known.create",
+        "routine.phrase.create",
+        "filesystem.file.open.latest",
+        "note.create",
+        "app.installed",
+        "filesystem.known.duplicates",
+        "backup.known.restore.latest",
+        "backup.create",
+        "task.create",
+        "filesystem.trash.commit",
+        "input.pointer.control",
+        "filesystem.sandbox.diff.named",
+        "audio.volume.adjust",
+        "task.update",
+        "task.reopen",
+        "office.document.create",
+        "filesystem.known.trash.named",
+        "filesystem.move",
+        "media.control",
+        "audio.volume",
+        "game.install.prepare",
+        "backup.verify",
+        "package.install.prepare",
+        "filesystem.sandbox.move.named",
+        "reminder.create"
+      ],
+      "case_id": "ooc-35",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es",
+      "retrieved": false,
+      "seconds": 0.40913290000753477,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "crea una particion nueva en el disco"
+    },
+    {
+      "candidate_operations": [
+        "window.restore",
+        "wifi.disconnect",
+        "wifi.connect",
+        "wifi.connect.named",
+        "wifi.ensure.connected",
+        "routine.restore",
+        "wifi.status",
+        "window.minimize",
+        "filesystem.trash.restore",
+        "window.resize",
+        "window.maximize",
+        "note.restore",
+        "routine.delete",
+        "backup.known.restore.latest",
+        "filesystem.move",
+        "clipboard.write.text",
+        "filesystem.hash",
+        "window.move",
+        "audio.mute",
+        "window.focus",
+        "routine.resolve.exact",
+        "bluetooth.radio.set",
+        "task.restore",
+        "browser.tabs.list",
+        "note.create",
+        "bluetooth.device.pair",
+        "peripheral.print",
+        "window.resolve"
+      ],
+      "case_id": "ooc-36",
+      "expected_operations": [],
+      "in_catalog": false,
+      "language": "es_en",
+      "retrieved": false,
+      "seconds": 0.5045875000068918,
+      "selected_expected": false,
+      "selected_operations": [],
+      "selected_wire_operations": [
+        "no_operation"
+      ],
+      "sentinel_mixed": false,
+      "text": "resetea el router de la casa"
+    }
+  ],
+  "schema": "baxy.goal03-minimal-operation-policy.v1",
+  "selection_shape": "scalar",
+  "sentinel_mixed_rows": 0,
+  "source_telemetry": {
+    "path": "artifacts\\development\\goal03_resume_baseline_20260820.telemetry.jsonl",
+    "sha256": "f7aab7ef894bbbd40c0548c4498e0e18aab99a1a88375ec9178136fa71b04d39"
+  }
+}

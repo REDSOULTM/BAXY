@@ -600,3 +600,11 @@ Hacer explícita esa alternativa tampoco alcanza
 mezcla entre el centinela y una operación. El centinela compra abstención
 quitando exactamente la ganancia de selección de la variante anterior. Las dos
 formas mínimas quedan rechazadas antes de tocar producto.
+
+Forzar una única hoja tampoco resuelve la frontera
+(`goal03_scalar_policy_v3.json`). Sobre los mismos candidatos congelados selecciona
+la esperada en **76/124**, conserva **19/36** abstenciones honestas y tarda p50
+**0,443 s** / p90 **0,775 s**. Es más rápido y evita las listas ansiosas, pero
+pierde seis aciertos frente a la política mínima con centinela y siete frente a
+la decisión cruda de referencia. Queda rechazado: el error no era sólo permitir
+varias operaciones, y esa simplificación tampoco justifica tocar producto.
