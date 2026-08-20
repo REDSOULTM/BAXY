@@ -114,6 +114,8 @@ def _payload(
     descriptions: dict[str, str],
     *,
     selection_shape: str = "array",
+    enable_thinking: bool = False,
+    reasoning_budget: int | None = None,
 ) -> dict[str, Any]:
     candidate_text = "\n".join(
         f"{name} | {descriptions[name]}" for name in candidate_names
@@ -185,9 +187,31 @@ def _payload(
         "min_p": 0.0,
         "repeat_penalty": 1.0,
         "seed": 0,
-        "max_tokens": 128 if selection_shape == "reasoned_array" else 80,
-        "chat_template_kwargs": {"enable_thinking": False},
+        "max_tokens": (
+            (128 if selection_shape == "reasoned_array" else 80)
+            + (reasoning_budget or 0)
+        ),
+        "chat_template_kwargs": {"enable_thinking": enable_thinking},
     }
+
+
+class _ExperimentalLlmRuntime(LlmRuntime):
+    """Change only llama.cpp's bounded reasoning flags for this probe."""
+
+    def __init__(self, *, reasoning_budget: int | None = None) -> None:
+        self._experiment_reasoning_budget = reasoning_budget
+        super().__init__()
+
+    def _server_command(self) -> list[str]:
+        command = super()._server_command()
+        budget = self._experiment_reasoning_budget
+        if budget is None:
+            return command
+        reasoning_index = command.index("--reasoning") + 1
+        budget_index = command.index("--reasoning-budget") + 1
+        command[reasoning_index] = "on"
+        command[budget_index] = str(budget)
+        return command
 
 
 def _write_lf(path: Path, value: dict[str, Any]) -> None:
@@ -204,6 +228,7 @@ def run(
     gguf: Path | None = None,
     union_artifact: Path | None = None,
     union_budget: int | None = None,
+    reasoning_budget: int | None = None,
 ) -> Path:
     corpus = {row["case_id"]: row for row in _jsonl(CORPUS)}
     replay = {row["case_id"]: row for row in _jsonl(source)}
@@ -245,7 +270,7 @@ def run(
     for key, value in environment.items():
         os.environ[key] = value
 
-    runtime = LlmRuntime()
+    runtime = _ExperimentalLlmRuntime(reasoning_budget=reasoning_budget)
     results: list[dict[str, Any]] = []
     try:
         # Pay startup and grammar compilation before the measured population.
@@ -256,6 +281,8 @@ def run(
                 warm_names,
                 descriptions,
                 selection_shape=selection_shape,
+                enable_thinking=reasoning_budget is not None,
+                reasoning_budget=reasoning_budget,
             ),
             "el calentamiento de la política mínima",
         )
@@ -288,6 +315,8 @@ def run(
                             candidates,
                             descriptions,
                             selection_shape=selection_shape,
+                            enable_thinking=reasoning_budget is not None,
+                            reasoning_budget=reasoning_budget,
                         ),
                         "la política mínima de operaciones",
                     )
@@ -333,6 +362,7 @@ def run(
     result = {
         "schema": SCHEMA,
         "selection_shape": selection_shape,
+        "reasoning_budget": reasoning_budget,
         "corpus": {"path": str(CORPUS.relative_to(REPO)), "sha256": _sha256(CORPUS)},
         "source_telemetry": {
             "path": str(source.relative_to(REPO)),
@@ -397,6 +427,7 @@ def main() -> int:
     parser.add_argument("--gguf", type=Path)
     parser.add_argument("--union-artifact", type=Path)
     parser.add_argument("--union-budget", type=int, choices=(16, 28))
+    parser.add_argument("--reasoning-budget", type=int)
     parser.add_argument(
         "--selection-shape",
         choices=("array", "scalar", "reasoned_array"),
@@ -412,6 +443,7 @@ def main() -> int:
             args.union_artifact.resolve() if args.union_artifact is not None else None
         ),
         union_budget=args.union_budget,
+        reasoning_budget=args.reasoning_budget,
     )
     result = json.loads(output.read_text(encoding="utf-8"))
     print(json.dumps({key: result[key] for key in (

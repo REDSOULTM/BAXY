@@ -686,3 +686,11 @@ modelo resume primero verbo, objeto y postcondición y después elige: sube a
 **0,921 s**. De las 22 pérdidas, 8 no están en la unión y 14 son selección aun
 con la hoja disponible. No se promueve ese campo: el siguiente cambio debe caer
 en el reconocedor dueño de verbos inequívocos, no añadir más prosa al prompt.
+
+El modo nativo de pensamiento con presupuesto **64** confirma que la capacidad
+de deliberación importa (`goal03_qwen3_8b_iq2_think64_union16_v8.json`): sobre la
+misma unión-16 sube a **105/124**, pero baja a **21/36** abstenciones y tarda p50
+**1,469 s** / p90 **1,516 s**. Son ocho hojas más que la política mínima sin
+pensamiento y tres más que verbalizar el efecto dentro del JSON. Aún faltan
+siete; queda justificado un único escalón a 128 tokens sobre la misma población,
+no una búsqueda abierta de presupuestos.
