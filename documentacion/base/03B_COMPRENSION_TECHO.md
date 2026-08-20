@@ -798,3 +798,14 @@ selecciona **100/124**, abstiene **24/36** —doce acciones indebidas— y tarda
 pensamiento-128; el oráculo de ambas llega a 112, pero no hay una señal previa
 que separe esos brazos. La receta resuelve formato y latencia, no la ambigüedad
 semántica entre 28 hojas, y queda rechazada para producto.
+
+La ficha oficial de Qwen3 permitió corregir una variable que estas corridas
+tenían mal fijada: desaconseja greedy en modo pensamiento y prescribe
+temperatura 0,6, top-p 0,95, top-k 20 y penalización de presencia 1,5. Aplicar
+ese perfil sin cambiar modelo, prompt, shortlist ni presupuesto produce
+**110/124**, **18/36** abstenciones y p50 **2,478 s** / p90 **2,589 s**
+(`goal03_qwen3_8b_iq2_think128_official_sampling_s0_v16.json`). Gana `aud-02`,
+`win-03` y `bak-01`, pero pierde `sys-04` y `med-02`; cambia 24 decisiones y
+abre 18 acciones en negativas. El +1 queda dentro de la dispersión, empeora tres
+abstenciones y no autoriza un barrido ni selección por semilla. Referencia
+primaria: [Qwen/Qwen3-8B-GGUF, Best Practices](https://huggingface.co/Qwen/Qwen3-8B-GGUF#best-practices).

@@ -120,6 +120,8 @@ def _payload(
     selection_shape: str = "array",
     enable_thinking: bool = False,
     reasoning_budget: int | None = None,
+    sampling_profile: str = "greedy",
+    seed: int = 0,
 ) -> dict[str, Any]:
     candidate_text = "\n".join(
         f"{name} | {descriptions[name]}" for name in candidate_names
@@ -161,6 +163,23 @@ def _payload(
                 **properties,
             }
             required = ["request_effect", *required]
+    sampling = (
+        {
+            "temperature": 0.6,
+            "top_k": 20,
+            "top_p": 0.95,
+            "min_p": 0.0,
+            "presence_penalty": 1.5,
+        }
+        if sampling_profile == "qwen-thinking"
+        else {
+            "temperature": 0.0,
+            "top_k": 1,
+            "top_p": 1.0,
+            "min_p": 0.0,
+            "presence_penalty": 0.0,
+        }
+    )
     return {
         "messages": [
             {"role": "system", "content": prompt},
@@ -185,12 +204,9 @@ def _payload(
                 },
             },
         },
-        "temperature": 0.0,
-        "top_k": 1,
-        "top_p": 1.0,
-        "min_p": 0.0,
+        **sampling,
         "repeat_penalty": 1.0,
-        "seed": 0,
+        "seed": seed,
         "max_tokens": (
             (128 if selection_shape == "reasoned_array" else 80)
             + (reasoning_budget or 0)
@@ -260,6 +276,8 @@ def run(
     adaptive_union: bool = False,
     proposal_artifacts: list[Path] | None = None,
     reasoning_budget: int | None = None,
+    sampling_profile: str = "greedy",
+    seed: int = 0,
 ) -> Path:
     corpus = {row["case_id"]: row for row in _jsonl(CORPUS)}
     replay = {row["case_id"]: row for row in _jsonl(source)}
@@ -277,6 +295,8 @@ def run(
         raise ValueError("la política adaptativa requiere un artefacto de unión")
     if selection_shape == "native" and reasoning_budget is not None:
         raise ValueError("la selección nativa heredada desactiva el pensamiento")
+    if sampling_profile == "qwen-thinking" and reasoning_budget is None:
+        raise ValueError("el sampling Qwen thinking requiere pensamiento acotado")
     proposal_rows: list[dict[str, dict[str, Any]]] = []
     for proposal_artifact in proposal_artifacts or []:
         proposal_value = json.loads(proposal_artifact.read_text(encoding="utf-8"))
@@ -345,6 +365,8 @@ def run(
                     selection_shape=selection_shape,
                     enable_thinking=reasoning_budget is not None,
                     reasoning_budget=reasoning_budget,
+                    sampling_profile=sampling_profile,
+                    seed=seed,
                 ),
                 "el calentamiento de la política mínima",
             )
@@ -406,6 +428,8 @@ def run(
                                 selection_shape=selection_shape,
                                 enable_thinking=reasoning_budget is not None,
                                 reasoning_budget=reasoning_budget,
+                                sampling_profile=sampling_profile,
+                                seed=seed,
                             ),
                             "la política mínima de operaciones",
                         )
@@ -454,6 +478,8 @@ def run(
         "schema": SCHEMA,
         "selection_shape": selection_shape,
         "reasoning_budget": reasoning_budget,
+        "sampling_profile": sampling_profile,
+        "seed": seed,
         "corpus": {"path": str(CORPUS.relative_to(REPO)), "sha256": _sha256(CORPUS)},
         "source_telemetry": {
             "path": str(source.relative_to(REPO)),
@@ -534,6 +560,12 @@ def main() -> int:
     parser.add_argument("--proposal-artifact", action="append", type=Path, default=[])
     parser.add_argument("--reasoning-budget", type=int)
     parser.add_argument(
+        "--sampling-profile",
+        choices=("greedy", "qwen-thinking"),
+        default="greedy",
+    )
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
         "--selection-shape",
         choices=("array", "scalar", "reasoned_array", "native"),
         default="array",
@@ -551,6 +583,8 @@ def main() -> int:
         adaptive_union=args.adaptive_union,
         proposal_artifacts=[path.resolve() for path in args.proposal_artifact],
         reasoning_budget=args.reasoning_budget,
+        sampling_profile=args.sampling_profile,
+        seed=args.seed,
     )
     result = json.loads(output.read_text(encoding="utf-8"))
     print(json.dumps({key: result[key] for key in (
