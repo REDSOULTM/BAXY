@@ -742,3 +742,18 @@ elegida mirando el mismo corpus dejaría de ser una comprobación fresca. El blo
 nuevo ya no es VRAM ni recuperación, sino un árbitro que distinga siete propuestas
 sin perder al menos siete de esas doce abstenciones; no existe evidencia heredada
 ni un corte fresco independiente que autorice entrenarlo o seleccionarlo aquí.
+
+La autorización para heredar código de las escrituras anteriores permitió
+recuperar una línea distinta del prompting: el selector FunctionGemma R2. El
+checkpoint LoRA ya no estaba en su ruta histórica, pero el corpus ganador se
+reconstruyó **byte a byte** desde el BAXY anterior: retirar sólo las 112 filas
+`core-contract-authored-contrastive-v3` del corpus posterior deja **1.821 filas**
+y SHA-256 `325a287fcb8797893f78aa6bf2209fcf238cdb8c56c2f1dd7001a09d8f095530`,
+idéntico al recibo R2. El entrenamiento heredado cerró con las mismas 169
+actualizaciones y 3.704 MiB asignados; pérdida media **0,065464** frente a
+0,065826 histórica. En el control antiguo de familia-oráculo reproduce
+**64/74 = 86,49 %**, una fila menos que el R2 original (65/74), con p50
+**0,736 s**, p95 **0,884 s** y pico asignado **602,4 MiB**
+(`goal03_functiongemma_r2_rebuild_control.json`). La señal basta para medirlo
+una vez sobre la unión ranker+E5 vigente; todavía no acredita el corpus fresco,
+abstención ni una integración.
