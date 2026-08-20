@@ -156,7 +156,10 @@ def run(
     tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
     load_started = time.perf_counter()
     model = AutoModelForCausalLM.from_pretrained(
-        model_path, local_files_only=True, torch_dtype=torch.bfloat16
+        model_path,
+        local_files_only=True,
+        dtype=torch.bfloat16,
+        attn_implementation="sdpa",
     )
     model = PeftModel.from_pretrained(model, adapter_path, local_files_only=True)
     model = model.to("cuda").eval()
@@ -240,6 +243,7 @@ def run(
             "sha256": _sha256(adapter_path / "adapter_model.safetensors"),
             "training_report_sha256": _sha256(adapter_path / "training_report.json"),
         },
+        "attention_implementation": "sdpa",
         "in_catalog": {
             "rows": len(inside),
             "retrieved": sum(bool(row["retrieved"]) for row in inside),
