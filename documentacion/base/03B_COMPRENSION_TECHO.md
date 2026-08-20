@@ -926,3 +926,16 @@ vigente ya está exactamente verde en **5/15 y 13/32**, las leyes de arreglar s�
 lo que bloquea y retirar la capa sustituida impiden añadir ese segundo
 orquestador por una ganancia no verificada. La línea compuesta queda agotada
 para este goal y se conserva íntegra para el goal 07, su dueño.
+
+El gate KVA coordinado tampoco completa la frontera
+(`goal03_inherited_kva_gate_v22.json`). Se cargaron sin reentrenar el ONNX
+reexportado SHA `987091a8…` y `fg/kva_gate.json` SHA `592733de…`, cuya
+recalibración conjunta fijó `P(conocimiento) >= 0,89` antes de este corpus. El
+guard preserva las **124/124** órdenes del catálogo, pero no corta ninguna de
+las **36** negativas: superpuesto al selector oficial deja exactamente
+**110/124** aciertos y **18/36** abstenciones. La negativa más próxima es
+`ooc-32` («llámame un plomero para mañana») con 0,88; bajar ahora el umbral
+sería ajustarlo contra el examen sellado, además de contradecir su calibración
+cost-sensitive para no perder acciones. El coste sí es despreciable —encoder
+p50 **2,087 ms**, cabeza p50 **0,029 ms**—, pero una capa ligera que no compra
+conducta sigue siendo una capa inútil y no se integra.
