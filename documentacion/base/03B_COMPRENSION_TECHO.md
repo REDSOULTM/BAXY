@@ -1044,3 +1044,19 @@ El único reintento permitido conserva corpus, orden determinista, LoRA r16,
 alpha 32, lr 2e-4, semilla 5601, una época y mezcla 2:1; sólo fija SDPA y el
 límite mecánico mínimo de 1.408. La cota de 4 GB del goal sigue pendiente de la
 inferencia real: esta preprueba de entrenamiento no pretende satisfacerla.
+
+El reintento único SDPA sí completa la época y queda sellado en
+`goal03_functiongemma_current_union_train_v28.json`. Entrena las **2.028** filas
+balanceadas previstas —1.352 acciones, ocho por cada una de 169 hojas, y 676
+`no_action`— durante **254** actualizaciones. La pérdida baja de 0,004685 a
+0,000030 (media 0,025847) en **4.779,975 s**; el pico asignado interno es
+**4.786,6 MiB**. La reserva WDDM/CUDA no se interpreta como requisito de
+producto: el adapter pesa 15.220.968 bytes, SHA-256 `61906906…`, y su inferencia
+se medirá aparte.
+
+Los pesos viven sólo en
+`D:\BAXYRuntime\experiments\functiongemma-selector-current-union-v1`; el
+informe externo y la copia versionada son idénticos, SHA `b208b03e…`. No hubo
+efectos ni cambio del manifiesto. La pérdida casi nula sólo prueba ajuste al
+train y hace especialmente importante no mirar aún el corte fresco: el próximo
+y único escalón es la validación independiente de 784 filas ya sellada.
