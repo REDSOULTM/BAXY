@@ -886,3 +886,21 @@ del mismo mecanismo, no los sustituye: BGE-reranker-v2-m3 R241 conservó 256/256
 positivas pero sólo abstuvo 2/256 OOS, y el verificador cruzado FunctionGemma
 perdía 98 pares ya servidos y aceptaba 86–148/169 operaciones para cada encargo
 sin match. No se integra ni se inventa otra banda sobre el examen fresco.
+
+El splitter heredado sí conserva una señal útil, todavía sólo estructural
+(`goal03_inherited_command_splitter_v20.json`). Con el mismo encoder ONNX y sus
+parámetros literales —máximo tres cláusulas, margen acción-sustantivo 0,05 y
+capa multilingüe activa— produce el número exacto de cláusulas en **7/15**
+misiones del banco. Separa más de una en 8/15: cuatro ya las resolvía enteras el
+producto (`cmp-b01`, `b07`, `b12`, `b14`) y cuatro son fallos actuales
+(`cmp-b04`, `b05`, `b10`, `b15`). Las ocho restantes quedan subpartidas y no hay
+ninguna sobrepartida; en `cmp-b12` da dos cláusulas donde el sello pide tres.
+
+El coste es pequeño: p50 **3,015 ms**, p90 **4,534 ms**, máximo 4,857 ms y
+44,586 ms para las quince. Esto no autoriza copiar sus 1.300 líneas ni afirmar
+una mejora: igualdad de cantidad no prueba que cada cláusula nombre su operación
+ni que sobreviva la dependencia entre turnos. Sí justifica el escalón siguiente
+y único: enviar esas cuatro misiones actualmente fallidas, cláusula por cláusula,
+al mind vigente con providers desactivados y medir si recupera pasos sin
+inventar ejecución. Hasta ese resultado, el producto permanece en su suelo ya
+cumplido de **5/15 misiones y 13/32 pasos**.
