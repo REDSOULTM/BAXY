@@ -1075,3 +1075,19 @@ asignado **665,8 MiB**, con providers apagados y cero efectos. Ésta es la prime
 evidencia independiente de que el selector dedicado cobra la unión real y
 abstiene a la vez. Autoriza exactamente una lectura del corte fresco, con el
 contrato ya fijado; no autoriza calibración posterior contra sus 160 respuestas.
+
+La única corrida fresca refuta esa generalización
+(`goal03_functiongemma_current_union_v30.json`, SHA `da18e827…`). Con la misma
+unión-28, greedy, SDPA y adapter sellado, recupera 119 hojas pero sólo elige la
+esperada en **24/124**. En 89 positivas emite `no_action`, en tres no emite una
+llamada parseable y en ocho elige otra acción. La seguridad sí queda dentro del
+corte: **33/36** abstenciones honestas y sólo tres llamadas fuera de catálogo.
+
+El contraste con 447/477 en validación demuestra cambio de distribución, no un
+umbral pendiente: train y holdout comparten generadores/fuentes, mientras que
+las paráfrasis frescas no. Ajustar proporción, prompt o época después de ver que
+89 filas positivas caen al sentinel sería entrenar contra el examen. El adapter
+se rechaza antes del producto pese a su coste pequeño —p50 **0,677 s**, p90
+0,797 s, pico **665,4 MiB**— y no sustituye al mejor selector aislado vigente de
+110/124. La siguiente investigación debe buscar en las otras escrituras un
+corpus o patch independiente de lenguaje natural, no reciclar este holdout.
