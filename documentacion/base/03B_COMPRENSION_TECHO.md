@@ -788,3 +788,13 @@ recuperadas: el recorte a 16 cambia decisiones más de lo que elimina ruido.
 Frente a unión-28 gana cuatro casos y pierde catorce; su unión-oráculo llega a
 **113/124**, señal complementaria pero no una regla de arbitraje autorizada. No
 se promoverán estos umbrales ni se calibrarán contra el mismo examen fresco.
+
+También se heredó literalmente el desacople propuesto por el BAXY anterior:
+selección nativa con `tool_choice=required` y una tool sintética explícita de
+«ningún efecto coincide», sin pensamiento ni JSON de política
+(`goal03_qwen3_8b_iq2_native_no_match_union28_v15.json`). Sobre la unión-28
+selecciona **100/124**, abstiene **24/36** —doce acciones indebidas— y tarda p50
+**0,922 s** / p90 **1,022 s**. Gana tres filas distintas y pierde doce frente a
+pensamiento-128; el oráculo de ambas llega a 112, pero no hay una señal previa
+que separe esos brazos. La receta resuelve formato y latencia, no la ambigüedad
+semántica entre 28 hojas, y queda rechazada para producto.

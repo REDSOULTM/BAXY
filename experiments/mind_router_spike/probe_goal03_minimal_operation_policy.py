@@ -25,6 +25,10 @@ for import_root in (REPO, REPO / "src"):
         sys.path.insert(0, str(import_root))
 
 from baxy_mind.llm import LlmRuntime  # noqa: E402
+from experiments.mind_router_spike.benchmark_native_no_match_tool import (  # noqa: E402
+    SELECTOR_PROMPT as NATIVE_NO_MATCH_PROMPT,
+    _select as _native_no_match_select,
+)
 from scripts.baxy_runtime_config import (  # noqa: E402
     DEFAULT_RUNTIME_MANIFEST,
     resolve_runtime,
@@ -271,6 +275,8 @@ def run(
             raise ValueError("el artefacto de unión no contiene las 160 filas")
     if adaptive_union and union_rows is None:
         raise ValueError("la política adaptativa requiere un artefacto de unión")
+    if selection_shape == "native" and reasoning_budget is not None:
+        raise ValueError("la selección nativa heredada desactiva el pensamiento")
     proposal_rows: list[dict[str, dict[str, Any]]] = []
     for proposal_artifact in proposal_artifacts or []:
         proposal_value = json.loads(proposal_artifact.read_text(encoding="utf-8"))
@@ -282,8 +288,16 @@ def run(
         raise ValueError("la unión de rankers y las propuestas son fuentes excluyentes")
 
     capabilities, _, _ = current_core_catalog_snapshot(discover_core(None))
+    capability_by_name = {
+        str(item["name"]): {
+            "name": str(item["name"]),
+            "description": str(item["description"]),
+            "arguments_schema": item["argumentsSchema"],
+        }
+        for item in capabilities
+    }
     descriptions = {
-        str(item["name"]): str(item["description"]) for item in capabilities
+        name: str(item["description"]) for name, item in capability_by_name.items()
     }
     missing = sorted(
         {
@@ -313,17 +327,27 @@ def run(
     try:
         # Pay startup and grammar compilation before the measured population.
         warm_names = ["app.open", "system.time", "web.search"]
-        runtime._post_schema_object(  # noqa: SLF001 - experiment owns the boundary
-            _payload(
+        if selection_shape == "native":
+            _native_no_match_select(
+                runtime,
                 "open calculator",
-                warm_names,
-                descriptions,
-                selection_shape=selection_shape,
-                enable_thinking=reasoning_budget is not None,
-                reasoning_budget=reasoning_budget,
-            ),
-            "el calentamiento de la política mínima",
-        )
+                [capability_by_name[name] for name in warm_names],
+                no_match_mode="sentinel",
+                tool_choice="required",
+                parallel_tool_calls=False,
+            )
+        else:
+            runtime._post_schema_object(  # noqa: SLF001 - experiment owns boundary
+                _payload(
+                    "open calculator",
+                    warm_names,
+                    descriptions,
+                    selection_shape=selection_shape,
+                    enable_thinking=reasoning_budget is not None,
+                    reasoning_budget=reasoning_budget,
+                ),
+                "el calentamiento de la política mínima",
+            )
         for case_id, row in corpus.items():
             source_row = replay[case_id]
             candidate_band: str | None = None
@@ -356,35 +380,46 @@ def run(
                 candidates = [name for name in candidates if name in descriptions]
             started = time.perf_counter()
             if not candidates:
-                response = (
-                    {"operation": NO_OPERATION}
-                    if selection_shape == "scalar"
-                    else {"effect_operations": []}
-                )
+                selected_wire = [NO_OPERATION]
             else:
                 try:
-                    response = runtime._post_schema_object(  # noqa: SLF001
-                        _payload(
+                    if selection_shape == "native":
+                        native_selected, native_no_match = _native_no_match_select(
+                            runtime,
                             str(row["text"]),
-                            candidates,
-                            descriptions,
-                            selection_shape=selection_shape,
-                            enable_thinking=reasoning_budget is not None,
-                            reasoning_budget=reasoning_budget,
-                        ),
-                        "la política mínima de operaciones",
-                    )
+                            [capability_by_name[name] for name in candidates],
+                            no_match_mode="sentinel",
+                            tool_choice="required",
+                            parallel_tool_calls=False,
+                        )
+                        selected_wire = (
+                            [NO_OPERATION]
+                            if native_no_match
+                            else list(native_selected)
+                        )
+                    else:
+                        response = runtime._post_schema_object(  # noqa: SLF001
+                            _payload(
+                                str(row["text"]),
+                                candidates,
+                                descriptions,
+                                selection_shape=selection_shape,
+                                enable_thinking=reasoning_budget is not None,
+                                reasoning_budget=reasoning_budget,
+                            ),
+                            "la política mínima de operaciones",
+                        )
+                        selected_wire = (
+                            [str(response["operation"])]
+                            if selection_shape == "scalar"
+                            else list(response.get("effect_operations") or [])
+                        )
                 except Exception as error:
                     raise RuntimeError(
                         f"la política mínima falló en {case_id} con "
                         f"{len(candidates)} candidatos"
                     ) from error
             seconds = time.perf_counter() - started
-            selected_wire = (
-                [str(response["operation"])]
-                if selection_shape == "scalar"
-                else list(response.get("effect_operations") or [])
-            )
             sentinel_mixed = NO_OPERATION in selected_wire and len(selected_wire) != 1
             selected = [name for name in selected_wire if name != NO_OPERATION]
             expected = set(row.get("expected_operations") or [])
@@ -456,6 +491,8 @@ def run(
             (
                 SCALAR_OPERATION_POLICY_PROMPT
                 if selection_shape == "scalar"
+                else NATIVE_NO_MATCH_PROMPT
+                if selection_shape == "native"
                 else REASONED_OPERATION_POLICY_PROMPT
                 if selection_shape == "reasoned_array"
                 else MINIMAL_OPERATION_POLICY_PROMPT
@@ -498,7 +535,7 @@ def main() -> int:
     parser.add_argument("--reasoning-budget", type=int)
     parser.add_argument(
         "--selection-shape",
-        choices=("array", "scalar", "reasoned_array"),
+        choices=("array", "scalar", "reasoned_array", "native"),
         default="array",
     )
     args = parser.parse_args()
