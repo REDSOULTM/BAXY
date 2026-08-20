@@ -99,10 +99,17 @@ partida por causa y la latencia medida al lado. 90 % son 112 filas de 124.
 No se cierra con skip, xfail, umbral relajado ni fallback. No cambies el corpus ni
 el marcador.
 
-SEGUNDO OBJETIVO, y es nuevo: LA SOBRECARGA
-Usamos un modelo pequeño PARA QUE SEA RÁPIDO. Si el modelo contesta en 800 ms y
-BAXY tarda tres segundos, pagaste el precio del modelo pequeño —menos capacidad—
-y no te llevaste lo que compraste. El modelo pequeño deja de tener sentido.
+SEGUNDO OBJETIVO: LA SOBRECARGA, MEDIDA Y JUSTIFICADA — no un tope
+Usamos un modelo pequeño PARA QUE SEA RÁPIDO. La latencia la pone el modelo: si
+eliges uno pequeño, el turno debería sentirse pequeño. Si el modelo contesta en
+800 ms y BAXY tarda tres segundos, pagaste el precio del modelo pequeño —menos
+capacidad— y no te llevaste lo que compraste.
+
+Pero la sobrecarga NO es un pecado: es un presupuesto. Un segundo extra que compra
+diez puntos de comprensión está bien gastado. Un segundo que no compra nada es
+robo. Lo que se prohíbe es lo segundo.
+
+Por eso NO hay tope duro. Hay una obligación:
 
   sobrecarga = p50(turno completo de BAXY) − p50(inferencia pura, MISMO prompt)
 
@@ -110,17 +117,23 @@ La inferencia pura se mide con el mismo binario, el mismo modelo y los mismos
 tokens —prefill incluido—, llamando a llama-server directamente sin pasar por
 BAXY. Contra un prompt distinto el número no significa nada.
 
-Listón para cerrar: sobrecarga ≤ 20 % del tiempo del modelo, o ≤ 250 ms, lo que
-sea mayor. Publícala SIEMPRE, p50 y p90, con el escritorio residente y con la
-persona usando el PC — aunque no llegues.
+LA REGLA: se mide siempre, se desglosa por etapa, y CADA etapa que suma tiempo
+dice qué compra. Una etapa que cuesta tiempo y no mueve ningún número se retira
+— eso es la ley 2 otra vez, vista desde el reloj.
 
-Si eliges un modelo más rápido, el presupuesto de sobrecarga se encoge con él: no
-puedes ganar el porcentaje bajando el listón del modelo.
+Lo que persigues: acercarte al tiempo del modelo tanto como se pueda **sin perder
+lo que la etapa aporta**. Puedes gastar de ese presupuesto a propósito si compra
+acierto, y decirlo. Lo que no se acepta es sobrecarga que nadie ha justificado, o
+que convierte el turno en un múltiplo del modelo en vez de una fracción.
 
-El precedente que lo convierte en ley: Carter medía 16 s por turno con un modelo
-que tardaba 4,26. Diez segundos eran capas propias. La ley 2 y este número son el
-mismo requisito visto desde dos sitios: cada capa que no retiras se paga en el
-reloj.
+Y no confundas esto con el listón de silencio: son cosas distintas. El silencio
+son 3 s sin que BAXY dé señal, y viene de la identidad —el dueño cierra la ventana
+y lo hace a mano—. Ese sigue en pie, y se cumple hablando antes de terminar si
+hace falta, no acelerando a costa del acierto.
+
+El precedente que hace esto importante: Carter medía 16 s por turno con un modelo
+que tardaba 4,26. Diez segundos eran capas propias que nadie había justificado
+nunca. Cada capa que no retiras se paga en el reloj.
 
 TERCER OBJETIVO: cabe en el equipo
 Pico de VRAM ≤ 4 GB durante un turno, con el modelo cargado. Medido, no estimado.
@@ -241,8 +254,10 @@ su cifra publicada.
 
 CRITERIOS DE CIERRE — los tres números, juntos
 - ≥ 90 % (112 de 124), partido por causa.
-- Sobrecarga ≤ 20 % del modelo o ≤ 250 ms, contra la inferencia pura del mismo
-  prompt, con p50 y p90 y en los dos estados del equipo.
+- Sobrecarga medida contra la inferencia pura del mismo prompt, con p50 y p90 y en
+  los dos estados del equipo, DESGLOSADA POR ETAPA y con lo que compra cada una.
+  Ninguna etapa sobrevive sin decir qué mueve.
+- El listón de silencio de 3 s, cumplido — hablando antes de terminar si hace falta.
 - Pico de VRAM ≤ 4 GB durante un turno.
 - Cobertura, banco de misiones compuestas y tres ceros: no bajan.
 - Compuerta verde.
