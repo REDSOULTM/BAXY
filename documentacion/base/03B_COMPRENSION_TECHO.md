@@ -757,3 +757,14 @@ actualizaciones y 3.704 MiB asignados; pérdida media **0,065464** frente a
 (`goal03_functiongemma_r2_rebuild_control.json`). La señal basta para medirlo
 una vez sobre la unión ranker+E5 vigente; todavía no acredita el corpus fresco,
 abstención ni una integración.
+
+La apertura única sobre el corpus fresco rechaza esa combinación
+(`goal03_functiongemma_r2_union28_v12.json`). La unión ranker+E5 ofrece la hoja
+esperada en **119/124**, pero FunctionGemma R2 sólo selecciona una esperada en
+**63/124** y abstiene honestamente en **1/36**; p50 **0,717 s**, p90 **0,815 s**
+y pico CUDA asignado/reservado **665,4/768,0 MiB**. El selector heredado aprendió
+contrastes dentro de una familia, mientras que la unión-28 mezcla familias: fuera
+de la distribución de entrenamiento casi siempre emite alguna tool call. El
+resultado reproduce el mecanismo del rechazo histórico con shortlist realista
+(52,7 % en el corte antiguo) y no se corrige apilándole el árbitro por familia,
+que allí ya bajó a 48,6 %. La reconstrucción queda como evidencia, no como guard.
