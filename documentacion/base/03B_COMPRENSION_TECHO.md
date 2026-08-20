@@ -669,3 +669,12 @@ Contra Qwen3-4B con el mismo centinela son +8 aciertos y +12 abstenciones; contr
 Qwen3.5-4B conserva casi todo el acierto y gana 20 abstenciones. No se promueve
 aún porque el shortlist sólo ofrece 109 hojas esperadas: la siguiente medida es
 el mismo selector sobre la unión ranker+E5 de 16 y 28 candidatos.
+
+La unión de 16 candidatos confirma que la recuperación adicional se convierte
+en acierto, pero no toda (`goal03_qwen3_8b_iq2_union16_v6.json`): ofrece la hoja
+esperada en **116/124**, Qwen3-8B selecciona una esperada en **97/124** y
+conserva **28/36** abstenciones. El prompt más corto también baja a p50
+**0,628 s** / p90 **0,677 s**. Son +7 filas contra E5-28 y menor latencia, pero
+siguen faltando 15 para el listón. Añadir hasta 28 sólo puede ofrecer tres hojas
+más y aumenta la ambigüedad; el siguiente experimento debe mejorar la
+deliberación del selector, no seguir ensanchando la lista.

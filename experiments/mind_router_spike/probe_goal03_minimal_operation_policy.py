@@ -177,11 +177,21 @@ def run(
     *,
     selection_shape: str = "array",
     gguf: Path | None = None,
+    union_artifact: Path | None = None,
+    union_budget: int | None = None,
 ) -> Path:
     corpus = {row["case_id"]: row for row in _jsonl(CORPUS)}
     replay = {row["case_id"]: row for row in _jsonl(source)}
     if set(corpus) != set(replay):
         raise ValueError("la telemetría no contiene exactamente las 160 filas del corpus")
+    union_rows: dict[str, dict[str, Any]] | None = None
+    if union_artifact is not None:
+        if union_budget not in {16, 28}:
+            raise ValueError("la unión requiere presupuesto 16 o 28")
+        union_value = json.loads(union_artifact.read_text(encoding="utf-8"))
+        union_rows = {str(row["case_id"]): row for row in union_value["rows"]}
+        if set(union_rows) != set(corpus):
+            raise ValueError("el artefacto de unión no contiene las 160 filas")
 
     capabilities, _, _ = current_core_catalog_snapshot(discover_core(None))
     descriptions = {
@@ -226,7 +236,18 @@ def run(
         )
         for case_id, row in corpus.items():
             source_row = replay[case_id]
-            candidates = list(source_row.get("candidate_operations") or [])
+            if union_rows is None:
+                candidates = list(source_row.get("candidate_operations") or [])
+            else:
+                per_ranker = union_budget // 2
+                union_row = union_rows[case_id]
+                candidates = list(
+                    dict.fromkeys(
+                        union_row["top_28"][:per_ranker]
+                        + union_row["e5_top_28"][:per_ranker]
+                    )
+                )
+                candidates = [name for name in candidates if name in descriptions]
             started = time.perf_counter()
             if not candidates:
                 response = (
@@ -301,6 +322,15 @@ def run(
             if gguf is not None
             else None
         ),
+        "candidate_union": (
+            {
+                "path": str(union_artifact.relative_to(REPO)),
+                "sha256": _sha256(union_artifact),
+                "budget": union_budget,
+            }
+            if union_artifact is not None
+            else None
+        ),
         "prompt_sha256": hashlib.sha256(
             (
                 SCALAR_OPERATION_POLICY_PROMPT
@@ -338,6 +368,8 @@ def main() -> int:
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--label", required=True)
     parser.add_argument("--gguf", type=Path)
+    parser.add_argument("--union-artifact", type=Path)
+    parser.add_argument("--union-budget", type=int, choices=(16, 28))
     parser.add_argument(
         "--selection-shape",
         choices=("array", "scalar"),
@@ -349,6 +381,10 @@ def main() -> int:
         args.label,
         selection_shape=args.selection_shape,
         gguf=args.gguf.resolve() if args.gguf is not None else None,
+        union_artifact=(
+            args.union_artifact.resolve() if args.union_artifact is not None else None
+        ),
+        union_budget=args.union_budget,
     )
     result = json.loads(output.read_text(encoding="utf-8"))
     print(json.dumps({key: result[key] for key in (
