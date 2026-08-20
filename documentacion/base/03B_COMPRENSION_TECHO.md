@@ -593,3 +593,10 @@ se embarca: aunque el schema permitía el array vacío, el modelo eligió alguna
 operación en las **36 de 36** peticiones fuera de catálogo — **0/36 abstenciones
 honestas**. La próxima variante debe hacer explícito `no_operation`; no vale
 confiar en que el modelo descubra el vacío como alternativa.
+
+Hacer explícita esa alternativa tampoco alcanza
+(`goal03_minimal_policy_no_operation_v2.json`): **82/124** selecciones correctas,
+**17/36** abstenciones honestas, p50 **0,552 s** y p90 **0,678 s**, sin una sola
+mezcla entre el centinela y una operación. El centinela compra abstención
+quitando exactamente la ganancia de selección de la variante anterior. Las dos
+formas mínimas quedan rechazadas antes de tocar producto.
