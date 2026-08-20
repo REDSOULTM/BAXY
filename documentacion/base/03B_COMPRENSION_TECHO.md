@@ -1060,3 +1060,18 @@ informe externo y la copia versionada son idénticos, SHA `b208b03e…`. No hubo
 efectos ni cambio del manifiesto. La pérdida casi nula sólo prueba ajuste al
 train y hace especialmente importante no mirar aún el corte fresco: el próximo
 y único escalón es la validación independiente de 784 filas ya sellada.
+
+La validación independiente autoriza ese escalón
+(`goal03_functiongemma_current_union_validation_v29.json`, SHA `80be47b4…`).
+Sin tocar pesos ni umbrales, el adapter elige exactamente **447/477** acciones
+(93,71 %) y emite `no_action` exacto en **296/307** negativas (96,42 %). Las
+once restantes no producen una llamada parseable, por lo que el total seguro es
+**307/307** sin acción seleccionada. El agregado exacto es 743/784 (94,77 %).
+
+Los 30 fallos positivos no se usan para reparar el train; la concentración mayor
+es `audio.volume -> no_action` en nueve filas y el resto se reparte en 20
+confusiones pequeñas. La inferencia cuesta p50 **0,789 s**, p90 0,968 s y pico
+asignado **665,8 MiB**, con providers apagados y cero efectos. Ésta es la primera
+evidencia independiente de que el selector dedicado cobra la unión real y
+abstiene a la vez. Autoriza exactamente una lectura del corte fresco, con el
+contrato ya fijado; no autoriza calibración posterior contra sus 160 respuestas.
