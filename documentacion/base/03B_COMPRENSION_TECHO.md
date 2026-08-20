@@ -1125,3 +1125,18 @@ selector que mantenga las 169 hojas actuales. Esa posibilidad tampoco se da por
 hecha: el siguiente filtro es conservar únicamente filas donde familia, acción y
 argumentos determinen una operación actual exacta y medir su cantidad/split sin
 usar fallos individuales del corpus fresco.
+
+La extracción conservadora queda sellada en
+`goal03_inherited_real_language_corpus_v33.json`. De los mensajes heredados
+sobreviven **345** textos únicos con una sola tool/acción, un paso, corrección
+original, confianza ≥0,8 y traducción contractual uno-a-uno. Se retiró la única
+coincidencia exacta con el corte fresco. El split SHA por operación deja **274**
+train en 17 operaciones y **71** validación en 19; hashes `220ad033…` y
+`c69f9db1…`. Las filas viven fuera del repo y el informe no copia texto privado.
+
+Es evidencia de estilo, no cobertura: 35 pares legacy aceptados se reducen a 27
+operaciones posibles y el train efectivo sólo observa 17. Por eso no se lanza
+otra LoRA todavía. El siguiente filtro mantiene el orden de producción: formar
+la unión ranker+E5 de cada frase real y medir cuántos labels entran sin forzar;
+si recuperación o holdout no sostienen la hipótesis, estas filas se conservan
+como corpus histórico y no se convierten en otra capa.
