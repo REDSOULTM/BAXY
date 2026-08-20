@@ -619,3 +619,14 @@ honestamente en **31/36**. El salto entre ambas poblaciones prueba cambio de
 distribución: el corpus histórico de ejemplos documentales no sirve como
 entrenamiento directo para las paráfrasis coloquiales actuales. Queda rechazado
 antes de darle autoridad o añadirlo al runtime.
+
+El primer cambio de pesos que sí mueve la decisión es Qwen3.5-4B Q4_K_M
+(`goal03_qwen35_minimal_policy_v4.json`, **2.740.937.888 bytes**, SHA-256
+`00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4`). Con el
+mismo shortlist congelado y el mismo contrato mínimo con `no_operation`, elige
+una operación esperada en **91/124**, nueve más que Qwen3-4B; mide p50
+**0,787 s** / p90 **0,926 s**. Aislado no es promovible: sólo produce **9/36**
+abstenciones honestas. A diferencia de las variantes anteriores, no se descarta
+el modelo todavía: la siguiente medida debe ser punta a punta con las puertas
+vigentes, porque ellas —no esta política aislada— son dueñas de contener los
+efectos no pedidos.

@@ -171,7 +171,13 @@ def _write_lf(path: Path, value: dict[str, Any]) -> None:
         stream.write(serialized)
 
 
-def run(source: Path, label: str, *, selection_shape: str = "array") -> Path:
+def run(
+    source: Path,
+    label: str,
+    *,
+    selection_shape: str = "array",
+    gguf: Path | None = None,
+) -> Path:
     corpus = {row["case_id"]: row for row in _jsonl(CORPUS)}
     replay = {row["case_id"]: row for row in _jsonl(source)}
     if set(corpus) != set(replay):
@@ -199,6 +205,8 @@ def run(source: Path, label: str, *, selection_shape: str = "array") -> Path:
         gpu_layers=registered.gpu_layers,
         llm_http_timeout=limits["llm_http"],
     )
+    if gguf is not None:
+        environment["BAXY_MIND_LLM_GGUF"] = str(gguf)
     for key, value in environment.items():
         os.environ[key] = value
 
@@ -284,6 +292,15 @@ def run(source: Path, label: str, *, selection_shape: str = "array") -> Path:
             "path": str(source.relative_to(REPO)),
             "sha256": _sha256(source),
         },
+        "candidate_model": (
+            {
+                "path": str(gguf),
+                "sha256": _sha256(gguf),
+                "bytes": gguf.stat().st_size,
+            }
+            if gguf is not None
+            else None
+        ),
         "prompt_sha256": hashlib.sha256(
             (
                 SCALAR_OPERATION_POLICY_PROMPT
@@ -320,6 +337,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--label", required=True)
+    parser.add_argument("--gguf", type=Path)
     parser.add_argument(
         "--selection-shape",
         choices=("array", "scalar"),
@@ -330,6 +348,7 @@ def main() -> int:
         args.source.resolve(),
         args.label,
         selection_shape=args.selection_shape,
+        gguf=args.gguf.resolve() if args.gguf is not None else None,
     )
     result = json.loads(output.read_text(encoding="utf-8"))
     print(json.dumps({key: result[key] for key in (
