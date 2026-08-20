@@ -5,9 +5,85 @@ Escrito para pegarse entero en una sesión nueva de Codex con **GPT-5.6 Sol,
 **agotarse en una cuenta y continuar en la otra sin perder nada**: todo el estado
 vive en el repositorio, no en la conversación.
 
+El repositorio es privado: `https://github.com/REDSOULTM/baxy-definitivo`.
+
 ---
 
-## El prompt
+## Antes de nada: qué NO viaja por git
+
+El repositorio trae el código, las pruebas y toda la evidencia medida. **No trae
+lo que hace falta para medir**, y `assets.manifest.json` lo dice explícitamente:
+*«BAXY no descarga modelos automáticamente»*. En un PC nuevo faltan:
+
+| Pieza | Qué es | Cuánto |
+|---|---|---|
+| `Qwen3-4B-Q4_K_M.gguf` | el decisor, SHA-256 `7485fe6f…` | 2,5 GB |
+| `llama-server.exe` (llama.cpp b9980, CUDA 12.4) | el runtime de inferencia | ~50 MB con sus DLL |
+| `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` | el manifiesto que ata las dos cosas y el `src` de este repositorio | un JSON |
+
+Sin esas tres, `run_goal03_comprehension.py` no arranca, y **este goal es una
+medición**: sin poder medir, la sesión no puede hacer nada útil. Cópialas por USB
+o por red desde este PC antes de empezar.
+
+---
+
+## Prompt de arranque en el PC nuevo
+
+Pégalo primero. Sólo prepara el terreno y comprueba que se puede medir; **no toca
+el producto**.
+
+```
+Vas a preparar un PC nuevo para trabajar en BAXY. No cambies nada del producto
+todavía: este paso sólo deja el terreno listo y comprueba que se puede medir.
+
+1. Clona el repositorio privado, con rutas largas habilitadas — sin esto el clon
+   falla con "Filename too long" sobre los artefactos de nombre largo:
+
+   git config --global core.longpaths true
+   git clone https://github.com/REDSOULTM/baxy-definitivo.git "BAXY Definitivo"
+   cd "BAXY Definitivo"
+   git log --oneline -8
+
+   El último commit tiene que ser el prompt de Sol para retomar la comprensión.
+   Son ~100 MB: tarda.
+
+2. Comprueba qué falta para poder medir. Desde la raíz del repositorio:
+
+   py -c "import os,sys,pathlib; sys.path.insert(0,'src'); from baxy_mind.assets import DEFAULT_DESCRIPTOR, load_asset_descriptor, resolve_asset; root=pathlib.Path('.').resolve(); d,_=load_asset_descriptor(DEFAULT_DESCRIPTOR, repository_root=root); [print(('OK   ' if resolve_asset(n, repository_root=root).path else 'FALTA'), n) for n in d['assets']]; m=pathlib.Path(os.environ['LOCALAPPDATA'])/'BAXYRuntime'/'mind-runtime-v1.json'; print(('OK   ' if m.is_file() else 'FALTA'), 'runtime manifest')"
+
+   De todo lo que salga, para este goal SÓLO importan tres: conversation_model,
+   llama_server y el runtime manifest. Wake, TTS, visión y el STT de streaming no
+   los toca este goal: que salgan FALTA es normal.
+
+3. Si falta alguno de esos tres, PARA y dilo. No los descargues ni los sustituyas
+   por otro modelo: el decisor está declarado con su SHA-256 y cambiarlo invalida
+   toda la comparación. Hay que copiarlos del PC original:
+     - el GGUF y llama-server, a donde prefieras;
+     - y después escribir %LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json con las
+       rutas de ESTE PC. El campo python_path tiene que apuntar al src de este
+       clon, o cada medición ejecutará el baxy_mind equivocado — es un fallo que
+       ya costó una campaña entera y está documentado en base/03_COMPRENSION.md §3.
+
+4. Compila el núcleo, que la medición lo arranca para leer el catálogo:
+
+   dotnet build Baxy.slnx -c Release --nologo -v:minimal
+
+5. Corre la medición de referencia y compárala con lo publicado:
+
+   py -m experiments.mind_router_spike.run_goal03_comprehension --label arranque
+
+   Tiene que dar del orden de 81-84 de 124 dentro de catálogo y 26-28 de 36 de
+   abstención honesta. Si da eso, el PC está listo. Si da mucho menos, algo del
+   punto 3 está mal apuntado: no sigas, arréglalo.
+
+6. Cuando el punto 5 cuadre, dilo con el número exacto y para. El trabajo del goal
+   se lanza con el otro prompt, el que está en
+   documentacion/sprints/03B_PROMPT_SOL.md.
+```
+
+---
+
+## El prompt del goal
 
 ```
 Trabajas en C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo, rama main.
