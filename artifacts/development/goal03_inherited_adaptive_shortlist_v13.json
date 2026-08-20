@@ -1,0 +1,41 @@
+{
+  "candidate_source": {
+    "path": "artifacts/development/goal03_frozen_operation_ranker_v1.json",
+    "sha256": "2e1ddb9bc1ca9f1cfe0efc54f9ed4688385a2d9caddd73e389f0c65b36e5a265"
+  },
+  "corpus": {
+    "path": "artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+  },
+  "effects_executed": 0,
+  "in_catalog_rows": 124,
+  "policies": {
+    "inherited_adaptive": {
+      "bands": {
+        "high_cap_4": 30,
+        "low_cap_16": 94
+      },
+      "mean_candidates": 13.096774193548388,
+      "retrieved_expected": 114,
+      "rule": "RRF k=60; if both rankers agree at top-1 and fused top score >= 0.030 use cap 4, otherwise cap 16"
+    },
+    "inherited_adaptive_with_tight_cluster": {
+      "bands": {
+        "high_cap_4": 30,
+        "low_cap_16": 31,
+        "tight_cap_8": 63
+      },
+      "mean_candidates": 9.03225806451613,
+      "retrieved_expected": 109,
+      "rule": "inherited_adaptive plus disagreement/top>=0.025/rrf[4]:rrf[0]>=0.80 cap 8"
+    },
+    "rrf_static": {
+      "top_16": 115,
+      "top_28": 119,
+      "top_4": 95,
+      "top_8": 106
+    }
+  },
+  "providers_enabled": false,
+  "schema": "baxy.goal03-inherited-adaptive-shortlist.v1"
+}

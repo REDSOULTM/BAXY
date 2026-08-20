@@ -768,3 +768,13 @@ de la distribución de entrenamiento casi siempre emite alguna tool call. El
 resultado reproduce el mecanismo del rechazo histórico con shortlist realista
 (52,7 % en el corte antiguo) y no se corrige apilándole el árbitro por familia,
 que allí ya bajó a 48,6 %. La reconstrucción queda como evidencia, no como guard.
+
+El siguiente patch heredado sí conserva techo antes de llamar al modelo
+(`goal03_inherited_adaptive_shortlist_v13.json`). Fusionar ranker+E5 por RRF
+`k=60` y aplicar la puerta original —cap 4 sólo cuando ambos ponen la misma hoja
+primera y el score fusionado es al menos 0,030; cap 16 en otro caso— recupera
+**114/124**, con 30 filas `high`, 94 `low` y **13,10 candidatos medios**. La
+extensión histórica `TIGHT_CLUSTER` no se traslada: su cap 8 sobre desacuerdos
+corroborados baja el techo a **109/124**. El 114 justifica una única inferencia
+con Qwen3-8B; los umbrales vienen del patch anterior y no se calibraron contra
+este corpus.
