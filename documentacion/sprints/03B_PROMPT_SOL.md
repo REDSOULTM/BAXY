@@ -99,6 +99,37 @@ partida por causa y la latencia medida al lado. 90 % son 112 filas de 124.
 No se cierra con skip, xfail, umbral relajado ni fallback. No cambies el corpus ni
 el marcador.
 
+SEGUNDO OBJETIVO, y es nuevo: LA SOBRECARGA
+Usamos un modelo pequeño PARA QUE SEA RÁPIDO. Si el modelo contesta en 800 ms y
+BAXY tarda tres segundos, pagaste el precio del modelo pequeño —menos capacidad—
+y no te llevaste lo que compraste. El modelo pequeño deja de tener sentido.
+
+  sobrecarga = p50(turno completo de BAXY) − p50(inferencia pura, MISMO prompt)
+
+La inferencia pura se mide con el mismo binario, el mismo modelo y los mismos
+tokens —prefill incluido—, llamando a llama-server directamente sin pasar por
+BAXY. Contra un prompt distinto el número no significa nada.
+
+Listón para cerrar: sobrecarga ≤ 20 % del tiempo del modelo, o ≤ 250 ms, lo que
+sea mayor. Publícala SIEMPRE, p50 y p90, con el escritorio residente y con la
+persona usando el PC — aunque no llegues.
+
+Si eliges un modelo más rápido, el presupuesto de sobrecarga se encoge con él: no
+puedes ganar el porcentaje bajando el listón del modelo.
+
+El precedente que lo convierte en ley: Carter medía 16 s por turno con un modelo
+que tardaba 4,26. Diez segundos eran capas propias. La ley 2 y este número son el
+mismo requisito visto desde dos sitios: cada capa que no retiras se paga en el
+reloj.
+
+TERCER OBJETIVO: cabe en el equipo
+Pico de VRAM ≤ 4 GB durante un turno, con el modelo cargado. Medido, no estimado.
+BAXY corre en el portátil de una persona normal y compite con lo que esa persona
+está haciendo de verdad.
+
+LOS TRES SE MIDEN JUNTOS. Un cambio que sube el acierto y dobla la latencia no es
+una mejora: es un intercambio, y tienes que verlo para poder rechazarlo.
+
 LEE ESTO ANTES DE TOCAR NADA, en este orden:
 1. AGENTS.md — dónde estás, las cinco leyes, la escalera de validación.
 2. documentacion/00_IDENTIDAD.md — qué es BAXY. Si tu diseño la contradice, cambias tú.
@@ -117,6 +148,19 @@ seis corridas:
 Están nombradas una a una en base/03B_COMPRENSION_TECHO.md §6.
 Para 112 tienes que mover ese suelo Y la decisión, que hoy pierde 21 de 124 y en
 8 a 11 de esos casos elige una hermana de la operación correcta.
+
+TIENES LAS MANOS LIBRES
+Mucha gente ha tocado este código y eso NO te limita. Puedes rehacer el
+reconocedor, el recuperador, el decisor, el prompt de política de turno, las
+puertas y vetos, la forma del catálogo o el camino de decisión entero. Ninguna
+conclusión anterior te obliga — incluida la de que el 90 % no se puede.
+Lo único que no se toca: los seis invariantes de arquitectura, los tres ceros, la
+cobertura y la compuerta verde.
+
+Pero libertad no es amnesia. La lista de abajo es un mapa de callejones sin
+salida, no una valla: no repitas un experimento ya corrido para llegar al mismo
+sitio. Si crees que uno estaba mal medido, vuelve a correrlo DICIENDO POR QUÉ y
+publica los dos números.
 
 YA MEDIDO Y RECHAZADO — no lo repitas, es la forma más cara de perder el goal:
 - Cinco gates léxicos (R116, R117, R124 ×2, R126). No escribas un sexto.
@@ -194,6 +238,14 @@ vez, y lo primero que hace es:
   documentacion/base/03B_COMPRENSION_TECHO.md, sección 12
 Con eso sabe qué se midió, qué dio y dónde se quedó. No repitas nada que ya tenga
 su cifra publicada.
+
+CRITERIOS DE CIERRE — los tres números, juntos
+- ≥ 90 % (112 de 124), partido por causa.
+- Sobrecarga ≤ 20 % del modelo o ≤ 250 ms, contra la inferencia pura del mismo
+  prompt, con p50 y p90 y en los dos estados del equipo.
+- Pico de VRAM ≤ 4 GB durante un turno.
+- Cobertura, banco de misiones compuestas y tres ceros: no bajan.
+- Compuerta verde.
 
 CUÁNDO PUEDES CERRAR SIN EL 90 %
 Sólo habiendo movido el techo y medido el nuevo, y diciendo con el número qué lo
