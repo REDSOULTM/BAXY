@@ -1,0 +1,62 @@
+{
+  "schema": "baxy.goal03-functiongemma-current-union-corpus.v1",
+  "sources": {
+    "positive": {
+      "path": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\research\\functiongemma_training_corpus.v3.jsonl",
+      "sha256": "9370207421d59fb3f464a50c33c504a6fd43335d35e71671829054b0a0aff77d"
+    },
+    "public_oos": {
+      "path": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\tests\\data\\turn_evidence_runtime.v1.jsonl",
+      "sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+    },
+    "sealed_exclusion_only": {
+      "path": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\development\\goal03_fresh_paraphrase_corpus.v1.jsonl",
+      "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+    },
+    "ranker_manifest_sha256": "56a65fdd97eed7dc47b3fd8bb092376f6010557fe7c853a05e1675afd7875a15",
+    "ranker_weights": {
+      "path": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY\\artifacts\\research\\operation_shortlist_v3\\operation_shortlist.v1.weights.npz",
+      "sha256": "63de7aaeb52cf14e034828315656343b96b5125a33c48e6a5d6d1183bbc14d12"
+    }
+  },
+  "outputs": {
+    "train": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\train.jsonl",
+      "sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad",
+      "rows": 6922,
+      "positive": 4222,
+      "no_action": 2700,
+      "operations": 169
+    },
+    "validation": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\validation.jsonl",
+      "sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2",
+      "rows": 784,
+      "positive": 477,
+      "no_action": 307,
+      "operations": 169
+    }
+  },
+  "catalog_operations": 169,
+  "skipped_retired_positive_rows": 0,
+  "negative_conflicts_with_positive": 0,
+  "exact_normalized_overlap_with_sealed": 0,
+  "positive_retrieval": {
+    "retrieved_before_force": 4699,
+    "rows": 4699,
+    "forced_for_training": 0
+  },
+  "candidate_count": {
+    "min": 16,
+    "mean": 24.050999221385933,
+    "max": 28
+  },
+  "split_policy": "per-operation deterministic SHA holdout; public no_action hash bucket 0/10",
+  "authority": {
+    "development_only": true,
+    "sealed_rows_copied": 0,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "runtime_manifest_changed": false
+  }
+}

@@ -995,3 +995,36 @@ guard del selector oficial, deja sin cambio **110/124** y **18/36**. Cuesta p50
 **2,527 ms**, p90 2,921 ms. Bajar el suelo ahora sería calibrar contra el examen;
 copiar un store que no reconoce 159 frases tampoco compra conducta. La pieza
 queda agotada junto al planner que ya la servía indirectamente.
+
+Agotadas las piezas heredadas concretas, la investigación externa acota el
+siguiente cambio en vez de abrir otro guard. When2Call formula por separado
+llamar, pedir información y admitir que ninguna tool sirve; su SFT usa como
+mejor mezcla global **2:1** llamadas frente a no-llamada/follow-up, y la
+optimización de preferencia reduce más la alucinación de tools. AgentFlux
+separa selección de argumentos, calcula pérdida sólo sobre el nombre y muestra
+que el mismo dataset pasa de 16 % a 61,5 % al sustituir fine-tuning general por
+un selector dedicado dentro de un shortlist. SimpleToolHalluBench, por el otro
+lado, encuentra que activar razonamiento incrementa la llamada de distractores.
+En BAXY esto converge con la evidencia de Tools-Reduce iter3: FunctionGemma
+directo, especializado en selección, con `no_action` explícito y los
+distractores reales de producción; no otro prompt deliberativo ni otra puerta.
+
+El dataset para ese único challenger ya está sellado antes de entrenar
+(`goal03_functiongemma_current_union_corpus_v26.json`). Hereda el ranker del
+repositorio anterior con sus pesos exactos SHA `63de7aae…`, lo une al E5 fijado
+y construye cada subset con la misma política simétrica 14+14. Los positivos
+provienen de `functiongemma_training_corpus.v3.jsonl` SHA `93702074…`; las
+negativas son las 3.015 filas MASSIVE/PRESTO sin familia ya incluidas en
+`turn_evidence_runtime.v1.jsonl`. El corpus sellado sólo se usa como conjunto
+de exclusión normalizada y el solapamiento final es **0**.
+
+Train queda en **6.922** filas —4.222 acciones y 2.700 `no_action`, 169
+operaciones— y validación independiente en **784** —477 y 307—, con split SHA
+determinista por operación. Las 4.699 positivas completas tenían su operación
+en la unión antes de cualquier corrección (**4.699/4.699**), por lo que no se
+forzó una sola hoja. Los subsets contienen 16–28 tools, media 24,051. Los JSONL
+viven fuera del árbol en `D:\BAXYRuntime\experiments\functiongemma-current-union-v1`
+y el repositorio conserva rutas, hashes, receta y conteos. El siguiente escalón
+es una sola LoRA desde el base FunctionGemma fijado, pérdida sólo en el nombre,
+muestreo 2:1 y evaluación primero en esa validación; el corte fresco no decide
+hiperparámetros.
