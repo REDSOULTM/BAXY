@@ -581,3 +581,15 @@ tendría que salir de la forma del catálogo — que es donde el goal 03 y éste
 acabado los dos.
 
 **V9 sigue sin abrir.** Ninguna corrida de este goal lo tocó.
+
+### Retoma del 2026-08-20 — selección mínima sin alternativa explícita
+
+Antes de tocar producto se reprodujeron los candidatos exactos de
+`goal03_resume_baseline_20260820.telemetry.jsonl` contra el mismo Qwen3-4B, pero
+reemplazando sólo el contrato de decisión por un objeto con
+`effect_operations`. La selección cruda subió de **83 a 89 de 124** sobre 109
+filas recuperadas y una sola inferencia midió **p50 0,578 s / p90 0,994 s**. No
+se embarca: aunque el schema permitía el array vacío, el modelo eligió alguna
+operación en las **36 de 36** peticiones fuera de catálogo — **0/36 abstenciones
+honestas**. La próxima variante debe hacer explícito `no_operation`; no vale
+confiar en que el modelo descubra el vacío como alternativa.
