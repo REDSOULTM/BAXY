@@ -939,3 +939,29 @@ sería ajustarlo contra el examen sellado, además de contradecir su calibració
 cost-sensitive para no perder acciones. El coste sí es despreciable —encoder
 p50 **2,087 ms**, cabeza p50 **0,029 ms**—, pero una capa ligera que no compra
 conducta sigue siendo una capa inútil y no se integra.
+
+También se midió el campeón heredado posterior al R2, sin escoger checkpoints
+contra el corte (`goal03_functiongemma_tools_reduce_iter3_v23.json`). La
+evidencia de `TOOLS_REDUCE_STATE.md` preselecciona iter3 y rechaza iter4 por
+regresar conocimiento 100→50 %, acción de producción 97,5→87,5 % y contraste
+90→80 %. El fichero promovido e `iter3` son idénticos, SHA-256
+`c6fe7e947b24035f1286bb355d7defc010670c2dc8740c2bb42751dba46dca24`;
+no se barrió ningún otro peso.
+
+Con su contrato nativo —developer prompt publicado, greedy, `no_tool` siempre,
+stop `<end_function_call>`— y la misma unión simétrica de 28 hojas actuales,
+sólo selecciona una hoja esperada en **19/124** pese a recuperar 119. La causa
+queda observable: el modelo fue afinado para las 110 funciones del catálogo
+Tools-Reduce anterior y, ante nombres actuales, emite 88 nombres no autorizados
+dentro del catálogo y sólo 36 nombres válidos; de éstos apenas 19 son correctos.
+Fuera de catálogo nunca emite el sentinel literal: propone seis operaciones
+actuales que sí pasarían autorización y 30 nombres inventados que el kernel
+rechazaría. Esos 30 rechazos son seguros, pero no se cuentan como abstención
+honesta ni como comprensión.
+
+En CPU real (`CUDA_VISIBLE_DEVICES=-1`, `-ngl 0`) cuesta p50 **0,370 s**, p90
+**0,432 s**, máximo 1,419 s y 59,519 s para 160 peticiones; el proceso se cerró
+sin servidor huérfano. Adaptarlo en serio exigiría reentrenarlo o construir un
+bridge semántico nuevo entre dos catálogos, después de haber quedado 19/124;
+ninguna de las dos cosas es copiar una solución ya validada. Se descarta antes
+de producto y se conserva el campeón intacto como evidencia.
