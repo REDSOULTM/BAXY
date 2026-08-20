@@ -856,3 +856,33 @@ BAXY ya pide referente cuando falta, así que no puede acreditar un acierto nuev
 en este instrumento. Su coste p50 es **0,004 ms** porque las frases largas salen
 antes del encoder, p90 **1,925 ms**. Se conserva como evidencia heredada, no se
 copia al runtime.
+
+El cross-encoder heredado también queda agotado con su política literal
+(`goal03_inherited_mmarco_reranker_v19.json`). El historial prueba que sí tuvo
+call-site en `Probando Gemma 4` (`3f2664c`): sólo se ejecutaba cuando el router
+no había encontrado ninguna tool de dominio y la cabeza daba
+`P(no_tool)<0,85`. El cambio posterior a router cien por cien semántico
+(`406905a`) retiró ese bloque y dejó import, constante y documentación muertos;
+nunca existió en producto el disparo por top-1 fusionado `[0,40, 0,65]` que
+describían los informes.
+
+Se ejecutó offline el mismo snapshot local
+`cross-encoder/mmarco-mMiniLMv2-L12-H384-v1@1427fd652930e4ba29e8149678df786c240d8825`,
+CPU, longitud 128, suelo logit `-3` y top-3, leyendo la petición junto a cada
+descripción tipada de la unión-28. Sin cambiar el umbral, sólo pone una hoja
+esperada primera en **23/124** y dentro de top-3 en **28/124**; de las 14 filas
+que falla el selector oficial rescata **0**. Como sustituto completo daría
+23/124 y 20/36 abstenciones. Como el rescue literal de la versión anterior
+conserva **110/124**, porque no toca decisiones existentes, pero rellena diez
+vacíos fuera de catálogo y baja la abstención de 18 a **8/36**. Tampoco recupera
+`clp-02`, `clp-03` ni `inp-03`: sus mejores logits son -3,816, -3,329 y -4,678,
+todos bajo el suelo heredado.
+
+El forward conjunto sobre los candidatos de una petición cuesta p50
+**106,205 ms**, p90 **142,847 ms**, máximo 165,152 ms y 17,249 s acumulados en
+160 turnos. El coste cabría como banda condicional, pero no compra ni una sola
+de las decisiones residuales y abre alcance. Coincide con dos rechazos previos
+del mismo mecanismo, no los sustituye: BGE-reranker-v2-m3 R241 conservó 256/256
+positivas pero sólo abstuvo 2/256 OOS, y el verificador cruzado FunctionGemma
+perdía 98 pares ya servidos y aceptaba 86–148/169 operaciones para cada encargo
+sin match. No se integra ni se inventa otra banda sobre el examen fresco.
