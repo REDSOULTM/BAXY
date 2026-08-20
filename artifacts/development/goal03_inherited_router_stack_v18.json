@@ -1,0 +1,7822 @@
+{
+  "schema": "baxy.goal03-inherited-router-stack.v1",
+  "source": {
+    "checkout": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\Probando Gemma 4",
+    "encoder": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\router_encoder_ft\\model_int8.onnx",
+    "selection": "artifacts\\development\\goal03_qwen3_8b_iq2_think128_official_sampling_s0_v16.json",
+    "serving_environment": {
+      "GEMMA4_ENCODER_ONNX": "1",
+      "GEMMA4_LEAN_TOOLS": "1",
+      "GEMMA4_SEMANTIC_COLD_LOAD": "1"
+    },
+    "sha256": {
+      "corpus": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+      "encoder_onnx": "987091a86e004caafcbcc9d61148dc5d5851b9cac3d2a5700db810e578e4f026",
+      "abstain_head": "b6c3a0fe5c8b99562c913679280fbe5140868f13201c0a381e40c417aa535b26",
+      "tool_head": "4c83a2aa7eb378eb760236595cedf0c6ff2465eaf2b032df4851416516270b5a",
+      "tool2vec_centroids": "3ff16e05a823c7f142e99e5494a7cc0371f3fc9d48c612bcd1723e730ae13bcc",
+      "router_exemplars": "3bb80536d7c0cc8c90986b53993b569ad5bb829848ac447c18c792fe1c394360",
+      "selection": "99b5e0f577736dd8a659919c9ecf226c384826fb335515bdc69b64b176786d24"
+    }
+  },
+  "population": {
+    "rows": 160,
+    "in_catalog": 124,
+    "out_of_catalog": 36
+  },
+  "intrinsic": {
+    "served_head": {
+      "kept_in_catalog": 124,
+      "abstained_out_of_catalog": 0
+    },
+    "calibrated_head_diagnostic": {
+      "kept_in_catalog": 86,
+      "abstained_out_of_catalog": 10
+    },
+    "exact_planner": {
+      "kept_in_catalog": 124,
+      "abstained_out_of_catalog": 0
+    },
+    "deictic": {
+      "in_catalog": [
+        "app-04",
+        "sys-12",
+        "net-02",
+        "net-08",
+        "med-02",
+        "not-02",
+        "clp-02",
+        "inp-06",
+        "brw-02",
+        "brw-03",
+        "gam-01",
+        "gam-02",
+        "blu-01",
+        "app-06"
+      ],
+      "out_of_catalog": [
+        "ooc-08",
+        "ooc-14",
+        "ooc-34"
+      ]
+    }
+  },
+  "selection_before_gate": {
+    "in_catalog": {
+      "rate": 0.8870967741935484,
+      "retrieved": 119,
+      "rows": 124,
+      "selected_expected": 110
+    },
+    "out_of_catalog": {
+      "honest_abstentions": 18,
+      "rate": 0.5,
+      "rows": 36
+    }
+  },
+  "selection_overlays": [
+    {
+      "gate": "served_head_abstains",
+      "in_catalog": {
+        "selected_expected": 110,
+        "rows": 124,
+        "gated_rows_with_prior_action": []
+      },
+      "out_of_catalog": {
+        "honest_abstentions": 18,
+        "rows": 36,
+        "prevented_prior_actions": []
+      }
+    },
+    {
+      "gate": "calibrated_head_abstains",
+      "in_catalog": {
+        "selected_expected": 76,
+        "rows": 124,
+        "gated_rows_with_prior_action": [
+          "aud-01",
+          "win-01",
+          "sys-01",
+          "sys-03",
+          "sys-05",
+          "sys-10",
+          "sys-12",
+          "net-01",
+          "net-02",
+          "net-04",
+          "net-05",
+          "med-01",
+          "med-03",
+          "med-04",
+          "not-01",
+          "tsk-02",
+          "tsk-03",
+          "tsk-04",
+          "tsk-05",
+          "fs-06",
+          "clp-02",
+          "inp-01",
+          "inp-02",
+          "inp-03",
+          "inp-04",
+          "inp-05",
+          "inp-08",
+          "brw-03",
+          "brw-04",
+          "per-01",
+          "cal-02",
+          "eml-01",
+          "off-01",
+          "str-01",
+          "rou-01",
+          "sys-14",
+          "tsk-06"
+        ]
+      },
+      "out_of_catalog": {
+        "honest_abstentions": 22,
+        "rows": 36,
+        "prevented_prior_actions": [
+          "ooc-02",
+          "ooc-03",
+          "ooc-24",
+          "ooc-32"
+        ]
+      }
+    },
+    {
+      "gate": "planner_abstains",
+      "in_catalog": {
+        "selected_expected": 110,
+        "rows": 124,
+        "gated_rows_with_prior_action": []
+      },
+      "out_of_catalog": {
+        "honest_abstentions": 18,
+        "rows": 36,
+        "prevented_prior_actions": []
+      }
+    }
+  ],
+  "steady_state_stage_seconds": {
+    "semantic_scores": {
+      "rows": 160,
+      "p50": 0.002302249995409511,
+      "p90": 0.0028996999899391085,
+      "max": 0.0035454000026220456
+    },
+    "served_abstain_head": {
+      "rows": 160,
+      "p50": 1.5249999705702066e-05,
+      "p90": 1.889999839477241e-05,
+      "max": 4.360001184977591e-05
+    },
+    "calibrated_intent_and_head": {
+      "rows": 160,
+      "p50": 0.002228350000223145,
+      "p90": 0.002767500001937151,
+      "max": 0.0036549000069499016
+    },
+    "tool_head": {
+      "rows": 160,
+      "p50": 3.7699996028095484e-05,
+      "p90": 4.959999932907522e-05,
+      "max": 7.489998824894428e-05
+    },
+    "planner": {
+      "rows": 160,
+      "p50": 0.005088799996883608,
+      "p90": 0.006129200002760626,
+      "max": 0.00818740000249818
+    },
+    "deictic_detector": {
+      "rows": 160,
+      "p50": 3.6999990697950125e-06,
+      "p90": 0.001924900003359653,
+      "max": 0.0027292000013403594
+    }
+  },
+  "rows": [
+    {
+      "case_id": "aud-01",
+      "language": "es",
+      "text": "che ponelo mas bajito que estoy en una llamada",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "memory",
+          0.42769184708595276
+        ],
+        [
+          "contacts",
+          0.4193810820579529
+        ],
+        [
+          "clipboard",
+          0.3866252899169922
+        ],
+        [
+          "whatsapp",
+          0.3663526475429535
+        ],
+        [
+          "notification",
+          0.3356969356536865
+        ]
+      ],
+      "served_p_no_tool": 0.2271859675452559,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8703198502571912,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "memory",
+        "contacts",
+        "clipboard",
+        "whatsapp",
+        "notification",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-02",
+      "language": "es",
+      "text": "dejame el sonido a la mitad",
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.7969311475753784
+        ],
+        [
+          "media",
+          0.4770239293575287
+        ],
+        [
+          "window",
+          0.2911691665649414
+        ],
+        [
+          "notification",
+          0.28689318895339966
+        ],
+        [
+          "clipboard",
+          0.28570032119750977
+        ]
+      ],
+      "served_p_no_tool": 0.020920745885448008,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.06630428004453273,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.2080608606338501
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-03",
+      "language": "en",
+      "text": "kill the sound completely, I need silence",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.6614913940429688
+        ],
+        [
+          "media",
+          0.5102185010910034
+        ],
+        [
+          "computer_use",
+          0.30921199917793274
+        ],
+        [
+          "notification",
+          0.3051517605781555
+        ],
+        [
+          "gui",
+          0.2861306667327881
+        ]
+      ],
+      "served_p_no_tool": 0.052639898466671387,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3299109828653989,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.18472200632095337
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-04",
+      "language": "es_en",
+      "text": "mutea el mic que ya vuelvo",
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.5823183059692383
+        ],
+        [
+          "media",
+          0.5573709607124329
+        ],
+        [
+          "clipboard",
+          0.3889850974082947
+        ],
+        [
+          "whatsapp",
+          0.3743513524532318
+        ],
+        [
+          "notification",
+          0.3572152256965637
+        ]
+      ],
+      "served_p_no_tool": 0.08984322920296717,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6154940880895732,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.1619388461112976
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-05",
+      "language": "es",
+      "text": "como esta el sonido ahora mismo",
+      "expected_operations": [
+        "audio.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.5866074562072754
+        ],
+        [
+          "media",
+          0.46367916464805603
+        ],
+        [
+          "vision",
+          0.31750941276550293
+        ],
+        [
+          "verify",
+          0.31417590379714966
+        ],
+        [
+          "clipboard",
+          0.2784977853298187
+        ]
+      ],
+      "served_p_no_tool": 0.09029401823642291,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4106666934834972,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.15099477767944336
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-06",
+      "language": "en",
+      "text": "turn it up a bit, I can barely hear it",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.633969783782959
+        ],
+        [
+          "media",
+          0.36357131600379944
+        ],
+        [
+          "device_settings",
+          0.35580334067344666
+        ],
+        [
+          "accessibility",
+          0.34594959020614624
+        ],
+        [
+          "notification",
+          0.34519708156585693
+        ]
+      ],
+      "served_p_no_tool": 0.06077841350984226,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.2770962874873325,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.17608463764190674
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-07",
+      "language": "es",
+      "text": "quitale el silencio a los parlantes",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.630136251449585
+        ],
+        [
+          "media",
+          0.41055604815483093
+        ],
+        [
+          "accessibility",
+          0.39732062816619873
+        ],
+        [
+          "notification",
+          0.37545642256736755
+        ],
+        [
+          "computer_use",
+          0.2961079478263855
+        ]
+      ],
+      "served_p_no_tool": 0.06695298774059616,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.47966310929879186,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.18921875953674316
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-08",
+      "language": "es_en",
+      "text": "baja el volume tres puntos nomas",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.5908171534538269
+        ],
+        [
+          "accessibility",
+          0.3567882478237152
+        ],
+        [
+          "media",
+          0.26651284098625183
+        ],
+        [
+          "computer_use",
+          0.2642853260040283
+        ],
+        [
+          "gui",
+          0.25342193245887756
+        ]
+      ],
+      "served_p_no_tool": 0.09066071751610146,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3916707647906479,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.1979517936706543
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "app-01",
+      "language": "es",
+      "text": "necesito el bloc de notas",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.6449248194694519
+        ],
+        [
+          "clipboard",
+          0.48496901988983154
+        ],
+        [
+          "accessibility",
+          0.47639769315719604
+        ],
+        [
+          "app",
+          0.4751991629600525
+        ],
+        [
+          "state",
+          0.46464991569519043
+        ]
+      ],
+      "served_p_no_tool": 0.05990825517078576,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.510699195434985,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notes_tasks",
+          0.08503592014312744
+        ]
+      ],
+      "planner_tools": [
+        "notes_tasks",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "app-02",
+      "language": "en",
+      "text": "do I have discord on this machine",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "verify",
+          0.500224232673645
+        ],
+        [
+          "system",
+          0.43380069732666016
+        ],
+        [
+          "device_settings",
+          0.43088507652282715
+        ],
+        [
+          "package",
+          0.4038499891757965
+        ],
+        [
+          "accessibility",
+          0.3996431827545166
+        ]
+      ],
+      "served_p_no_tool": 0.15180891446350342,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6659451448524236,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "peripheral",
+          0.11117273569107056
+        ]
+      ],
+      "planner_tools": [
+        "peripheral",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "app-03",
+      "language": "es",
+      "text": "cierrame la ventana que tengo adelante",
+      "expected_operations": [
+        "app.close"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.7976022958755493
+        ],
+        [
+          "app",
+          0.5160771012306213
+        ],
+        [
+          "gui",
+          0.48062753677368164
+        ],
+        [
+          "uia",
+          0.46870720386505127
+        ],
+        [
+          "accessibility",
+          0.4587141275405884
+        ]
+      ],
+      "served_p_no_tool": 0.019805235483379473,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.1211828828984704,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.11680197715759277
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "app",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "app-04",
+      "language": "es_en",
+      "text": "abrime el calculator porfa",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "app",
+          0.7200071811676025
+        ],
+        [
+          "browser",
+          0.5664469003677368
+        ],
+        [
+          "steam",
+          0.48376408219337463
+        ],
+        [
+          "verify",
+          0.48252302408218384
+        ],
+        [
+          "accessibility",
+          0.47802770137786865
+        ]
+      ],
+      "served_p_no_tool": 0.035621489892103377,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4587856018926183,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "app",
+          0.11416518688201904
+        ]
+      ],
+      "planner_tools": [
+        "app",
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "app-05",
+      "language": "en",
+      "text": "is steam even installed here",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "steam",
+          0.6930288076400757
+        ],
+        [
+          "verify",
+          0.49499019980430603
+        ],
+        [
+          "package",
+          0.4770108163356781
+        ],
+        [
+          "dependency",
+          0.3644602596759796
+        ],
+        [
+          "app",
+          0.36196058988571167
+        ]
+      ],
+      "served_p_no_tool": 0.04280037039148826,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.23717083948661402,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "steam",
+          0.09486275911331177
+        ],
+        [
+          "verify",
+          0.09033203125
+        ]
+      ],
+      "planner_tools": [
+        "steam",
+        "app",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-01",
+      "language": "es",
+      "text": "que tengo en primer plano ahora",
+      "expected_operations": [
+        "window.active"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "memory",
+          0.6093654632568359
+        ],
+        [
+          "notes_tasks",
+          0.5392088294029236
+        ],
+        [
+          "state",
+          0.42358797788619995
+        ],
+        [
+          "knowledge",
+          0.3794320523738861
+        ],
+        [
+          "vision",
+          0.3460071086883545
+        ]
+      ],
+      "served_p_no_tool": 0.07466821078796396,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6974048088042849,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "memory",
+          0.1027786135673523
+        ],
+        [
+          "habit_tracker",
+          0.07271581888198853
+        ]
+      ],
+      "planner_tools": [
+        "memory",
+        "habit_tracker",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-02",
+      "language": "es",
+      "text": "hazme grande esta ventana que no veo nada",
+      "expected_operations": [
+        "window.maximize"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.7239784002304077
+        ],
+        [
+          "accessibility",
+          0.5422669649124146
+        ],
+        [
+          "vision",
+          0.4959617555141449
+        ],
+        [
+          "device_settings",
+          0.46554887294769287
+        ],
+        [
+          "gui",
+          0.45634564757347107
+        ]
+      ],
+      "served_p_no_tool": 0.03167684904486735,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.2168590956982864,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.109039306640625
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-03",
+      "language": "en",
+      "text": "send this window down to the taskbar",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "uia",
+          0.6960915923118591
+        ],
+        [
+          "window",
+          0.6623196601867676
+        ],
+        [
+          "gui",
+          0.6475306153297424
+        ],
+        [
+          "computer_use",
+          0.5957920551300049
+        ],
+        [
+          "vision",
+          0.5799520015716553
+        ]
+      ],
+      "served_p_no_tool": 0.0372248533152898,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.32246815063284545,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.05081444978713989
+        ],
+        [
+          "uia",
+          0.03677648305892944
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "gui",
+        "vision",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-04",
+      "language": "es",
+      "text": "corre la ventana a la esquina de arriba a la izquierda",
+      "expected_operations": [
+        "window.move"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.7923417091369629
+        ],
+        [
+          "uia",
+          0.4447084665298462
+        ],
+        [
+          "gui",
+          0.4436541199684143
+        ],
+        [
+          "accessibility",
+          0.4127686619758606
+        ],
+        [
+          "computer_use",
+          0.3852423429489136
+        ]
+      ],
+      "served_p_no_tool": 0.01874397103883555,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.04807124408420405,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.11922955513000488
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-05",
+      "language": "en",
+      "text": "make this window eight hundred by six hundred",
+      "expected_operations": [
+        "window.resize"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.6332814693450928
+        ],
+        [
+          "computer_use",
+          0.4950563609600067
+        ],
+        [
+          "uia",
+          0.48709920048713684
+        ],
+        [
+          "gui",
+          0.4794023931026459
+        ],
+        [
+          "accessibility",
+          0.39309170842170715
+        ]
+      ],
+      "served_p_no_tool": 0.06043077873477573,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.20203185374552846,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.05684942007064819
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-06",
+      "language": "es_en",
+      "text": "trae la ventana de chrome al frente",
+      "expected_operations": [
+        "window.focus",
+        "window.resolve"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.7709428071975708
+        ],
+        [
+          "uia",
+          0.5001814365386963
+        ],
+        [
+          "gui",
+          0.4877595901489258
+        ],
+        [
+          "accessibility",
+          0.4417737126350403
+        ],
+        [
+          "computer_use",
+          0.43613994121551514
+        ]
+      ],
+      "served_p_no_tool": 0.023463300374045114,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.096049828887787,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.11778688430786133
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-07",
+      "language": "es",
+      "text": "spotify tiene alguna ventana abierta",
+      "expected_operations": [
+        "window.application.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.7691904306411743
+        ],
+        [
+          "app",
+          0.5633926391601562
+        ],
+        [
+          "verify",
+          0.5533431172370911
+        ],
+        [
+          "accessibility",
+          0.49039989709854126
+        ],
+        [
+          "uia",
+          0.4764433801174164
+        ]
+      ],
+      "served_p_no_tool": 0.024198252001348612,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.10522926875339923,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.11796045303344727
+        ],
+        [
+          "verify",
+          0.0017732977867126465
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-08",
+      "language": "es",
+      "text": "devuelvele el tamano normal a la ventana",
+      "expected_operations": [
+        "window.restore"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.6634580492973328
+        ],
+        [
+          "verify",
+          0.41447556018829346
+        ],
+        [
+          "gui",
+          0.40265795588493347
+        ],
+        [
+          "vision",
+          0.39179855585098267
+        ],
+        [
+          "uia",
+          0.39027833938598633
+        ]
+      ],
+      "served_p_no_tool": 0.05195224068399109,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.20413456028451848,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.1074366569519043
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-01",
+      "language": "es",
+      "text": "como anda la maquina en general",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "system",
+          0.5100449323654175
+        ],
+        [
+          "network",
+          0.46039390563964844
+        ],
+        [
+          "device_settings",
+          0.4572812020778656
+        ],
+        [
+          "verify",
+          0.3666735291481018
+        ],
+        [
+          "web",
+          0.3581293523311615
+        ]
+      ],
+      "served_p_no_tool": 0.1442541973710831,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7713863581818796,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "system",
+        "network",
+        "device_settings",
+        "web",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-02",
+      "language": "es",
+      "text": "que fecha y hora tenemos",
+      "expected_operations": [
+        "system.time"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "system",
+          0.540257453918457
+        ],
+        [
+          "notification",
+          0.3854749798774719
+        ],
+        [
+          "knowledge",
+          0.3119121491909027
+        ],
+        [
+          "network",
+          0.3013303875923157
+        ],
+        [
+          "web",
+          0.2999623417854309
+        ]
+      ],
+      "served_p_no_tool": 0.12691933005361247,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.46882252271094754,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "system",
+          0.06380736827850342
+        ],
+        [
+          "local_calendar",
+          0.03429359197616577
+        ]
+      ],
+      "planner_tools": [
+        "system",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-03",
+      "language": "en",
+      "text": "which apps crashed on me lately",
+      "expected_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "verify",
+          0.4015578031539917
+        ],
+        [
+          "system",
+          0.3977680504322052
+        ],
+        [
+          "dependency",
+          0.39505237340927124
+        ],
+        [
+          "state",
+          0.37817561626434326
+        ],
+        [
+          "package",
+          0.35896366834640503
+        ]
+      ],
+      "served_p_no_tool": 0.2771127277122776,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7011574989334841,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "system",
+        "package",
+        "verify",
+        "dependency",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-04",
+      "language": "es",
+      "text": "trancame el equipo que me voy",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "gui",
+          0.39024612307548523
+        ],
+        [
+          "memory",
+          0.3862680196762085
+        ],
+        [
+          "state",
+          0.3812870383262634
+        ],
+        [
+          "accessibility",
+          0.3609086275100708
+        ],
+        [
+          "uia",
+          0.3356545865535736
+        ]
+      ],
+      "served_p_no_tool": 0.29516451772293323,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.871923618953328,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "gui",
+        "memory",
+        "accessibility",
+        "uia",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-05",
+      "language": "es",
+      "text": "que programas se estan comiendo la memoria",
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "state",
+          0.38077276945114136
+        ],
+        [
+          "system",
+          0.37857767939567566
+        ],
+        [
+          "knowledge",
+          0.3306739330291748
+        ],
+        [
+          "verify",
+          0.3023301064968109
+        ],
+        [
+          "notes_tasks",
+          0.30177995562553406
+        ]
+      ],
+      "served_p_no_tool": 0.30749148817919814,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8000713780777787,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "system",
+        "knowledge",
+        "notes_tasks",
+        "state",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-06",
+      "language": "en",
+      "text": "force quit chrome, it is frozen solid",
+      "expected_operations": [
+        "system.process.terminate.named"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "package",
+          0.4102877080440521
+        ],
+        [
+          "app",
+          0.37254995107650757
+        ],
+        [
+          "verify",
+          0.3656448423862457
+        ],
+        [
+          "steam",
+          0.3504790663719177
+        ],
+        [
+          "system",
+          0.3159845173358917
+        ]
+      ],
+      "served_p_no_tool": 0.2622578315362668,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6610635746411225,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "package",
+        "app",
+        "steam",
+        "system",
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-07",
+      "language": "es",
+      "text": "vaciame la papelera de reciclaje",
+      "expected_operations": [
+        "system.recyclebin.empty"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "state",
+          0.5210550427436829
+        ],
+        [
+          "clipboard",
+          0.4412071704864502
+        ],
+        [
+          "verify",
+          0.3893928825855255
+        ],
+        [
+          "audio",
+          0.38391757011413574
+        ],
+        [
+          "system",
+          0.33610713481903076
+        ]
+      ],
+      "served_p_no_tool": 0.13970568741676206,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.639614970226443,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "state",
+          0.01087808609008789
+        ]
+      ],
+      "planner_tools": [
+        "clipboard",
+        "audio",
+        "system",
+        "state",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-08",
+      "language": "es",
+      "text": "subile un poco a la luz de la pantalla",
+      "expected_operations": [
+        "system.settings.adjust"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.7586675882339478
+        ],
+        [
+          "accessibility",
+          0.5143101215362549
+        ],
+        [
+          "system",
+          0.4494338035583496
+        ],
+        [
+          "vision",
+          0.4380273222923279
+        ],
+        [
+          "window",
+          0.39299747347831726
+        ]
+      ],
+      "served_p_no_tool": 0.02458083269454464,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.12783344106216693,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "device_settings",
+          0.11038893461227417
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-09",
+      "language": "en",
+      "text": "how bright is my screen right now",
+      "expected_operations": [
+        "system.settings.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.6603243350982666
+        ],
+        [
+          "system",
+          0.5367721915245056
+        ],
+        [
+          "vision",
+          0.38949069380760193
+        ],
+        [
+          "network",
+          0.3643905818462372
+        ],
+        [
+          "accessibility",
+          0.33907783031463623
+        ]
+      ],
+      "served_p_no_tool": 0.05188131495846468,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.1639324955033316,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "device_settings",
+          0.06325095891952515
+        ],
+        [
+          "system",
+          0.06195247173309326
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "system",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-10",
+      "language": "es",
+      "text": "con que usuario estoy entrado",
+      "expected_operations": [
+        "system.identity"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "uia",
+          0.534081220626831
+        ],
+        [
+          "memory",
+          0.5227551460266113
+        ],
+        [
+          "contacts",
+          0.517390251159668
+        ],
+        [
+          "vision",
+          0.4844636619091034
+        ],
+        [
+          "terminal",
+          0.48246344923973083
+        ]
+      ],
+      "served_p_no_tool": 0.12348604934356577,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8924301460949734,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "uia",
+        "memory",
+        "contacts",
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-11",
+      "language": "es_en",
+      "text": "cuanta ram me queda libre",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "system",
+          0.4612905979156494
+        ],
+        [
+          "network",
+          0.34059327840805054
+        ],
+        [
+          "audio",
+          0.3115702271461487
+        ],
+        [
+          "state",
+          0.3027035892009735
+        ],
+        [
+          "notification",
+          0.26439931988716125
+        ]
+      ],
+      "served_p_no_tool": 0.20740171906365137,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6082943026036955,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "system",
+          0.06320315599441528
+        ]
+      ],
+      "planner_tools": [
+        "system",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-12",
+      "language": "es",
+      "text": "apaga la compu",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.5038045644760132
+        ],
+        [
+          "notification",
+          0.4775005578994751
+        ],
+        [
+          "app",
+          0.476032018661499
+        ],
+        [
+          "system",
+          0.42765527963638306
+        ],
+        [
+          "window",
+          0.4244298040866852
+        ]
+      ],
+      "served_p_no_tool": 0.15823120122278495,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7474406505751535,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "audio",
+        "notification",
+        "app",
+        "system",
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "net-01",
+      "language": "es",
+      "text": "tengo internet o no",
+      "expected_operations": [
+        "network.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.5851132273674011
+        ],
+        [
+          "device_settings",
+          0.407634437084198
+        ],
+        [
+          "web",
+          0.37587863206863403
+        ],
+        [
+          "system",
+          0.37347859144210815
+        ],
+        [
+          "memory",
+          0.318098783493042
+        ]
+      ],
+      "served_p_no_tool": 0.09516813700652124,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7140187568438738,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "network",
+        "device_settings",
+        "web",
+        "system",
+        "memory",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-02",
+      "language": "en",
+      "text": "see if 8.8.8.8 answers",
+      "expected_operations": [
+        "network.ping"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "computer_use",
+          0.5040634274482727
+        ],
+        [
+          "web",
+          0.4900152385234833
+        ],
+        [
+          "verify",
+          0.44821909070014954
+        ],
+        [
+          "browser",
+          0.420203298330307
+        ],
+        [
+          "uia",
+          0.41723987460136414
+        ]
+      ],
+      "served_p_no_tool": 0.15529081066596492,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7865710449696023,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "computer_use",
+        "web",
+        "browser",
+        "uia",
+        "source_manager",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "net-03",
+      "language": "es",
+      "text": "cual es mi direccion ip",
+      "expected_operations": [
+        "network.ip.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.7386310696601868
+        ],
+        [
+          "contacts",
+          0.510495126247406
+        ],
+        [
+          "email",
+          0.34972938895225525
+        ],
+        [
+          "memory",
+          0.31691884994506836
+        ],
+        [
+          "knowledge",
+          0.26339125633239746
+        ]
+      ],
+      "served_p_no_tool": 0.03179508586174589,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.23044203177529618,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.11976927518844604
+        ],
+        [
+          "contacts",
+          0.015330195426940918
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-04",
+      "language": "es",
+      "text": "que servidores de nombres estoy usando",
+      "expected_operations": [
+        "network.dns.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.5990575551986694
+        ],
+        [
+          "memory",
+          0.4774712324142456
+        ],
+        [
+          "contacts",
+          0.43830496072769165
+        ],
+        [
+          "knowledge",
+          0.4053545892238617
+        ],
+        [
+          "state",
+          0.38564762473106384
+        ]
+      ],
+      "served_p_no_tool": 0.08082527863299077,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8098770353212802,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "memory",
+          0.029875993728637695
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "memory",
+        "contacts",
+        "knowledge",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-05",
+      "language": "en",
+      "text": "what ports are listening on this box",
+      "expected_operations": [
+        "network.port.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.5095332264900208
+        ],
+        [
+          "vision",
+          0.4244288504123688
+        ],
+        [
+          "verify",
+          0.3718218207359314
+        ],
+        [
+          "audio",
+          0.3575513958930969
+        ],
+        [
+          "state",
+          0.34319204092025757
+        ]
+      ],
+      "served_p_no_tool": 0.1451315432197538,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6851044692500666,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "peripheral",
+          0.08103430271148682
+        ]
+      ],
+      "planner_tools": [
+        "peripheral",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-06",
+      "language": "es",
+      "text": "a que red inalambrica estoy pegado",
+      "expected_operations": [
+        "wifi.status",
+        "wifi.ensure.connected"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.710822582244873
+        ],
+        [
+          "state",
+          0.4717600345611572
+        ],
+        [
+          "system",
+          0.41255640983581543
+        ],
+        [
+          "device_settings",
+          0.3972564935684204
+        ],
+        [
+          "verify",
+          0.35932549834251404
+        ]
+      ],
+      "served_p_no_tool": 0.03762150422263441,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3281408868117897,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.11604899168014526
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-07",
+      "language": "es",
+      "text": "mostrame las redes que tengo guardadas",
+      "expected_operations": [
+        "wifi.profile.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.7055619955062866
+        ],
+        [
+          "state",
+          0.5235738158226013
+        ],
+        [
+          "device_settings",
+          0.4401431083679199
+        ],
+        [
+          "vision",
+          0.43366754055023193
+        ],
+        [
+          "system",
+          0.4323708415031433
+        ]
+      ],
+      "served_p_no_tool": 0.03838029950128423,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4083491269235449,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.10812801122665405
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-08",
+      "language": "en",
+      "text": "drop the wireless connection",
+      "expected_operations": [
+        "wifi.disconnect"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.6272168159484863
+        ],
+        [
+          "network",
+          0.46920859813690186
+        ],
+        [
+          "system",
+          0.4618171453475952
+        ],
+        [
+          "audio",
+          0.2882257103919983
+        ],
+        [
+          "package",
+          0.25837671756744385
+        ]
+      ],
+      "served_p_no_tool": 0.06958573542478165,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.22194876396252758,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "device_settings",
+          0.10769277811050415
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "net-09",
+      "language": "es_en",
+      "text": "conectate al wifi de casa",
+      "expected_operations": [
+        "wifi.connect.named",
+        "wifi.connect"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.6973050832748413
+        ],
+        [
+          "network",
+          0.670974612236023
+        ],
+        [
+          "system",
+          0.41170838475227356
+        ],
+        [
+          "accessibility",
+          0.3399589955806732
+        ],
+        [
+          "state",
+          0.2944653630256653
+        ]
+      ],
+      "served_p_no_tool": 0.040564019394739255,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.22406593294789126,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.11770421266555786
+        ],
+        [
+          "device_settings",
+          0.1156165599822998
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "med-01",
+      "language": "es",
+      "text": "para lo que esta sonando",
+      "expected_operations": [
+        "media.control"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.5931048393249512
+        ],
+        [
+          "audio",
+          0.4975314438343048
+        ],
+        [
+          "whatsapp",
+          0.4146103858947754
+        ],
+        [
+          "clipboard",
+          0.40106281638145447
+        ],
+        [
+          "vision",
+          0.3668525218963623
+        ]
+      ],
+      "served_p_no_tool": 0.08603341496207878,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7700800441383682,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "med-02",
+      "language": "es",
+      "text": "que cancion es esta",
+      "expected_operations": [
+        "media.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.6723951697349548
+        ],
+        [
+          "vision",
+          0.42055898904800415
+        ],
+        [
+          "web",
+          0.40502840280532837
+        ],
+        [
+          "clipboard",
+          0.3671470880508423
+        ],
+        [
+          "whatsapp",
+          0.3474464416503906
+        ]
+      ],
+      "served_p_no_tool": 0.05215103933158464,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6402651329958108,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "media",
+          0.14491713047027588
+        ]
+      ],
+      "planner_tools": [
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "med-03",
+      "language": "en",
+      "text": "jump ahead thirty seconds",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.4692089557647705
+        ],
+        [
+          "gui",
+          0.42522764205932617
+        ],
+        [
+          "notification",
+          0.3708823323249817
+        ],
+        [
+          "uia",
+          0.36125802993774414
+        ],
+        [
+          "computer_use",
+          0.3512268364429474
+        ]
+      ],
+      "served_p_no_tool": 0.19671336073846415,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6865549093032192,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "media",
+        "gui",
+        "notification",
+        "uia",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "med-04",
+      "language": "es_en",
+      "text": "ponme algo de bad bunny en spotify",
+      "expected_operations": [
+        "media.play.query",
+        "media.play.exact"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.4261034429073334
+        ],
+        [
+          "gui",
+          0.36601829528808594
+        ],
+        [
+          "whatsapp",
+          0.3476792573928833
+        ],
+        [
+          "computer_use",
+          0.33281180262565613
+        ],
+        [
+          "clipboard",
+          0.3079065680503845
+        ]
+      ],
+      "served_p_no_tool": 0.2414943999835327,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7478083438609352,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "media",
+        "gui",
+        "whatsapp",
+        "computer_use",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "med-05",
+      "language": "en",
+      "text": "play the tiny desk concert on youtube",
+      "expected_operations": [
+        "media.play.youtube"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.6428611278533936
+        ],
+        [
+          "computer_use",
+          0.5192912220954895
+        ],
+        [
+          "browser",
+          0.48529767990112305
+        ],
+        [
+          "gui",
+          0.41768568754196167
+        ],
+        [
+          "audio",
+          0.40460649132728577
+        ]
+      ],
+      "served_p_no_tool": 0.05758141067918846,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.442776403246062,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "media",
+          0.040042221546173096
+        ]
+      ],
+      "planner_tools": [
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "med-06",
+      "language": "es",
+      "text": "pasa a la siguiente cancion",
+      "expected_operations": [
+        "media.control"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.7623357176780701
+        ],
+        [
+          "computer_use",
+          0.3692200481891632
+        ],
+        [
+          "clipboard",
+          0.3569256067276001
+        ],
+        [
+          "gui",
+          0.3243754208087921
+        ],
+        [
+          "audio",
+          0.3143807053565979
+        ]
+      ],
+      "served_p_no_tool": 0.027662733027562225,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.26305579704258064,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "media",
+          0.14965367317199707
+        ]
+      ],
+      "planner_tools": [
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "not-01",
+      "language": "es",
+      "text": "apuntame que tengo que llamar al dentista",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.43855801224708557
+        ],
+        [
+          "notification",
+          0.4016742408275604
+        ],
+        [
+          "clipboard",
+          0.3895249664783478
+        ],
+        [
+          "contacts",
+          0.35755231976509094
+        ],
+        [
+          "memory",
+          0.35082560777664185
+        ]
+      ],
+      "served_p_no_tool": 0.22219399486735122,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.815372899983956,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "notes_tasks",
+        "notification",
+        "clipboard",
+        "contacts",
+        "memory",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "not-02",
+      "language": "es",
+      "text": "que apuntes tengo guardados",
+      "expected_operations": [
+        "note.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.5990323424339294
+        ],
+        [
+          "clipboard",
+          0.5590816736221313
+        ],
+        [
+          "knowledge",
+          0.4559231996536255
+        ],
+        [
+          "state",
+          0.4556162655353546
+        ],
+        [
+          "verify",
+          0.44998064637184143
+        ]
+      ],
+      "served_p_no_tool": 0.08274477726151627,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5843456966059455,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notes_tasks",
+          0.09378880262374878
+        ],
+        [
+          "clipboard",
+          0.09060120582580566
+        ],
+        [
+          "maintenance",
+          0.024966537952423096
+        ]
+      ],
+      "planner_tools": [
+        "notes_tasks",
+        "clipboard",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "not-03",
+      "language": "en",
+      "text": "find the note where I wrote the wifi password",
+      "expected_operations": [
+        "note.search"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.5153786540031433
+        ],
+        [
+          "network",
+          0.49516433477401733
+        ],
+        [
+          "knowledge",
+          0.4924246668815613
+        ],
+        [
+          "vision",
+          0.3811589777469635
+        ],
+        [
+          "device_settings",
+          0.3713023066520691
+        ]
+      ],
+      "served_p_no_tool": 0.1293938388825012,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.595937057251045,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "notes_tasks",
+        "network",
+        "knowledge",
+        "vision",
+        "device_settings",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "not-04",
+      "language": "es",
+      "text": "tira a la papelera la nota de la lista del super",
+      "expected_operations": [
+        "note.trash"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "clipboard",
+          0.608569324016571
+        ],
+        [
+          "notes_tasks",
+          0.5555378198623657
+        ],
+        [
+          "gui",
+          0.5423115491867065
+        ],
+        [
+          "computer_use",
+          0.5210062861442566
+        ],
+        [
+          "uia",
+          0.4879819452762604
+        ]
+      ],
+      "served_p_no_tool": 0.06535928095990715,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5487773731528055,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notes_tasks",
+          0.06498414278030396
+        ],
+        [
+          "clipboard",
+          0.02681034803390503
+        ]
+      ],
+      "planner_tools": [
+        "notes_tasks",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "not-05",
+      "language": "es_en",
+      "text": "leeme la note que se llama ideas",
+      "expected_operations": [
+        "note.read"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.646359920501709
+        ],
+        [
+          "clipboard",
+          0.5528937578201294
+        ],
+        [
+          "vision",
+          0.5524207353591919
+        ],
+        [
+          "knowledge",
+          0.526633083820343
+        ],
+        [
+          "computer_use",
+          0.5222476124763489
+        ]
+      ],
+      "served_p_no_tool": 0.0550267335007778,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.660128153657129,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notes_tasks",
+          0.027868449687957764
+        ],
+        [
+          "vision",
+          0.013593971729278564
+        ]
+      ],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "tsk-01",
+      "language": "es",
+      "text": "agregame al pendiente revisar el contrato",
+      "expected_operations": [
+        "task.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.411955863237381
+        ],
+        [
+          "filesystem",
+          0.40881603956222534
+        ],
+        [
+          "state",
+          0.3946264982223511
+        ],
+        [
+          "knowledge",
+          0.37842249870300293
+        ],
+        [
+          "verify",
+          0.37356626987457275
+        ]
+      ],
+      "served_p_no_tool": 0.2616765845407965,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.540871756997065,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "database",
+          0.08448129892349243
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "database",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "tsk-02",
+      "language": "en",
+      "text": "what is on my to do list",
+      "expected_operations": [
+        "task.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.6894028186798096
+        ],
+        [
+          "memory",
+          0.5358061790466309
+        ],
+        [
+          "state",
+          0.48763126134872437
+        ],
+        [
+          "uia",
+          0.4203875958919525
+        ],
+        [
+          "vision",
+          0.4192572832107544
+        ]
+      ],
+      "served_p_no_tool": 0.041488860786139836,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6946088820805633,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "notes_tasks",
+          0.07604414224624634
+        ]
+      ],
+      "planner_tools": [
+        "notes_tasks",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "tsk-03",
+      "language": "es",
+      "text": "da por terminada la tarea de pagar el arriendo",
+      "expected_operations": [
+        "task.complete",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "state",
+          0.567490816116333
+        ],
+        [
+          "filesystem",
+          0.5378851890563965
+        ],
+        [
+          "notes_tasks",
+          0.533845067024231
+        ],
+        [
+          "knowledge",
+          0.5322038531303406
+        ],
+        [
+          "verify",
+          0.4453384280204773
+        ]
+      ],
+      "served_p_no_tool": 0.09059695334085255,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.753678978600131,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "filesystem",
+        "notes_tasks",
+        "knowledge",
+        "state",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "tsk-04",
+      "language": "es",
+      "text": "busca entre mis pendientes los que hablen del banco",
+      "expected_operations": [
+        "task.search"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.5012410879135132
+        ],
+        [
+          "knowledge",
+          0.45327919721603394
+        ],
+        [
+          "notes_tasks",
+          0.42750799655914307
+        ],
+        [
+          "network",
+          0.40985843539237976
+        ],
+        [
+          "state",
+          0.33807140588760376
+        ]
+      ],
+      "served_p_no_tool": 0.1444203001960272,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7045859522545683,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "database",
+          0.0647202730178833
+        ]
+      ],
+      "planner_tools": [
+        "database",
+        "filesystem",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "tsk-05",
+      "language": "es_en",
+      "text": "borra el task de comprar cables",
+      "expected_operations": [
+        "task.delete",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "system",
+          0.486644446849823
+        ],
+        [
+          "state",
+          0.47660890221595764
+        ],
+        [
+          "filesystem",
+          0.472137451171875
+        ],
+        [
+          "package",
+          0.45932671427726746
+        ],
+        [
+          "app",
+          0.43939369916915894
+        ]
+      ],
+      "served_p_no_tool": 0.16573834131103346,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7734644516848179,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "system",
+        "filesystem",
+        "package",
+        "app",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "rem-01",
+      "language": "es",
+      "text": "avisame manana a las nueve que tengo medico",
+      "expected_operations": [
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.5114352107048035
+        ],
+        [
+          "email",
+          0.42870163917541504
+        ],
+        [
+          "safety",
+          0.37463730573654175
+        ],
+        [
+          "contacts",
+          0.3127361536026001
+        ],
+        [
+          "memory",
+          0.29722028970718384
+        ]
+      ],
+      "served_p_no_tool": 0.14032762969522547,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.40224329693280625,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "reminder",
+          0.07713228464126587
+        ],
+        [
+          "notification",
+          0.07014578580856323
+        ]
+      ],
+      "planner_tools": [
+        "notification",
+        "reminder",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "rem-02",
+      "language": "en",
+      "text": "what reminders are set up",
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.728203296661377
+        ],
+        [
+          "notes_tasks",
+          0.5159521102905273
+        ],
+        [
+          "state",
+          0.41971081495285034
+        ],
+        [
+          "accessibility",
+          0.41395920515060425
+        ],
+        [
+          "safety",
+          0.36178964376449585
+        ]
+      ],
+      "served_p_no_tool": 0.03367686863728005,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.1726151711649544,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notification",
+          0.10347962379455566
+        ],
+        [
+          "reminder",
+          0.0886431336402893
+        ],
+        [
+          "notes_tasks",
+          0.038315415382385254
+        ]
+      ],
+      "planner_tools": [
+        "notification",
+        "reminder",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "rem-03",
+      "language": "es",
+      "text": "cancela la alarma de las siete de la manana",
+      "expected_operations": [
+        "notification.cancel.at",
+        "reminder.delete"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.7322869300842285
+        ],
+        [
+          "accessibility",
+          0.4496799111366272
+        ],
+        [
+          "system",
+          0.41032516956329346
+        ],
+        [
+          "app",
+          0.3845524191856384
+        ],
+        [
+          "device_settings",
+          0.35848596692085266
+        ]
+      ],
+      "served_p_no_tool": 0.030332408518229846,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.1477916510389399,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notification",
+          0.08996909856796265
+        ]
+      ],
+      "planner_tools": [
+        "notification",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "rem-04",
+      "language": "es_en",
+      "text": "ponme un alarm para las seis de la tarde",
+      "expected_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.7652105093002319
+        ],
+        [
+          "email",
+          0.3834211230278015
+        ],
+        [
+          "safety",
+          0.3446573317050934
+        ],
+        [
+          "system",
+          0.3345879018306732
+        ],
+        [
+          "device_settings",
+          0.32625865936279297
+        ]
+      ],
+      "served_p_no_tool": 0.024695053779229658,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.0857338118899108,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "notification",
+          0.11813604831695557
+        ],
+        [
+          "reminder",
+          0.09523552656173706
+        ]
+      ],
+      "planner_tools": [
+        "notification",
+        "reminder",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-01",
+      "language": "es",
+      "text": "abrime la carpeta de descargas",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.7061232328414917
+        ],
+        [
+          "app",
+          0.5893483757972717
+        ],
+        [
+          "state",
+          0.5428576469421387
+        ],
+        [
+          "verify",
+          0.5424723625183105
+        ],
+        [
+          "steam",
+          0.5224612355232239
+        ]
+      ],
+      "served_p_no_tool": 0.03772289244322741,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.34743988336463244,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.11619877815246582
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-02",
+      "language": "en",
+      "text": "look for a pdf with factura in the name in my documents",
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.5869078636169434
+        ],
+        [
+          "knowledge",
+          0.5712167024612427
+        ],
+        [
+          "clipboard",
+          0.4540231227874756
+        ],
+        [
+          "notes_tasks",
+          0.43054482340812683
+        ],
+        [
+          "contacts",
+          0.37263697385787964
+        ]
+      ],
+      "served_p_no_tool": 0.07520585337619558,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4621479355191762,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "local_search",
+          0.10163778066635132
+        ],
+        [
+          "filesystem",
+          0.08202451467514038
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "local_search",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-03",
+      "language": "es",
+      "text": "hay archivos repetidos en descargas",
+      "expected_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.6715881824493408
+        ],
+        [
+          "state",
+          0.5043108463287354
+        ],
+        [
+          "clipboard",
+          0.47752487659454346
+        ],
+        [
+          "verify",
+          0.47464632987976074
+        ],
+        [
+          "dependency",
+          0.3793618381023407
+        ]
+      ],
+      "served_p_no_tool": 0.04960424338186686,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.29146933827050425,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.12293833494186401
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-04",
+      "language": "es",
+      "text": "manda a la papelera el archivo notas.txt de descargas",
+      "expected_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.7324097156524658
+        ],
+        [
+          "clipboard",
+          0.6053128242492676
+        ],
+        [
+          "knowledge",
+          0.4661596715450287
+        ],
+        [
+          "state",
+          0.46124303340911865
+        ],
+        [
+          "verify",
+          0.44905149936676025
+        ]
+      ],
+      "served_p_no_tool": 0.028948735699709793,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.19799069053423543,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.12052130699157715
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-05",
+      "language": "en",
+      "text": "open the last file I downloaded",
+      "expected_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.7598114609718323
+        ],
+        [
+          "verify",
+          0.5085934996604919
+        ],
+        [
+          "computer_use",
+          0.4959033131599426
+        ],
+        [
+          "app",
+          0.4958707094192505
+        ],
+        [
+          "terminal",
+          0.48346537351608276
+        ]
+      ],
+      "served_p_no_tool": 0.025905120219310403,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.19696402066080068,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.12506890296936035
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-06",
+      "language": "es",
+      "text": "creame una carpeta que se llame proyectos",
+      "expected_operations": [
+        "filesystem.create.directory"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.5147794485092163
+        ],
+        [
+          "notes_tasks",
+          0.39216098189353943
+        ],
+        [
+          "knowledge",
+          0.3824648857116699
+        ],
+        [
+          "state",
+          0.37511247396469116
+        ],
+        [
+          "computer_use",
+          0.36956435441970825
+        ]
+      ],
+      "served_p_no_tool": 0.14101807845133313,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.732145639378097,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.08306688070297241
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-07",
+      "language": "es_en",
+      "text": "sacale el hash al archivo reporte.txt",
+      "expected_operations": [
+        "filesystem.hash",
+        "filesystem.search",
+        "filesystem.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.6926406621932983
+        ],
+        [
+          "state",
+          0.4572295844554901
+        ],
+        [
+          "knowledge",
+          0.4291008710861206
+        ],
+        [
+          "package",
+          0.419073224067688
+        ],
+        [
+          "terminal",
+          0.39622724056243896
+        ]
+      ],
+      "served_p_no_tool": 0.04272676806689247,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.20584639029214705,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.12482571601867676
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-08",
+      "language": "es",
+      "text": "que archivos tengo en la carpeta de trabajo",
+      "expected_operations": [
+        "filesystem.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.654937744140625
+        ],
+        [
+          "state",
+          0.5789366960525513
+        ],
+        [
+          "knowledge",
+          0.5575975775718689
+        ],
+        [
+          "verify",
+          0.5285080671310425
+        ],
+        [
+          "clipboard",
+          0.46127429604530334
+        ]
+      ],
+      "served_p_no_tool": 0.05036264778730883,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4705765520803902,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.12369507551193237
+        ],
+        [
+          "local_search",
+          0.0630183219909668
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "local_search",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-09",
+      "language": "en",
+      "text": "write hello into a file called saludo.txt",
+      "expected_operations": [
+        "filesystem.write.text"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.6273680925369263
+        ],
+        [
+          "terminal",
+          0.5355764627456665
+        ],
+        [
+          "computer_use",
+          0.5190497636795044
+        ],
+        [
+          "email",
+          0.5081595182418823
+        ],
+        [
+          "gui",
+          0.4772816300392151
+        ]
+      ],
+      "served_p_no_tool": 0.06338317782546703,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5496792799108379,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "filesystem",
+        "terminal",
+        "computer_use",
+        "email",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "clp-01",
+      "language": "es",
+      "text": "copiame lo que tengo seleccionado",
+      "expected_operations": [
+        "clipboard.copy"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "clipboard",
+          0.7467279434204102
+        ],
+        [
+          "filesystem",
+          0.5517863035202026
+        ],
+        [
+          "gui",
+          0.525136411190033
+        ],
+        [
+          "notes_tasks",
+          0.5140226483345032
+        ],
+        [
+          "computer_use",
+          0.4474520981311798
+        ]
+      ],
+      "served_p_no_tool": 0.02864385257221171,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.414173248741352,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "clipboard",
+          0.10153090953826904
+        ]
+      ],
+      "planner_tools": [
+        "clipboard",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "clp-02",
+      "language": "es",
+      "text": "pegalo aca",
+      "expected_operations": [
+        "clipboard.paste"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.430027574300766
+        ],
+        [
+          "clipboard",
+          0.39432647824287415
+        ],
+        [
+          "audio",
+          0.37740951776504517
+        ],
+        [
+          "gui",
+          0.2996102273464203
+        ],
+        [
+          "steam",
+          0.29471808671951294
+        ]
+      ],
+      "served_p_no_tool": 0.2559096495730445,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8997090698901452,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "clipboard",
+          0.016455650329589844
+        ]
+      ],
+      "planner_tools": [
+        "media",
+        "clipboard",
+        "audio",
+        "gui",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "clp-03",
+      "language": "en",
+      "text": "what did I copy last",
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "clipboard",
+          0.6221591234207153
+        ],
+        [
+          "filesystem",
+          0.4397590756416321
+        ],
+        [
+          "state",
+          0.3645137846469879
+        ],
+        [
+          "memory",
+          0.3300946354866028
+        ],
+        [
+          "knowledge",
+          0.32232052087783813
+        ]
+      ],
+      "served_p_no_tool": 0.07232356765400969,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5167869250999636,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "clipboard",
+          0.04970896244049072
+        ],
+        [
+          "filesystem",
+          0.034024596214294434
+        ]
+      ],
+      "planner_tools": [
+        "clipboard",
+        "filesystem",
+        "memory",
+        "knowledge",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "clp-04",
+      "language": "es",
+      "text": "deja mi correo en el portapapeles",
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "email",
+          0.5558518767356873
+        ],
+        [
+          "clipboard",
+          0.467471718788147
+        ],
+        [
+          "contacts",
+          0.37279337644577026
+        ],
+        [
+          "notes_tasks",
+          0.3315681517124176
+        ],
+        [
+          "gui",
+          0.31453937292099
+        ]
+      ],
+      "served_p_no_tool": 0.10926856686571079,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.45441298746064096,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "clipboard",
+          0.07670319080352783
+        ],
+        [
+          "email",
+          0.054444968700408936
+        ]
+      ],
+      "planner_tools": [
+        "email",
+        "clipboard",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-01",
+      "language": "es",
+      "text": "dale enter",
+      "expected_operations": [
+        "input.key.press"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.3430585265159607
+        ],
+        [
+          "computer_use",
+          0.3392421007156372
+        ],
+        [
+          "uia",
+          0.3253161609172821
+        ],
+        [
+          "browser",
+          0.3072448968887329
+        ],
+        [
+          "app",
+          0.3071908950805664
+        ]
+      ],
+      "served_p_no_tool": 0.39959729695679225,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8867336226364552,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "contacts",
+        "computer_use",
+        "uia",
+        "browser",
+        "app",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-02",
+      "language": "es",
+      "text": "selecciona todo lo que hay ahi",
+      "expected_operations": [
+        "input.select.all"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "uia",
+          0.5753751397132874
+        ],
+        [
+          "vision",
+          0.5745894312858582
+        ],
+        [
+          "clipboard",
+          0.557701587677002
+        ],
+        [
+          "gui",
+          0.5498055219650269
+        ],
+        [
+          "computer_use",
+          0.5269242525100708
+        ]
+      ],
+      "served_p_no_tool": 0.09060489947810367,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8368090494660797,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-03",
+      "language": "en",
+      "text": "type hello world for me",
+      "expected_operations": [
+        "input.text.type"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "computer_use",
+          0.550565242767334
+        ],
+        [
+          "gui",
+          0.5277045965194702
+        ],
+        [
+          "steam",
+          0.4990227222442627
+        ],
+        [
+          "uia",
+          0.4972917437553406
+        ],
+        [
+          "app",
+          0.47694268822669983
+        ]
+      ],
+      "served_p_no_tool": 0.11131042783992814,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8400073489847387,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "computer_use",
+        "gui",
+        "steam",
+        "uia",
+        "app",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-04",
+      "language": "es",
+      "text": "sacame el teclado de pantalla",
+      "expected_operations": [
+        "input.keyboard.open"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "gui",
+          0.5645970702171326
+        ],
+        [
+          "device_settings",
+          0.5451493859291077
+        ],
+        [
+          "uia",
+          0.522375762462616
+        ],
+        [
+          "accessibility",
+          0.5064033269882202
+        ],
+        [
+          "window",
+          0.49431708455085754
+        ]
+      ],
+      "served_p_no_tool": 0.10072533591945777,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6930144865709095,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "gui",
+        "device_settings",
+        "uia",
+        "accessibility",
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-05",
+      "language": "es_en",
+      "text": "cambia el keyboard a espanol",
+      "expected_operations": [
+        "input.keyboard.layout"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "accessibility",
+          0.40076857805252075
+        ],
+        [
+          "computer_use",
+          0.3516464829444885
+        ],
+        [
+          "device_settings",
+          0.3451612591743469
+        ],
+        [
+          "app",
+          0.3439822196960449
+        ],
+        [
+          "audio",
+          0.33713772892951965
+        ]
+      ],
+      "served_p_no_tool": 0.2874400304380347,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8615052963500194,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "input",
+          0.06070911884307861
+        ]
+      ],
+      "planner_tools": [
+        "input",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-06",
+      "language": "en",
+      "text": "scroll down a bit",
+      "expected_operations": [
+        "input.pointer.control"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "gui",
+          0.6055044531822205
+        ],
+        [
+          "vision",
+          0.5427588820457458
+        ],
+        [
+          "uia",
+          0.5027230978012085
+        ],
+        [
+          "computer_use",
+          0.4864875376224518
+        ],
+        [
+          "accessibility",
+          0.4607259929180145
+        ]
+      ],
+      "served_p_no_tool": 0.07872630741242148,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.43839090666969704,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "input",
+          0.06338798999786377
+        ]
+      ],
+      "planner_tools": [
+        "gui",
+        "vision",
+        "input",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "inp-07",
+      "language": "es",
+      "text": "hazle clic al boton de aceptar",
+      "expected_operations": [
+        "input.visible.click"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "uia",
+          0.7880921959877014
+        ],
+        [
+          "gui",
+          0.6775902509689331
+        ],
+        [
+          "computer_use",
+          0.6086958646774292
+        ],
+        [
+          "accessibility",
+          0.4901314973831177
+        ],
+        [
+          "clipboard",
+          0.4877464771270752
+        ]
+      ],
+      "served_p_no_tool": 0.019900895071254348,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.30316516452950365,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "uia",
+          0.10489577054977417
+        ],
+        [
+          "gui",
+          0.05272263288497925
+        ]
+      ],
+      "planner_tools": [
+        "uia",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "inp-08",
+      "language": "es",
+      "text": "en que idioma esta el teclado",
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "web",
+          0.44507673382759094
+        ],
+        [
+          "knowledge",
+          0.3821970820426941
+        ],
+        [
+          "uia",
+          0.35009241104125977
+        ],
+        [
+          "vision",
+          0.3491314947605133
+        ],
+        [
+          "browser",
+          0.3186403214931488
+        ]
+      ],
+      "served_p_no_tool": 0.2203382070756837,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.9216114529827967,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "web",
+        "knowledge",
+        "uia",
+        "vision",
+        "source_manager",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cap-01",
+      "language": "es",
+      "text": "sacame una foto de la pantalla",
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "gui",
+          0.6459864377975464
+        ],
+        [
+          "vision",
+          0.6318461894989014
+        ],
+        [
+          "clipboard",
+          0.44612711668014526
+        ],
+        [
+          "uia",
+          0.4175429046154022
+        ],
+        [
+          "filesystem",
+          0.3953063488006592
+        ]
+      ],
+      "served_p_no_tool": 0.05674691106449389,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3828819665942015,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "gui",
+          0.0493280291557312
+        ],
+        [
+          "vision",
+          0.022392094135284424
+        ]
+      ],
+      "planner_tools": [
+        "gui",
+        "vision",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cap-02",
+      "language": "es",
+      "text": "captura nada mas la ventana de adelante",
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "gui",
+          0.661232054233551
+        ],
+        [
+          "vision",
+          0.6190650463104248
+        ],
+        [
+          "window",
+          0.6092039346694946
+        ],
+        [
+          "uia",
+          0.5496716499328613
+        ],
+        [
+          "verify",
+          0.5226198434829712
+        ]
+      ],
+      "served_p_no_tool": 0.04835622810403623,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.45602693563554453,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "gui",
+          0.03546255826950073
+        ]
+      ],
+      "planner_tools": [
+        "gui",
+        "vision",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cap-03",
+      "language": "en",
+      "text": "read the text out of that screenshot",
+      "expected_operations": [
+        "ocr.read",
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "vision",
+          0.768118679523468
+        ],
+        [
+          "gui",
+          0.7329505681991577
+        ],
+        [
+          "clipboard",
+          0.5711898803710938
+        ],
+        [
+          "uia",
+          0.5271764993667603
+        ],
+        [
+          "computer_use",
+          0.5116308927536011
+        ]
+      ],
+      "served_p_no_tool": 0.022345821382698715,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.1856471620165408,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "vision",
+          0.09650254249572754
+        ],
+        [
+          "gui",
+          0.08801525831222534
+        ]
+      ],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cap-04",
+      "language": "es",
+      "text": "describime que se ve en la captura",
+      "expected_operations": [
+        "vision.describe",
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "vision",
+          0.7511548399925232
+        ],
+        [
+          "clipboard",
+          0.5805379152297974
+        ],
+        [
+          "gui",
+          0.5623082518577576
+        ],
+        [
+          "verify",
+          0.4792450964450836
+        ],
+        [
+          "filesystem",
+          0.43326056003570557
+        ]
+      ],
+      "served_p_no_tool": 0.02612488431790824,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.392623672517199,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "vision",
+          0.09924757480621338
+        ]
+      ],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "brw-01",
+      "language": "es",
+      "text": "llevame a wikipedia",
+      "expected_operations": [
+        "browser.navigate",
+        "browser.navigate.named"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "browser",
+          0.6746298670768738
+        ],
+        [
+          "web",
+          0.5087635517120361
+        ],
+        [
+          "knowledge",
+          0.4962843060493469
+        ],
+        [
+          "network",
+          0.43096303939819336
+        ],
+        [
+          "steam",
+          0.42072856426239014
+        ]
+      ],
+      "served_p_no_tool": 0.05056034626270991,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6349522332196864,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "browser",
+          0.16252750158309937
+        ]
+      ],
+      "planner_tools": [
+        "browser",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "brw-02",
+      "language": "en",
+      "text": "go back one page",
+      "expected_operations": [
+        "browser.control"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "browser",
+          0.5273656845092773
+        ],
+        [
+          "computer_use",
+          0.46778470277786255
+        ],
+        [
+          "clipboard",
+          0.42597097158432007
+        ],
+        [
+          "gui",
+          0.4139142632484436
+        ],
+        [
+          "uia",
+          0.3785508871078491
+        ]
+      ],
+      "served_p_no_tool": 0.1353758301200369,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6426201799755823,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "browser",
+          0.15256613492965698
+        ]
+      ],
+      "planner_tools": [
+        "browser",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "brw-03",
+      "language": "es",
+      "text": "que pestanas tengo abiertas",
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "verify",
+          0.4576609134674072
+        ],
+        [
+          "accessibility",
+          0.41079357266426086
+        ],
+        [
+          "network",
+          0.3903326094150543
+        ],
+        [
+          "state",
+          0.38429349660873413
+        ],
+        [
+          "vision",
+          0.3789271116256714
+        ]
+      ],
+      "served_p_no_tool": 0.21022016489022755,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8836791449711076,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "accessibility",
+        "network",
+        "vision",
+        "verify",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "brw-04",
+      "language": "en",
+      "text": "what does this page actually say",
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "vision",
+          0.5347528457641602
+        ],
+        [
+          "verify",
+          0.517305850982666
+        ],
+        [
+          "clipboard",
+          0.4795379638671875
+        ],
+        [
+          "knowledge",
+          0.44966739416122437
+        ],
+        [
+          "uia",
+          0.39329496026039124
+        ]
+      ],
+      "served_p_no_tool": 0.12144295989623533,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7766504483969918,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "browser_real",
+          0.06051206588745117
+        ],
+        [
+          "vision",
+          0.010030686855316162
+        ]
+      ],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "browser_real",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "gam-01",
+      "language": "es",
+      "text": "que juegos tengo instalados",
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "steam",
+          0.5824973583221436
+        ],
+        [
+          "state",
+          0.4006853997707367
+        ],
+        [
+          "package",
+          0.3886924982070923
+        ],
+        [
+          "notes_tasks",
+          0.37205901741981506
+        ],
+        [
+          "dependency",
+          0.36107155680656433
+        ]
+      ],
+      "served_p_no_tool": 0.09671445429394399,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6329656972283539,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "steam",
+          0.0896444320678711
+        ],
+        [
+          "game_launcher",
+          0.08168601989746094
+        ]
+      ],
+      "planner_tools": [
+        "steam",
+        "app",
+        "game_launcher",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "gam-02",
+      "language": "en",
+      "text": "launch counter strike",
+      "expected_operations": [
+        "game.launch"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "app",
+          0.46577340364456177
+        ],
+        [
+          "terminal",
+          0.36758726835250854
+        ],
+        [
+          "state",
+          0.352780282497406
+        ],
+        [
+          "notes_tasks",
+          0.34054696559906006
+        ],
+        [
+          "computer_use",
+          0.29169172048568726
+        ]
+      ],
+      "served_p_no_tool": 0.20732092358180923,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.616387490762375,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "app",
+        "terminal",
+        "notes_tasks",
+        "computer_use",
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "gam-03",
+      "language": "es",
+      "text": "tengo instalado el hollow knight",
+      "expected_operations": [
+        "game.installed.named"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "steam",
+          0.5077676773071289
+        ],
+        [
+          "package",
+          0.48209768533706665
+        ],
+        [
+          "media",
+          0.3165090084075928
+        ],
+        [
+          "accessibility",
+          0.30731579661369324
+        ],
+        [
+          "web",
+          0.28359144926071167
+        ]
+      ],
+      "served_p_no_tool": 0.1527254577640504,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.48800586380918154,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "steam",
+          0.08325493335723877
+        ]
+      ],
+      "planner_tools": [
+        "steam",
+        "app",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "gam-04",
+      "language": "es_en",
+      "text": "para la descarga que tiene steam corriendo",
+      "expected_operations": [
+        "game.install.cancel.active",
+        "game.install.cancel"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "steam",
+          0.7326065301895142
+        ],
+        [
+          "filesystem",
+          0.5064300298690796
+        ],
+        [
+          "package",
+          0.48098063468933105
+        ],
+        [
+          "app",
+          0.4604615867137909
+        ],
+        [
+          "terminal",
+          0.45131438970565796
+        ]
+      ],
+      "served_p_no_tool": 0.03082888331223505,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.27655241477392717,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "steam",
+          0.06366086006164551
+        ]
+      ],
+      "planner_tools": [
+        "steam",
+        "app",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "blu-01",
+      "language": "es",
+      "text": "apagame el bluetooth",
+      "expected_operations": [
+        "bluetooth.radio.set"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.6083422899246216
+        ],
+        [
+          "system",
+          0.4978296160697937
+        ],
+        [
+          "app",
+          0.4560506343841553
+        ],
+        [
+          "accessibility",
+          0.4029606580734253
+        ],
+        [
+          "audio",
+          0.3376855254173279
+        ]
+      ],
+      "served_p_no_tool": 0.08044463261755495,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4189956517086272,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "device_settings",
+          0.0856943130493164
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "blu-02",
+      "language": "en",
+      "text": "which bluetooth devices are around",
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.48928025364875793
+        ],
+        [
+          "network",
+          0.36682289838790894
+        ],
+        [
+          "system",
+          0.35106360912323
+        ],
+        [
+          "web",
+          0.30267980694770813
+        ],
+        [
+          "verify",
+          0.29524511098861694
+        ]
+      ],
+      "served_p_no_tool": 0.1736314941444574,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.650887121830107,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "peripheral",
+          0.037224531173706055
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "network",
+        "system",
+        "web",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "per-01",
+      "language": "es",
+      "text": "que cosas tengo conectadas al equipo",
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "memory",
+          0.3837612569332123
+        ],
+        [
+          "notes_tasks",
+          0.33505451679229736
+        ],
+        [
+          "state",
+          0.3278729319572449
+        ],
+        [
+          "knowledge",
+          0.2794601321220398
+        ],
+        [
+          "contacts",
+          0.26208871603012085
+        ]
+      ],
+      "served_p_no_tool": 0.3101054262653969,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8812414659277606,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "memory",
+        "notes_tasks",
+        "knowledge",
+        "contacts",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "bak-01",
+      "language": "es",
+      "text": "hazme una copia de seguridad de documentos",
+      "expected_operations": [
+        "backup.known.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "state",
+          0.5135064125061035
+        ],
+        [
+          "filesystem",
+          0.5039231777191162
+        ],
+        [
+          "safety",
+          0.49469852447509766
+        ],
+        [
+          "knowledge",
+          0.48883765935897827
+        ],
+        [
+          "clipboard",
+          0.47029078006744385
+        ]
+      ],
+      "served_p_no_tool": 0.13615945358596757,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5296245217407601,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "backup_sync",
+          0.09812289476394653
+        ]
+      ],
+      "planner_tools": [
+        "backup_sync",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "bak-02",
+      "language": "en",
+      "text": "list the backups you have made",
+      "expected_operations": [
+        "backup.list",
+        "backup.known.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "state",
+          0.590423583984375
+        ],
+        [
+          "filesystem",
+          0.5327237844467163
+        ],
+        [
+          "clipboard",
+          0.42864662408828735
+        ],
+        [
+          "knowledge",
+          0.41814568638801575
+        ],
+        [
+          "notes_tasks",
+          0.4018712639808655
+        ]
+      ],
+      "served_p_no_tool": 0.08485014572945206,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5732959149014764,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "backup_sync",
+          0.10091370344161987
+        ]
+      ],
+      "planner_tools": [
+        "backup_sync",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cal-01",
+      "language": "es",
+      "text": "que tengo en la agenda para hoy",
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.6419288516044617
+        ],
+        [
+          "knowledge",
+          0.5353320837020874
+        ],
+        [
+          "memory",
+          0.4784565269947052
+        ],
+        [
+          "state",
+          0.45818543434143066
+        ],
+        [
+          "notification",
+          0.37069642543792725
+        ]
+      ],
+      "served_p_no_tool": 0.05784060584498536,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6106543199458738,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "local_calendar",
+          0.0691412091255188
+        ],
+        [
+          "notes_tasks",
+          0.017253637313842773
+        ]
+      ],
+      "planner_tools": [
+        "local_calendar",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cal-02",
+      "language": "es",
+      "text": "agendame una reunion manana de diez a once",
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.5072622299194336
+        ],
+        [
+          "notes_tasks",
+          0.48698386549949646
+        ],
+        [
+          "computer_use",
+          0.45425593852996826
+        ],
+        [
+          "memory",
+          0.40776318311691284
+        ],
+        [
+          "state",
+          0.3716643154621124
+        ]
+      ],
+      "served_p_no_tool": 0.1402960269754717,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7972898061196452,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "notification",
+        "notes_tasks",
+        "computer_use",
+        "memory",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "eml-01",
+      "language": "en",
+      "text": "read me the last email that came in",
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "email",
+          0.5397811532020569
+        ],
+        [
+          "contacts",
+          0.47967833280563354
+        ],
+        [
+          "filesystem",
+          0.47157788276672363
+        ],
+        [
+          "vision",
+          0.466847687959671
+        ],
+        [
+          "verify",
+          0.4667423367500305
+        ]
+      ],
+      "served_p_no_tool": 0.11375185786660164,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6963217271487411,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "email",
+        "contacts",
+        "filesystem",
+        "vision",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "eml-02",
+      "language": "es",
+      "text": "contestale al ultimo correo que ya lo vi",
+      "expected_operations": [
+        "email.latest.reply"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "email",
+          0.5899976491928101
+        ],
+        [
+          "whatsapp",
+          0.5194351673126221
+        ],
+        [
+          "contacts",
+          0.5130646824836731
+        ],
+        [
+          "vision",
+          0.37814146280288696
+        ],
+        [
+          "clipboard",
+          0.3682812750339508
+        ]
+      ],
+      "served_p_no_tool": 0.08028353952789331,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6441943114599571,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "email",
+        "whatsapp",
+        "contacts",
+        "vision",
+        "clipboard",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "msg-01",
+      "language": "es",
+      "text": "mandale un mensaje a juan diciendo que llego tarde",
+      "expected_operations": [
+        "message.send",
+        "message.recipient.resolve"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "whatsapp",
+          0.6010876893997192
+        ],
+        [
+          "email",
+          0.5514155030250549
+        ],
+        [
+          "notification",
+          0.4349331259727478
+        ],
+        [
+          "contacts",
+          0.41900771856307983
+        ],
+        [
+          "safety",
+          0.29321178793907166
+        ]
+      ],
+      "served_p_no_tool": 0.07357027611195766,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.23928494101425374,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "whatsapp",
+          0.11811906099319458
+        ],
+        [
+          "email",
+          0.03754687309265137
+        ]
+      ],
+      "planner_tools": [
+        "whatsapp",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "off-01",
+      "language": "es",
+      "text": "creame un documento de word en blanco",
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "clipboard",
+          0.5272791981697083
+        ],
+        [
+          "filesystem",
+          0.4689990282058716
+        ],
+        [
+          "notes_tasks",
+          0.4159981310367584
+        ],
+        [
+          "knowledge",
+          0.4000813961029053
+        ],
+        [
+          "computer_use",
+          0.34768301248550415
+        ]
+      ],
+      "served_p_no_tool": 0.12753273486641442,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6856976813986965,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "office",
+          0.142042338848114
+        ],
+        [
+          "filesystem",
+          0.007749974727630615
+        ]
+      ],
+      "planner_tools": [
+        "office",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "pkg-01",
+      "language": "en",
+      "text": "install vlc on this machine",
+      "expected_operations": [
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "package",
+          0.4631510078907013
+        ],
+        [
+          "app",
+          0.3442631959915161
+        ],
+        [
+          "steam",
+          0.2983340620994568
+        ],
+        [
+          "dependency",
+          0.25616055727005005
+        ],
+        [
+          "accessibility",
+          0.2561326324939728
+        ]
+      ],
+      "served_p_no_tool": 0.20552176917793197,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.43890251424429055,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "package",
+        "accessibility",
+        "dependency",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "str-01",
+      "language": "es",
+      "text": "pon la casa de papel en netflix",
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "clipboard",
+          0.44604337215423584
+        ],
+        [
+          "browser",
+          0.3811965584754944
+        ],
+        [
+          "accessibility",
+          0.3770853877067566
+        ],
+        [
+          "steam",
+          0.3696940243244171
+        ],
+        [
+          "filesystem",
+          0.3649352192878723
+        ]
+      ],
+      "served_p_no_tool": 0.21410796751413638,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.727776203673888,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "clipboard",
+        "browser",
+        "accessibility",
+        "steam",
+        "filesystem",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "web-01",
+      "language": "es",
+      "text": "busca en internet cuanto mide el everest",
+      "expected_operations": [
+        "web.search"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "web",
+          0.622979998588562
+        ],
+        [
+          "browser",
+          0.6151754856109619
+        ],
+        [
+          "knowledge",
+          0.47710147500038147
+        ],
+        [
+          "network",
+          0.4686150848865509
+        ],
+        [
+          "computer_use",
+          0.4315803050994873
+        ]
+      ],
+      "served_p_no_tool": 0.06480456467080274,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5954331154322318,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "browser",
+          0.11308395862579346
+        ],
+        [
+          "web",
+          0.007060229778289795
+        ]
+      ],
+      "planner_tools": [
+        "browser",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "rou-01",
+      "language": "es",
+      "text": "que rutinas tengo configuradas",
+      "expected_operations": [
+        "routine.list"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.5195574164390564
+        ],
+        [
+          "state",
+          0.4627605676651001
+        ],
+        [
+          "memory",
+          0.44473081827163696
+        ],
+        [
+          "accessibility",
+          0.43522822856903076
+        ],
+        [
+          "notification",
+          0.42294368147850037
+        ]
+      ],
+      "served_p_no_tool": 0.14182891171895737,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7655773360528393,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "routine",
+          0.21752935647964478
+        ]
+      ],
+      "planner_tools": [
+        "routine",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "aud-09",
+      "language": "es",
+      "text": "esta muy fuerte el audio, bajalo",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.7077547311782837
+        ],
+        [
+          "media",
+          0.3901483714580536
+        ],
+        [
+          "device_settings",
+          0.26459503173828125
+        ],
+        [
+          "system",
+          0.2600482702255249
+        ]
+      ],
+      "served_p_no_tool": 0.04038293157956825,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.16990134670910687,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.20785462856292725
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-13",
+      "language": "es_en",
+      "text": "cuanto storage me queda en el disco",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "system",
+          0.4322531223297119
+        ],
+        [
+          "filesystem",
+          0.37671393156051636
+        ],
+        [
+          "state",
+          0.3588486909866333
+        ],
+        [
+          "verify",
+          0.3320392668247223
+        ],
+        [
+          "network",
+          0.28809884190559387
+        ]
+      ],
+      "served_p_no_tool": 0.23247703177359835,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4738192574611622,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "system",
+          0.07007795572280884
+        ]
+      ],
+      "planner_tools": [
+        "system",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "win-09",
+      "language": "en",
+      "text": "minimize everything I have open right now",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "window",
+          0.6632883548736572
+        ],
+        [
+          "state",
+          0.4929777681827545
+        ],
+        [
+          "accessibility",
+          0.4644632339477539
+        ],
+        [
+          "device_settings",
+          0.4200162887573242
+        ],
+        [
+          "filesystem",
+          0.41503483057022095
+        ]
+      ],
+      "served_p_no_tool": 0.050490164521385265,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3063298954263329,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.1145821213722229
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "net-10",
+      "language": "es_en",
+      "text": "chequea si el internet anda",
+      "expected_operations": [
+        "network.status",
+        "network.ping"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.6767044067382812
+        ],
+        [
+          "verify",
+          0.5265539884567261
+        ],
+        [
+          "safety",
+          0.4901757836341858
+        ],
+        [
+          "browser",
+          0.4753851890563965
+        ],
+        [
+          "web",
+          0.4293370246887207
+        ]
+      ],
+      "served_p_no_tool": 0.047515238325766505,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4886760565301078,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.08486247062683105
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "med-07",
+      "language": "es",
+      "text": "retrocede diez segundos la cancion",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "media",
+          0.6433796882629395
+        ],
+        [
+          "audio",
+          0.4077083468437195
+        ],
+        [
+          "clipboard",
+          0.3084830641746521
+        ],
+        [
+          "gui",
+          0.29755938053131104
+        ],
+        [
+          "computer_use",
+          0.2953839898109436
+        ]
+      ],
+      "served_p_no_tool": 0.06373798576388995,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.1877073336934714,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "media",
+          0.1463446021080017
+        ]
+      ],
+      "planner_tools": [
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "fs-10",
+      "language": "es",
+      "text": "abrime la carpeta de imagenes",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.644447922706604
+        ],
+        [
+          "app",
+          0.6351726651191711
+        ],
+        [
+          "gui",
+          0.5151238441467285
+        ],
+        [
+          "steam",
+          0.507962703704834
+        ],
+        [
+          "verify",
+          0.4951084852218628
+        ]
+      ],
+      "served_p_no_tool": 0.05776565147715015,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.42867086529737575,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.08920645713806152
+        ],
+        [
+          "app",
+          0.005361199378967285
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "sys-14",
+      "language": "en",
+      "text": "log me out of windows",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "state",
+          0.45130813121795654
+        ],
+        [
+          "network",
+          0.4119405150413513
+        ],
+        [
+          "gui",
+          0.40628254413604736
+        ],
+        [
+          "uia",
+          0.4001668691635132
+        ],
+        [
+          "window",
+          0.3969220519065857
+        ]
+      ],
+      "served_p_no_tool": 0.21337401519646756,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.750234156201248,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "network",
+        "gui",
+        "uia",
+        "window",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "app-06",
+      "language": "es",
+      "text": "arrancame el navegador",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "browser",
+          0.7015968561172485
+        ],
+        [
+          "app",
+          0.6989898681640625
+        ],
+        [
+          "computer_use",
+          0.44822680950164795
+        ],
+        [
+          "window",
+          0.4480542838573456
+        ],
+        [
+          "network",
+          0.42200374603271484
+        ]
+      ],
+      "served_p_no_tool": 0.040631229257015136,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.2870239596531179,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "browser",
+          0.1440865397453308
+        ],
+        [
+          "app",
+          0.019008994102478027
+        ]
+      ],
+      "planner_tools": [
+        "browser",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "not-06",
+      "language": "en",
+      "text": "jot down that the router password is on the fridge",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "network",
+          0.576170027256012
+        ],
+        [
+          "verify",
+          0.38511887192726135
+        ],
+        [
+          "safety",
+          0.38204675912857056
+        ],
+        [
+          "device_settings",
+          0.37368011474609375
+        ],
+        [
+          "system",
+          0.3179299831390381
+        ]
+      ],
+      "served_p_no_tool": 0.0890227246617847,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3010668678396957,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.10213369131088257
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "tsk-06",
+      "language": "es",
+      "text": "volve a abrir la tarea de llamar al banco",
+      "expected_operations": [
+        "task.reopen",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.5065295100212097
+        ],
+        [
+          "verify",
+          0.4971017837524414
+        ],
+        [
+          "app",
+          0.4950787127017975
+        ],
+        [
+          "state",
+          0.4867517948150635
+        ],
+        [
+          "computer_use",
+          0.4805559515953064
+        ]
+      ],
+      "served_p_no_tool": 0.13674242733443828,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7434141819589547,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "notes_tasks",
+        "app",
+        "computer_use",
+        "state",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cmp-01",
+      "language": "es",
+      "text": "abre spotify y ponme musica",
+      "expected_operations": [
+        "app.open",
+        "media.play.query"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "app",
+          0.6870114803314209
+        ],
+        [
+          "computer_use",
+          0.5983883738517761
+        ],
+        [
+          "media",
+          0.5973973274230957
+        ],
+        [
+          "browser",
+          0.5335662961006165
+        ],
+        [
+          "uia",
+          0.5155231356620789
+        ]
+      ],
+      "served_p_no_tool": 0.04255745288837697,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3653856253683385,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "app",
+          0.10153323411941528
+        ]
+      ],
+      "planner_tools": [
+        "app",
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cmp-02",
+      "language": "es_en",
+      "text": "saca un screenshot y decime que dice",
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read",
+        "vision.describe"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "gui",
+          0.739781379699707
+        ],
+        [
+          "vision",
+          0.6999647617340088
+        ],
+        [
+          "clipboard",
+          0.5143288969993591
+        ],
+        [
+          "computer_use",
+          0.5049682259559631
+        ],
+        [
+          "uia",
+          0.5040922164916992
+        ]
+      ],
+      "served_p_no_tool": 0.027891644369586546,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.40118175010029444,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "gui",
+          0.08736610412597656
+        ],
+        [
+          "vision",
+          0.07051616907119751
+        ]
+      ],
+      "planner_tools": [
+        "gui",
+        "vision",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cmp-03",
+      "language": "en",
+      "text": "mute the audio and lock the machine",
+      "expected_operations": [
+        "audio.mute",
+        "system.power"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "audio",
+          0.6761263608932495
+        ],
+        [
+          "notification",
+          0.4509812593460083
+        ],
+        [
+          "accessibility",
+          0.4099673628807068
+        ],
+        [
+          "gui",
+          0.38290780782699585
+        ],
+        [
+          "system",
+          0.35845351219177246
+        ]
+      ],
+      "served_p_no_tool": 0.04713109301682123,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.3463481769578363,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "audio",
+          0.1923234462738037
+        ]
+      ],
+      "planner_tools": [
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "cmp-04",
+      "language": "es",
+      "text": "anota que hay reunion el jueves y avisame ese dia",
+      "expected_operations": [
+        "note.create",
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "in_catalog": true,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.531743049621582
+        ],
+        [
+          "notes_tasks",
+          0.4868956208229065
+        ],
+        [
+          "email",
+          0.413848340511322
+        ],
+        [
+          "knowledge",
+          0.4033997356891632
+        ],
+        [
+          "safety",
+          0.37909454107284546
+        ]
+      ],
+      "served_p_no_tool": 0.11604522730422935,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5733676366159101,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "local_calendar",
+          0.05302780866622925
+        ],
+        [
+          "reminder",
+          0.04390150308609009
+        ],
+        [
+          "notes_tasks",
+          0.008815228939056396
+        ]
+      ],
+      "planner_tools": [
+        "local_calendar",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-01",
+      "language": "es",
+      "text": "pide un taxi para las ocho",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.4182867407798767
+        ],
+        [
+          "contacts",
+          0.30008864402770996
+        ],
+        [
+          "email",
+          0.2794117331504822
+        ]
+      ],
+      "served_p_no_tool": 0.26238949637625114,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6406753048890261,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "notification",
+        "contacts",
+        "email",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-02",
+      "language": "en",
+      "text": "book me a table for two tonight",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "notes_tasks",
+          0.41323667764663696
+        ],
+        [
+          "clipboard",
+          0.30469614267349243
+        ],
+        [
+          "gui",
+          0.3035915791988373
+        ],
+        [
+          "knowledge",
+          0.28933387994766235
+        ],
+        [
+          "steam",
+          0.28346914052963257
+        ]
+      ],
+      "served_p_no_tool": 0.26369828830095776,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7766759289047922,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "study",
+          0.07375246286392212
+        ]
+      ],
+      "planner_tools": [
+        "study",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-03",
+      "language": "es",
+      "text": "pedime una pizza a domicilio",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "email",
+          0.33686643838882446
+        ],
+        [
+          "browser",
+          0.31098175048828125
+        ],
+        [
+          "contacts",
+          0.2932887375354767
+        ],
+        [
+          "notification",
+          0.291058212518692
+        ],
+        [
+          "network",
+          0.26479366421699524
+        ]
+      ],
+      "served_p_no_tool": 0.3965930701386159,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8542627240200082,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "email",
+        "browser",
+        "contacts",
+        "notification",
+        "network",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-04",
+      "language": "en",
+      "text": "call my mother",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.4649870991706848
+        ],
+        [
+          "whatsapp",
+          0.36401742696762085
+        ],
+        [
+          "email",
+          0.2501409351825714
+        ]
+      ],
+      "served_p_no_tool": 0.21220538307375827,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6192563904816057,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "contacts",
+        "whatsapp",
+        "email",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-05",
+      "language": "es",
+      "text": "transfiere cincuenta dolares a mi hermano",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.32111334800720215
+        ],
+        [
+          "whatsapp",
+          0.30868294835090637
+        ],
+        [
+          "email",
+          0.26318076252937317
+        ]
+      ],
+      "served_p_no_tool": 0.4204411612443796,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8625692502865899,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "contacts",
+        "whatsapp",
+        "email",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-06",
+      "language": "es",
+      "text": "prende las luces del living",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.6742340326309204
+        ],
+        [
+          "system",
+          0.4381636083126068
+        ],
+        [
+          "accessibility",
+          0.39495497941970825
+        ],
+        [
+          "notification",
+          0.3622009754180908
+        ],
+        [
+          "network",
+          0.31805872917175293
+        ]
+      ],
+      "served_p_no_tool": 0.05026125064921225,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.2084073347941665,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "device_settings",
+          0.09049719572067261
+        ]
+      ],
+      "planner_tools": [
+        "device_settings",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-07",
+      "language": "en",
+      "text": "upload this video to youtube",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "media",
+          0.4659654498100281
+        ],
+        [
+          "browser",
+          0.4328833818435669
+        ],
+        [
+          "clipboard",
+          0.3964126706123352
+        ],
+        [
+          "gui",
+          0.3832852244377136
+        ],
+        [
+          "computer_use",
+          0.3543519377708435
+        ]
+      ],
+      "served_p_no_tool": 0.19553920298982105,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5978770683787951,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "media",
+        "browser",
+        "clipboard",
+        "gui",
+        "computer_use",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-08",
+      "language": "es",
+      "text": "formatea el pendrive",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "app",
+          0.4878028929233551
+        ],
+        [
+          "filesystem",
+          0.3887002766132355
+        ],
+        [
+          "system",
+          0.375784695148468
+        ],
+        [
+          "window",
+          0.34436869621276855
+        ],
+        [
+          "audio",
+          0.340021014213562
+        ]
+      ],
+      "served_p_no_tool": 0.18061764259051885,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5801963948951433,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "app",
+        "filesystem",
+        "system",
+        "window",
+        "audio",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "ooc-09",
+      "language": "en",
+      "text": "update the bios on this laptop",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "package",
+          0.4735190272331238
+        ],
+        [
+          "knowledge",
+          0.39288899302482605
+        ],
+        [
+          "filesystem",
+          0.38241899013519287
+        ],
+        [
+          "state",
+          0.37711840867996216
+        ],
+        [
+          "network",
+          0.3482230305671692
+        ]
+      ],
+      "served_p_no_tool": 0.1852182986116215,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5334395939098766,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "package",
+        "knowledge",
+        "filesystem",
+        "network",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-10",
+      "language": "es",
+      "text": "sacame un pasaje de avion a madrid",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.36189132928848267
+        ],
+        [
+          "knowledge",
+          0.3019048869609833
+        ],
+        [
+          "email",
+          0.29815924167633057
+        ],
+        [
+          "web",
+          0.2923602759838104
+        ],
+        [
+          "notes_tasks",
+          0.2884175181388855
+        ]
+      ],
+      "served_p_no_tool": 0.34313447653261603,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6755786677547438,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "contacts",
+        "knowledge",
+        "email",
+        "web",
+        "notes_tasks",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-11",
+      "language": "es_en",
+      "text": "compilame el proyecto de rust",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "package",
+          0.5537148714065552
+        ],
+        [
+          "filesystem",
+          0.5313886404037476
+        ],
+        [
+          "dependency",
+          0.5237647294998169
+        ],
+        [
+          "steam",
+          0.44733354449272156
+        ],
+        [
+          "state",
+          0.43306320905685425
+        ]
+      ],
+      "served_p_no_tool": 0.10843622095949071,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6547048421531704,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "developer",
+          0.0032516121864318848
+        ]
+      ],
+      "planner_tools": [
+        "package",
+        "filesystem",
+        "steam",
+        "verify",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-12",
+      "language": "en",
+      "text": "commit and push my changes to git",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.39129918813705444
+        ],
+        [
+          "notes_tasks",
+          0.37502768635749817
+        ],
+        [
+          "state",
+          0.3258955478668213
+        ],
+        [
+          "memory",
+          0.3101491332054138
+        ],
+        [
+          "terminal",
+          0.3059287369251251
+        ]
+      ],
+      "served_p_no_tool": 0.29172424355793874,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7206229798179288,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "filesystem",
+        "notes_tasks",
+        "memory",
+        "terminal",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-13",
+      "language": "es",
+      "text": "pasale el antivirus al equipo",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "safety",
+          0.44895434379577637
+        ],
+        [
+          "state",
+          0.40596482157707214
+        ],
+        [
+          "knowledge",
+          0.3814827799797058
+        ],
+        [
+          "network",
+          0.3548474907875061
+        ],
+        [
+          "package",
+          0.3291194438934326
+        ]
+      ],
+      "served_p_no_tool": 0.2174456688693425,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.7279685436679981,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "maintenance",
+          0.09793931245803833
+        ]
+      ],
+      "planner_tools": [
+        "maintenance",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-14",
+      "language": "es",
+      "text": "desfragmenta el disco duro",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "system",
+          0.4347653388977051
+        ],
+        [
+          "state",
+          0.4173218607902527
+        ],
+        [
+          "filesystem",
+          0.41679176688194275
+        ],
+        [
+          "device_settings",
+          0.4104440212249756
+        ],
+        [
+          "audio",
+          0.40944886207580566
+        ]
+      ],
+      "served_p_no_tool": 0.23803896437475974,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5683873495119302,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.03091365098953247
+        ]
+      ],
+      "planner_tools": [
+        "system",
+        "filesystem",
+        "device_settings",
+        "audio",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "ooc-15",
+      "language": "en",
+      "text": "spin up a virtual machine",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "window",
+          0.3194325864315033
+        ],
+        [
+          "audio",
+          0.3003295063972473
+        ],
+        [
+          "app",
+          0.26646748185157776
+        ],
+        [
+          "system",
+          0.2593722343444824
+        ]
+      ],
+      "served_p_no_tool": 0.4295302143052359,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6830807962934042,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "window",
+        "audio",
+        "app",
+        "system",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-16",
+      "language": "es",
+      "text": "cambiame la contrasena de windows",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "window",
+          0.5615699887275696
+        ],
+        [
+          "accessibility",
+          0.4934462606906891
+        ],
+        [
+          "app",
+          0.4442782402038574
+        ],
+        [
+          "uia",
+          0.43465039134025574
+        ],
+        [
+          "computer_use",
+          0.3962276577949524
+        ]
+      ],
+      "served_p_no_tool": 0.1054520323424273,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5026034312220953,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "window",
+        "accessibility",
+        "app",
+        "uia",
+        "computer_use",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-17",
+      "language": "es",
+      "text": "grabame la pantalla en video",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "vision",
+          0.6029002666473389
+        ],
+        [
+          "gui",
+          0.5500085353851318
+        ],
+        [
+          "clipboard",
+          0.4237200617790222
+        ],
+        [
+          "computer_use",
+          0.38992273807525635
+        ],
+        [
+          "filesystem",
+          0.3861177861690521
+        ]
+      ],
+      "served_p_no_tool": 0.07955029902639103,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.30139806159207283,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-18",
+      "language": "en",
+      "text": "connect to my work vpn",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "network",
+          0.590550422668457
+        ],
+        [
+          "contacts",
+          0.40957754850387573
+        ],
+        [
+          "device_settings",
+          0.36707615852355957
+        ],
+        [
+          "system",
+          0.3264716863632202
+        ],
+        [
+          "state",
+          0.3162802457809448
+        ]
+      ],
+      "served_p_no_tool": 0.08996048403084918,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.376787599615888,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.09149682521820068
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-19",
+      "language": "es",
+      "text": "cloname el disco duro a otro",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.3685317039489746
+        ],
+        [
+          "clipboard",
+          0.35336756706237793
+        ]
+      ],
+      "served_p_no_tool": 0.33188271620349497,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5892382534615359,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.06869107484817505
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-20",
+      "language": "es",
+      "text": "riega las plantas del balcon",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "window",
+          0.4632989764213562
+        ],
+        [
+          "gui",
+          0.3578292429447174
+        ],
+        [
+          "vision",
+          0.3485032916069031
+        ],
+        [
+          "uia",
+          0.32092469930648804
+        ],
+        [
+          "accessibility",
+          0.31689453125
+        ]
+      ],
+      "served_p_no_tool": 0.2030325717370024,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5608461216781725,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.04090619087219238
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "gui",
+        "vision",
+        "uia",
+        "accessibility",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-21",
+      "language": "es",
+      "text": "programa el aire acondicionado a veintidos grados",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "device_settings",
+          0.5190256237983704
+        ],
+        [
+          "system",
+          0.4537503719329834
+        ],
+        [
+          "notification",
+          0.373214989900589
+        ],
+        [
+          "audio",
+          0.3675824999809265
+        ],
+        [
+          "window",
+          0.35586532950401306
+        ]
+      ],
+      "served_p_no_tool": 0.13591853002476953,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.34377364197865434,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "device_settings",
+        "system",
+        "notification",
+        "audio",
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-22",
+      "language": "en",
+      "text": "download this series over torrent",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.4963715672492981
+        ],
+        [
+          "browser",
+          0.437080979347229
+        ],
+        [
+          "web",
+          0.4324646592140198
+        ],
+        [
+          "package",
+          0.4274294972419739
+        ],
+        [
+          "clipboard",
+          0.4167097806930542
+        ]
+      ],
+      "served_p_no_tool": 0.16167076870282854,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.616726808960799,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "filesystem",
+        "browser",
+        "web",
+        "package",
+        "clipboard",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-23",
+      "language": "es",
+      "text": "editame el video y quitale los ultimos diez segundos",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "media",
+          0.5538821220397949
+        ],
+        [
+          "gui",
+          0.5010049343109131
+        ],
+        [
+          "computer_use",
+          0.491171658039093
+        ],
+        [
+          "audio",
+          0.42273953557014465
+        ],
+        [
+          "filesystem",
+          0.41423967480659485
+        ]
+      ],
+      "served_p_no_tool": 0.10073869396693694,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.4384414288708558,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "media",
+        "browser",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-24",
+      "language": "es_en",
+      "text": "convierteme este pdf a word",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "clipboard",
+          0.47276175022125244
+        ],
+        [
+          "filesystem",
+          0.4541284143924713
+        ],
+        [
+          "knowledge",
+          0.32350391149520874
+        ],
+        [
+          "gui",
+          0.31905803084373474
+        ],
+        [
+          "computer_use",
+          0.2981770634651184
+        ]
+      ],
+      "served_p_no_tool": 0.18960219268318873,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.717192954129202,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "office",
+          0.053238868713378906
+        ]
+      ],
+      "planner_tools": [
+        "office",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-25",
+      "language": "en",
+      "text": "order me an uber to the airport",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.42933011054992676
+        ],
+        [
+          "email",
+          0.42300739884376526
+        ],
+        [
+          "network",
+          0.36977624893188477
+        ],
+        [
+          "notification",
+          0.3104943335056305
+        ],
+        [
+          "memory",
+          0.29552018642425537
+        ]
+      ],
+      "served_p_no_tool": 0.23401650395447796,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6535038481438471,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "contacts",
+        "email",
+        "network",
+        "notification",
+        "memory",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-26",
+      "language": "es",
+      "text": "reservame hora en la peluqueria",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "notification",
+          0.4910529553890228
+        ],
+        [
+          "accessibility",
+          0.3154580593109131
+        ],
+        [
+          "notes_tasks",
+          0.30285367369651794
+        ],
+        [
+          "system",
+          0.2896128296852112
+        ],
+        [
+          "memory",
+          0.2707142233848572
+        ]
+      ],
+      "served_p_no_tool": 0.17496484474112883,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.48154378660598063,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "notification",
+        "accessibility",
+        "notes_tasks",
+        "system",
+        "memory",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-27",
+      "language": "es",
+      "text": "cambiame el fondo de escritorio",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "window",
+          0.575449526309967
+        ],
+        [
+          "accessibility",
+          0.42510730028152466
+        ],
+        [
+          "filesystem",
+          0.3792964518070221
+        ],
+        [
+          "device_settings",
+          0.36723124980926514
+        ],
+        [
+          "app",
+          0.3400002717971802
+        ]
+      ],
+      "served_p_no_tool": 0.09887068791465999,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.33706246999885103,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "window",
+          0.08522140979766846
+        ]
+      ],
+      "planner_tools": [
+        "window",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-28",
+      "language": "en",
+      "text": "encrypt this whole drive with bitlocker",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.38359570503234863
+        ],
+        [
+          "verify",
+          0.3831620216369629
+        ],
+        [
+          "system",
+          0.35143959522247314
+        ],
+        [
+          "network",
+          0.3385615944862366
+        ],
+        [
+          "state",
+          0.3350134789943695
+        ]
+      ],
+      "served_p_no_tool": 0.30694959603630334,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.6617787843791542,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.04150855541229248
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "system",
+        "network",
+        "verify",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-29",
+      "language": "es",
+      "text": "mandame flores a la oficina",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "email",
+          0.49526503682136536
+        ],
+        [
+          "whatsapp",
+          0.32232558727264404
+        ],
+        [
+          "contacts",
+          0.30610790848731995
+        ],
+        [
+          "notes_tasks",
+          0.27473184466362
+        ],
+        [
+          "memory",
+          0.26287707686424255
+        ]
+      ],
+      "served_p_no_tool": 0.1702415298534546,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5581395984006879,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "email",
+          0.0797852873802185
+        ]
+      ],
+      "planner_tools": [
+        "email",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-30",
+      "language": "es_en",
+      "text": "hazme un deploy a produccion",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "state",
+          0.37016230821609497
+        ],
+        [
+          "terminal",
+          0.3516700267791748
+        ],
+        [
+          "dependency",
+          0.3294861316680908
+        ],
+        [
+          "package",
+          0.31086111068725586
+        ],
+        [
+          "notes_tasks",
+          0.3028091788291931
+        ]
+      ],
+      "served_p_no_tool": 0.3361630289514393,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.8970085995634919,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "terminal",
+        "package",
+        "notes_tasks",
+        "state",
+        "dependency",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-31",
+      "language": "en",
+      "text": "unlock my phone for me",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "contacts",
+          0.5107936859130859
+        ],
+        [
+          "network",
+          0.43394383788108826
+        ],
+        [
+          "device_settings",
+          0.4080469608306885
+        ],
+        [
+          "accessibility",
+          0.3923299312591553
+        ],
+        [
+          "memory",
+          0.38469409942626953
+        ]
+      ],
+      "served_p_no_tool": 0.14865260990518822,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.754726516850162,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "contacts",
+        "network",
+        "device_settings",
+        "accessibility",
+        "memory",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-32",
+      "language": "es",
+      "text": "llamame un plomero para manana",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "memory",
+          0.44795048236846924
+        ],
+        [
+          "whatsapp",
+          0.39894962310791016
+        ],
+        [
+          "contacts",
+          0.3247026205062866
+        ],
+        [
+          "media",
+          0.32075998187065125
+        ],
+        [
+          "notification",
+          0.2968454360961914
+        ]
+      ],
+      "served_p_no_tool": 0.2211416997471017,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.9249818409685736,
+      "calibrated_head_abstains": true,
+      "tool_head_fired": [
+        [
+          "routine",
+          0.03885167837142944
+        ]
+      ],
+      "planner_tools": [
+        "memory",
+        "whatsapp",
+        "contacts",
+        "media",
+        "notification",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-33",
+      "language": "es",
+      "text": "imprimeme en 3d esta figura",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "vision",
+          0.5744172930717468
+        ],
+        [
+          "gui",
+          0.5634843707084656
+        ],
+        [
+          "clipboard",
+          0.5474902391433716
+        ],
+        [
+          "filesystem",
+          0.46597379446029663
+        ],
+        [
+          "computer_use",
+          0.42538219690322876
+        ]
+      ],
+      "served_p_no_tool": 0.0935756539728486,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.5825837368413663,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "vision",
+          0.0009307265281677246
+        ]
+      ],
+      "planner_tools": [
+        "vision",
+        "gui",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-34",
+      "language": "en",
+      "text": "overclock the graphics card",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "app",
+          0.345622181892395
+        ],
+        [
+          "window",
+          0.3286181688308716
+        ],
+        [
+          "system",
+          0.3119038939476013
+        ],
+        [
+          "steam",
+          0.30092886090278625
+        ],
+        [
+          "package",
+          0.29545068740844727
+        ]
+      ],
+      "served_p_no_tool": 0.38507419940608273,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.64515062779417,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [],
+      "planner_tools": [
+        "app",
+        "window",
+        "system",
+        "steam",
+        "package",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": true
+    },
+    {
+      "case_id": "ooc-35",
+      "language": "es",
+      "text": "crea una particion nueva en el disco",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "filesystem",
+          0.4754326343536377
+        ],
+        [
+          "terminal",
+          0.31314343214035034
+        ],
+        [
+          "state",
+          0.2937435209751129
+        ]
+      ],
+      "served_p_no_tool": 0.18519407406758542,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.2634581165770983,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "filesystem",
+          0.09445703029632568
+        ]
+      ],
+      "planner_tools": [
+        "filesystem",
+        "verify",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    },
+    {
+      "case_id": "ooc-36",
+      "language": "es_en",
+      "text": "resetea el router de la casa",
+      "expected_operations": [],
+      "in_catalog": false,
+      "semantic_top_5": [
+        [
+          "network",
+          0.516779899597168
+        ],
+        [
+          "device_settings",
+          0.4581872224807739
+        ],
+        [
+          "state",
+          0.3296588063240051
+        ],
+        [
+          "system",
+          0.2939074635505676
+        ],
+        [
+          "accessibility",
+          0.2646964490413666
+        ]
+      ],
+      "served_p_no_tool": 0.14176829389436613,
+      "served_head_abstains": false,
+      "calibrated_p_no_tool": 0.331354036112472,
+      "calibrated_head_abstains": false,
+      "tool_head_fired": [
+        [
+          "network",
+          0.11066609621047974
+        ]
+      ],
+      "planner_tools": [
+        "network",
+        "state",
+        "session"
+      ],
+      "planner_abstains": false,
+      "deictic": false
+    }
+  ]
+}

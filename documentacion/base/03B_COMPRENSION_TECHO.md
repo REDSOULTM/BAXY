@@ -823,3 +823,36 @@ seis frente a IQ2; su oráculo conjunto es 115. No se probarán 64 tokens ni má
 capas. El mecanismo de offload está documentado por
 [llama.cpp `--n-gpu-layers`](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md#common-params),
 y el modelo/quant por [Qwen](https://huggingface.co/Qwen/Qwen3-8B-GGUF).
+
+La primera pieza de la pila heredada tampoco completa la guarda
+(`goal03_inherited_router_stack_v18.json`). Se midió el despliegue coordinado de
+`Probando Gemma 4`, no el bundle anterior de FunctionGemma: su
+`model_int8.onnx` es byte a byte el backup señalado por el goal (SHA-256
+`987091a86e004caafcbcc9d61148dc5d5851b9cac3d2a5700db810e578e4f026`) y las
+cabezas/centroides/exemplars son los recalibrados del 26 de junio. En el
+call-site real del planner, que pasa `intent=None` y `keyword_fired=False`, la
+cabeza conserva las 124 positivas pero abstiene **0/36** negativas: sus
+probabilidades quedan entre 0,019 y 0,430, siempre bajo el umbral heredado 0,68.
+El planner completo también ofrece alguna tool de dominio en **160/160** filas,
+por lo que superponerlo al mejor selector medido no mueve nada: sigue en
+**110/124** y **18/36** abstenciones honestas.
+
+Restituir sólo para diagnóstico las features de intención usadas por el arnés
+heredado prueba que el problema no es un import roto: la cabeza entonces
+abstiene 10/36 negativas, pero también 38/124 órdenes del catálogo. Como guarda
+del selector oficial evita cuatro acciones indebidas y destruye 34 aciertos:
+**76/124** y **22/36**. `inp-03` («type hello world for me») es uno de esos
+falsos vetos, con `P(no_tool)=0,840`. El componente es muy ligero —p50 del
+encoder ONNX **2,302 ms**, dot de abstención **0,015 ms**, intención+cabeza
+**2,228 ms**, tool-head **0,038 ms** y planner completo **5,089 ms**—, pero no
+compra la frontera pedida y queda rechazado antes de producto.
+
+El detector deíctico del mismo stack sí marca `clp-02` («pegalo aca»), pero no
+`clp-03` («what did I copy last») ni `inp-03`; estas dos últimas son peticiones
+completas, no referencias sin antecedente. Además marca 13 órdenes completas
+adicionales y tres fuera de catálogo. Su diseño sólo inyecta una ruta, URL o ID
+extraído del resultado anterior; el corpus sellado no contiene ese resultado y
+BAXY ya pide referente cuando falta, así que no puede acreditar un acierto nuevo
+en este instrumento. Su coste p50 es **0,004 ms** porque las frases largas salen
+antes del encoder, p90 **1,925 ms**. Se conserva como evidencia heredada, no se
+copia al runtime.
