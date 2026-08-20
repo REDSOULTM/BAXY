@@ -630,3 +630,12 @@ abstenciones honestas. A diferencia de las variantes anteriores, no se descarta
 el modelo todavía: la siguiente medida debe ser punta a punta con las puertas
 vigentes, porque ellas —no esta política aislada— son dueñas de contener los
 efectos no pedidos.
+
+La medida punta a punta cierra esa promoción
+(`goal03_qwen35_e2e1.json`): Qwen3.5-4B sirve **58/124** y abstiene honestamente
+en **35/36**, con p50 **4,445 s** / p90 **5,702 s**. Pierde 6 filas en
+reconocedor, 8 en recuperación, **45 en decisión** y 7 en veto; la decisión
+cruda sólo conserva la operación esperada en **59/124**. Las puertas sí corrigen
+la sobrellamada aislada, pero el contrato completo del producto es incompatible
+con la mejora del selector mínimo y duplica aproximadamente la latencia. El
+candidato queda rechazado y el modelo registrado no cambia.
