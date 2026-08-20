@@ -678,3 +678,11 @@ conserva **28/36** abstenciones. El prompt más corto también baja a p50
 siguen faltando 15 para el listón. Añadir hasta 28 sólo puede ofrecer tres hojas
 más y aumenta la ambigüedad; el siguiente experimento debe mejorar la
 deliberación del selector, no seguir ensanchando la lista.
+
+Una deliberación acotada dentro del mismo schema sí distingue cinco hojas más,
+pero vuelve a abrir alcance (`goal03_qwen3_8b_iq2_reasoned_union16_v7.json`). El
+modelo resume primero verbo, objeto y postcondición y después elige: sube a
+**102/124**, pero baja a **23/36** abstenciones; p50 **0,753 s** / p90
+**0,921 s**. De las 22 pérdidas, 8 no están en la unión y 14 son selección aun
+con la hoja disponible. No se promueve ese campo: el siguiente cambio debe caer
+en el reconocedor dueño de verbos inequívocos, no añadir más prosa al prompt.
