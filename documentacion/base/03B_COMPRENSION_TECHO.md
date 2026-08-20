@@ -639,3 +639,13 @@ cruda sólo conserva la operación esperada en **59/124**. Las puertas sí corri
 la sobrellamada aislada, pero el contrato completo del producto es incompatible
 con la mejora del selector mínimo y duplica aproximadamente la latencia. El
 candidato queda rechazado y el modelo registrado no cambia.
+
+El ranker congelado heredado (`operation_shortlist_v3`) tampoco reemplaza a E5
+por sí solo (`goal03_frozen_operation_ranker_v1.json`): ofrece una operación
+esperada en **50/124** a top-1, **101/124** a top-8 y **109/124** a top-28; pone
+`no_action` primero en **20/36** peticiones fuera de catálogo. La señal útil es
+que sus errores no son los mismos. La unión simétrica ranker+E5 recupera
+**110/124** con 10 candidatos, **116/124** con 16 y **119/124** con 28. Por
+primera vez el techo de recuperación supera las 112 filas sin tocar el corpus,
+el catálogo ni una regla por caso. No se promueve todavía: falta demostrar que
+un selector puede convertir esa cobertura en acierto sin perder abstención.
