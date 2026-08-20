@@ -904,3 +904,25 @@ y único: enviar esas cuatro misiones actualmente fallidas, cláusula por cláus
 al mind vigente con providers desactivados y medir si recupera pasos sin
 inventar ejecución. Hasta ese resultado, el producto permanece en su suelo ya
 cumplido de **5/15 misiones y 13/32 pasos**.
+
+El escalón por cláusula confirma el límite antes de copiar el orquestador
+(`goal03_split_clauses_v21.json`). Se enviaron sólo las ocho cláusulas de las
+cuatro misiones fallidas que V20 separó exactamente, cada una como un
+`turn.decide` independiente, con historial vacío, providers apagados y cero
+efectos. El subgrupo pasa de **0/4 misiones y 0/8 pasos** a **1/4 y 5/8**:
+`cmp-b05` nombra `app.installed` y después `app.open`; `cmp-b04`, `b10` y `b15`
+reconocen la primera cláusula, pero pierden respectivamente `task.create`,
+`audio.status` y `window.active` en la segunda. `b10` incluso propone la hermana
+ajena `window.resize` para «después decime cómo quedó».
+
+Ese 1/4 no se suma como un falso 6/15 punta a punta. La cláusula «if it is, open
+it» nombra `app.open` sin haber observado si Discord está instalado; el probe no
+fabricó el resultado anterior y por eso acredita reconocimiento, no condición,
+argumentos ni ejecución. Para hacerlo real habría que trasladar también el loop
+secuencial, el carry de resultados, las condicionales y sus verificaciones, no
+sólo `split_command`. Cada cláusula cuesta p50 **2,555 s**, p90/máximo **4,907
+s** y las ocho acumulan 20,241 s, aparte de los 3 ms del split. Como el criterio
+vigente ya está exactamente verde en **5/15 y 13/32**, las leyes de arreglar sólo
+lo que bloquea y retirar la capa sustituida impiden añadir ese segundo
+orquestador por una ganancia no verificada. La línea compuesta queda agotada
+para este goal y se conserva íntegra para el goal 07, su dueño.

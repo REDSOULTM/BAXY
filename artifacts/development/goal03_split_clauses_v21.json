@@ -1,0 +1,229 @@
+{
+  "schema": "baxy.goal03-split-clauses-current-mind.v1",
+  "source": {
+    "splitter_result_sha256": "373baa12b2e2a3b6c7b60b027650588ab07d1713f0ee22565fbb031f783665b1",
+    "current_compound_result_sha256": "e763de2ad4e2b2f0b969e03d45590147060aceb85e3b7c3c50a0412e3604fdfa",
+    "audit_sha256": "31fa23d2b33756fa8db8257a34dc0ca7e897975151ee44e1be6db5735fe4df41",
+    "telemetry_sha256": "1a5ed090cbb9424ca1ee7311e8af2bd44c8317f6a02a33d248f2a0ad7ed4cb79"
+  },
+  "population": {
+    "missions": 4,
+    "clauses": 8
+  },
+  "before": {
+    "whole_missions": 0,
+    "named_steps": 0
+  },
+  "after_independent_clauses": {
+    "whole_missions": 1,
+    "named_steps": 5
+  },
+  "latency_seconds": {
+    "rows": 8,
+    "p50": 2.5549095,
+    "p90": 4.906514,
+    "max": 4.906514,
+    "total": 20.240794
+  },
+  "three_zeros": {
+    "providers_enabled": false,
+    "effects_executed": 0
+  },
+  "limits": [
+    "Each clause has empty history, matching a recognition probe rather than execution.",
+    "No result or success of an earlier clause is fabricated.",
+    "A named dependent clause does not prove that its runtime arguments are grounded."
+  ],
+  "missions": [
+    {
+      "case_id": "cmp-b04",
+      "clause_named": [
+        true,
+        false
+      ],
+      "whole": false,
+      "current_whole": false,
+      "current_step_named": [
+        false,
+        false
+      ]
+    },
+    {
+      "case_id": "cmp-b05",
+      "clause_named": [
+        true,
+        true
+      ],
+      "whole": true,
+      "current_whole": false,
+      "current_step_named": [
+        false,
+        false
+      ]
+    },
+    {
+      "case_id": "cmp-b10",
+      "clause_named": [
+        true,
+        false
+      ],
+      "whole": false,
+      "current_whole": false,
+      "current_step_named": [
+        false,
+        false
+      ]
+    },
+    {
+      "case_id": "cmp-b15",
+      "clause_named": [
+        true,
+        false
+      ],
+      "whole": false,
+      "current_whole": false,
+      "current_step_named": [
+        false,
+        false
+      ]
+    }
+  ],
+  "clauses": [
+    {
+      "case_id": "cmp-b04-s1",
+      "mission_id": "cmp-b04",
+      "step_index": 1,
+      "text": "Fijate si tengo una tarea que se llame pagar el arriendo y si no",
+      "expected_operations": [
+        "task.search",
+        "task.list",
+        "task.resolve.exact"
+      ],
+      "final_operations": [
+        "task.search"
+      ],
+      "named": true,
+      "kind": "clarify",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 2.624141
+    },
+    {
+      "case_id": "cmp-b04-s2",
+      "mission_id": "cmp-b04",
+      "step_index": 2,
+      "text": "creala",
+      "expected_operations": [
+        "task.create"
+      ],
+      "final_operations": [],
+      "named": false,
+      "kind": "clarify",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 4.906514
+    },
+    {
+      "case_id": "cmp-b05-s1",
+      "mission_id": "cmp-b05",
+      "step_index": 1,
+      "text": "Check whether Discord is installed on this machine",
+      "expected_operations": [
+        "app.installed",
+        "window.application.status"
+      ],
+      "final_operations": [
+        "app.installed"
+      ],
+      "named": true,
+      "kind": "action",
+      "decision_path": "explicit_effects",
+      "retrieval": "semantic",
+      "seconds": 0.263152
+    },
+    {
+      "case_id": "cmp-b05-s2",
+      "mission_id": "cmp-b05",
+      "step_index": 2,
+      "text": "if it is, open it",
+      "expected_operations": [
+        "app.open"
+      ],
+      "final_operations": [
+        "app.open"
+      ],
+      "named": true,
+      "kind": "clarify",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 4.048051
+    },
+    {
+      "case_id": "cmp-b10-s1",
+      "mission_id": "cmp-b10",
+      "step_index": 1,
+      "text": "Bajale tres puntos al volumen",
+      "expected_operations": [
+        "audio.volume.adjust",
+        "audio.volume"
+      ],
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "named": true,
+      "kind": "plan",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 1.371007
+    },
+    {
+      "case_id": "cmp-b10-s2",
+      "mission_id": "cmp-b10",
+      "step_index": 2,
+      "text": "despues decime como quedo",
+      "expected_operations": [
+        "audio.status"
+      ],
+      "final_operations": [
+        "window.resize"
+      ],
+      "named": false,
+      "kind": "clarify",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 1.902533
+    },
+    {
+      "case_id": "cmp-b15-s1",
+      "mission_id": "cmp-b15",
+      "step_index": 1,
+      "text": "Minimiza la ventana de adelante",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "final_operations": [
+        "window.minimize"
+      ],
+      "named": true,
+      "kind": "clarify",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 2.485678
+    },
+    {
+      "case_id": "cmp-b15-s2",
+      "mission_id": "cmp-b15",
+      "step_index": 2,
+      "text": "despues decime cual quedo en primer plano",
+      "expected_operations": [
+        "window.active"
+      ],
+      "final_operations": [],
+      "named": false,
+      "kind": "conversation",
+      "decision_path": "model",
+      "retrieval": "semantic",
+      "seconds": 2.639718
+    }
+  ]
+}
