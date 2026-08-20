@@ -714,3 +714,18 @@ pierde (`note.search`, `input.pointer.control`, `backup.known.create`), y la
 unión-oráculo de ambas llega exactamente a **112/124**. Por eso la próxima
 medición es Qwen3-8B dentro del pipeline completo con sus verificadores, no otro
 prompt aislado.
+
+Esa comprobación también queda cerrada
+(`goal03_qwen3_8b_iq2_e2e1.json`): Qwen3-8B dentro del pipeline vigente sirve
+**89/124**, abstiene honestamente en **23/36** y tarda p50 **1,774 s** / p90
+**2,659 s** (camino de modelo: p50 **1,947 s** / p90 **2,694 s**). Recuperación
+ofrece la hoja esperada en 110 filas, pero se pierden 4 en reconocedor, 8 en
+recuperación, **18 en decisión** y 5 en `domain_grounding`; la decisión cruda
+sólo conserva 89. Es +7 sobre el baseline registrado, pero -20 contra el mismo
+8B como selector mínimo, así que las capas del contrato completo no realizan la
+unión-oráculo de 112: vuelven a abrir la pérdida de decisión. Los tres ceros se
+mantienen, pero 13/36 peticiones fuera de catálogo aún producirían una operación.
+La telemetría simultánea tomó **1.638 muestras válidas cada 200 ms** bajo WDDM:
+el total del sistema osciló entre 1.755 y 5.172 MiB, un incremento conservador
+de **3.417 MiB**, por debajo de 4.096 MiB; WDDM no expuso memoria por proceso.
+El modelo sí cabe, pero queda rechazado punta a punta por acierto y abstención.
