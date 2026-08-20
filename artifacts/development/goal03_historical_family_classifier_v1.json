@@ -1,0 +1,1580 @@
+{
+  "corpus": {
+    "path": "artifacts\\development\\goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+  },
+  "fresh_corpus": {
+    "in_catalog": {
+      "correct_family": 41,
+      "rows": 124
+    },
+    "out_of_catalog": {
+      "honest_abstentions": 31,
+      "rows": 36
+    }
+  },
+  "historical_validation": {
+    "accuracy": 0.9327817993795243,
+    "balanced_accuracy": 0.8398338609103405
+  },
+  "rows": [
+    {
+      "case_id": "aud-01",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "che ponelo mas bajito que estoy en una llamada"
+    },
+    {
+      "case_id": "aud-02",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "dejame el sonido a la mitad"
+    },
+    {
+      "case_id": "aud-03",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "kill the sound completely, I need silence"
+    },
+    {
+      "case_id": "aud-04",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "mutea el mic que ya vuelvo"
+    },
+    {
+      "case_id": "aud-05",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "como esta el sonido ahora mismo"
+    },
+    {
+      "case_id": "aud-06",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "turn it up a bit, I can barely hear it"
+    },
+    {
+      "case_id": "aud-07",
+      "correct": false,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "quitale el silencio a los parlantes"
+    },
+    {
+      "case_id": "aud-08",
+      "correct": true,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "audio",
+      "text": "baja el volume tres puntos nomas"
+    },
+    {
+      "case_id": "app-01",
+      "correct": false,
+      "expected_domains": [
+        "app"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "necesito el bloc de notas"
+    },
+    {
+      "case_id": "app-02",
+      "correct": false,
+      "expected_domains": [
+        "app"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "do I have discord on this machine"
+    },
+    {
+      "case_id": "app-03",
+      "correct": false,
+      "expected_domains": [
+        "app"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "cierrame la ventana que tengo adelante"
+    },
+    {
+      "case_id": "app-04",
+      "correct": false,
+      "expected_domains": [
+        "app"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "abrime el calculator porfa"
+    },
+    {
+      "case_id": "app-05",
+      "correct": false,
+      "expected_domains": [
+        "app"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "is steam even installed here"
+    },
+    {
+      "case_id": "win-01",
+      "correct": false,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que tengo en primer plano ahora"
+    },
+    {
+      "case_id": "win-02",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "hazme grande esta ventana que no veo nada"
+    },
+    {
+      "case_id": "win-03",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "send this window down to the taskbar"
+    },
+    {
+      "case_id": "win-04",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "corre la ventana a la esquina de arriba a la izquierda"
+    },
+    {
+      "case_id": "win-05",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "make this window eight hundred by six hundred"
+    },
+    {
+      "case_id": "win-06",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "trae la ventana de chrome al frente"
+    },
+    {
+      "case_id": "win-07",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "spotify tiene alguna ventana abierta"
+    },
+    {
+      "case_id": "win-08",
+      "correct": true,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "devuelvele el tamano normal a la ventana"
+    },
+    {
+      "case_id": "sys-01",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "como anda la maquina en general"
+    },
+    {
+      "case_id": "sys-02",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que fecha y hora tenemos"
+    },
+    {
+      "case_id": "sys-03",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "which apps crashed on me lately"
+    },
+    {
+      "case_id": "sys-04",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "trancame el equipo que me voy"
+    },
+    {
+      "case_id": "sys-05",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que programas se estan comiendo la memoria"
+    },
+    {
+      "case_id": "sys-06",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "force quit chrome, it is frozen solid"
+    },
+    {
+      "case_id": "sys-07",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "vaciame la papelera de reciclaje"
+    },
+    {
+      "case_id": "sys-08",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "vision",
+      "text": "subile un poco a la luz de la pantalla"
+    },
+    {
+      "case_id": "sys-09",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "vision",
+      "text": "how bright is my screen right now"
+    },
+    {
+      "case_id": "sys-10",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "con que usuario estoy entrado"
+    },
+    {
+      "case_id": "sys-11",
+      "correct": true,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "system",
+      "text": "cuanta ram me queda libre"
+    },
+    {
+      "case_id": "sys-12",
+      "correct": true,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "system",
+      "text": "apaga la compu"
+    },
+    {
+      "case_id": "net-01",
+      "correct": false,
+      "expected_domains": [
+        "network"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "tengo internet o no"
+    },
+    {
+      "case_id": "net-02",
+      "correct": false,
+      "expected_domains": [
+        "network"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "see if 8.8.8.8 answers"
+    },
+    {
+      "case_id": "net-03",
+      "correct": false,
+      "expected_domains": [
+        "network"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "cual es mi direccion ip"
+    },
+    {
+      "case_id": "net-04",
+      "correct": false,
+      "expected_domains": [
+        "network"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que servidores de nombres estoy usando"
+    },
+    {
+      "case_id": "net-05",
+      "correct": false,
+      "expected_domains": [
+        "network"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "what ports are listening on this box"
+    },
+    {
+      "case_id": "net-06",
+      "correct": false,
+      "expected_domains": [
+        "wifi"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "a que red inalambrica estoy pegado"
+    },
+    {
+      "case_id": "net-07",
+      "correct": false,
+      "expected_domains": [
+        "wifi"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "mostrame las redes que tengo guardadas"
+    },
+    {
+      "case_id": "net-08",
+      "correct": false,
+      "expected_domains": [
+        "wifi"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "drop the wireless connection"
+    },
+    {
+      "case_id": "net-09",
+      "correct": true,
+      "expected_domains": [
+        "wifi"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "wifi",
+      "text": "conectate al wifi de casa"
+    },
+    {
+      "case_id": "med-01",
+      "correct": false,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "para lo que esta sonando"
+    },
+    {
+      "case_id": "med-02",
+      "correct": true,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "media",
+      "text": "que cancion es esta"
+    },
+    {
+      "case_id": "med-03",
+      "correct": false,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "jump ahead thirty seconds"
+    },
+    {
+      "case_id": "med-04",
+      "correct": true,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "media",
+      "text": "ponme algo de bad bunny en spotify"
+    },
+    {
+      "case_id": "med-05",
+      "correct": false,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "streaming",
+      "text": "play the tiny desk concert on youtube"
+    },
+    {
+      "case_id": "med-06",
+      "correct": true,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "media",
+      "text": "pasa a la siguiente cancion"
+    },
+    {
+      "case_id": "not-01",
+      "correct": false,
+      "expected_domains": [
+        "note"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "apuntame que tengo que llamar al dentista"
+    },
+    {
+      "case_id": "not-02",
+      "correct": false,
+      "expected_domains": [
+        "note"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que apuntes tengo guardados"
+    },
+    {
+      "case_id": "not-03",
+      "correct": false,
+      "expected_domains": [
+        "note"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "wifi",
+      "text": "find the note where I wrote the wifi password"
+    },
+    {
+      "case_id": "not-04",
+      "correct": false,
+      "expected_domains": [
+        "note"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "tira a la papelera la nota de la lista del super"
+    },
+    {
+      "case_id": "not-05",
+      "correct": false,
+      "expected_domains": [
+        "note"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "leeme la note que se llama ideas"
+    },
+    {
+      "case_id": "tsk-01",
+      "correct": true,
+      "expected_domains": [
+        "task"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "task",
+      "text": "agregame al pendiente revisar el contrato"
+    },
+    {
+      "case_id": "tsk-02",
+      "correct": false,
+      "expected_domains": [
+        "task"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "what is on my to do list"
+    },
+    {
+      "case_id": "tsk-03",
+      "correct": true,
+      "expected_domains": [
+        "task"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "task",
+      "text": "da por terminada la tarea de pagar el arriendo"
+    },
+    {
+      "case_id": "tsk-04",
+      "correct": false,
+      "expected_domains": [
+        "task"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "web",
+      "text": "busca entre mis pendientes los que hablen del banco"
+    },
+    {
+      "case_id": "tsk-05",
+      "correct": true,
+      "expected_domains": [
+        "task"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "task",
+      "text": "borra el task de comprar cables"
+    },
+    {
+      "case_id": "rem-01",
+      "correct": true,
+      "expected_domains": [
+        "notification",
+        "reminder"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "reminder",
+      "text": "avisame manana a las nueve que tengo medico"
+    },
+    {
+      "case_id": "rem-02",
+      "correct": false,
+      "expected_domains": [
+        "reminder"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "what reminders are set up"
+    },
+    {
+      "case_id": "rem-03",
+      "correct": true,
+      "expected_domains": [
+        "notification",
+        "reminder"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "notification",
+      "text": "cancela la alarma de las siete de la manana"
+    },
+    {
+      "case_id": "rem-04",
+      "correct": true,
+      "expected_domains": [
+        "notification",
+        "reminder"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "notification",
+      "text": "ponme un alarm para las seis de la tarde"
+    },
+    {
+      "case_id": "fs-01",
+      "correct": true,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "filesystem",
+      "text": "abrime la carpeta de descargas"
+    },
+    {
+      "case_id": "fs-02",
+      "correct": false,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "look for a pdf with factura in the name in my documents"
+    },
+    {
+      "case_id": "fs-03",
+      "correct": false,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "hay archivos repetidos en descargas"
+    },
+    {
+      "case_id": "fs-04",
+      "correct": true,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "filesystem",
+      "text": "manda a la papelera el archivo notas.txt de descargas"
+    },
+    {
+      "case_id": "fs-05",
+      "correct": false,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "open the last file I downloaded"
+    },
+    {
+      "case_id": "fs-06",
+      "correct": true,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "filesystem",
+      "text": "creame una carpeta que se llame proyectos"
+    },
+    {
+      "case_id": "fs-07",
+      "correct": true,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "filesystem",
+      "text": "sacale el hash al archivo reporte.txt"
+    },
+    {
+      "case_id": "fs-08",
+      "correct": false,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que archivos tengo en la carpeta de trabajo"
+    },
+    {
+      "case_id": "fs-09",
+      "correct": false,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "write hello into a file called saludo.txt"
+    },
+    {
+      "case_id": "clp-01",
+      "correct": false,
+      "expected_domains": [
+        "clipboard"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "copiame lo que tengo seleccionado"
+    },
+    {
+      "case_id": "clp-02",
+      "correct": false,
+      "expected_domains": [
+        "clipboard"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "pegalo aca"
+    },
+    {
+      "case_id": "clp-03",
+      "correct": false,
+      "expected_domains": [
+        "clipboard"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "what did I copy last"
+    },
+    {
+      "case_id": "clp-04",
+      "correct": true,
+      "expected_domains": [
+        "clipboard"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "clipboard",
+      "text": "deja mi correo en el portapapeles"
+    },
+    {
+      "case_id": "inp-01",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "dale enter"
+    },
+    {
+      "case_id": "inp-02",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "task",
+      "text": "selecciona todo lo que hay ahi"
+    },
+    {
+      "case_id": "inp-03",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "type hello world for me"
+    },
+    {
+      "case_id": "inp-04",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "vision",
+      "text": "sacame el teclado de pantalla"
+    },
+    {
+      "case_id": "inp-05",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "cambia el keyboard a espanol"
+    },
+    {
+      "case_id": "inp-06",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "scroll down a bit"
+    },
+    {
+      "case_id": "inp-07",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "hazle clic al boton de aceptar"
+    },
+    {
+      "case_id": "inp-08",
+      "correct": false,
+      "expected_domains": [
+        "input"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "en que idioma esta el teclado"
+    },
+    {
+      "case_id": "cap-01",
+      "correct": false,
+      "expected_domains": [
+        "capture"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "vision",
+      "text": "sacame una foto de la pantalla"
+    },
+    {
+      "case_id": "cap-02",
+      "correct": false,
+      "expected_domains": [
+        "capture"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "window",
+      "text": "captura nada mas la ventana de adelante"
+    },
+    {
+      "case_id": "cap-03",
+      "correct": true,
+      "expected_domains": [
+        "capture",
+        "ocr"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "capture",
+      "text": "read the text out of that screenshot"
+    },
+    {
+      "case_id": "cap-04",
+      "correct": true,
+      "expected_domains": [
+        "capture",
+        "vision"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "capture",
+      "text": "describime que se ve en la captura"
+    },
+    {
+      "case_id": "brw-01",
+      "correct": false,
+      "expected_domains": [
+        "browser"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "llevame a wikipedia"
+    },
+    {
+      "case_id": "brw-02",
+      "correct": false,
+      "expected_domains": [
+        "browser"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "go back one page"
+    },
+    {
+      "case_id": "brw-03",
+      "correct": false,
+      "expected_domains": [
+        "browser"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que pestanas tengo abiertas"
+    },
+    {
+      "case_id": "brw-04",
+      "correct": false,
+      "expected_domains": [
+        "browser"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "what does this page actually say"
+    },
+    {
+      "case_id": "gam-01",
+      "correct": true,
+      "expected_domains": [
+        "game"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "game",
+      "text": "que juegos tengo instalados"
+    },
+    {
+      "case_id": "gam-02",
+      "correct": true,
+      "expected_domains": [
+        "game"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "game",
+      "text": "launch counter strike"
+    },
+    {
+      "case_id": "gam-03",
+      "correct": true,
+      "expected_domains": [
+        "game"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "game",
+      "text": "tengo instalado el hollow knight"
+    },
+    {
+      "case_id": "gam-04",
+      "correct": false,
+      "expected_domains": [
+        "game"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "media",
+      "text": "para la descarga que tiene steam corriendo"
+    },
+    {
+      "case_id": "blu-01",
+      "correct": true,
+      "expected_domains": [
+        "bluetooth"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "bluetooth",
+      "text": "apagame el bluetooth"
+    },
+    {
+      "case_id": "blu-02",
+      "correct": false,
+      "expected_domains": [
+        "bluetooth"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "which bluetooth devices are around"
+    },
+    {
+      "case_id": "per-01",
+      "correct": false,
+      "expected_domains": [
+        "peripheral"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que cosas tengo conectadas al equipo"
+    },
+    {
+      "case_id": "bak-01",
+      "correct": false,
+      "expected_domains": [
+        "backup"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "hazme una copia de seguridad de documentos"
+    },
+    {
+      "case_id": "bak-02",
+      "correct": false,
+      "expected_domains": [
+        "backup"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "list the backups you have made"
+    },
+    {
+      "case_id": "cal-01",
+      "correct": false,
+      "expected_domains": [
+        "calendar"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que tengo en la agenda para hoy"
+    },
+    {
+      "case_id": "cal-02",
+      "correct": true,
+      "expected_domains": [
+        "calendar"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "calendar",
+      "text": "agendame una reunion manana de diez a once"
+    },
+    {
+      "case_id": "eml-01",
+      "correct": false,
+      "expected_domains": [
+        "email"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "read me the last email that came in"
+    },
+    {
+      "case_id": "eml-02",
+      "correct": false,
+      "expected_domains": [
+        "email"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "contestale al ultimo correo que ya lo vi"
+    },
+    {
+      "case_id": "msg-01",
+      "correct": false,
+      "expected_domains": [
+        "message"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "mandale un mensaje a juan diciendo que llego tarde"
+    },
+    {
+      "case_id": "off-01",
+      "correct": true,
+      "expected_domains": [
+        "office"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "office",
+      "text": "creame un documento de word en blanco"
+    },
+    {
+      "case_id": "pkg-01",
+      "correct": false,
+      "expected_domains": [
+        "package"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "install vlc on this machine"
+    },
+    {
+      "case_id": "str-01",
+      "correct": true,
+      "expected_domains": [
+        "streaming"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "streaming",
+      "text": "pon la casa de papel en netflix"
+    },
+    {
+      "case_id": "web-01",
+      "correct": true,
+      "expected_domains": [
+        "web"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "web",
+      "text": "busca en internet cuanto mide el everest"
+    },
+    {
+      "case_id": "rou-01",
+      "correct": false,
+      "expected_domains": [
+        "routine"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "que rutinas tengo configuradas"
+    },
+    {
+      "case_id": "aud-09",
+      "correct": true,
+      "expected_domains": [
+        "audio"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "audio",
+      "text": "esta muy fuerte el audio, bajalo"
+    },
+    {
+      "case_id": "sys-13",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "cuanto storage me queda en el disco"
+    },
+    {
+      "case_id": "win-09",
+      "correct": false,
+      "expected_domains": [
+        "window"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "minimize everything I have open right now"
+    },
+    {
+      "case_id": "net-10",
+      "correct": false,
+      "expected_domains": [
+        "network"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "chequea si el internet anda"
+    },
+    {
+      "case_id": "med-07",
+      "correct": true,
+      "expected_domains": [
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "media",
+      "text": "retrocede diez segundos la cancion"
+    },
+    {
+      "case_id": "fs-10",
+      "correct": false,
+      "expected_domains": [
+        "filesystem"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "abrime la carpeta de imagenes"
+    },
+    {
+      "case_id": "sys-14",
+      "correct": false,
+      "expected_domains": [
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "log me out of windows"
+    },
+    {
+      "case_id": "app-06",
+      "correct": false,
+      "expected_domains": [
+        "app"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "browser",
+      "text": "arrancame el navegador"
+    },
+    {
+      "case_id": "not-06",
+      "correct": false,
+      "expected_domains": [
+        "note"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "no_operation",
+      "text": "jot down that the router password is on the fridge"
+    },
+    {
+      "case_id": "tsk-06",
+      "correct": true,
+      "expected_domains": [
+        "task"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "task",
+      "text": "volve a abrir la tarea de llamar al banco"
+    },
+    {
+      "case_id": "cmp-01",
+      "correct": true,
+      "expected_domains": [
+        "app",
+        "media"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "media",
+      "text": "abre spotify y ponme musica"
+    },
+    {
+      "case_id": "cmp-02",
+      "correct": true,
+      "expected_domains": [
+        "capture",
+        "ocr",
+        "vision"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "capture",
+      "text": "saca un screenshot y decime que dice"
+    },
+    {
+      "case_id": "cmp-03",
+      "correct": true,
+      "expected_domains": [
+        "audio",
+        "system"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "audio",
+      "text": "mute the audio and lock the machine"
+    },
+    {
+      "case_id": "cmp-04",
+      "correct": false,
+      "expected_domains": [
+        "note",
+        "notification",
+        "reminder"
+      ],
+      "in_catalog": true,
+      "predicted_domain": "calendar",
+      "text": "anota que hay reunion el jueves y avisame ese dia"
+    },
+    {
+      "case_id": "ooc-01",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "pide un taxi para las ocho"
+    },
+    {
+      "case_id": "ooc-02",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "book me a table for two tonight"
+    },
+    {
+      "case_id": "ooc-03",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "pedime una pizza a domicilio"
+    },
+    {
+      "case_id": "ooc-04",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "call my mother"
+    },
+    {
+      "case_id": "ooc-05",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "transfiere cincuenta dolares a mi hermano"
+    },
+    {
+      "case_id": "ooc-06",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "prende las luces del living"
+    },
+    {
+      "case_id": "ooc-07",
+      "correct": false,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "streaming",
+      "text": "upload this video to youtube"
+    },
+    {
+      "case_id": "ooc-08",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "formatea el pendrive"
+    },
+    {
+      "case_id": "ooc-09",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "update the bios on this laptop"
+    },
+    {
+      "case_id": "ooc-10",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "sacame un pasaje de avion a madrid"
+    },
+    {
+      "case_id": "ooc-11",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "compilame el proyecto de rust"
+    },
+    {
+      "case_id": "ooc-12",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "commit and push my changes to git"
+    },
+    {
+      "case_id": "ooc-13",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "pasale el antivirus al equipo"
+    },
+    {
+      "case_id": "ooc-14",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "desfragmenta el disco duro"
+    },
+    {
+      "case_id": "ooc-15",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "spin up a virtual machine"
+    },
+    {
+      "case_id": "ooc-16",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "cambiame la contrasena de windows"
+    },
+    {
+      "case_id": "ooc-17",
+      "correct": false,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "vision",
+      "text": "grabame la pantalla en video"
+    },
+    {
+      "case_id": "ooc-18",
+      "correct": false,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "wifi",
+      "text": "connect to my work vpn"
+    },
+    {
+      "case_id": "ooc-19",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "cloname el disco duro a otro"
+    },
+    {
+      "case_id": "ooc-20",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "riega las plantas del balcon"
+    },
+    {
+      "case_id": "ooc-21",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "programa el aire acondicionado a veintidos grados"
+    },
+    {
+      "case_id": "ooc-22",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "download this series over torrent"
+    },
+    {
+      "case_id": "ooc-23",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "editame el video y quitale los ultimos diez segundos"
+    },
+    {
+      "case_id": "ooc-24",
+      "correct": false,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "office",
+      "text": "convierteme este pdf a word"
+    },
+    {
+      "case_id": "ooc-25",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "order me an uber to the airport"
+    },
+    {
+      "case_id": "ooc-26",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "reservame hora en la peluqueria"
+    },
+    {
+      "case_id": "ooc-27",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "cambiame el fondo de escritorio"
+    },
+    {
+      "case_id": "ooc-28",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "encrypt this whole drive with bitlocker"
+    },
+    {
+      "case_id": "ooc-29",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "mandame flores a la oficina"
+    },
+    {
+      "case_id": "ooc-30",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "hazme un deploy a produccion"
+    },
+    {
+      "case_id": "ooc-31",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "unlock my phone for me"
+    },
+    {
+      "case_id": "ooc-32",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "llamame un plomero para manana"
+    },
+    {
+      "case_id": "ooc-33",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "imprimeme en 3d esta figura"
+    },
+    {
+      "case_id": "ooc-34",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "overclock the graphics card"
+    },
+    {
+      "case_id": "ooc-35",
+      "correct": false,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "filesystem",
+      "text": "crea una particion nueva en el disco"
+    },
+    {
+      "case_id": "ooc-36",
+      "correct": true,
+      "expected_domains": [],
+      "in_catalog": false,
+      "predicted_domain": "no_operation",
+      "text": "resetea el router de la casa"
+    }
+  ],
+  "schema": "baxy.goal03-historical-family-classifier.v1",
+  "timing_seconds": {
+    "fresh_per_row_mean": 4.623750000973814e-05,
+    "fresh_total": 0.007398000001558103,
+    "training": 1.427970999997342
+  },
+  "training_sources": {
+    "mapping": {
+      "path": "tests\\data\\historical_message_mapping.jsonl",
+      "sha256": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b"
+    },
+    "messages": {
+      "path": "tests\\data\\historical_messages.jsonl",
+      "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e"
+    },
+    "rows": 9666,
+    "train_rows": 7732,
+    "validation_rows": 1934
+  }
+}

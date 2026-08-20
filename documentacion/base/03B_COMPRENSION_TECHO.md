@@ -608,3 +608,14 @@ la esperada en **76/124**, conserva **19/36** abstenciones honestas y tarda p50
 pierde seis aciertos frente a la política mínima con centinela y siete frente a
 la decisión cruda de referencia. Queda rechazado: el error no era sólo permitir
 varias operaciones, y esa simplificación tampoco justifica tocar producto.
+
+También se midió heredar como datos, no sólo como diseño
+(`goal03_historical_family_classifier_v1.json`). Un TF-IDF de palabras y
+caracteres con SVM lineal se entrenó sólo con **9.666** mensajes no duplicados
+del corte histórico y su mapping versionado, nunca con el corpus fresco. Logra
+**93,28 %** en las 1.934 filas de validación histórica y clasifica las 160 filas
+frescas en **7,398 ms** totales, pero acierta apenas **41/124** familias; abstiene
+honestamente en **31/36**. El salto entre ambas poblaciones prueba cambio de
+distribución: el corpus histórico de ejemplos documentales no sirve como
+entrenamiento directo para las paráfrasis coloquiales actuales. Queda rechazado
+antes de darle autoridad o añadirlo al runtime.
