@@ -1140,3 +1140,18 @@ otra LoRA todavía. El siguiente filtro mantiene el orden de producción: formar
 la unión ranker+E5 de cada frase real y medir cuántos labels entran sin forzar;
 si recuperación o holdout no sostienen la hipótesis, estas filas se conservan
 como corpus histórico y no se convierten en otra capa.
+
+La unión de producción confirma una señal útil pero acotada
+(`goal03_inherited_real_union_corpus_v34.json`). Sin forzar labels, ranker14+E5
+recupera **242/274** train (88,3 %) y **62/71** holdout (87,3 %); las 32 filas
+train sin target declarado se eliminan en vez de fabricar candidatos. Quedan
+**242** ejemplos reales sobre 16 operaciones, subsets de 17–28 tools (media
+23,91), SHA `5fc2edca…`; el holdout completo conserva los nueve misses para
+medir punta a punta, SHA `c42d27e6…`.
+
+La recuperación no alcanza por sí sola el estándar fresco de 119/124 y estas 16
+operaciones no cubren el catálogo. Su valor es otro: constituyen un examen
+independiente de estilo real. Antes de gastar GPU se mide allí el adapter V28
+sin cambios. Sólo una brecha clara entre su 93,71 % sintético y este holdout,
+seguida de una mejora del mismo holdout con la mezcla real prerregistrada,
+justificaría volver a abrir el corte fresco.

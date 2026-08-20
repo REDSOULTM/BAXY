@@ -1,0 +1,89 @@
+{
+  "authority": {
+    "effects_executed": 0,
+    "providers_enabled": false,
+    "runtime_manifest_changed": false
+  },
+  "candidate_count": {
+    "maximum": 28,
+    "mean": 23.910145,
+    "minimum": 17
+  },
+  "catalog_operations": 169,
+  "outputs": {
+    "train": {
+      "by_operation": {
+        "app.close": 14,
+        "app.open": 35,
+        "audio.mute": 10,
+        "audio.volume": 45,
+        "browser.navigate": 13,
+        "capture.screenshot": 4,
+        "filesystem.list": 2,
+        "media.control": 7,
+        "media.play.query": 40,
+        "message.send": 21,
+        "system.status": 5,
+        "system.time": 6,
+        "vision.describe": 1,
+        "web.search": 32,
+        "window.maximize": 2,
+        "window.minimize": 5
+      },
+      "operations": 16,
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\current_union_train.jsonl",
+      "rows": 242,
+      "sha256": "5fc2edca7d04c37a5302b0e63717828c9ebdebf471ac9e41a3d4fa972df8cb1b"
+    },
+    "validation": {
+      "by_operation": {
+        "app.close": 3,
+        "app.open": 12,
+        "audio.mute": 3,
+        "audio.volume": 12,
+        "browser.navigate": 6,
+        "capture.screenshot": 1,
+        "filesystem.known.search": 1,
+        "filesystem.list": 1,
+        "media.control": 2,
+        "media.play.query": 10,
+        "memory.save": 1,
+        "message.send": 5,
+        "system.process.list": 1,
+        "system.status": 1,
+        "system.time": 1,
+        "vision.describe": 1,
+        "web.search": 8,
+        "window.maximize": 1,
+        "window.minimize": 1
+      },
+      "operations": 19,
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\current_union_validation.jsonl",
+      "rows": 71,
+      "sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300"
+    }
+  },
+  "policy": "symmetric frozen-ranker 14 + E5 14; no forced labels",
+  "retrieval": {
+    "train": {
+      "retrieved": 242,
+      "rows": 274
+    },
+    "validation": {
+      "retrieved": 62,
+      "rows": 71
+    }
+  },
+  "schema": "baxy.goal03-inherited-real-current-union-corpus.v1",
+  "sources": {
+    "ranker_weights_sha256": "63de7aaeb52cf14e034828315656343b96b5125a33c48e6a5d6d1183bbc14d12",
+    "train": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\mapped_train.jsonl",
+      "sha256": "220ad03345aad2a6470be6c5e2353c7bc6c95689a6b5ab1c884212f8eabe853f"
+    },
+    "validation": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\mapped_validation.jsonl",
+      "sha256": "c69f9db12242ea363d0cd21df131574e3f7f5c18c1bb44854ac7117bccce8de1"
+    }
+  }
+}
