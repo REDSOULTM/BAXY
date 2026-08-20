@@ -1109,3 +1109,19 @@ completo traduce **1.365** entre 42. Esa anchura todavía no acredita las 169
 hojas actuales: antes de otra LoRA hay que sellar un crosswalk semántico y medir
 su cobertura teórica. No se copiaron textos al artefacto ni se modificaron los
 repositorios anteriores.
+
+El crosswalk se selló por contrato antes de medir el corte (`c1ec92d`) y descarta
+el bridge nativo (`goal03_inherited_legacy_crosswalk_v32.json`). Las 42 funciones
+que aparecen en datos reales sólo representan **44/169** operaciones actuales;
+`knowledge_search` y `terminal_run` ni siquiera tienen equivalente vigente. Aun
+permitiendo relaciones uno-a-varios generosas —por ejemplo `play` hacia cuatro
+providers actuales y `set_volume` hacia absoluto/relativo— el oráculo alcanza
+sólo **50/124** filas y 38/115 operaciones esperadas distintas. No se ejecuta el
+GGUF ni se integra un traductor cuyo techo es menos de la mitad del criterio.
+
+Esto separa dos posibles usos de la herencia: el catálogo legacy no sirve como
+runtime, pero sus mensajes reales todavía pueden enseñar forma lingüística a un
+selector que mantenga las 169 hojas actuales. Esa posibilidad tampoco se da por
+hecha: el siguiente filtro es conservar únicamente filas donde familia, acción y
+argumentos determinen una operación actual exacta y medir su cantidad/split sin
+usar fallos individuales del corpus fresco.

@@ -1,0 +1,333 @@
+{
+  "crosswalk": {
+    "active": [
+      "window.active"
+    ],
+    "app_close": [
+      "app.close"
+    ],
+    "app_open": [
+      "app.open",
+      "game.launch"
+    ],
+    "app_search": [
+      "app.installed",
+      "game.installed.named",
+      "window.application.status"
+    ],
+    "battery": [
+      "system.status"
+    ],
+    "browser_open": [
+      "browser.navigate",
+      "browser.navigate.named",
+      "streaming.navigate"
+    ],
+    "browser_search": [
+      "web.search"
+    ],
+    "describe_screen": [
+      "capture.screenshot",
+      "vision.describe"
+    ],
+    "filesystem_delete": [
+      "filesystem.known.trash.named",
+      "filesystem.trash.prepare"
+    ],
+    "filesystem_list": [
+      "filesystem.list"
+    ],
+    "filesystem_read": [
+      "filesystem.read.text"
+    ],
+    "filesystem_search": [
+      "filesystem.known.search",
+      "filesystem.search"
+    ],
+    "get_system_resources": [
+      "system.status"
+    ],
+    "gui_click": [
+      "input.pointer.control",
+      "input.visible.click"
+    ],
+    "gui_screenshot": [
+      "capture.active.window",
+      "capture.screenshot"
+    ],
+    "knowledge_search": [],
+    "library": [
+      "game.catalog.list"
+    ],
+    "maximize": [
+      "window.maximize"
+    ],
+    "media_next": [
+      "media.control"
+    ],
+    "media_previous": [
+      "media.control"
+    ],
+    "media_stop": [
+      "media.control"
+    ],
+    "memory_save": [
+      "memory.save",
+      "memory.sensitive.save"
+    ],
+    "minimize": [
+      "window.minimize"
+    ],
+    "mkdir": [
+      "filesystem.create.directory"
+    ],
+    "mute": [
+      "audio.microphone.mute",
+      "audio.mute"
+    ],
+    "pause": [
+      "media.control"
+    ],
+    "play": [
+      "media.play.exact",
+      "media.play.query",
+      "media.play.youtube",
+      "streaming.play.named"
+    ],
+    "processes": [
+      "system.process.list"
+    ],
+    "recall": [
+      "memory.recall"
+    ],
+    "resume": [
+      "media.control"
+    ],
+    "search_store": [
+      "browser.navigate",
+      "game.catalog.list"
+    ],
+    "send_message": [
+      "message.send"
+    ],
+    "set_volume": [
+      "audio.volume",
+      "audio.volume.adjust"
+    ],
+    "steam_open": [
+      "app.open"
+    ],
+    "store": [
+      "browser.navigate",
+      "game.catalog.list"
+    ],
+    "store_page": [
+      "browser.navigate",
+      "game.catalog.list"
+    ],
+    "terminal_run": [],
+    "time": [
+      "system.time"
+    ],
+    "web_search": [
+      "web.search"
+    ],
+    "window_close": [
+      "app.close"
+    ],
+    "window_focus": [
+      "window.focus"
+    ],
+    "window_list": [
+      "window.resolve"
+    ]
+  },
+  "current_catalogue_operations": 169,
+  "effects_executed": 0,
+  "fresh_corpus": {
+    "distinct_expected_operations": 115,
+    "in_catalog_rows": 124,
+    "path": "artifacts\\development\\goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+  },
+  "fresh_oracle_reach": {
+    "covered_distinct_expected_operations": 38,
+    "covered_expected_operation_names": [
+      "app.close",
+      "app.installed",
+      "app.open",
+      "audio.microphone.mute",
+      "audio.mute",
+      "audio.volume",
+      "audio.volume.adjust",
+      "browser.navigate",
+      "browser.navigate.named",
+      "capture.active.window",
+      "capture.screenshot",
+      "filesystem.create.directory",
+      "filesystem.known.search",
+      "filesystem.known.trash.named",
+      "filesystem.list",
+      "filesystem.search",
+      "game.catalog.list",
+      "game.installed.named",
+      "game.launch",
+      "input.pointer.control",
+      "input.visible.click",
+      "media.control",
+      "media.play.exact",
+      "media.play.query",
+      "media.play.youtube",
+      "message.send",
+      "streaming.play.named",
+      "system.process.list",
+      "system.status",
+      "system.time",
+      "vision.describe",
+      "web.search",
+      "window.active",
+      "window.application.status",
+      "window.focus",
+      "window.maximize",
+      "window.minimize",
+      "window.resolve"
+    ],
+    "covered_rows": 50,
+    "total_distinct_expected_operations": 115,
+    "total_rows": 124,
+    "uncovered_expected_operation_names": [
+      "audio.status",
+      "backup.known.create",
+      "backup.known.list",
+      "backup.list",
+      "bluetooth.device.list",
+      "bluetooth.radio.set",
+      "browser.control",
+      "browser.page.read",
+      "browser.tabs.list",
+      "calendar.event.create",
+      "calendar.event.list",
+      "clipboard.copy",
+      "clipboard.paste",
+      "clipboard.read.text",
+      "clipboard.write.text",
+      "email.latest.read",
+      "email.latest.reply",
+      "filesystem.file.open.latest",
+      "filesystem.folder.open",
+      "filesystem.hash",
+      "filesystem.known.duplicates",
+      "filesystem.write.text",
+      "game.install.cancel",
+      "game.install.cancel.active",
+      "input.key.press",
+      "input.keyboard.layout",
+      "input.keyboard.open",
+      "input.keyboard.status",
+      "input.select.all",
+      "input.text.type",
+      "media.seek.relative",
+      "media.status",
+      "message.recipient.resolve",
+      "network.dns.status",
+      "network.ip.list",
+      "network.ping",
+      "network.port.list",
+      "network.status",
+      "note.create",
+      "note.list",
+      "note.read",
+      "note.search",
+      "note.trash",
+      "notification.cancel.at",
+      "notification.schedule",
+      "ocr.read",
+      "office.document.create",
+      "package.install.commit",
+      "package.install.prepare",
+      "peripheral.list",
+      "reminder.create",
+      "reminder.delete",
+      "reminder.list",
+      "routine.list",
+      "system.application.crash.diagnose",
+      "system.identity",
+      "system.power",
+      "system.process.terminate.named",
+      "system.recyclebin.empty",
+      "system.settings.adjust",
+      "system.settings.status",
+      "task.complete",
+      "task.create",
+      "task.delete",
+      "task.list",
+      "task.reopen",
+      "task.resolve.exact",
+      "task.search",
+      "wifi.connect",
+      "wifi.connect.named",
+      "wifi.disconnect",
+      "wifi.ensure.connected",
+      "wifi.profile.list",
+      "wifi.status",
+      "window.move",
+      "window.resize",
+      "window.restore"
+    ]
+  },
+  "legacy_functions": 42,
+  "legacy_functions_without_current_equivalent": [
+    "knowledge_search",
+    "terminal_run"
+  ],
+  "mapped_current_operation_names": [
+    "app.close",
+    "app.installed",
+    "app.open",
+    "audio.microphone.mute",
+    "audio.mute",
+    "audio.volume",
+    "audio.volume.adjust",
+    "browser.navigate",
+    "browser.navigate.named",
+    "capture.active.window",
+    "capture.screenshot",
+    "filesystem.create.directory",
+    "filesystem.known.search",
+    "filesystem.known.trash.named",
+    "filesystem.list",
+    "filesystem.read.text",
+    "filesystem.search",
+    "filesystem.trash.prepare",
+    "game.catalog.list",
+    "game.installed.named",
+    "game.launch",
+    "input.pointer.control",
+    "input.visible.click",
+    "media.control",
+    "media.play.exact",
+    "media.play.query",
+    "media.play.youtube",
+    "memory.recall",
+    "memory.save",
+    "memory.sensitive.save",
+    "message.send",
+    "streaming.navigate",
+    "streaming.play.named",
+    "system.process.list",
+    "system.status",
+    "system.time",
+    "vision.describe",
+    "web.search",
+    "window.active",
+    "window.application.status",
+    "window.focus",
+    "window.maximize",
+    "window.minimize",
+    "window.resolve"
+  ],
+  "mapped_current_operations": 44,
+  "providers_enabled": false,
+  "schema": "baxy.goal03-inherited-legacy-crosswalk.v1",
+  "source_projects_modified": false
+}
