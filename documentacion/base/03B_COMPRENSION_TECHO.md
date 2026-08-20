@@ -778,3 +778,13 @@ extensión histórica `TIGHT_CLUSTER` no se traslada: su cap 8 sobre desacuerdos
 corroborados baja el techo a **109/124**. El 114 justifica una única inferencia
 con Qwen3-8B; los umbrales vienen del patch anterior y no se calibraron contra
 este corpus.
+
+La inferencia única rechaza la puerta adaptativa como política de selección
+(`goal03_qwen3_8b_iq2_inherited_adaptive_v14.json`). Aunque conserva la hoja
+esperada en **114/124**, Qwen3-8B sólo elige una esperada en **99/124**, abstiene
+**21/36** y tarda p50 **2,348 s** / p90 **2,436 s**. La banda `high` resuelve
+28/30 con 29 hojas recuperadas, pero la banda `low` sólo 71/94 con 85
+recuperadas: el recorte a 16 cambia decisiones más de lo que elimina ruido.
+Frente a unión-28 gana cuatro casos y pierde catorce; su unión-oráculo llega a
+**113/124**, señal complementaria pero no una regla de arbitraje autorizada. No
+se promoverán estos umbrales ni se calibrarán contra el mismo examen fresco.

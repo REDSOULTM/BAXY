@@ -220,6 +220,31 @@ def _write_lf(path: Path, value: dict[str, Any]) -> None:
         stream.write(serialized)
 
 
+def _inherited_adaptive_candidates(
+    row: dict[str, Any],
+) -> tuple[list[str], str, float]:
+    """Reproduce the shortlist policy shipped by the previous BAXY."""
+    scores: dict[str, float] = {}
+    rankings = (row["top_28"], row["e5_top_28"])
+    for ranking in rankings:
+        for rank, name in enumerate(ranking, start=1):
+            scores[str(name)] = scores.get(str(name), 0.0) + 1.0 / (60 + rank)
+    ordered = sorted(scores, key=lambda name: (-scores[name], name))
+    top_score = scores[ordered[0]] if ordered else 0.0
+    top_agrees = bool(
+        rankings[0]
+        and rankings[1]
+        and str(rankings[0][0]) == str(rankings[1][0])
+    )
+    if top_agrees and top_score >= 0.030:
+        band, limit = "high", 4
+    elif top_agrees and top_score >= 0.020:
+        band, limit = "medium", 8
+    else:
+        band, limit = "low", 16
+    return ordered[:limit], band, top_score
+
+
 def run(
     source: Path,
     label: str,
@@ -228,6 +253,7 @@ def run(
     gguf: Path | None = None,
     union_artifact: Path | None = None,
     union_budget: int | None = None,
+    adaptive_union: bool = False,
     proposal_artifacts: list[Path] | None = None,
     reasoning_budget: int | None = None,
 ) -> Path:
@@ -243,6 +269,8 @@ def run(
         union_rows = {str(row["case_id"]): row for row in union_value["rows"]}
         if set(union_rows) != set(corpus):
             raise ValueError("el artefacto de unión no contiene las 160 filas")
+    if adaptive_union and union_rows is None:
+        raise ValueError("la política adaptativa requiere un artefacto de unión")
     proposal_rows: list[dict[str, dict[str, Any]]] = []
     for proposal_artifact in proposal_artifacts or []:
         proposal_value = json.loads(proposal_artifact.read_text(encoding="utf-8"))
@@ -298,6 +326,8 @@ def run(
         )
         for case_id, row in corpus.items():
             source_row = replay[case_id]
+            candidate_band: str | None = None
+            candidate_top_score: float | None = None
             if proposal_rows:
                 candidates = list(
                     dict.fromkeys(
@@ -310,14 +340,19 @@ def run(
             elif union_rows is None:
                 candidates = list(source_row.get("candidate_operations") or [])
             else:
-                per_ranker = union_budget // 2
                 union_row = union_rows[case_id]
-                candidates = list(
-                    dict.fromkeys(
-                        union_row["top_28"][:per_ranker]
-                        + union_row["e5_top_28"][:per_ranker]
+                if adaptive_union:
+                    candidates, candidate_band, candidate_top_score = (
+                        _inherited_adaptive_candidates(union_row)
                     )
-                )
+                else:
+                    per_ranker = union_budget // 2
+                    candidates = list(
+                        dict.fromkeys(
+                            union_row["top_28"][:per_ranker]
+                            + union_row["e5_top_28"][:per_ranker]
+                        )
+                    )
                 candidates = [name for name in candidates if name in descriptions]
             started = time.perf_counter()
             if not candidates:
@@ -361,6 +396,8 @@ def run(
                     "text": row["text"],
                     "expected_operations": sorted(expected),
                     "candidate_operations": candidates,
+                    "candidate_band": candidate_band,
+                    "candidate_top_score": candidate_top_score,
                     "selected_wire_operations": selected_wire,
                     "selected_operations": selected,
                     "sentinel_mixed": sentinel_mixed,
@@ -401,6 +438,9 @@ def run(
                 "path": str(union_artifact.relative_to(REPO)),
                 "sha256": _sha256(union_artifact),
                 "budget": union_budget,
+                "policy": (
+                    "inherited_adaptive_rrf_k60" if adaptive_union else "symmetric"
+                ),
             }
             if union_artifact is not None
             else None
@@ -453,6 +493,7 @@ def main() -> int:
     parser.add_argument("--gguf", type=Path)
     parser.add_argument("--union-artifact", type=Path)
     parser.add_argument("--union-budget", type=int, choices=(16, 28))
+    parser.add_argument("--adaptive-union", action="store_true")
     parser.add_argument("--proposal-artifact", action="append", type=Path, default=[])
     parser.add_argument("--reasoning-budget", type=int)
     parser.add_argument(
@@ -470,6 +511,7 @@ def main() -> int:
             args.union_artifact.resolve() if args.union_artifact is not None else None
         ),
         union_budget=args.union_budget,
+        adaptive_union=args.adaptive_union,
         proposal_artifacts=[path.resolve() for path in args.proposal_artifact],
         reasoning_budget=args.reasoning_budget,
     )
