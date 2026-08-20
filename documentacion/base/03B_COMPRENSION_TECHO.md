@@ -1155,3 +1155,18 @@ independiente de estilo real. Antes de gastar GPU se mide allí el adapter V28
 sin cambios. Sólo una brecha clara entre su 93,71 % sintético y este holdout,
 seguida de una mejora del mismo holdout con la mezcla real prerregistrada,
 justificaría volver a abrir el corte fresco.
+
+La línea base real confirma la brecha antes de entrenar
+(`goal03_functiongemma_real_language_baseline_v35.json`, SHA `eecdf1c2…`). El
+adapter V28 acierta sólo **11/71** (15,5 %) y 11/62 labels recuperados; emite
+`no_action` en 49 órdenes, ninguna llamada parseable en tres y una hoja errónea
+en ocho. Cuesta p50 0,756 s y 655,7 MiB. Es independiente de las 160 frases y
+reproduce la sobreabstención fresca de 89/124, así que la mezcla real sí ataca
+un fallo demostrado fuera del examen.
+
+Se prerregistra un solo challenger: partir del mismo FunctionGemma base, misma
+LoRA r16/alpha32/lr2e-4/semilla5601, una época y 2:1 acciones:`no_action`; por
+cada operación tomar como máximo ocho filas reales y mantener el corpus actual
+para todas las demás. Debe alcanzar **≥50/71** en este holdout y conservar
+**≥430/477** acciones sintéticas, con **0/307** negativas que seleccionen acción,
+antes de merecer otra corrida fresca. No se ajustarán esos umbrales después.
