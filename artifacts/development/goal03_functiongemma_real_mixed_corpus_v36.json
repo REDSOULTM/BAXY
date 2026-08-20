@@ -1,0 +1,57 @@
+{
+  "authority": {
+    "effects_executed": 0,
+    "providers_enabled": false,
+    "runtime_manifest_changed": false
+  },
+  "conflicting_real_rows_removed": 0,
+  "exact_normalized_overlap_with_sealed": 0,
+  "output": {
+    "no_action_rows": 2700,
+    "operations": 169,
+    "path": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-real-mixed-v1\\train.jsonl",
+    "real_rows": 242,
+    "rows": 7129,
+    "sha256": "c8b6e29a023a0d084747fef4c4bbeba08d81f8f131d47a908e90aa8e1828c6ac"
+  },
+  "same_label_real_rows_replaced_current": 35,
+  "schema": "baxy.goal03-functiongemma-real-mixed-corpus.v1",
+  "sources": {
+    "current": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\train.jsonl",
+      "rows": 6922,
+      "sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad"
+    },
+    "inherited_real": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\current_union_train.jsonl",
+      "rows": 242,
+      "sha256": "5fc2edca7d04c37a5302b0e63717828c9ebdebf471ac9e41a3d4fa972df8cb1b"
+    },
+    "sealed_exclusion_only": {
+      "path": "artifacts\\development\\goal03_fresh_paraphrase_corpus.v1.jsonl",
+      "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+    }
+  },
+  "training_preregistration": {
+    "alpha": 32,
+    "attention_implementation": "sdpa",
+    "batch_size": 1,
+    "epochs": 1,
+    "expected_balanced_rows_per_epoch": 2028,
+    "expected_preferred_real_rows_per_epoch": 96,
+    "gradient_accumulation": 8,
+    "learning_rate": 0.0002,
+    "max_length": 1408,
+    "no_action_ratio": 0.5,
+    "per_operation": 8,
+    "preferred_per_operation": 8,
+    "preferred_source": "inherited-real-language-high-confidence-v1",
+    "rank": 16,
+    "seed": 5601
+  },
+  "validation_gates": {
+    "real_exact_minimum": "50/71",
+    "synthetic_negative_selected_actions_maximum": "0/307",
+    "synthetic_positive_exact_minimum": "430/477"
+  }
+}

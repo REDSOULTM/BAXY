@@ -1170,3 +1170,17 @@ cada operación tomar como máximo ocho filas reales y mantener el corpus actual
 para todas las demás. Debe alcanzar **≥50/71** en este holdout y conservar
 **≥430/477** acciones sintéticas, con **0/307** negativas que seleccionen acción,
 antes de merecer otra corrida fresca. No se ajustarán esos umbrales después.
+
+La mezcla queda cerrada antes de entrenar
+(`goal03_functiongemma_real_mixed_corpus_v36.json`). Une las 6.922 filas
+actuales con 242 reales; 35 coincidencias del mismo label se sustituyen por su
+versión real, ninguna contradice y quedan **7.129** textos, 169 operaciones y
+2.700 negativas, SHA `c8b6e29a…`, cero solapamiento fresco. El balance seco con
+tokenizer confirma exactamente **2.028** filas: 1.352 acciones + 676
+`no_action`, incluyendo **96** reales en 16 operaciones; máximo 1.371 tokens.
+
+El cambio del entrenador es sólo de muestreo declarativo: `preferred_source`
+elige hasta ocho reales y completa cada operación con el orden heredado. Con
+sus defaults reproduce V28. La nueva corrida queda fijada a SDPA/1.408 y los
+hiperparámetros ya escritos; saldrá desde el base, no continuará el adapter
+fallido. Sus pesos no podrán ver ninguno de los dos holdouts.

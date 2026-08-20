@@ -110,6 +110,8 @@ def _balanced_rows(
     per_operation: int,
     seed: int,
     no_action_ratio: float | None = None,
+    preferred_source: str | None = None,
+    preferred_per_operation: int = 0,
 ) -> list[EncodedRow]:
     grouped: dict[str, list[EncodedRow]] = collections.defaultdict(list)
     for row in rows:
@@ -117,14 +119,31 @@ def _balanced_rows(
     rng = random.Random(seed)
     balanced: list[EncodedRow] = []
     no_action_pool = grouped.pop(NO_ACTION_OPERATION, [])
+    if not 0 <= preferred_per_operation <= per_operation:
+        raise ValueError("preferred_per_operation must be between 0 and per_operation")
+    if preferred_per_operation and not preferred_source:
+        raise ValueError("preferred_source is required when preferred_per_operation is set")
     for operation in sorted(grouped):
         pool = grouped[operation]
         rng.shuffle(pool)
         pool.sort(key=lambda row: _source_priority(row.source))
-        if len(pool) >= per_operation:
-            selected = pool[:per_operation]
+        preferred = (
+            [row for row in pool if row.source == preferred_source]
+            if preferred_source
+            else []
+        )
+        fallback = [row for row in pool if row.source != preferred_source]
+        preferred_selected = preferred[:preferred_per_operation]
+        remaining = per_operation - len(preferred_selected)
+        if len(fallback) >= remaining:
+            selected = [*preferred_selected, *fallback[:remaining]]
         else:
-            selected = [pool[index % len(pool)] for index in range(per_operation)]
+            refill = fallback or preferred or pool
+            selected = [*preferred_selected, *fallback]
+            selected.extend(
+                refill[index % len(refill)]
+                for index in range(per_operation - len(selected))
+            )
             rng.shuffle(selected)
         balanced.extend(selected)
     if no_action_ratio is None:
@@ -187,6 +206,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         args.per_operation,
         args.seed,
         no_action_ratio=args.no_action_ratio,
+        preferred_source=args.preferred_source,
+        preferred_per_operation=args.preferred_per_operation,
     )
     loader_generator = torch.Generator().manual_seed(args.seed)
     loader = DataLoader(
@@ -319,6 +340,9 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "balance_counts_per_epoch": dict(
             collections.Counter(row.balance_key for row in balanced)
         ),
+        "source_counts_per_epoch": dict(
+            collections.Counter(row.source for row in balanced)
+        ),
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "gradient_accumulation": args.gradient_accumulation,
@@ -326,6 +350,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "learning_rate": args.learning_rate,
         "attention_implementation": args.attention_implementation,
         "no_action_ratio": args.no_action_ratio,
+        "preferred_source": args.preferred_source,
+        "preferred_per_operation": args.preferred_per_operation,
         "rank": args.rank,
         "alpha": args.alpha,
         "trainable_parameters": trainable,
@@ -368,6 +394,8 @@ def main() -> int:
         default=None,
         help="sample this many no-action rows per balanced positive row",
     )
+    parser.add_argument("--preferred-source")
+    parser.add_argument("--preferred-per-operation", type=int, default=0)
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--gradient-accumulation", type=int, default=4)
     parser.add_argument("--max-length", type=int, default=1024)
