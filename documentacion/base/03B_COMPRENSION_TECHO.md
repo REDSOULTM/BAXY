@@ -965,3 +965,23 @@ sin servidor huérfano. Adaptarlo en serio exigiría reentrenarlo o construir un
 bridge semántico nuevo entre dos catálogos, después de haber quedado 19/124;
 ninguna de las dos cosas es copiar una solución ya validada. Se descarta antes
 de producto y se conserva el campeón intacto como evidencia.
+
+Los bancos históricos exigidos por el goal quedan inventariados en
+`goal03_inherited_eval_banks_v24.json`, sin confundir su unidad con la actual.
+`_router_eval_NEWBASE_noes.txt` mide si una **familia** aparece en un subset:
+1258/1280 (0,9828) en dev y 327/334 (0,9790) en holdout, con no-tool keep
+395/396 y 92/92. Nuestro corte ya recupera la hoja exacta en 119/124 y falla
+después al elegirla; esas cifras de familia no ofrecen un selector de hoja. Los
+22 dev-fails publicados tampoco tienen solapamiento textual exacto con las 160
+frases selladas ni resultados sobre sus 14 fallos de decisión actuales.
+
+La otra mejora del banco, `_gates_ft_r2_guard5.json`, sí llevó las afirmaciones
+de valor sin evidencia de 7 a 0 y se sostuvo en `deploy_smoke`, pero corre
+**después** de ejecutar y validar la respuesta visible; no decide operación ni
+abstención. Su solución ya está heredada con ownership más estricto:
+`visible_reply_asserts_an_unread_machine_state` veta conversación que describe
+una máquina no leída, `OperationOutcome.Verified` hace imposible convertir un
+provider no verificado en éxito, y el narrador sólo declara éxito cuando
+`Succeeded && Verified`. Copiar además el reply-validator antiguo duplicaría
+la misma responsabilidad y violaría la ley 2. Los bancos quedan agotados para
+03B: confirman recuperación y grounding ya cubiertos, no resuelven selección.
