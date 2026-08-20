@@ -702,3 +702,15 @@ de p50 y pierde otras tres abstenciones. La unión-oráculo de los aciertos de 6
 y 128 sólo llega a **109/124** (una fila exclusiva de 64 y cuatro de 128), por
 lo que votar ambas corridas tampoco alcanza. Queda una comprobación: el mismo
 128 sobre unión-28, cuyo techo añade tres hojas; no se probarán más presupuestos.
+
+La unión-28 cierra la búsqueda de la política mínima
+(`goal03_qwen3_8b_iq2_think128_union28_v10.json`): ofrece **119/124**, selecciona
+**109/124**, abstiene **15/36** y tarda p50 **2,428 s** / p90 **2,523 s**. Las
+tres hojas adicionales del shortlist producen sólo un acierto adicional y tres
+abstenciones menos. La arquitectura queda agotada en 109: más presupuesto o más
+candidatos ya mostró rendimiento decreciente. Hay, sin embargo, una señal para
+el producto: la corrida registrada conserva tres aciertos que este selector
+pierde (`note.search`, `input.pointer.control`, `backup.known.create`), y la
+unión-oráculo de ambas llega exactamente a **112/124**. Por eso la próxima
+medición es Qwen3-8B dentro del pipeline completo con sus verificadores, no otro
+prompt aislado.
