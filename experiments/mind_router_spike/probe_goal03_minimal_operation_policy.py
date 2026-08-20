@@ -278,6 +278,7 @@ def run(
     reasoning_budget: int | None = None,
     sampling_profile: str = "greedy",
     seed: int = 0,
+    gpu_layers: int | None = None,
 ) -> Path:
     corpus = {row["case_id"]: row for row in _jsonl(CORPUS)}
     replay = {row["case_id"]: row for row in _jsonl(source)}
@@ -297,6 +298,8 @@ def run(
         raise ValueError("la selección nativa heredada desactiva el pensamiento")
     if sampling_profile == "qwen-thinking" and reasoning_budget is None:
         raise ValueError("el sampling Qwen thinking requiere pensamiento acotado")
+    if gpu_layers is not None and not 0 <= gpu_layers <= 99:
+        raise ValueError("gpu_layers debe estar entre 0 y 99")
     proposal_rows: list[dict[str, dict[str, Any]]] = []
     for proposal_artifact in proposal_artifacts or []:
         proposal_value = json.loads(proposal_artifact.read_text(encoding="utf-8"))
@@ -334,7 +337,7 @@ def run(
     limits = PROFILE_LIMITS["gpu"]
     environment = sidecar_environment(
         registered,
-        gpu_layers=registered.gpu_layers,
+        gpu_layers=(registered.gpu_layers if gpu_layers is None else gpu_layers),
         llm_http_timeout=limits["llm_http"],
     )
     if gguf is not None:
@@ -490,6 +493,9 @@ def run(
                 "path": str(gguf),
                 "sha256": _sha256(gguf),
                 "bytes": gguf.stat().st_size,
+                "gpu_layers": (
+                    registered.gpu_layers if gpu_layers is None else gpu_layers
+                ),
             }
             if gguf is not None
             else None
@@ -565,6 +571,7 @@ def main() -> int:
         default="greedy",
     )
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--gpu-layers", type=int)
     parser.add_argument(
         "--selection-shape",
         choices=("array", "scalar", "reasoned_array", "native"),
@@ -585,6 +592,7 @@ def main() -> int:
         reasoning_budget=args.reasoning_budget,
         sampling_profile=args.sampling_profile,
         seed=args.seed,
+        gpu_layers=args.gpu_layers,
     )
     result = json.loads(output.read_text(encoding="utf-8"))
     print(json.dumps({key: result[key] for key in (

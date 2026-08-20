@@ -809,3 +809,17 @@ ese perfil sin cambiar modelo, prompt, shortlist ni presupuesto produce
 abre 18 acciones en negativas. El +1 queda dentro de la dispersión, empeora tres
 abstenciones y no autoriza un barrido ni selección por semilla. Referencia
 primaria: [Qwen/Qwen3-8B-GGUF, Best Practices](https://huggingface.co/Qwen/Qwen3-8B-GGUF#best-practices).
+
+La cuantización oficial tampoco es la hoja que faltaba
+(`goal03_qwen3_8b_q4_think128_official_sampling_ngl20_s0_v17.json`). El
+Qwen3-8B Q4_K_M oficial, SHA-256
+`d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785`, se
+midió con sólo 20/36 capas en GPU para respetar recursos. Da **109/124**,
+**20/36** abstenciones y p50 **8,904 s** / p90 **10,142 s**. WDDM pasó de
+1.037 a un máximo observado de 4.921 MiB —incremento conservador **3.884 MiB**—
+y volvió a 1.107 MiB al cerrar. Cabe, pero el offload de dieciséis capas hace
+inservible la latencia y no compra calidad: gana cinco filas distintas y pierde
+seis frente a IQ2; su oráculo conjunto es 115. No se probarán 64 tokens ni más
+capas. El mecanismo de offload está documentado por
+[llama.cpp `--n-gpu-layers`](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md#common-params),
+y el modelo/quant por [Qwen](https://huggingface.co/Qwen/Qwen3-8B-GGUF).
