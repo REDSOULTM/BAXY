@@ -228,6 +228,7 @@ def run(
     gguf: Path | None = None,
     union_artifact: Path | None = None,
     union_budget: int | None = None,
+    proposal_artifacts: list[Path] | None = None,
     reasoning_budget: int | None = None,
 ) -> Path:
     corpus = {row["case_id"]: row for row in _jsonl(CORPUS)}
@@ -242,6 +243,15 @@ def run(
         union_rows = {str(row["case_id"]): row for row in union_value["rows"]}
         if set(union_rows) != set(corpus):
             raise ValueError("el artefacto de unión no contiene las 160 filas")
+    proposal_rows: list[dict[str, dict[str, Any]]] = []
+    for proposal_artifact in proposal_artifacts or []:
+        proposal_value = json.loads(proposal_artifact.read_text(encoding="utf-8"))
+        rows = {str(row["case_id"]): row for row in proposal_value["rows"]}
+        if set(rows) != set(corpus):
+            raise ValueError("un artefacto de propuestas no contiene las 160 filas")
+        proposal_rows.append(rows)
+    if union_rows is not None and proposal_rows:
+        raise ValueError("la unión de rankers y las propuestas son fuentes excluyentes")
 
     capabilities, _, _ = current_core_catalog_snapshot(discover_core(None))
     descriptions = {
@@ -288,7 +298,16 @@ def run(
         )
         for case_id, row in corpus.items():
             source_row = replay[case_id]
-            if union_rows is None:
+            if proposal_rows:
+                candidates = list(
+                    dict.fromkeys(
+                        name
+                        for rows in proposal_rows
+                        for name in rows[case_id].get("selected_operations") or []
+                    )
+                )
+                candidates = [name for name in candidates if name in descriptions]
+            elif union_rows is None:
                 candidates = list(source_row.get("candidate_operations") or [])
             else:
                 per_ranker = union_budget // 2
@@ -386,6 +405,13 @@ def run(
             if union_artifact is not None
             else None
         ),
+        "candidate_proposals": [
+            {
+                "path": str(path.relative_to(REPO)),
+                "sha256": _sha256(path),
+            }
+            for path in proposal_artifacts or []
+        ],
         "prompt_sha256": hashlib.sha256(
             (
                 SCALAR_OPERATION_POLICY_PROMPT
@@ -427,6 +453,7 @@ def main() -> int:
     parser.add_argument("--gguf", type=Path)
     parser.add_argument("--union-artifact", type=Path)
     parser.add_argument("--union-budget", type=int, choices=(16, 28))
+    parser.add_argument("--proposal-artifact", action="append", type=Path, default=[])
     parser.add_argument("--reasoning-budget", type=int)
     parser.add_argument(
         "--selection-shape",
@@ -443,6 +470,7 @@ def main() -> int:
             args.union_artifact.resolve() if args.union_artifact is not None else None
         ),
         union_budget=args.union_budget,
+        proposal_artifacts=[path.resolve() for path in args.proposal_artifact],
         reasoning_budget=args.reasoning_budget,
     )
     result = json.loads(output.read_text(encoding="utf-8"))

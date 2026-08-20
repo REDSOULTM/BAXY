@@ -729,3 +729,16 @@ La telemetría simultánea tomó **1.638 muestras válidas cada 200 ms** bajo WD
 el total del sistema osciló entre 1.755 y 5.172 MiB, un incremento conservador
 de **3.417 MiB**, por debajo de 4.096 MiB; WDDM no expuso memoria por proceso.
 El modelo sí cabe, pero queda rechazado punta a punta por acierto y abstención.
+
+La última fusión legítima se probó sin añadir recuperación ni reglas por fila
+(`goal03_qwen3_8b_iq2_proposal_arbiter_v11.json`). Los seis selectores 8B ya
+medidos tienen una unión-oráculo de **118/124** —y la misma cifra sin el baseline
+registrado—, pero su pluralidad sólo da 105–107. Un segundo pase escalar con
+pensamiento 128 recibe únicamente las operaciones que esos selectores propusieron:
+recupera las **118**, elige correctamente **111/124**, abstiene **24/36** y añade
+p50 **2,075 s** / p90 **2,212 s**. Queda una fila bajo 112 y sobrellama doce de
+las 36 negativas. Esta costura queda agotada: otra variante de prompt o desempate
+elegida mirando el mismo corpus dejaría de ser una comprobación fresca. El bloqueo
+nuevo ya no es VRAM ni recuperación, sino un árbitro que distinga siete propuestas
+sin perder al menos siete de esas doce abstenciones; no existe evidencia heredada
+ni un corte fresco independiente que autorice entrenarlo o seleccionarlo aquí.
