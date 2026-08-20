@@ -92,7 +92,7 @@ Definitivo". En la misma carpeta Programacion hay otro repositorio llamado BAXY 
 secas: es el intento anterior, fuente de herencia, NO tu sitio de trabajo.
 
 TU OBJETIVO, literal y único:
-≥ 90 % sobre el corpus de paráfrasis frescas del goal 03 —
+≥ 112 de 124 (90 %) sobre el corpus de paráfrasis frescas del goal 03 —
 artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl, SHA-256 761c1bc3…,
 124 filas dentro de catálogo y 36 fuera — puntuando esos mismos bytes, con la tasa
 partida por causa y la latencia medida al lado. 90 % son 112 filas de 124.
@@ -161,6 +161,91 @@ seis corridas:
 Están nombradas una a una en base/03B_COMPRENSION_TECHO.md §6.
 Para 112 tienes que mover ese suelo Y la decisión, que hoy pierde 21 de 124 y en
 8 a 11 de esos casos elige una hermana de la operación correcta.
+
+LA HERENCIA PRIMERO — Y ESTO ES LO QUE LA SESIÓN ANTERIOR NO ENCONTRÓ
+La sesión anterior se fue a buscar fuera porque no encontró nada dentro. SÍ hay, y
+está a dos carpetas de aquí. Los goals 01 y 02 mapearon el repositorio; NO
+inventariaron esta pila. Ábrela ANTES de diseñar nada.
+
+  C:\Users\usuario\Desktop\ETC\Programacion\FunctionGemma\router\
+
+Es una pila de enrutado entera, escrita para este mismo producto, con la ley de
+«nada de listas de keywords por idioma» ya respetada. Lo que hay, y contra qué
+fallo tuyo va cada pieza:
+
+- heads/abstain_head.py (190 líneas) — ABSTENCIÓN CALIBRADA. Su diagnóstico es tu
+  problema con otras palabras: «the router's weak spot is not tool recall (0.83)
+  but NO-TOOL abstention (0.51)», y la causa que da es estructural: hoy la
+  abstención es un RESIDUO —se abstiene sólo cuando todas las demás capas
+  fallan— en vez de una decisión puntuada. Lo convierte en un clasificador
+  calibrado sobre rasgos comparables entre consultas, con temperature scaling.
+  Cita DETER (arXiv:2405.19967) y DROID (arXiv:2510.14110).
+
+  LÉELO ANTES DE DESCARTARLO: en tu lista de rechazados están «abstención
+  semántica BGE-M3 por familia (R236)» y «clasificador de 32 vías (R250)». NO son
+  lo mismo. Aquéllos comparaban coseno crudo, y el propio abstain_head explica por
+  qué eso no puede funcionar: el coseno no es comparable entre consultas — el
+  mismo 0,45 significa cosas distintas para «mutea» y para «qué tiempo hace
+  mañana». Es el mecanismo que ataca la causa por la que fallaron los dos
+  rechazados. Mídelo antes de meterlo en la misma bolsa.
+
+- routing/reranker.py (98 líneas) — CROSS-ENCODER CONDICIONAL. Se dispara SÓLO en
+  la banda de incertidumbre (top-1 fusionado entre 0,40 y 0,65; ~10-15 % de los
+  turnos) y usa un cross-encoder multilingüe pequeño (mmarco-mMiniLMv2-L12,
+  ~120 MB, ~50 ms por par en CPU) en vez del bge-reranker de 2,3 GB.
+  Va directo a tu fallo más gordo de decisión: en 8 a 11 de 21 casos elige una
+  HERMANA de la operación correcta. Un cross-encoder lee (consulta, descripción)
+  juntas, que es justo lo que un bi-encoder no hace. Y por ser condicional, el
+  camino confiado no paga nada — encaja con la sobrecarga como presupuesto.
+
+- routing/deictic_detector.py (182 líneas) — DEÍCTICOS POR EMBEDDINGS, no por
+  regex de español. «copia lo que tienes seleccionado», «ábrelo», «ponelo». Mira
+  tus filas del suelo: clp-02 y clp-03 son exactamente eso, e inp-03 huele igual.
+  Inyecta el referente LITERAL al final del prompt porque el 4B sufre «lost in
+  the middle».
+
+- routing/command_splitter.py (1291 líneas) — MULTI-INTENT. «abrí Spotify y bajá
+  el volumen» son dos acciones; parte el enunciado en cláusulas ANTES de que el
+  LLM lo vea y rutea cada una como su propio turno. Cita MIDLM (COLING 2025): la
+  atención causal de un 4B colapsa el multi-intent. Esto es tu banco de misiones
+  compuestas, hoy en 5/15.
+
+- routing/exemplar_router.py (238 líneas) — memoria de ejemplares por embeddings,
+  conservadora a propósito. Y routing/{semantic,intent,context}_router.py,
+  action_fewshot.py, planner.py, heads/tool_head.py.
+
+Y hay más fuera de esa carpeta:
+
+  Programacion\router_encoder_ft_backup_ToolsReduce_20260625_024527\
+  — un ENCODER YA AFINADO para recuperación de herramientas, con model_int8.onnx
+    listo. Tu recuperación pierde 8 de las 13 filas del suelo.
+
+  Programacion\Probando Gemma 4\dataset_finetune\out\
+  — bancos de evaluación del router ya corridos: _router_eval_BASELINE.txt,
+    _router_eval_devfails.txt, _router_eval_V3_slices.txt, y
+    scripts/eval_router_multiling.py. Los devfails son casos que ya fallaron una
+    vez: mira si alguno es una de tus 13.
+
+  biblioteca/gemma4-agent/documentacion/02_router/ — la documentación de todo eso:
+    02_COMPONENTES.md, 04_EVAL_Y_METRICAS.md, 05_HISTORIAL_SPRINTS.md,
+    06_PENDIENTE_Y_NO_FORZADO.md, y research/ con toolcalling, NLU y recuperación.
+
+CÓMO SE HEREDA, que no es copiar y pegar
+1. Lee la pieza y su documentación. Entiende QUÉ fallo ataca.
+2. Mide su idea OFFLINE sobre la telemetría que ya tienes en disco, antes de
+   integrar nada. Así se descartó casi todo lo de la lista de rechazados sin
+   gastar una corrida.
+3. Si la medición offline promete, intégrala EN SERIO: adaptada a este catálogo y
+   a este decisor, no pegada de lado. Y con la ley 2 — si sustituye a una capa que
+   ya está, esa capa se retira en el mismo cambio.
+4. Publica el número antes y después, y di de qué fichero salió.
+5. Si NO promete, anótalo en APLAZADOS.md con la cifra y sigue. Un rechazo con el
+   mecanismo entendido vale tanto como una herencia.
+
+SÓLO CUANDO ESTA PILA ESTÉ AGOTADA vas fuera. Y entonces sí, busca de verdad: lo
+más nuevo del estado del arte, papers incluidos, diciendo de dónde salió lo que
+adoptes. Pero primero esto — la sesión anterior gastó su cuota buscando fuera lo
+que tenía dentro.
 
 TIENES LAS MANOS LIBRES
 Mucha gente ha tocado este código y eso NO te limita. Puedes rehacer el
@@ -252,13 +337,15 @@ vez, y lo primero que hace es:
 Con eso sabe qué se midió, qué dio y dónde se quedó. No repitas nada que ya tenga
 su cifra publicada.
 
-CRITERIOS DE CIERRE — los tres números, juntos
-- ≥ 90 % (112 de 124), partido por causa.
+CRITERIOS DE CIERRE
+- ≥ 112 de 124 (90 %), partido por causa.
+- Alcance seguro: las peticiones fuera de catálogo se rechazan honestamente, y las
+  decisiones que habrían ejecutado un efecto no pedido no suben de 5 de 36.
+- Cabe: pico de VRAM ≤ 4 GB durante un turno, medido.
 - Sobrecarga medida contra la inferencia pura del mismo prompt, con p50 y p90 y en
   los dos estados del equipo, DESGLOSADA POR ETAPA y con lo que compra cada una.
   Ninguna etapa sobrevive sin decir qué mueve.
 - El listón de silencio de 3 s, cumplido — hablando antes de terminar si hace falta.
-- Pico de VRAM ≤ 4 GB durante un turno.
 - Cobertura, banco de misiones compuestas y tres ceros: no bajan.
 - Compuerta verde.
 
