@@ -694,3 +694,11 @@ misma unión-16 sube a **105/124**, pero baja a **21/36** abstenciones y tarda p
 pensamiento y tres más que verbalizar el efecto dentro del JSON. Aún faltan
 siete; queda justificado un único escalón a 128 tokens sobre la misma población,
 no una búsqueda abierta de presupuestos.
+
+Duplicar el presupuesto a **128** tokens muestra rendimientos decrecientes
+(`goal03_qwen3_8b_iq2_think128_union16_v9.json`): **108/124**, **18/36**
+abstenciones, p50 **2,297 s** / p90 **2,365 s**. Compra tres filas por 0,83 s
+de p50 y pierde otras tres abstenciones. La unión-oráculo de los aciertos de 64
+y 128 sólo llega a **109/124** (una fila exclusiva de 64 y cuatro de 128), por
+lo que votar ambas corridas tampoco alcanza. Queda una comprobación: el mismo
+128 sobre unión-28, cuyo techo añade tres hojas; no se probarán más presupuestos.
