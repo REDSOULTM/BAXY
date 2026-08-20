@@ -1091,3 +1091,21 @@ se rechaza antes del producto pese a su coste pequeño —p50 **0,677 s**, p90
 0,797 s, pico **665,4 MiB**— y no sustituye al mejor selector aislado vigente de
 110/124. La siguiente investigación debe buscar en las otras escrituras un
 corpus o patch independiente de lenguaje natural, no reciclar este holdout.
+
+La búsqueda en las otras escrituras encuentra justo esa evidencia, pero todavía
+no un selector listo (`goal03_inherited_real_logs_v31.json`). `Probando Gemma 4`
+conserva **1.071** pares de logs reales, 1.018 textos normalizados únicos, SHA
+`67752ca3…`; la documentación histórica ya había medido que el 99,64 % del
+holdout curado se convertía en sólo **85,7 %** estricto / 89,1 % por dominio al
+pasar a esos logs. Es el mismo cambio de distribución que V30 volvió a revelar.
+
+El dataset `FunctionGemma/train_v3` heredado contiene 812 de esos mensajes y
+guarda `tool_results` con familia+acción. En cambio, el train de unión actual
+sólo contiene **68** de los 1.018 mensajes reales. El solapamiento exacto con el
+corte fresco es uno en ambos corpora, de modo que esta fuente puede usarse como
+train independiente, no como copia del examen. Su mapper reducido traduce
+**1.235** filas históricas a un único target entre 33 funciones; el mapper
+completo traduce **1.365** entre 42. Esa anchura todavía no acredita las 169
+hojas actuales: antes de otra LoRA hay que sellar un crosswalk semántico y medir
+su cobertura teórica. No se copiaron textos al artefacto ni se modificaron los
+repositorios anteriores.
