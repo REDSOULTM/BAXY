@@ -1461,5 +1461,8 @@ sobre el catálogo vivo:
 Controles intactos: «abre el bloc de notas» sigue app.open, «lista mis notas»
 sigue note.list, «como esta el equipo» sigue system.status, «Play Bohemian
 Rhapsody by Queen.» sigue media.play.query. 1843 pruebas de effect_intent y
-alias en verde. El sello wake pasa a `266cc159…`. Falta la corrida punta a
-punta sobre el corpus fresco.
+alias en verde. La aclaración de calendario no se adelanta a «anota … y
+avisame»: `anota` no es crear un evento. El sello wake pasa a `1b221c26…`.
+rec5e2e1, con las cuatro hojas sueltas ya servidas y cmp-04 aún preguntando
+hora de fin, sirvió **89/124**, abstuvo 29/36, p50 2,12 s. Falta repetir con
+esta exclusión.

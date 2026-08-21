@@ -737,6 +737,21 @@ def test_message_then_reminder_collection_is_a_bounded_composition(text: str) ->
     )
 
 
+def test_note_and_same_day_reminder_is_not_an_incomplete_calendar_event() -> None:
+    text = "anota que hay reunion el jueves y avisame ese dia"
+    available = AVAILABLE | {
+        "note.create",
+        "reminder.create",
+        "calendar.event.create",
+        "notification.schedule",
+    }
+
+    assert resolve_explicit_clarification_intent(text, available) is None
+    result = resolve_explicit_effects(text, available)
+    assert result is not None
+    assert result.operations == ("note.create", "reminder.create")
+
+
 @pytest.mark.parametrize(("text", "expected"), CASES)
 def test_deterministic_audit_effect_subset_is_compositional(
     text: str,

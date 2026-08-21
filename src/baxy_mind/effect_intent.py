@@ -2586,10 +2586,20 @@ def resolve_explicit_clarification_intent(
     incomplete_calendar_clause = any(
         _head_is(
             _request_head(clause),
-            rf"(?:{_CREATE}|set|agenda|agendar|programa|programar|schedule)",
+            r"(?:crea|crear|añade|añadir|anade|anadir|agrega|agregar|"
+            r"haz|hacer|create|make|add|set|agenda|agendar|"
+            r"programa|programar|schedule)",
+        )
+        and not _head_is(
+            _request_head(clause),
+            r"(?:anota|anotar|note\s+down)",
         )
         and _has(clause, r"\b(?:reunion|meeting|evento|event)\b")
         and not _has(clause, r"\b(?:recordatorio|reminder)\b")
+        and not _has(
+            folded,
+            r"\b(?:avisame|recuerdame|recordame|remind\s+me)\b",
+        )
         and _has(clause, _BOUNDED_TEMPORAL_SELECTOR)
         and not _has(
             clause,
