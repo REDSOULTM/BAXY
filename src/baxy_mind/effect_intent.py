@@ -6916,7 +6916,8 @@ def _is_direct_request(text: str) -> bool:
         r"pega|pegar|pegalo|pegala|paste|"
         r"trancame|tranca|bloqueame|bloquea|lock|"
         r"agendame|"
-        r"para(?=\s+lo\s+que\s+esta)|"
+        r"para(?=\s+(?:lo\s+que\s+esta|la\s+descarga))|"
+        r"scroll|scrollea|scrollear|"
         r"apuntame|apunta|jot|"
         r"dale(?=\s+(?:enter|intro|return))|"
         r"llevame|"
@@ -11393,7 +11394,7 @@ def _steam_install_cancel_active_intent(
         (
             r"^[¿?¡!\s]*(?:para|cancela|cancelar|cancel|stop|detene|"
             r"detener)\b.{0,96}\b(?:descarga|download|instalacion|install)"
-            r"\b.{0,96}\bsteam\b[\s?!.]*$"
+            r"\b.{0,96}\bsteam\b.{0,48}$"
         ),
     )
     if request is None or _is_negated_match(text, request):
@@ -12394,6 +12395,12 @@ def resolve_explicit_effects(
         return None
     if "notification.schedule" in available and _wake_alarm_request(folded):
         return EffectIntent(("notification.schedule",), (folded,))
+    steam_cancel = _steam_install_cancel_active_intent(folded, available)
+    if steam_cancel is not None:
+        return steam_cancel
+    pointer_scroll = _pointer_scroll_intent(folded, available)
+    if pointer_scroll is not None:
+        return pointer_scroll
     if (
         "media.play.query" in available
         and re.fullmatch(
