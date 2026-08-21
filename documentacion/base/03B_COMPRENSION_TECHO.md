@@ -1203,3 +1203,21 @@ salidas sin llamada parseable y 13 hojas equivocadas; no es sólo calibración d
 abstención. La inferencia cuesta p50 0,894 s y 655,7 MiB asignados. Conforme al
 orden cerrado, no se ejecutan ni el holdout sintético V39 ni otra corrida
 fresca, y el adapter no se integra.
+
+La pila heredada exigida por el goal queda agotada pieza por pieza: abstain/tool
+heads y planner coordinado (§ anterior), cross-encoder, deícticos, splitter,
+exemplars, KVA y los dos FunctionGemma tienen ya una cifra publicada.
+`action_fewshot.py` tampoco es un selector: sólo enseña la forma de llamada para
+tools que el router ya eligió y sesga en contra del déficit de abstención.
+
+La siguiente línea sale por tanto fuera, pero conserva el encoder E5 ya residente.
+[When2Call (NAACL 2025)](https://aclanthology.org/2025.naacl-long.174/) separa
+explícitamente *cuándo llamar* de *qué tool llamar*, y
+[When2Tool](https://arxiv.org/abs/2605.09252) muestra que una cabeza lineal puede
+leer una señal de necesidad mejor que el razonamiento verbal. BAXY no adopta su
+sonda interna —ataría el proceso a los pesos del decisor—: V41 preregistra una
+regresión logística sobre los embeddings E5 que ya produce el worker. Entrena
+sólo con 4.222 acciones + 2.700 OOS de unión y 274 acciones reales heredadas;
+calibra para conservar **≥473/477** acciones y debe además conservar **≥70/71**
+reales, rechazar **≥246/307** OOS sintéticas y **≥80/100** CLINC OOS
+independientes. No hay barrido. Si falla uno, no ve el fresco ni vuelve a Qwen.

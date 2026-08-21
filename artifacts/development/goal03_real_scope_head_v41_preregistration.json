@@ -1,0 +1,69 @@
+{
+  "acceptance": {
+    "calibration_actions_kept": 473,
+    "calibration_oos_refused": 246,
+    "clinc_oos_validation_refused": 80,
+    "inherited_real_actions_kept": 70,
+    "rule": "all four gates must pass before any fresh-corpus or decision-policy measurement"
+  },
+  "classifier": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "kind": "sklearn.LogisticRegression",
+    "random_state": 5601,
+    "solver": "lbfgs",
+    "threshold_rule": "lowest calibration-action score after allowing at most floor(1%-of-actions) lower scores"
+  },
+  "constraints": {
+    "clinc_test_opened": false,
+    "fresh_corpus_opened": false,
+    "hyperparameter_sweep": false,
+    "runtime_modified": false,
+    "threshold_tuned_on_inherited_real_or_clinc": false
+  },
+  "encoder": {
+    "config_sha256": "69137736cab8b8903a07fe8afaafdda25aac55415a12a55d1bffa9f581abf959",
+    "dimensions": 384,
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "evidence": {
+    "clinc_attestation_sha256": "bec486d7da45d2a736dc986d6878b180d939ecc6d3223bd8042eb58f44619e5b",
+    "program_sha256": "257bb04f45464b6ddd92fecd0822fb56d37162632975ca9aa20830f99449371b",
+    "test_sha256": "9b8fc0231af99dcbe89f65f636a178d32619775b4d1da94e9d23b49ba372afbc"
+  },
+  "hypothesis": "A binary call/no-call head trained on current BAXY actions plus inherited real actions and sealed OOS can separate tool necessity before leaf selection without adding another encoder.",
+  "populations": {
+    "calibration": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\validation.jsonl",
+      "rows": 784,
+      "sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2"
+    },
+    "clinc_oos_validation": {
+      "member": "oos_val",
+      "rows": 100,
+      "source_sha256": "bfcca9ae515623541dc1983c94c4ed7cae9d26b42ae47d74b972e51bb6f7a21f"
+    },
+    "inherited_real_training": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\mapped_train.jsonl",
+      "rows": 274,
+      "sha256": "220ad03345aad2a6470be6c5e2353c7bc6c95689a6b5ab1c884212f8eabe853f"
+    },
+    "inherited_real_validation": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\current_union_validation.jsonl",
+      "rows": 71,
+      "sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300"
+    },
+    "training": {
+      "path": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\train.jsonl",
+      "rows": 6922,
+      "sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad"
+    }
+  },
+  "research_basis": [
+    "https://aclanthology.org/2025.naacl-long.174/",
+    "https://arxiv.org/abs/2605.09252"
+  ],
+  "schema": "baxy.goal03-real-scope-head-preregistration.v1",
+  "stop_rule": "If any gate fails, reject the head without opening the fresh corpus or running Qwen again."
+}
