@@ -1,0 +1,42 @@
+{
+  "constraints": {
+    "effects_executed": 0,
+    "fresh_corpus_opened": false,
+    "raw_texts_retained": false,
+    "runtime_modified": false
+  },
+  "decision": "V38 remains rejected; repair subsequent experiments by excluding every current-union train or calibration overlap from inherited-real validation.",
+  "identities": {
+    "current_union_calibration_sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2",
+    "current_union_train_sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad",
+    "real_validation_sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300",
+    "v35_sha256": "eecdf1c2fb78d0973f6359978d37344091eae6366ce1be716f6f2e95e9d04b48",
+    "v38_sha256": "37d85b86a9e1f3e56432c0cfb8b551decc2978cc0d66bfb88704ec4b33b2592c"
+  },
+  "method": "NFKD casefold, remove combining marks, retain [a-z0-9]+ tokens, compare exact normalized strings; score V35/V38 rows by their published exact field.",
+  "overlap": {
+    "real_validation_with_current_union_calibration": 3,
+    "real_validation_with_current_union_train": 8,
+    "real_validation_with_real_train": 0
+  },
+  "published_scores": {
+    "v35": {
+      "clean_exact": 9,
+      "clean_rows": 63,
+      "overlap_exact": 2,
+      "overlap_rows": 8,
+      "published_exact": 11,
+      "published_rows": 71
+    },
+    "v38": {
+      "clean_exact": 30,
+      "clean_rows": 63,
+      "overlap_exact": 8,
+      "overlap_rows": 8,
+      "published_exact": 38,
+      "published_rows": 71
+    }
+  },
+  "schema": "baxy.goal03-real-holdout-overlap-audit.v1",
+  "verdict": "The inherited-real holdout was not fully independent. Its clean subset still shows improvement from 9/63 to 30/63, but V38 remains below the rate-equivalent preregistered gate of 45/63."
+}

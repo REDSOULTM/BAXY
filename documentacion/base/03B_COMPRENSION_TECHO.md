@@ -1221,3 +1221,12 @@ sólo con 4.222 acciones + 2.700 OOS de unión y 274 acciones reales heredadas;
 calibra para conservar **≥473/477** acciones y debe además conservar **≥70/71**
 reales, rechazar **≥246/307** OOS sintéticas y **≥80/100** CLINC OOS
 independientes. No hay barrido. Si falla uno, no ve el fresco ni vuelve a Qwen.
+
+La primera ejecución de V41 aborta antes de cargar E5 y descubre una contaminación
+previa (`goal03_real_holdout_overlap_audit_v43.json`, SHA `5d7c01eb…`). Ocho de
+las 71 filas reales ya estaban en el train de unión y tres adicionales aparecen
+en su validación sintética. V28 acertaba 2/8 de los cruces y 9/63 de la parte
+limpia; la LoRA mixta acierta 8/8 y **30/63** limpias. Por tanto V38 sí estaba
+inflado, aunque su rechazo no cambia: el gate equivalente sería 45/63. No se
+crearon V42 ni pesos. V41 queda invalidado y debe reseñarse excluyendo de la
+evaluación real todo cruce con train o calibración antes de ejecutar el modelo.
