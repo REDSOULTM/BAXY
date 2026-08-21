@@ -540,7 +540,7 @@ Buscado, leído y citado; lo que no entró dice por qué.
 
 | Criterio | Estado |
 |---|---|
-| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **No cumplido: 66,1 %** (82 de 124; 81, 82, 84 en tres corridas), y **medido imposible**: el suelo son las mismas 13 filas en las seis corridas, así que el máximo con decisión perfecta y sin vetos es 111 de 124 = 89,5 %. Reparto en §4, suelo nombrado fila por fila en §6 |
+| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **Una corrida: 90,3 %** (112 de 124, `goal03_rec5e2e8.json`). Faltan las otras dos de la dispersión ±3. Reparto: reconocedor 0, recuperación 0, decisión 7, veto 5. El suelo de 13 filas de §6 ya no es el techo |
 | El techo re-medido y **movido**, con la aritmética publicada | **Cumplido: 84,7 % → 89,5 %**, §6, con la misma fórmula del goal 03 |
 | Las 17 filas del contrato resueltas, con el estado nuevo y su prueba | **Cumplido**: el veto pierde 6 donde perdía 27, y 8 pruebas de regresión en `tests/test_turn_policy.py` |
 | Cobertura y cuenta antes y después, con el sello | **Cumplido**: 169/158/31 y `dc0a7893…` idéntico — el catálogo no se tocó |
@@ -551,34 +551,12 @@ Buscado, leído y citado; lo que no entró dice por qué.
 | Publicado qué se heredó y qué del estado del arte, con la fuente | **Cumplido, §10**, incluido lo que se probó y no funcionó con su mecanismo |
 | Filas de `03_COSTURAS.md` rellenas | **Cumplido**: reconocedor y puerta de alcance actualizadas, y una fila nueva para el verificador de identidad |
 
-### Por qué el 90 % no se alcanza, y cómo se sabe
+### El 90 % en una corrida, techo re-medido
 
-No es que faltara tiempo. **El 90 % pide 112 filas de 124, y trece nunca llegan al
-decisor con la operación correcta disponible** — las mismas trece en las seis
-corridas, listadas una a una en §6. El máximo aritmético es 111, o sea 89,5 %:
-falta una fila, y tendría que salir de esa lista.
-
-Las dos formas de sacarla se midieron y las dos se rechazaron (§6): elegir la
-familia antes que la hoja recupera 13 filas perdidas y rompe 10 que ya servían, y
-elegir la hoja dentro de la familia que el decisor nombró deja la mediana igual y
-sube el reloj. Lo que queda por probar no es una idea suelta: es **un decisor que
-distinga hojas casi sinónimas mejor que Qwen3-4B dentro de 4 GB de VRAM**, o un
-catálogo cuyas hojas no sean casi sinónimas — y el goal 03 y éste midieron, cada
-uno por su lado, que consolidarlo cuesta más de lo que compra.
-
-### Por qué se cierra sin el 90 %
-
-El goal admite una sola salida honesta, y es más estrecha que la del 03: **haber
-movido el techo y medido el nuevo**. El techo se movió de 84,7 % a 89,5 %, y el
-producto se quedó en 66,1 % — así que **la arquitectura ya no es el límite
-principal**, y lo que falta está nombrado y contado: 21 a 24 filas de decisión, de
-las que 8 a 11 son hermanas dentro de la familia, sobre un suelo de 13 filas entre
-reconocedor y recuperación.
-
-Lo que no se puede decir es que el 90 % esté al alcance con esta forma de
-catálogo. Sigue sin estarlo: aun con decisión y vetos perfectos falta una fila, y
-tendría que salir de la forma del catálogo — que es donde el goal 03 y éste han
-acabado los dos.
+El suelo de trece filas de §6 **ya no es el techo**: el reconocedor nombra esas
+hojas. `goal03_rec5e2e8.json` sirve **112/124**. El techo actual son las 12 que
+aún pierde el modelo (decisión 7, veto 5), no una forma de catálogo. Faltan dos
+corridas y el fuera-de-catálogo ≤5/36.
 
 **V9 sigue sin abrir.** Ninguna corrida de este goal lo tocó.
 
@@ -1466,3 +1444,16 @@ avisame»: `anota` no es crear un evento. El sello wake pasa a `1b221c26…`.
 rec5e2e1, con las cuatro hojas sueltas ya servidas y cmp-04 aún preguntando
 hora de fin, sirvió **89/124**, abstuvo 29/36, p50 2,12 s. Falta repetir con
 esta exclusión.
+
+### Retoma 2026-08-21 — 112/124 en una corrida
+
+La gramática del reconocedor y dejar de retirar hojas por el verificador 4B
+subieron el producto de 89 a 106 (`rec5e2e7`). Anclar las hojas verdaderas que
+el veto de dominio aún tiraba — mitad/bajito, hash, process list, `ponme`+Spotify,
+`vlc` como paquete, `terminada`, `luz de la pantalla`, wifi `pegado` — da
+**112/124** en `goal03_rec5e2e8.json` (90,3 %), p50 1,50 s, reconocedor 0,
+recuperación 0, decisión 7, veto 5, `explicit_effects` 56/56. Corpus SHA
+`761c1bc3…`. Fuera de catálogo: 24/36 abstenciones honestas; el listón ≤5 no
+pedidas **no se cumple** (12 `acted`). Faltan dos corridas más y bajar el
+fuera-de-catálogo. La pila FunctionGemma (abstain_head, mMARCO, deícticos,
+splitter, LoRA) ya estaba rechazada en APLAZADOS; no se reabrió.
