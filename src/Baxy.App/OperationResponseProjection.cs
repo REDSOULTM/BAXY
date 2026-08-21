@@ -27,6 +27,13 @@ internal sealed record OperationResponseProjection(string Message)
                 "\n\n[Contenido truncado en la vista.]"));
         }
 
+        if (response.HonestyCorrection is { } honesty
+            && !string.IsNullOrWhiteSpace(honesty.Correction)
+            && !LooksLikeRawJson(honesty.Correction))
+        {
+            return new OperationResponseProjection(TruncateMessage(honesty.Correction.Trim()));
+        }
+
         if (!string.IsNullOrWhiteSpace(response.Message) && !LooksLikeRawJson(response.Message))
         {
             var trimmed = response.Message.Trim();

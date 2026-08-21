@@ -69,11 +69,19 @@ def is_invented_visible_word(row: dict[str, Any]) -> bool:
     return bool(text) and visible_reply_invents_a_spanish_infinitive(text)
 
 
+def is_unusable_empty_visible(row: dict[str, Any]) -> bool:
+    kind = str(row.get("kind") or "")
+    if kind not in {"conversation", "clarify"}:
+        return False
+    return not visible_text(row)
+
+
 def score_telemetry(telemetry: list[dict[str, Any]]) -> dict[str, Any]:
     unsolicited = [row["case_id"] for row in telemetry if is_unsolicited_effect(row)]
     unverified = [row["case_id"] for row in telemetry if is_unverified_success(row)]
     fixed = [row["case_id"] for row in telemetry if is_fixed_visible_reply(row)]
     invented = [row["case_id"] for row in telemetry if is_invented_visible_word(row)]
+    empty = [row["case_id"] for row in telemetry if is_unusable_empty_visible(row)]
     conversation_replies = [
         row
         for row in telemetry
@@ -90,11 +98,14 @@ def score_telemetry(telemetry: list[dict[str, Any]]) -> dict[str, Any]:
         "fixed_visible_reply_ids": fixed,
         "invented_visible_words": len(invented),
         "invented_visible_word_ids": invented,
+        "unusable_empty_visible": len(empty),
+        "unusable_empty_visible_ids": empty,
         "conversation_replies": len(conversation_replies),
         "zeros_hold": (
             len(unsolicited) == 0
             and len(unverified) == 0
             and len(fixed) == 0
             and len(invented) == 0
+            and len(empty) == 0
         ),
     }

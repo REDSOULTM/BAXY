@@ -343,6 +343,38 @@ public sealed class ProtocolContractTests
     }
 
     [Test]
+    public void Response_round_trip_preserves_honesty_correction()
+    {
+        var expected = new OperationResponse(
+            ProtocolTypes.OperationResponse,
+            NewId(),
+            NewId(),
+            NewId(),
+            OperationStatuses.Failed,
+            "No pude completar la petición solicitada.",
+            false,
+            false,
+            null,
+            "verification_failed",
+            EffectMayHaveOccurred: true,
+            CauseCode: "honesty_self_correction",
+            HonestyCorrection: new HonestyCorrectionTrace(
+                "Estoy entendiendo tu petición.",
+                "verification_failed",
+                "No pude completar la petición solicitada."));
+
+        OperationResponse actual = ProtocolJson.DeserializeResponse(
+            ProtocolJson.SerializeToUtf8Bytes(expected));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actual.HonestyCorrection, Is.EqualTo(expected.HonestyCorrection));
+            Assert.That(actual.CauseCode, Is.EqualTo("honesty_self_correction"));
+            Assert.That(actual.Verified, Is.False);
+        });
+    }
+
+    [Test]
     public void Pending_response_round_trip_preserves_recovery_identity()
     {
         var expected = new OperationResponse(

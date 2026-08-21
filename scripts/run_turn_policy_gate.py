@@ -1154,8 +1154,7 @@ def recovery_metadata_is_valid(result: dict[str, Any]) -> bool:
     if recovery not in {"semantic_clarification", "protocol_fallback"}:
         return False
     if (
-        result.get("kind") != "clarify"
-        or result.get("operation") is not None
+        result.get("operation") is not None
         or turn_attempts not in {0, 1, 2}
         or result.get("failure_code")
         not in {
@@ -1166,8 +1165,16 @@ def recovery_metadata_is_valid(result: dict[str, Any]) -> bool:
     ):
         return False
     if recovery == "semantic_clarification":
-        return recovery_attempts == 1
-    return recovery_attempts in {0, 1}
+        return (
+            result.get("kind") == "clarify"
+            and recovery_attempts == 1
+            and bool(str(result.get("question") or "").strip())
+        )
+    return (
+        result.get("kind") == "conversation"
+        and not str(result.get("question") or "").strip()
+        and recovery_attempts in {0, 1}
+    )
 
 
 def summarize_arm(

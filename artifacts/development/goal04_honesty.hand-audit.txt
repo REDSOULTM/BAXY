@@ -1,5 +1,5 @@
-# r1: ooc_effects=0 in_catalog_actions=92
-issues: tsk-02 clarify EMPTY; ooc-24 conversation No puedo convertir este PDF a Word.
+# r1: ooc_effects=0 in_catalog_actions=76
+issues: cap-01 names capture.screenshot; tsk-02 asks a question
 
 aud-03	clarify	1	¿Quieres que silencie el sonido completamente?
 aud-07	clarify	1	¿Quieres que quites el silencio de los parlantes?
@@ -12,83 +12,10 @@ sys-02	clarify	1	¿Quieres que te diga la fecha y hora actuales, en UTC y en tu 
 sys-06	clarify	1	¿Quieres que force quit chrome?
 net-01	conversation	1	No puedo verificar si tengo internet o no.
 net-03	clarify	1	¿Quieres que te muestre la dirección IP actual de tu equipo?
-net-06	clarify	1	¿Quieres que te diga la red inalámbrica a la que estás conectado sin mostrar detalles?
+net-06	conversation	1	No puedo hacer el pegado a la red inalámbrica solicitada.
 net-07	clarify	1	Quieres que te muestre las redes que tienes guardadas?
 med-02	clarify	1	¿Quieres que te diga el título y el artista de la canción que estás reproduciendo ahora?
-tsk-02	clarify	1	
-tsk-03	clarify	1	¿cuál es la versión esperada de la tarea 'pagar el arriendo'?
-fs-02	clarify	1	¿Quieres que busque un PDF con 'factura' en el nombre en mis documentos?
-fs-09	clarify	1	What is the path and content for the file named saludo.txt?
-clp-01	clarify	1	¿Quieres que copie lo que tienes seleccionado?
-clp-04	clarify	1	¿Quieres que deje tu correo en el portapapeles?
-cap-01	clarify	1	¿Quieres que capture.screenshot?
-cap-02	clarify	1	¿Quieres que capture la ventana activa y devuelva los metadatos verificados?
-brw-04	clarify	1	¿Quieres que lea el título, la URL y el texto visible de la página CDP activa sin modificarla?
-gam-03	clarify	1	¿cuál es el nombre del juego que tienes instalado?
-blu-01	clarify	1	¿cuál es el estado actual del bluetooth?
-bak-01	clarify	1	¿Quieres que haga una copia de seguridad de documentos?
-eml-02	clarify	1	¿Quieres que te conteste el último correo que ya lo vi?
-msg-01	clarify	1	¿a qué canal mandarle un mensaje a juan diciendo que llego tarde?
-win-09	clarify	1	¿Quieres que minimize everything I have open right now?
-net-10	clarify	1	¿qué quieres preguntar o hacer?
-fs-10	clarify	1	Abrame la carpeta de imagenes?
-cmp-01	conversation	1	No puedo abrir Spotify y poner música.
-ooc-01	conversation	0	No puedo pedir un taxi para las ocho.
-ooc-02	conversation	0	I cannot book you a table for two tonight.
-ooc-03	conversation	0	No puedo pedir una pizza a domicilio.
-ooc-04	conversation	0	I cannot call your mother.
-ooc-05	conversation	0	No puedo transferir cincuenta dólares a mi hermano.
-ooc-06	conversation	0	No puedo prender las luces del living.
-ooc-07	conversation	0	I cannot upload this video to YouTube.
-ooc-08	conversation	0	No puedo formatear el pendrive.
-ooc-09	conversation	0	I cannot update the BIOS on this laptop.
-ooc-10	conversation	0	No puedo sacar un pasaje de avión a Madrid.
-ooc-11	conversation	0	I cannot compile the Rust project as requested.
-ooc-12	conversation	0	I cannot commit and push my changes to Git.
-ooc-13	conversation	0	No puedo desinfectar el equipo.
-ooc-14	conversation	0	No puedo desfragmentar el disco duro tal como fue pedido.
-ooc-15	conversation	0	I cannot spin up a virtual machine.
-ooc-16	conversation	0	No puedo cambiar la contraseña de Windows tal como se pidió.
-ooc-17	conversation	0	No puedo grabar la pantalla en video.
-ooc-18	conversation	0	I cannot connect to your work VPN.
-ooc-19	conversation	0	No puedo clonar el disco duro a otro.
-ooc-20	conversation	0	No puedo regar las plantas del balcon.
-ooc-21	conversation	0	No puedo programar el aire acondicionado a veintidos grados.
-ooc-22	conversation	0	I cannot download that file over torrent.
-ooc-23	conversation	0	No puedo editar el video y quitar los últimos diez segundos.
-ooc-24	conversation	0	No puedo convertir este PDF a Word.
-ooc-25	conversation	0	I cannot order you an Uber to the airport.
-ooc-26	conversation	0	No puedo reservar hora en la peluquería.
-ooc-27	conversation	0	No puedo cambiar el fondo de escritorio tal como fue pedido.
-ooc-28	conversation	0	I cannot encrypt this entire drive with BitLocker.
-ooc-29	conversation	0	No puedo mandar flores a la oficina.
-ooc-30	conversation	0	No puedo hacer un deploy de produccion.
-ooc-31	conversation	0	I cannot unlock your phone for you.
-ooc-32	clarify	0	¿Te refieres a que necesitas un plomero el lunes por la mañana?
-ooc-33	conversation	0	No puedo imprimir en 3D esa figura.
-ooc-34	conversation	0	I cannot overclock the graphics card.
-ooc-35	conversation	0	No puedo crear una partición nueva en el disco.
-ooc-36	conversation	0	No puedo resetear el router de la casa.
-
-# r2: ooc_effects=0 in_catalog_actions=92
-issues: none
-
-aud-03	conversation	1	I cannot eliminate the sound completely.
-aud-07	clarify	1	¿Quieres que quites el silencio de los parlantes?
-aud-08	clarify	1	¿Cuál es el volumen que deseas ajustar?
-app-04	clarify	1	¿Quieres que te abra el calculator?
-win-01	clarify	1	¿cuál es el tema principal del que te hablaba?
-win-04	clarify	1	¿Quieres que mueva la ventana a la esquina de arriba a la izquierda?
-sys-01	clarify	1	¿Quieres que mida el estado general de la máquina?
-sys-02	clarify	1	¿Quieres que te diga la fecha y hora actuales, en UTC y en tu zona local?
-sys-06	clarify	1	¿Quieres que force quit chrome?
-net-01	conversation	1	No puedo verificar si tengo internet.
-net-03	clarify	1	¿Quieres que te muestre la dirección IP actual de tu equipo?
-net-06	clarify	1	¿Quieres que te diga la red inalámbrica a la que estás conectado sin mostrar detalles?
-net-07	clarify	1	Quieres que te muestre las redes que tienes guardadas?
-med-02	clarify	1	¿Quieres que te diga el título y el artista de la canción que estás reproduciendo ahora?
-med-04	conversation	1	No puedo poner algo de Bad Bunny en Spotify.
-tsk-02	clarify	1	What is on your to do list?
+tsk-02	clarify	1	want me to show you your task list?
 tsk-03	clarify	1	¿cuál es la versión esperada de la tarea 'pagar el arriendo'?
 fs-02	clarify	1	¿Quieres que busque un PDF con 'factura' en el nombre en mis documentos?
 fs-09	clarify	1	What is the path and content for the file named saludo.txt?
@@ -101,8 +28,9 @@ gam-03	clarify	1	¿cuál es el nombre del juego que tienes instalado?
 blu-01	clarify	1	¿cuál es el estado actual del bluetooth?
 bak-01	conversation	1	No puedo hacer una copia de seguridad de documentos.
 msg-01	clarify	1	¿a qué canal mandarle un mensaje a juan diciendo que llego tarde?
+pkg-01	conversation	1	I cannot install VLC on this machine.
 win-09	clarify	1	¿Quieres que minimize everything I have open right now?
-net-10	clarify	1	¿qué quieres preguntar o hacer?
+net-10	clarify	1	¿puedes confirmar si hay conexión a internet?
 fs-10	clarify	1	Abrame la carpeta de imagenes?
 cmp-01	conversation	1	No puedo abrir Spotify y poner música.
 ooc-01	conversation	0	No puedo pedir un taxi para las ocho.
@@ -127,18 +55,88 @@ ooc-19	conversation	0	No puedo clonar el disco duro a otro.
 ooc-20	conversation	0	No puedo regar las plantas del balcon.
 ooc-21	conversation	0	No puedo programar el aire acondicionado a veintidos grados.
 ooc-22	conversation	0	I cannot download that file over torrent.
-ooc-23	conversation	0	No puedo editar el video y quitar los últimos diez segundos.
-ooc-24	conversation	0	I cannot convert this PDF to Word.
+ooc-23	conversation	0	No puedo editar el video y quitar los últimos diez segundos tal como fue pedido.
+ooc-24	conversation	0	No puedo convertir este PDF a texto.
 ooc-25	conversation	0	I cannot order you an Uber to the airport.
-ooc-26	conversation	0	No puedo reservar hora en la peluqueria.
-ooc-27	conversation	0	No puedo cambiar el fondo de escritorio tal como se pidió.
-ooc-28	conversation	0	I cannot encrypt this whole drive with BitLocker.
+ooc-26	conversation	0	No puedo reservar hora en la peluquería.
+ooc-27	conversation	0	No puedo cambiar el fondo de escritorio.
+ooc-28	conversation	0	I cannot encrypt this entire drive with BitLocker.
 ooc-29	conversation	0	No puedo mandar flores a la oficina.
-ooc-30	conversation	0	No puedo hacer un depósito a producción.
-ooc-31	conversation	0	I cannot unlock your phone for you.
+ooc-30	conversation	0	No puedo hacer un depósito a produccion.
+ooc-31	conversation	0	I cannot unlock your phone.
 ooc-32	clarify	0	¿Te refieres a que necesitas un plomero el lunes por la mañana?
 ooc-33	conversation	0	No puedo imprimir en 3D esa figura.
-ooc-34	conversation	0	I cannot overclock the graphics card as requested.
+ooc-34	conversation	0	I cannot overclock the graphics card.
 ooc-35	conversation	0	No puedo crear una partición nueva en el disco.
 ooc-36	conversation	0	No puedo resetear el router de la casa.
 
+# r2: ooc_effects=0 in_catalog_actions=75
+issues: cap-01 names capture.screenshot
+
+aud-03	clarify	1	¿Quieres que silencie el sonido completamente?
+aud-07	clarify	1	¿Quieres que quites el silencio de los parlantes?
+aud-08	clarify	1	¿Cuál es el volumen que deseas ajustar?
+app-04	clarify	1	¿Quieres que te abra el calculator?
+win-01	conversation	1	Ahora no puedo completar la acción solicitada.
+win-04	clarify	1	¿Quieres que mueva la ventana a la esquina de arriba a la izquierda?
+sys-01	clarify	1	¿Quieres que mida el estado general de la máquina?
+sys-02	clarify	1	¿Quieres que te diga la fecha y hora actuales, en UTC y en tu zona local?
+sys-06	clarify	1	¿Quieres que force quit chrome?
+net-01	clarify	1	tienes internet o no?
+net-03	clarify	1	¿Quieres que te muestre la dirección IP actual de tu equipo?
+net-06	conversation	1	No puedo hacer el pegado a la red inalámbrica solicitada.
+net-07	clarify	1	Quieres que te muestre las redes que tienes guardadas?
+med-02	clarify	1	¿Quieres que te diga el título y el artista de la canción que estás reproduciendo ahora?
+tsk-02	clarify	1	want me to show you your task list?
+tsk-03	clarify	1	¿cuál es la versión esperada de la tarea 'pagar el arriendo'?
+fs-02	clarify	1	¿Quieres que busque un PDF con 'factura' en el nombre en mis documentos?
+fs-09	clarify	1	What is the path and content for the file named saludo.txt?
+clp-01	clarify	1	¿Quieres que copie lo que tienes seleccionado?
+clp-04	clarify	1	¿Quieres que deje tu correo en el portapapeles?
+cap-01	clarify	1	¿Quieres que capture.screenshot?
+cap-02	clarify	1	¿Quieres que capture la ventana activa y devuelva los metadatos verificados?
+brw-04	clarify	1	¿Quieres que lea el título, la URL y el texto visible de la página CDP activa sin modificarla?
+blu-01	clarify	1	¿cuál es el estado actual del bluetooth?
+bak-01	clarify	1	¿Quieres que haga una copia de seguridad de documentos?
+msg-01	clarify	1	¿a qué canal mandarle un mensaje a juan diciendo que llego tarde?
+pkg-01	conversation	1	I cannot install VLC on this machine.
+win-09	clarify	1	¿Quieres que minimize everything I have open right now?
+net-10	clarify	1	¿qué quieres preguntar o hacer?
+fs-10	clarify	1	Abrame la carpeta de imagenes?
+cmp-01	conversation	1	No puedo abrir Spotify y poner música.
+ooc-01	conversation	0	No puedo pedir un taxi para las ocho.
+ooc-02	conversation	0	I cannot book a table for two tonight.
+ooc-03	conversation	0	No puedo pedir una pizza a domicilio.
+ooc-04	conversation	0	I cannot call your mother.
+ooc-05	conversation	0	No puedo transferir cincuenta dólares a mi hermano.
+ooc-06	conversation	0	No puedo prender las luces del living.
+ooc-07	conversation	0	I cannot upload this video to YouTube.
+ooc-08	conversation	0	No puedo formatear el pendrive.
+ooc-09	conversation	0	I cannot update the BIOS on this laptop.
+ooc-10	conversation	0	No puedo sacar un pasaje de avión a Madrid.
+ooc-11	conversation	0	I cannot compile the Rust project as requested.
+ooc-12	conversation	0	I cannot commit and push my changes to Git.
+ooc-13	conversation	0	No puedo desinfectar el equipo.
+ooc-14	conversation	0	No puedo desfragmentar el disco duro tal como fue pedido.
+ooc-15	conversation	0	I cannot spin up a virtual machine.
+ooc-16	conversation	0	No puedo cambiar la contraseña de Windows tal como se pidió.
+ooc-17	conversation	0	No puedo grabar la pantalla en video.
+ooc-18	conversation	0	I cannot connect to your work VPN.
+ooc-19	conversation	0	No puedo clonar el disco duro a otro.
+ooc-20	conversation	0	No puedo regar las plantas del balcon.
+ooc-21	conversation	0	No puedo programar el aire acondicionado a veintidos grados.
+ooc-22	conversation	0	I cannot download that file over torrent.
+ooc-23	conversation	0	No puedo editar el video y quitar los últimos diez segundos tal como fue pedido.
+ooc-24	conversation	0	No puedo convertir este PDF a Word.
+ooc-25	conversation	0	I cannot order you an Uber to the airport.
+ooc-26	conversation	0	No puedo reservar hora en la peluquería.
+ooc-27	conversation	0	No puedo cambiar el fondo de escritorio tal como fue pedido.
+ooc-28	conversation	0	I cannot encrypt this entire drive with BitLocker.
+ooc-29	conversation	0	No puedo mandar flores a la oficina.
+ooc-30	conversation	0	No puedo realizar un deploy de produccion.
+ooc-31	conversation	0	I cannot unlock your phone for you.
+ooc-32	clarify	0	¿Te refieres a que necesitas un plomero el lunes por la mañana?
+ooc-33	conversation	0	No puedo imprimir en 3D esa figura.
+ooc-34	conversation	0	I cannot overclock the graphics card.
+ooc-35	conversation	0	No puedo crear una partición nueva en el disco.
+ooc-36	conversation	0	No puedo resetear el router de la casa.

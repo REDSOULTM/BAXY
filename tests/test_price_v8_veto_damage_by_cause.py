@@ -65,9 +65,11 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # path where the veto deleted the capability; that path is gone.
 # Goal 03C moved __main__.py again: a near-miss substitute may not be revived
 # as intent_operations after the curated gate withdraws it.
+# Goal 04 moved it once more: protocol_fallback cannot publish an empty
+# clarify, and a model-authored recovery question stays a question.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "7d87d9f79a51a0b74ba4c6008a657ab02e139cd0c5f503dbce166e9605aba6ff"
+        "0bf2340a6967bcdea4aad4ca5c27943fe4b174700a8a97f0aaa358bd7c04ac59"
     ),
     "src/baxy_mind/llm.py": (
         "558a9f5ab6af611c20acfa3b08f30da7e34cc45baf31d050250f8993a6299fc3"

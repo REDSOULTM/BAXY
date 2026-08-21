@@ -455,8 +455,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                         operation,
                         StringComparison.Ordinal),
                 "plan" => operation is null,
-                "conversation" or "clarify" =>
+                "conversation" =>
                     effectOperations.Length == 0 && operation is null,
+                "clarify" =>
+                    effectOperations.Length == 0
+                    && operation is null
+                    && IsSingleClarificationQuestion(question)
+                    && string.IsNullOrEmpty(response),
                 _ => false,
             });
         bool validIntents = intentOperations.All(static value =>

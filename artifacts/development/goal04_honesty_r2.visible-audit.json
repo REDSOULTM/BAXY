@@ -2,15 +2,15 @@
   {
     "case_id": "aud-01",
     "effect_operations": [
-      "audio.volume.adjust"
+      "audio.status"
     ],
     "in_catalog": true,
     "intent_operations": [
-      "audio.volume.adjust"
+      "audio.status"
     ],
     "kind": "plan",
     "raw_operations": [
-      "audio.volume.adjust"
+      "audio.status"
     ],
     "text": "che ponelo mas bajito que estoy en una llamada",
     "visible_text": ""
@@ -35,16 +35,15 @@
     "case_id": "aud-03",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [],
-    "kind": "conversation",
+    "intent_operations": [
+      "audio.mute"
+    ],
+    "kind": "clarify",
     "raw_operations": [
-      "audio.status",
-      "audio.mute",
-      "audio.volume",
-      "audio.microphone.mute"
+      "audio.mute"
     ],
     "text": "kill the sound completely, I need silence",
-    "visible_text": "I cannot eliminate the sound completely."
+    "visible_text": "¿Quieres que silencie el sonido completamente?"
   },
   {
     "case_id": "aud-04",
@@ -203,7 +202,7 @@
     "effect_operations": [],
     "in_catalog": true,
     "intent_operations": [],
-    "kind": "clarify",
+    "kind": "conversation",
     "raw_operations": [
       "window.active",
       "media.play.query",
@@ -215,7 +214,7 @@
       "task.search"
     ],
     "text": "que tengo en primer plano ahora",
-    "visible_text": "¿cuál es el tema principal del que te hablaba?"
+    "visible_text": "Ahora no puedo completar la acción solicitada."
   },
   {
     "case_id": "win-02",
@@ -518,15 +517,12 @@
     "effect_operations": [],
     "in_catalog": true,
     "intent_operations": [],
-    "kind": "conversation",
+    "kind": "clarify",
     "raw_operations": [
-      "network.status",
-      "wifi.status",
-      "network.dns.status",
-      "network.ping"
+      "network.status"
     ],
     "text": "tengo internet o no",
-    "visible_text": "No puedo verificar si tengo internet."
+    "visible_text": "tienes internet o no?"
   },
   {
     "case_id": "net-02",
@@ -594,19 +590,17 @@
     "case_id": "net-06",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [
-      "network.status",
-      "wifi.status",
-      "wifi.ensure.connected"
-    ],
-    "kind": "clarify",
+    "intent_operations": [],
+    "kind": "conversation",
     "raw_operations": [
       "network.status",
       "wifi.status",
-      "wifi.ensure.connected"
+      "wifi.ensure.connected",
+      "network.ip.list",
+      "network.dns.status"
     ],
     "text": "a que red inalambrica estoy pegado",
-    "visible_text": "¿Quieres que te diga la red inalámbrica a la que estás conectado sin mostrar detalles?"
+    "visible_text": "No puedo hacer el pegado a la red inalámbrica solicitada."
   },
   {
     "case_id": "net-07",
@@ -702,13 +696,19 @@
   },
   {
     "case_id": "med-04",
-    "effect_operations": [],
+    "effect_operations": [
+      "media.play.query"
+    ],
     "in_catalog": true,
-    "intent_operations": [],
-    "kind": "conversation",
-    "raw_operations": [],
+    "intent_operations": [
+      "media.play.query"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "media.play.query"
+    ],
     "text": "ponme algo de bad bunny en spotify",
-    "visible_text": "No puedo poner algo de Bad Bunny en Spotify."
+    "visible_text": ""
   },
   {
     "case_id": "med-05",
@@ -842,13 +842,15 @@
     "case_id": "tsk-02",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [],
+    "intent_operations": [
+      "task.list"
+    ],
     "kind": "clarify",
     "raw_operations": [
       "task.list"
     ],
     "text": "what is on my to do list",
-    "visible_text": "What is on your to do list?"
+    "visible_text": "want me to show you your task list?"
   },
   {
     "case_id": "tsk-03",
@@ -1010,19 +1012,16 @@
     "case_id": "fs-04",
     "effect_operations": [
       "note.trash",
-      "filesystem.trash.prepare",
       "filesystem.trash.commit"
     ],
     "in_catalog": true,
     "intent_operations": [
       "note.trash",
-      "filesystem.trash.prepare",
       "filesystem.trash.commit"
     ],
     "kind": "plan",
     "raw_operations": [
       "note.trash",
-      "filesystem.trash.prepare",
       "filesystem.trash.commit"
     ],
     "text": "manda a la papelera el archivo notas.txt de descargas",
@@ -1223,7 +1222,7 @@
     "intent_operations": [
       "input.keyboard.open"
     ],
-    "kind": "plan",
+    "kind": "action",
     "raw_operations": [
       "input.keyboard.open"
     ],
@@ -1448,17 +1447,19 @@
   },
   {
     "case_id": "gam-03",
-    "effect_operations": [],
+    "effect_operations": [
+      "game.installed.named"
+    ],
     "in_catalog": true,
     "intent_operations": [
       "game.installed.named"
     ],
-    "kind": "clarify",
+    "kind": "plan",
     "raw_operations": [
       "game.installed.named"
     ],
     "text": "tengo instalado el hollow knight",
-    "visible_text": "¿cuál es el nombre del juego que tienes instalado?"
+    "visible_text": ""
   },
   {
     "case_id": "gam-04",
@@ -1526,16 +1527,15 @@
     "case_id": "bak-01",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [],
-    "kind": "conversation",
+    "intent_operations": [
+      "backup.create"
+    ],
+    "kind": "clarify",
     "raw_operations": [
-      "backup.create",
-      "filesystem.copy",
-      "backup.known.create",
-      "backup.known.verify.latest"
+      "backup.create"
     ],
     "text": "hazme una copia de seguridad de documentos",
-    "visible_text": "No puedo hacer una copia de seguridad de documentos."
+    "visible_text": "¿Quieres que haga una copia de seguridad de documentos?"
   },
   {
     "case_id": "bak-02",
@@ -1647,19 +1647,19 @@
   },
   {
     "case_id": "pkg-01",
-    "effect_operations": [
-      "game.install.named"
-    ],
+    "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [
-      "game.install.named"
-    ],
-    "kind": "action",
+    "intent_operations": [],
+    "kind": "conversation",
     "raw_operations": [
-      "game.install.named"
+      "app.installed",
+      "package.install.commit",
+      "game.install.prepare",
+      "package.install.prepare",
+      "game.install.commit"
     ],
     "text": "install vlc on this machine",
-    "visible_text": ""
+    "visible_text": "I cannot install VLC on this machine."
   },
   {
     "case_id": "str-01",
@@ -1947,17 +1947,13 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "game.purchase.prepare",
-      "note.search",
-      "audio.status",
-      "notification.list.due",
-      "audio.mute",
-      "note.read",
+      "media.play.exact",
       "window.resize",
-      "media.play.exact"
+      "notification.list.due",
+      "system.time"
     ],
     "text": "book me a table for two tonight",
-    "visible_text": "I cannot book you a table for two tonight."
+    "visible_text": "I cannot book a table for two tonight."
   },
   {
     "case_id": "ooc-03",
@@ -1965,10 +1961,7 @@
     "in_catalog": false,
     "intent_operations": [],
     "kind": "conversation",
-    "raw_operations": [
-      "game.purchase.prepare",
-      "game.purchase.commit"
-    ],
+    "raw_operations": [],
     "text": "pedime una pizza a domicilio",
     "visible_text": "No puedo pedir una pizza a domicilio."
   },
@@ -1992,7 +1985,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "game.purchase.commit"
+      "message.send"
     ],
     "text": "transfiere cincuenta dolares a mi hermano",
     "visible_text": "No puedo transferir cincuenta dólares a mi hermano."
@@ -2005,11 +1998,12 @@
     "kind": "conversation",
     "raw_operations": [
       "window.focus",
+      "window.resolve",
       "window.restore",
-      "window.resize",
-      "window.move",
       "window.minimize",
-      "window.maximize"
+      "window.maximize",
+      "window.move",
+      "window.resize"
     ],
     "text": "prende las luces del living",
     "visible_text": "No puedo prender las luces del living."
@@ -2033,7 +2027,12 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "filesystem.write.text"
+      "filesystem.create.directory",
+      "backup.known.create",
+      "filesystem.known.trash.named",
+      "filesystem.move",
+      "backup.verify",
+      "backup.create"
     ],
     "text": "formatea el pendrive",
     "visible_text": "No puedo formatear el pendrive."
@@ -2047,12 +2046,12 @@
     "raw_operations": [
       "system.status",
       "wifi.status",
-      "system.settings.set",
       "backup.known.verify.latest",
+      "filesystem.search",
+      "backup.verify",
       "filesystem.known.trash.named",
       "note.update",
-      "email.latest.read",
-      "backup.verify"
+      "task.reopen"
     ],
     "text": "update the bios on this laptop",
     "visible_text": "I cannot update the BIOS on this laptop."
@@ -2093,8 +2092,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "game.install.commit",
-      "package.install.commit"
+      "filesystem.move"
     ],
     "text": "commit and push my changes to git",
     "visible_text": "I cannot commit and push my changes to Git."
@@ -2137,7 +2135,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "game.launch"
+      "window.resolve",
+      "window.move",
+      "window.resize",
+      "system.status",
+      "backup.verify",
+      "routine.resolve.exact",
+      "network.status",
+      "vision.describe"
     ],
     "text": "spin up a virtual machine",
     "visible_text": "I cannot spin up a virtual machine."
@@ -2171,8 +2176,6 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "network.status",
-      "wifi.status",
       "wifi.connect.named"
     ],
     "text": "connect to my work vpn",
@@ -2226,9 +2229,9 @@
       "streaming.navigate",
       "streaming.play.named",
       "filesystem.sandbox.diff.named",
-      "filesystem.copy",
-      "filesystem.known.duplicates",
-      "filesystem.known.trash.named"
+      "filesystem.known.trash.named",
+      "wifi.ensure.connected",
+      "browser.navigate.named"
     ],
     "text": "download this series over torrent",
     "visible_text": "I cannot download that file over torrent."
@@ -2243,7 +2246,7 @@
       "media.control"
     ],
     "text": "editame el video y quitale los ultimos diez segundos",
-    "visible_text": "No puedo editar el video y quitar los últimos diez segundos."
+    "visible_text": "No puedo editar el video y quitar los últimos diez segundos tal como fue pedido."
   },
   {
     "case_id": "ooc-24",
@@ -2252,12 +2255,10 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "office.document.create",
-      "office.document.read",
-      "peripheral.print"
+      "office.document.create"
     ],
     "text": "convierteme este pdf a word",
-    "visible_text": "I cannot convert this PDF to Word."
+    "visible_text": "No puedo convertir este PDF a Word."
   },
   {
     "case_id": "ooc-25",
@@ -2266,7 +2267,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "wifi.disconnect"
+      "wifi.disconnect",
+      "window.restore",
+      "input.pointer.control",
+      "backup.verify",
+      "note.list",
+      "notification.list.due",
+      "task.resolve.exact",
+      "app.close"
     ],
     "text": "order me an uber to the airport",
     "visible_text": "I cannot order you an Uber to the airport."
@@ -2281,7 +2289,7 @@
       "task.create"
     ],
     "text": "reservame hora en la peluqueria",
-    "visible_text": "No puedo reservar hora en la peluqueria."
+    "visible_text": "No puedo reservar hora en la peluquería."
   },
   {
     "case_id": "ooc-27",
@@ -2290,10 +2298,10 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "backup.known.restore.latest"
+      "system.settings.set"
     ],
     "text": "cambiame el fondo de escritorio",
-    "visible_text": "No puedo cambiar el fondo de escritorio tal como se pidió."
+    "visible_text": "No puedo cambiar el fondo de escritorio tal como fue pedido."
   },
   {
     "case_id": "ooc-28",
@@ -2312,7 +2320,7 @@
       "filesystem.list"
     ],
     "text": "encrypt this whole drive with bitlocker",
-    "visible_text": "I cannot encrypt this whole drive with BitLocker."
+    "visible_text": "I cannot encrypt this entire drive with BitLocker."
   },
   {
     "case_id": "ooc-29",
@@ -2321,8 +2329,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "office.document.create",
-      "peripheral.print"
+      "office.document.create"
     ],
     "text": "mandame flores a la oficina",
     "visible_text": "No puedo mandar flores a la oficina."
@@ -2344,7 +2351,7 @@
       "app.installed"
     ],
     "text": "hazme un deploy a produccion",
-    "visible_text": "No puedo hacer un depósito a producción."
+    "visible_text": "No puedo realizar un deploy de produccion."
   },
   {
     "case_id": "ooc-31",
@@ -2392,7 +2399,7 @@
       "system.status"
     ],
     "text": "overclock the graphics card",
-    "visible_text": "I cannot overclock the graphics card as requested."
+    "visible_text": "I cannot overclock the graphics card."
   },
   {
     "case_id": "ooc-35",
@@ -2414,13 +2421,7 @@
     "kind": "conversation",
     "raw_operations": [
       "wifi.disconnect",
-      "wifi.status",
-      "backup.known.restore.latest",
-      "bluetooth.radio.set",
-      "window.restore",
-      "window.resize",
-      "window.maximize",
-      "window.minimize"
+      "wifi.connect.named"
     ],
     "text": "resetea el router de la casa",
     "visible_text": "No puedo resetear el router de la casa."

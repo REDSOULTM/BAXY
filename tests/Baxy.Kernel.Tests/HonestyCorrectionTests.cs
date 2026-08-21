@@ -12,12 +12,32 @@ namespace Baxy.Kernel.Tests;
 public sealed class HonestyCorrectionTests
 {
     [Test]
-    public async Task VerificationDenialCorrectsWithoutANewUserPromptAndLeavesATrace()
+    public void CorrectTakesTheShippedInProgressSignalAndTheDeniedVerification()
     {
-        const string inProgress = "Entendiendo tu petición";
-        Assert.That(inProgress, Does.Not.Contain("Listo"));
-        Assert.That(inProgress, Does.Not.Contain("completé"));
+        const string denial = "verification_failed";
+        const string correction = "No pude completar la petición solicitada.";
 
+        HonestyCorrectionTrace trace = HonestyCorrection.Correct(
+            HonestyCorrection.NonAssertingInProgress,
+            denial,
+            correction);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                trace.Claim,
+                Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
+            Assert.That(trace.Claim, Does.StartWith("Estoy"));
+            Assert.That(trace.Claim, Does.Not.Contain("Listo"));
+            Assert.That(trace.Claim, Does.Not.Contain("completé"));
+            Assert.That(trace.Verification, Is.EqualTo(denial));
+            Assert.That(trace.Correction, Is.EqualTo(correction));
+        });
+    }
+
+    [Test]
+    public async Task VerificationDenialCorrectsWithoutANewUserPromptAndJournalsTheTriple()
+    {
         var handler = new UnverifiedHandler();
         using var journal = new InMemoryInvocationJournal();
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
@@ -30,6 +50,9 @@ public sealed class HonestyCorrectionTests
             JsonDocument.Parse("{\"title\":\"x\",\"content\":\"y\"}").RootElement.Clone());
 
         OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+        CompletedInvocation? completed = await journal.FindCompletedAsync(
+            request.InvocationId,
+            CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -37,11 +60,19 @@ public sealed class HonestyCorrectionTests
             Assert.That(response.Verified, Is.False);
             Assert.That(response.ErrorCode, Is.EqualTo("verification_failed"));
             Assert.That(response.Message, Does.Not.Match("(?i)^\\s*listo\\b"));
-            Assert.That(engine.LastHonestyCorrection, Is.Not.Null);
-            Assert.That(engine.LastHonestyCorrection!.Claim, Is.EqualTo("in_progress_non_asserting"));
-            Assert.That(engine.LastHonestyCorrection.Verification, Is.EqualTo("denied"));
-            Assert.That(engine.LastHonestyCorrection.Correction, Is.EqualTo(response.Message));
-            Assert.That(engine.LastHonestyCorrection.Correction, Is.Not.Empty);
+            Assert.That(response.HonestyCorrection, Is.Not.Null);
+            Assert.That(
+                response.HonestyCorrection!.Claim,
+                Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
+            Assert.That(
+                response.HonestyCorrection.Verification,
+                Is.EqualTo("verification_failed"));
+            Assert.That(response.HonestyCorrection.Correction, Is.EqualTo(response.Message));
+            Assert.That(engine.LastHonestyCorrection, Is.EqualTo(response.HonestyCorrection));
+            Assert.That(completed, Is.Not.Null);
+            Assert.That(
+                completed!.Response.HonestyCorrection,
+                Is.EqualTo(response.HonestyCorrection));
         });
     }
 
@@ -65,6 +96,7 @@ public sealed class HonestyCorrectionTests
         {
             Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
             Assert.That(response.Verified, Is.True);
+            Assert.That(response.HonestyCorrection, Is.Null);
             Assert.That(engine.LastHonestyCorrection, Is.Null);
         });
     }

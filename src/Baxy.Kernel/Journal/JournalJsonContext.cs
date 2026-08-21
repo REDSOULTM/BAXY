@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Baxy.Contracts;
 
 namespace Baxy.Kernel.Journal;
 
@@ -11,6 +12,7 @@ namespace Baxy.Kernel.Journal;
 [JsonSerializable(typeof(JournalEnvelope))]
 [JsonSerializable(typeof(JournalUnsignedEnvelope))]
 [JsonSerializable(typeof(JournalPayload))]
+[JsonSerializable(typeof(HonestyCorrectionTrace))]
 [JsonSerializable(typeof(JournalAnchorPosition))]
 [JsonSerializable(typeof(JournalAnchorPayload))]
 [JsonSerializable(typeof(JournalAnchorEnvelope))]

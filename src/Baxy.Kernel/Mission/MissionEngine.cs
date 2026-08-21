@@ -76,11 +76,13 @@ public sealed class MissionEngine : IDisposable
                 }
 
                 _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
-                return PrivateOperationBoundary.NormalizeReplay(
+                OperationResponse replayed = PrivateOperationBoundary.NormalizeReplay(
                     request,
                     completed.Response,
                     _privateEnvelopeAuthenticator,
                     _narrator);
+                LastHonestyCorrection = replayed.HonestyCorrection;
+                return replayed;
             }
 
             string? startedFingerprint = await _journal
@@ -232,12 +234,14 @@ public sealed class MissionEngine : IDisposable
             ? null
             : outcome.ErrorCode ?? (outcome.Succeeded ? "verification_failed" : "operation_failed");
         string message = _narrator.Narrate(request.Operation, outcome);
+        HonestyCorrectionTrace? honesty = null;
         if (outcome.Succeeded && !outcome.Verified)
         {
-            LastHonestyCorrection = new HonestyCorrectionTrace(
-                Claim: "in_progress_non_asserting",
-                Verification: "denied",
-                Correction: message);
+            honesty = HonestyCorrection.Correct(
+                HonestyCorrection.NonAssertingInProgress,
+                errorCode ?? "verification_failed",
+                message);
+            LastHonestyCorrection = honesty;
         }
 
         return new OperationResponse(
@@ -252,7 +256,8 @@ public sealed class MissionEngine : IDisposable
             outcome.Result,
             errorCode,
             outcome.EffectMayHaveOccurred,
-            outcome.CauseCode);
+            outcome.CauseCode,
+            honesty);
     }
 
     private async ValueTask<OperationResponse> CompleteAsync(

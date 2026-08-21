@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Baxy.App;
+using Baxy.Kernel.Policy;
 using NUnit.Framework;
 
 namespace Baxy.Integration.Tests;
@@ -37,6 +38,23 @@ public sealed class FieldProgressContractTests
         Assert.That(notice, Is.Not.Null);
         Assert.That(notice!.Stage, Is.EqualTo(FieldProgressNotice.StageStarting));
         Assert.That(notice.Label, Does.StartWith("Estoy"));
+    }
+
+    [Test]
+    public void UnderstandingProgressIsTheHonestyCorrectionClaim()
+    {
+        FieldProgressNotice? notice = FieldBridgeContract.ResolveProgress(
+            isReady: true,
+            isBusy: true,
+            hasStartupError: false,
+            statusDescription: "Entendiendo tu petición");
+
+        Assert.That(notice, Is.Not.Null);
+        Assert.That(notice!.Stage, Is.EqualTo(FieldProgressNotice.StageUnderstanding));
+        Assert.That(notice.Label, Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
+        Assert.That(
+            FieldBridgeContract.Create(FieldProgressNotice.StageUnderstanding).Label,
+            Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
     }
 
     [Test]

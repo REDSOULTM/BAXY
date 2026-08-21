@@ -2,15 +2,15 @@
   {
     "case_id": "aud-01",
     "effect_operations": [
-      "audio.status"
+      "audio.volume.adjust"
     ],
     "in_catalog": true,
     "intent_operations": [
-      "audio.status"
+      "audio.volume.adjust"
     ],
     "kind": "plan",
     "raw_operations": [
-      "audio.status"
+      "audio.volume.adjust"
     ],
     "text": "che ponelo mas bajito que estoy en una llamada",
     "visible_text": ""
@@ -297,15 +297,15 @@
   {
     "case_id": "win-07",
     "effect_operations": [
-      "window.active"
+      "window.application.status"
     ],
     "in_catalog": true,
     "intent_operations": [
-      "window.active"
+      "window.application.status"
     ],
     "kind": "plan",
     "raw_operations": [
-      "window.active"
+      "window.application.status"
     ],
     "text": "spotify tiene alguna ventana abierta",
     "visible_text": ""
@@ -597,19 +597,17 @@
     "case_id": "net-06",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [
-      "network.status",
-      "wifi.status",
-      "wifi.ensure.connected"
-    ],
-    "kind": "clarify",
+    "intent_operations": [],
+    "kind": "conversation",
     "raw_operations": [
       "network.status",
       "wifi.status",
-      "wifi.ensure.connected"
+      "wifi.ensure.connected",
+      "network.ip.list",
+      "network.dns.status"
     ],
     "text": "a que red inalambrica estoy pegado",
-    "visible_text": "¿Quieres que te diga la red inalámbrica a la que estás conectado sin mostrar detalles?"
+    "visible_text": "No puedo hacer el pegado a la red inalámbrica solicitada."
   },
   {
     "case_id": "net-07",
@@ -851,13 +849,15 @@
     "case_id": "tsk-02",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [],
+    "intent_operations": [
+      "task.list"
+    ],
     "kind": "clarify",
     "raw_operations": [
       "task.list"
     ],
     "text": "what is on my to do list",
-    "visible_text": ""
+    "visible_text": "want me to show you your task list?"
   },
   {
     "case_id": "tsk-03",
@@ -1229,7 +1229,7 @@
     "intent_operations": [
       "input.keyboard.open"
     ],
-    "kind": "action",
+    "kind": "plan",
     "raw_operations": [
       "input.keyboard.open"
     ],
@@ -1353,7 +1353,7 @@
     "intent_operations": [
       "vision.describe"
     ],
-    "kind": "plan",
+    "kind": "action",
     "raw_operations": [
       "vision.describe"
     ],
@@ -1532,15 +1532,14 @@
     "case_id": "bak-01",
     "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [
-      "backup.create"
-    ],
-    "kind": "clarify",
+    "intent_operations": [],
+    "kind": "conversation",
     "raw_operations": [
-      "backup.create"
+      "backup.create",
+      "filesystem.copy"
     ],
     "text": "hazme una copia de seguridad de documentos",
-    "visible_text": "¿Quieres que haga una copia de seguridad de documentos?"
+    "visible_text": "No puedo hacer una copia de seguridad de documentos."
   },
   {
     "case_id": "bak-02",
@@ -1608,17 +1607,19 @@
   },
   {
     "case_id": "eml-02",
-    "effect_operations": [],
+    "effect_operations": [
+      "email.latest.read"
+    ],
     "in_catalog": true,
     "intent_operations": [
-      "email.latest.reply"
+      "email.latest.read"
     ],
-    "kind": "clarify",
+    "kind": "action",
     "raw_operations": [
-      "email.latest.reply"
+      "email.latest.read"
     ],
     "text": "contestale al ultimo correo que ya lo vi",
-    "visible_text": "¿Quieres que te conteste el último correo que ya lo vi?"
+    "visible_text": ""
   },
   {
     "case_id": "msg-01",
@@ -1650,19 +1651,19 @@
   },
   {
     "case_id": "pkg-01",
-    "effect_operations": [
-      "game.install.named"
-    ],
+    "effect_operations": [],
     "in_catalog": true,
-    "intent_operations": [
-      "game.install.named"
-    ],
-    "kind": "action",
+    "intent_operations": [],
+    "kind": "conversation",
     "raw_operations": [
-      "game.install.named"
+      "app.installed",
+      "package.install.commit",
+      "game.install.prepare",
+      "package.install.prepare",
+      "game.install.commit"
     ],
     "text": "install vlc on this machine",
-    "visible_text": ""
+    "visible_text": "I cannot install VLC on this machine."
   },
   {
     "case_id": "str-01",
@@ -1768,7 +1769,7 @@
       "network.status"
     ],
     "text": "chequea si el internet anda",
-    "visible_text": "¿qué quieres preguntar o hacer?"
+    "visible_text": "¿puedes confirmar si hay conexión a internet?"
   },
   {
     "case_id": "med-07",
@@ -1950,10 +1951,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "media.play.exact",
-      "window.resize",
+      "game.purchase.prepare",
+      "note.search",
+      "audio.status",
       "notification.list.due",
-      "system.time"
+      "audio.mute",
+      "note.read",
+      "window.resize",
+      "media.play.exact"
     ],
     "text": "book me a table for two tonight",
     "visible_text": "I cannot book you a table for two tonight."
@@ -1964,10 +1969,7 @@
     "in_catalog": false,
     "intent_operations": [],
     "kind": "conversation",
-    "raw_operations": [
-      "game.purchase.prepare",
-      "game.purchase.commit"
-    ],
+    "raw_operations": [],
     "text": "pedime una pizza a domicilio",
     "visible_text": "No puedo pedir una pizza a domicilio."
   },
@@ -1978,7 +1980,8 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "message.send"
+      "notification.cancel.at",
+      "notification.cancel.latest"
     ],
     "text": "call my mother",
     "visible_text": "I cannot call your mother."
@@ -1990,7 +1993,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "message.send"
+      "game.purchase.commit"
     ],
     "text": "transfiere cincuenta dolares a mi hermano",
     "visible_text": "No puedo transferir cincuenta dólares a mi hermano."
@@ -2003,11 +2006,12 @@
     "kind": "conversation",
     "raw_operations": [
       "window.focus",
+      "window.resolve",
       "window.restore",
-      "window.resize",
-      "window.move",
       "window.minimize",
-      "window.maximize"
+      "window.maximize",
+      "window.move",
+      "window.resize"
     ],
     "text": "prende las luces del living",
     "visible_text": "No puedo prender las luces del living."
@@ -2031,7 +2035,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "filesystem.write.text"
+      "filesystem.create.directory",
+      "filesystem.move",
+      "backup.known.create",
+      "backup.verify",
+      "filesystem.known.trash.named",
+      "note.create",
+      "note.list",
+      "system.status"
     ],
     "text": "formatea el pendrive",
     "visible_text": "No puedo formatear el pendrive."
@@ -2044,13 +2055,13 @@
     "kind": "conversation",
     "raw_operations": [
       "system.status",
-      "task.update",
-      "filesystem.file.open.latest",
+      "wifi.status",
+      "backup.known.verify.latest",
+      "filesystem.search",
+      "backup.verify",
+      "filesystem.known.trash.named",
       "note.update",
-      "app.installed",
-      "wifi.ensure.connected",
-      "filesystem.sandbox.append.named",
-      "email.latest.read"
+      "task.reopen"
     ],
     "text": "update the bios on this laptop",
     "visible_text": "I cannot update the BIOS on this laptop."
@@ -2072,14 +2083,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "package.install.prepare",
-      "game.install.named",
-      "backup.known.create",
       "routine.phrase.create",
-      "filesystem.copy",
+      "game.install.commit",
       "backup.create",
       "task.complete",
-      "game.install.status"
+      "routine.resolve.exact",
+      "system.status",
+      "window.minimize",
+      "window.maximize"
     ],
     "text": "compilame el proyecto de rust",
     "visible_text": "I cannot compile the Rust project as requested."
@@ -2091,13 +2102,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "filesystem.move",
-      "task.complete",
-      "task.reopen",
-      "task.restore",
-      "task.resolve.exact",
-      "task.search",
-      "task.update"
+      "package.install.commit",
+      "game.install.commit",
+      "filesystem.trash.commit",
+      "game.purchase.commit",
+      "package.install.prepare",
+      "task.update",
+      "system.status",
+      "note.update"
     ],
     "text": "commit and push my changes to git",
     "visible_text": "I cannot commit and push my changes to Git."
@@ -2169,7 +2181,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "capture.screenshot"
+      "capture.active.window"
     ],
     "text": "grabame la pantalla en video",
     "visible_text": "No puedo grabar la pantalla en video."
@@ -2205,7 +2217,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "routine.read"
+      "system.identity"
     ],
     "text": "riega las plantas del balcon",
     "visible_text": "No puedo regar las plantas del balcon."
@@ -2229,14 +2241,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
+      "game.install.cancel.active",
+      "game.install.cancel",
       "streaming.navigate",
       "streaming.play.named",
-      "game.install.cancel.active",
-      "game.install.prepare",
-      "game.installed.named",
       "filesystem.sandbox.diff.named",
-      "filesystem.known.duplicates",
-      "filesystem.copy"
+      "filesystem.known.trash.named",
+      "wifi.ensure.connected",
+      "browser.navigate.named"
     ],
     "text": "download this series over torrent",
     "visible_text": "I cannot download that file over torrent."
@@ -2251,7 +2263,7 @@
       "media.seek.relative"
     ],
     "text": "editame el video y quitale los ultimos diez segundos",
-    "visible_text": "No puedo editar el video y quitar los últimos diez segundos."
+    "visible_text": "No puedo editar el video y quitar los últimos diez segundos tal como fue pedido."
   },
   {
     "case_id": "ooc-24",
@@ -2263,7 +2275,7 @@
       "office.document.create"
     ],
     "text": "convierteme este pdf a word",
-    "visible_text": "No puedo convertir este PDF a Word."
+    "visible_text": "No puedo convertir este PDF a texto."
   },
   {
     "case_id": "ooc-25",
@@ -2306,7 +2318,7 @@
       "system.settings.set"
     ],
     "text": "cambiame el fondo de escritorio",
-    "visible_text": "No puedo cambiar el fondo de escritorio tal como fue pedido."
+    "visible_text": "No puedo cambiar el fondo de escritorio."
   },
   {
     "case_id": "ooc-28",
@@ -2334,8 +2346,7 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "office.document.create",
-      "peripheral.print"
+      "office.document.create"
     ],
     "text": "mandame flores a la oficina",
     "visible_text": "No puedo mandar flores a la oficina."
@@ -2349,15 +2360,15 @@
     "raw_operations": [
       "game.install.prepare",
       "filesystem.move",
-      "game.launch",
+      "filesystem.copy",
       "task.resolve.exact",
-      "game.purchase.prepare",
-      "routine.phrase.create",
-      "web.search",
-      "app.installed"
+      "game.launch",
+      "game.install.cancel.active",
+      "system.application.crash.diagnose",
+      "backup.verify"
     ],
     "text": "hazme un deploy a produccion",
-    "visible_text": "No puedo hacer un deploy de produccion."
+    "visible_text": "No puedo hacer un depósito a produccion."
   },
   {
     "case_id": "ooc-31",
@@ -2369,7 +2380,7 @@
       "system.power"
     ],
     "text": "unlock my phone for me",
-    "visible_text": "I cannot unlock your phone for you."
+    "visible_text": "I cannot unlock your phone."
   },
   {
     "case_id": "ooc-32",
@@ -2414,7 +2425,14 @@
     "intent_operations": [],
     "kind": "conversation",
     "raw_operations": [
-      "filesystem.move"
+      "filesystem.known.duplicates",
+      "backup.known.create",
+      "backup.create",
+      "task.create",
+      "task.update",
+      "task.reopen",
+      "filesystem.move",
+      "filesystem.trash.commit"
     ],
     "text": "crea una particion nueva en el disco",
     "visible_text": "No puedo crear una partición nueva en el disco."
@@ -2428,12 +2446,12 @@
     "raw_operations": [
       "wifi.disconnect",
       "wifi.status",
+      "bluetooth.radio.set",
       "backup.known.restore.latest",
-      "filesystem.trash.restore",
-      "note.restore",
-      "routine.restore",
-      "task.restore",
-      "note.create"
+      "routine.delete",
+      "note.create",
+      "peripheral.print",
+      "bluetooth.device.pair"
     ],
     "text": "resetea el router de la casa",
     "visible_text": "No puedo resetear el router de la casa."

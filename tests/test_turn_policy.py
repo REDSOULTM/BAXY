@@ -659,12 +659,13 @@ def test_failed_turn_audit_preserves_total_recovery_boundary(
 
     record = json.loads(audit_path.read_text(encoding="utf-8"))
     assert result["turn_recovery"] == "protocol_fallback"
+    assert result["kind"] == "conversation"
     assert record["phase"] == "recovery"
     assert record["request_id"] == "audit-recovery"
     assert record["stages"] == [
         {
             "name": "total_recovery",
-            "mode": "clarify",
+            "mode": "conversation",
             "operation": None,
             "effect_operations": [],
             "effect_verification": "not_applicable",
@@ -4196,7 +4197,7 @@ def test_failed_turn_recovery_never_fabricates_protocol_prose() -> None:
     assert histories == [
         ([{"role": "assistant", "content": "What should I do?"}], 2.5),
     ]
-    assert result["kind"] == "clarify"
+    assert result["kind"] == "conversation"
     assert result["operation"] is None
     assert result["question"] == ""
     assert result["reply"] == ""
@@ -4233,7 +4234,7 @@ def test_failed_turn_protocol_fallback_has_zero_action_authority_and_no_text(
     )
 
     assert result["type"] == "turn.result"
-    assert result["kind"] == "clarify"
+    assert result["kind"] == "conversation"
     assert result["operation"] is None
     assert result["reply"] == ""
     assert result["question"] == ""
@@ -4242,6 +4243,84 @@ def test_failed_turn_protocol_fallback_has_zero_action_authority_and_no_text(
     assert result["preserveObjective"] is False
     assert result["recovery_attempts"] == 1
     assert result["failure_code"] == "turn_runtime_failure"
+
+
+def test_failed_turn_protocol_fallback_never_publishes_empty_clarify() -> None:
+    class InvalidQuestionRuntime:
+        @staticmethod
+        def clarify_after_turn_failure(
+            _text: str,
+            *,
+            history: object,
+            timeout: float,
+        ) -> str:
+            del history, timeout
+            return "   "
+
+        @staticmethod
+        def compose_user_message(
+            _user_text: str,
+            _intent: str,
+            _facts: object,
+        ) -> str:
+            return "I could not finish reading that request."
+
+    result = _recover_failed_turn(
+        {
+            "id": "turn-compose",
+            "text": "what is on my to do list",
+            "history": [],
+            "uiLanguage": "en-US",
+        },
+        InvalidQuestionRuntime(),
+        failure_kinds=("runtime", "runtime"),
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["question"] == ""
+    assert result["reply"] == "I could not finish reading that request."
+    assert result["turn_recovery"] == "protocol_fallback"
+    assert result["operation"] is None
+    assert result["effectOperations"] == []
+
+
+def test_recovery_compose_question_is_published_as_clarify() -> None:
+    class QuestionComposeRuntime:
+        @staticmethod
+        def clarify_after_turn_failure(
+            _text: str,
+            *,
+            history: object,
+            timeout: float,
+        ) -> str:
+            del history, timeout
+            return ""
+
+        @staticmethod
+        def compose_user_message(
+            _user_text: str,
+            _intent: str,
+            _facts: object,
+        ) -> str:
+            return "What is on your to do list?"
+
+    result = _recover_failed_turn(
+        {
+            "id": "turn-compose-question",
+            "text": "what is on my to do list",
+            "history": [],
+            "uiLanguage": "en-US",
+        },
+        QuestionComposeRuntime(),
+        failure_kinds=("runtime", "runtime"),
+    )
+
+    assert result["kind"] == "clarify"
+    assert result["question"] == "What is on your to do list?"
+    assert result["reply"] == ""
+    assert result["turn_recovery"] == "semantic_clarification"
+    assert result["operation"] is None
+    assert result["effectOperations"] == []
 
 
 def test_failed_turn_protocol_fallback_is_textless_without_language_model() -> None:
@@ -4256,7 +4335,7 @@ def test_failed_turn_protocol_fallback_is_textless_without_language_model() -> N
         attempts=0,
     )
 
-    assert result["kind"] == "clarify"
+    assert result["kind"] == "conversation"
     assert result["operation"] is None
     assert result["question"] == ""
     assert result["reply"] == ""

@@ -17,5 +17,6 @@ namespace Baxy.Contracts;
 [JsonSerializable(typeof(OperationDescriptor[]))]
 [JsonSerializable(typeof(OperationRequest))]
 [JsonSerializable(typeof(OperationResponse))]
+[JsonSerializable(typeof(HonestyCorrectionTrace))]
 [JsonSerializable(typeof(ProtocolError))]
 public sealed partial class BaxyJsonContext : JsonSerializerContext;

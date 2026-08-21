@@ -830,8 +830,9 @@ def test_raw_turn_audit_binds_offered_proposed_and_veto_stages(
 
 def test_recovery_metadata_never_allows_action_authority() -> None:
     valid = {
-        "kind": "clarify",
+        "kind": "conversation",
         "operation": None,
+        "question": "",
         "turn_attempts": 2,
         "turn_recovery": "protocol_fallback",
         "recovery_attempts": 1,
@@ -839,10 +840,12 @@ def test_recovery_metadata_never_allows_action_authority() -> None:
     }
     assert gate.recovery_metadata_is_valid(valid) is True
 
+    empty_clarify = dict(valid, kind="clarify")
+    assert gate.recovery_metadata_is_valid(empty_clarify) is False
     action_bearing = dict(valid, kind="action", operation="app.open")
     assert gate.recovery_metadata_is_valid(action_bearing) is False
     hidden_recovery = {
-        "kind": "clarify",
+        "kind": "conversation",
         "operation": None,
         "turn_attempts": 1,
         "turn_recovery": "",
@@ -871,6 +874,8 @@ def test_recovery_is_counted_and_bounded_separately_from_runtime_errors() -> Non
     }
     arm_results["case-0"].update(
         {
+            "kind": "conversation",
+            "question": "",
             "turn_attempts": 2,
             "turn_recovery": "protocol_fallback",
             "recovery_attempts": 1,
@@ -1673,7 +1678,7 @@ def test_only_the_exact_fresh_860_case_protocol_can_be_certified(
 
     for case_id in ("case-0000", "case-0848"):
         specs[case_id]["expected_modes"] = ["clarify"]
-        recovered = result("clarify", question="¿Puedes aclararlo?")
+        recovered = result("conversation")
         recovered.update(
             {
                 "turn_attempts": 2,

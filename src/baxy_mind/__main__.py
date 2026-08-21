@@ -6423,12 +6423,48 @@ def _recover_failed_turn(
             )
         except Exception:  # noqa: BLE001 - use the protocol safety floor
             pass
+        kind, text = _recovery_visible_from_compose(llm, objective)
+        if kind == "clarify":
+            return audited(
+                {
+                    "type": "turn.result",
+                    "id": message.get("id"),
+                    "kind": "clarify",
+                    "operation": None,
+                    "intentOperations": [],
+                    "effectOperations": [],
+                    "preserveObjective": False,
+                    "question": text,
+                    "reply": "",
+                    "turn_attempts": max(0, attempts),
+                    "turn_recovery": "semantic_clarification",
+                    "recovery_attempts": 1,
+                    "failure_code": failure_code,
+                }
+            )
+        return audited(
+            {
+                "type": "turn.result",
+                "id": message.get("id"),
+                "kind": "conversation",
+                "operation": None,
+                "intentOperations": [],
+                "effectOperations": [],
+                "preserveObjective": False,
+                "question": "",
+                "reply": text,
+                "turn_attempts": max(0, attempts),
+                "turn_recovery": "protocol_fallback",
+                "recovery_attempts": 1,
+                "failure_code": failure_code,
+            }
+        )
 
     return audited(
         {
             "type": "turn.result",
             "id": message.get("id"),
-            "kind": "clarify",
+            "kind": "conversation",
             "operation": None,
             "intentOperations": [],
             "effectOperations": [],
@@ -6437,10 +6473,38 @@ def _recover_failed_turn(
             "reply": "",
             "turn_attempts": max(0, attempts),
             "turn_recovery": "protocol_fallback",
-            "recovery_attempts": 1 if llm is not None else 0,
+            "recovery_attempts": 0,
             "failure_code": failure_code,
         }
     )
+
+
+def _recovery_visible_from_compose(llm: Any, objective: str) -> tuple[str, str]:
+    """Use model-authored recovery text. A question is a question, not silence.
+
+    Returns ``("clarify", question)``, ``("conversation", reply)`` or
+    ``("conversation", "")`` when the model produces nothing usable.
+    """
+
+    compose = getattr(llm, "compose_user_message", None)
+    if not callable(compose):
+        return "conversation", ""
+    try:
+        text = str(
+            compose(
+                objective,
+                "error",
+                {"situation": "No pude completar el análisis de tu petición."},
+            )
+            or ""
+        ).strip()
+    except Exception:  # noqa: BLE001 - empty reply is the honest floor
+        return "conversation", ""
+    if not text or len(text) > 4_096:
+        return "conversation", ""
+    if _recovery_question_is_valid(text):
+        return "clarify", text
+    return "conversation", text
 
 
 class _SidecarLifecycle:

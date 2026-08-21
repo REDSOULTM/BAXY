@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
@@ -56,8 +57,6 @@ internal static class FieldBridgeContract
 
     private const string StartingLabel =
         "Estoy preparando todo para empezar.";
-    private const string UnderstandingLabel =
-        "Estoy entendiendo tu petición.";
     private const string PreparingStepsLabel =
         "Estoy preparando los pasos que hacen falta.";
     private const string ActingLabel =
@@ -193,7 +192,7 @@ internal static class FieldBridgeContract
         FieldProgressNotice.StageStarting =>
             new FieldProgressNotice(stage, StartingLabel),
         FieldProgressNotice.StageUnderstanding =>
-            new FieldProgressNotice(stage, UnderstandingLabel),
+            new FieldProgressNotice(stage, HonestyCorrection.NonAssertingInProgress),
         FieldProgressNotice.StagePreparingSteps =>
             new FieldProgressNotice(stage, PreparingStepsLabel),
         FieldProgressNotice.StageActing =>
