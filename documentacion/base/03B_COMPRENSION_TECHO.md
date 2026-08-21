@@ -1230,3 +1230,10 @@ limpia; la LoRA mixta acierta 8/8 y **30/63** limpias. Por tanto V38 sí estaba
 inflado, aunque su rechazo no cambia: el gate equivalente sería 45/63. No se
 crearon V42 ni pesos. V41 queda invalidado y debe reseñarse excluyendo de la
 evaluación real todo cruce con train o calibración antes de ejecutar el modelo.
+
+V44 repara el sello sin cambiar la hipótesis ni buscar otro punto de operación.
+Elimina por hash normalizado los ocho cruces con train y los tres con calibración,
+deja **60** acciones reales independientes y conserva la regla de permitir como
+máximo un veto: gate **59/60**. `C=1`, E5, corpus de entrenamiento, threshold y
+los gates 473/477, 246/307 y 80/100 no cambian. El programa reparado pasa 4/4
+pruebas; V45/v2 son nombres nuevos y siguen prohibidos hasta este sello.

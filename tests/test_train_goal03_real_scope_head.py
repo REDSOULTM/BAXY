@@ -22,6 +22,17 @@ def test_deduplicate_rejects_conflicting_labels() -> None:
         )
 
 
+def test_exclude_overlaps_counts_each_sealed_reference() -> None:
+    rows = [
+        {"text": "one"},
+        {"text": "two"},
+        {"text": "three"},
+    ]
+    kept, excluded = subject.exclude_overlaps(rows, [{"one"}, {"two"}])
+    assert kept == [{"text": "three"}]
+    assert excluded == [1, 1]
+
+
 def test_summarize_counts_action_and_oos_decisions() -> None:
     summary = subject.summarize(
         np.asarray([2.0, -1.0, 0.5, -0.5]),

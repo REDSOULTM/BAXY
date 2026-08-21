@@ -44,8 +44,8 @@ REAL_TRAIN = Path(
 REAL_VALIDATION = Path(
     r"D:\BAXYRuntime\experiments\functiongemma-real-language-v1\current_union_validation.jsonl"
 )
-OUTPUT = REPO / "artifacts/development/goal03_real_scope_head_v42.json"
-HEAD_OUTPUT = Path(r"D:\BAXYRuntime\experiments\goal03-real-scope-head-v1\scope_head.npz")
+OUTPUT = REPO / "artifacts/development/goal03_real_scope_head_v45.json"
+HEAD_OUTPUT = Path(r"D:\BAXYRuntime\experiments\goal03-real-scope-head-v2\scope_head.npz")
 
 EXPECTED_SHA256 = {
     TRAIN: "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad",
@@ -56,7 +56,7 @@ EXPECTED_SHA256 = {
 }
 
 MINIMUM_CALIBRATION_ACTION_KEEP = 0.99
-MINIMUM_REAL_ACTIONS_KEPT = 70
+MINIMUM_REAL_ACTIONS_KEPT = 59
 MINIMUM_CALIBRATION_OOS_REFUSED = 246
 MINIMUM_CLINC_OOS_REFUSED = 80
 
@@ -120,6 +120,24 @@ def deduplicate(rows: Iterable[dict[str, Any]]) -> tuple[list[dict[str, Any]], i
     return list(by_text.values()), duplicates
 
 
+def exclude_overlaps(
+    rows: Iterable[dict[str, Any]], reference_sets: Iterable[set[str]]
+) -> tuple[list[dict[str, Any]], list[int]]:
+    references = list(reference_sets)
+    kept: list[dict[str, Any]] = []
+    excluded = [0 for _ in references]
+    for row in rows:
+        key = normalize(str(row["text"]))
+        matched = False
+        for index, reference in enumerate(references):
+            if key in reference:
+                excluded[index] += 1
+                matched = True
+        if not matched:
+            kept.append(row)
+    return kept, excluded
+
+
 def threshold_for_keep(scores: np.ndarray, minimum_keep: float) -> float:
     if scores.ndim != 1 or not len(scores) or not 0.0 < minimum_keep <= 1.0:
         raise ValueError("invalid threshold inputs")
@@ -171,16 +189,22 @@ def run(output: Path, head_output: Path) -> dict[str, Any]:
     train_base = labelled(read_jsonl(TRAIN), "current-union-train")
     train_real = labelled(read_jsonl(REAL_TRAIN), "inherited-real-train")
     calibration = labelled(read_jsonl(CALIBRATION), "current-union-validation")
-    real_validation = labelled(
+    real_validation_all = labelled(
         read_jsonl(REAL_VALIDATION), "inherited-real-validation"
     )
     training, duplicate_rows = deduplicate([*train_base, *train_real])
 
+    train_base_keys = {normalize(row["text"]) for row in train_base}
     training_keys = {normalize(row["text"]) for row in training}
     calibration_keys = {normalize(row["text"]) for row in calibration}
+    real_validation, real_excluded = exclude_overlaps(
+        real_validation_all, [train_base_keys, calibration_keys]
+    )
     real_validation_keys = {normalize(row["text"]) for row in real_validation}
     if training_keys & calibration_keys or training_keys & real_validation_keys:
         raise RuntimeError("training overlaps a sealed evaluation population")
+    if len(real_validation) != 60 or real_excluded != [8, 3]:
+        raise RuntimeError("unexpected inherited-real holdout decontamination")
 
     clinc_rows = clinc.development_rows()
     if len(clinc_rows["oos_train"]) != 250 or len(clinc_rows["oos_val"]) != 100:
@@ -269,7 +293,12 @@ def run(output: Path, head_output: Path) -> dict[str, Any]:
         },
         "evaluation": {
             "calibration": calibration_summary,
-            "inherited_real_actions": real_summary,
+            "inherited_real_actions": {
+                **real_summary,
+                "source_rows": len(real_validation_all),
+                "excluded_current_union_train_overlap": real_excluded[0],
+                "excluded_current_union_calibration_overlap": real_excluded[1],
+            },
             "clinc_oos_validation": clinc_summary,
         },
         "acceptance": {

@@ -1,0 +1,73 @@
+{
+  "acceptance": {
+    "calibration_actions_kept": 473,
+    "calibration_oos_refused": 246,
+    "clinc_oos_validation_refused": 80,
+    "inherited_real_clean_actions_kept": 59,
+    "rule": "all four gates must pass before any fresh-corpus or decision-policy measurement"
+  },
+  "classifier": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "kind": "sklearn.LogisticRegression",
+    "random_state": 5601,
+    "solver": "lbfgs",
+    "threshold_rule": "lowest calibration-action score after allowing at most floor(1%-of-actions) lower scores"
+  },
+  "constraints": {
+    "clinc_test_opened": false,
+    "fresh_corpus_opened": false,
+    "hyperparameter_sweep": false,
+    "runtime_modified": false,
+    "threshold_tuned_on_inherited_real_or_clinc": false
+  },
+  "encoder": {
+    "config_sha256": "69137736cab8b8903a07fe8afaafdda25aac55415a12a55d1bffa9f581abf959",
+    "dimensions": 384,
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "evidence": {
+    "overlap_audit_sha256": "5d7c01eb0e76540bdfb4792316de675aeb49c8466b251d1c8f50a65c4c2bc8d1",
+    "program_sha256": "c24086c29de31f2d78052a136f527f68d7882a483037e9ac6798ebf1936a8ca8",
+    "superseded_v41_sha256": "6a32ad10e07fa648a6a0e446734fa4841f8ee1775176ee5578bafb8c47e6917e",
+    "test_sha256": "99a919adcea1e0cb7338667678d863bcf16f3fc39ce07b0e4cd24975fb7af615"
+  },
+  "holdout_repair": {
+    "excluded_current_union_calibration_overlap": 3,
+    "excluded_current_union_train_overlap": 8,
+    "original_rows": 71,
+    "remaining_rows": 60,
+    "rule": "exact normalized exclusion fixed by V43 before model load"
+  },
+  "output": {
+    "head": "D:\\BAXYRuntime\\experiments\\goal03-real-scope-head-v2\\scope_head.npz",
+    "report": "artifacts/development/goal03_real_scope_head_v45.json"
+  },
+  "populations": {
+    "calibration": {
+      "rows": 784,
+      "sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2"
+    },
+    "clinc_oos_validation": {
+      "member": "oos_val",
+      "rows": 100,
+      "source_sha256": "bfcca9ae515623541dc1983c94c4ed7cae9d26b42ae47d74b972e51bb6f7a21f"
+    },
+    "inherited_real_training": {
+      "rows": 274,
+      "sha256": "220ad03345aad2a6470be6c5e2353c7bc6c95689a6b5ab1c884212f8eabe853f"
+    },
+    "inherited_real_validation": {
+      "clean_rows": 60,
+      "source_rows": 71,
+      "sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300"
+    },
+    "training": {
+      "rows": 6922,
+      "sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad"
+    }
+  },
+  "schema": "baxy.goal03-real-scope-head-preregistration.v2",
+  "stop_rule": "If any gate fails, reject the head without opening the fresh corpus or running Qwen again."
+}
