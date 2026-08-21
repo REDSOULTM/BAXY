@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+.ruff_cache/
 /.tmp/
 
 # Capturas de pantalla (se regeneran; pesan MB)
@@ -20,6 +21,16 @@ gui/ui_field/node_modules/
 
 # Transcripts de sesiones de desarrollo
 ContextoFable.md
+
+# Trazas crudas de corridas que nadie citó. El marcador (.json) de cada corrida
+# SÍ se versiona; la traza (.telemetry.jsonl / .turn-audit.jsonl) pesa ~900 KB
+# por corrida y sólo entra al repositorio cuando un documento la usa para
+# diagnosticar — que es la proporción que el árbol ya tenía (712 .json frente a
+# 44 .turn-audit). Las descartadas se mueven aquí y siguen en disco.
+artifacts/_trazas_locales/
+
+# Comprimido de una carpeta que ya está en el árbol
+documentacion/documentacion.rar
 
 # Estado local del harness
 .claude/

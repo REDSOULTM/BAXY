@@ -27,8 +27,16 @@ Permisos totales sobre este PC: descarga, instala, sobrescribe, borra lo que
 sobre. **No preguntes.** Para sólo si vas a tocar datos personales del usuario u
 otros proyectos de la carpeta `Programacion`.
 
-Sin subagentes. El estado se deja escrito en el repositorio a medida que
-avanzas. Tras cada paso medido: cifra en
+Esfuerzo `high` de suelo; `/effort xhigh` sólo en el tramo que lo pida.
+Busca con `grep` acotado a `src tests scripts main.py` y lee rangos con
+`read_file`: en la shell no hay `rg`, es PowerShell, y
+`run_terminal_command` es para git, pytest, dotnet y procesos. Las
+corridas de medición van en segundo plano y se recogen con
+`get_command_or_subagent_output`, sin sondear en bucle.
+
+Sin subagentes: `spawn_subagent` hereda tu modelo y paga otra vez
+contexto y razonamiento. El estado se deja escrito en el repositorio a
+medida que avanzas. Tras cada paso medido: cifra en
 `documentacion/base/03C_ALCANCE.md` (créalo al primer número), una línea en
 `documentacion/APLAZADOS.md` por lo que no persigues, `git add` y `git commit`
 que diga qué midió y cuánto dio.

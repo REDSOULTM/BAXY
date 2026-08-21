@@ -1,0 +1,38 @@
+# Bloque para ~/.grok/config.toml — NO es configuración activa del repositorio.
+#
+# Grok sólo lee `[mcp_servers]` de un config con ámbito de proyecto: skills,
+# modelo, esfuerzo y subagentes se leen únicamente del config de usuario. Se
+# instala con .\.grok\install-config.ps1 y se comprueba con `grok inspect`.
+#
+# Qué hace y por qué: los nombres y descripciones de las 22 skills bundled
+# viajan en el prompt de cada sesión —9.494 caracteres medidos el 2026-08-21,
+# más que AGENTS.md entero— y casi ninguna aplica a un producto .NET + Python +
+# PowerShell + React que se desarrolla en local.
+#
+# `disabled` las deja listadas pero fuera del prompt de sistema y fuera de
+# invocación. Para revivir una, quita su nombre y vuelve a `grok inspect`.
+#
+# Siguen vivas, porque este repositorio sí las usa: code-review, review,
+# implement, execute-plan — y la del proyecto, evidencia-baxy.
+
+[skills]
+disabled = [
+  "docx",
+  "pptx",
+  "pdf",
+  "design",
+  "imagine",
+  "build-with-ai",
+  "create-skill",
+  "create-workflow",
+  "skill-design-principles",
+  "pr-babysit",
+  "resume-claude",
+  "resume-codex",
+  "resume-cursor",
+  "game-asset-core",
+  "game-animation-frames",
+  "game-character-consistency",
+  "game-tilesets",
+  "game-ui-icons",
+]

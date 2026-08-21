@@ -190,7 +190,7 @@ Antes:
 2. ejecuta `--help` solo si el script lo soporta sin side effects;
 3. resuelve inputs y outputs absolutos;
 4. comprueba si el output ya existe;
-5. busca su prueba: `rg -n 'nombre_script' tests`;
+5. busca su prueba: `grep` de `nombre_script` acotado a `tests`;
 6. identifica secrets/corpus/targets;
 7. clasifica el efecto con la leyenda;
 8. pide autoridad si cruza runtime, físico o instalación.

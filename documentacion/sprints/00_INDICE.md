@@ -7,11 +7,10 @@ correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
 
 | Goals | Modelo | Dónde |
 |---|---|---|
-| **01–04** | **Claude Opus 5** | Esta carpeta. Son los que están en uso. |
-| 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/), por si vuelve el acceso a Codex |
-| **03B** | **GPT-5.6 Sol / Grok 4.6** | Esta carpeta. El 90 % se midió; el alcance no. |
+| **01–11** | **Grok 4.6**, esfuerzo `high` | Esta carpeta. Son los que están en uso. |
 | **03C** | **Grok 4.6** | Esta carpeta. Cierra el alcance y los restos antes del 04. |
-| 05–11 | GPT-5.6 Sol | Esta carpeta. Se convertirán a Opus cuando toquen. |
+| 03B (cerrado) | Se abrió con GPT-5.6 Sol y se cerró con Grok 4.6 | Esta carpeta. El 90 % se midió; el alcance no. |
+| 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/). Archivo, no se lanzan. |
 
 **Sobre el 03B.** El goal 03 cerró en 46 % con el 90 % **medido inalcanzable**.
 El 03B movió el techo y el producto llegó a **112/124 (mediana de tres
@@ -25,15 +24,17 @@ Detalle en
 deuda. Prompt y criterios:
 [`03C_ALCANCE.md`](03C_ALCANCE.md).
 
-La conversión a Opus no es un cambio de nombre de modelo: `reasoning.effort` no
-existe en Claude Code, el harness pide permisos y compacta sesiones largas, y Opus
-5 tiene cuatro tendencias medidas —verificar de más, ampliar el encargo, delegar
-demasiado, escribir largo— que chocan con las cinco leyes si no se nombran. Los
-goals de Opus llevan un bloque que las corrige. Detalle en
-[`sol/00_LEEME.md`](sol/00_LEEME.md).
+**Cómo se lanza uno.** Sesión nueva y limpia, `/effort high`, y el goal pegado
+entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
+que una revisión de evidencia independiente reproduce el resultado**; si no puede
+reproducirlo, el goal sigue abierto con los huecos nombrados. Eso es exactamente el
+invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una sesión por
+goal, no una sesión para todo el día.
 
 **El contenido no cambia entre versiones**: mismo objetivo, misma evidencia
-heredada, mismos criterios de cierre.
+heredada, mismos criterios de cierre. Lo que cambia es el bloque «Cómo trabajas
+aquí» de cada goal. Detalle de las versiones anteriores en
+[`sol/00_LEEME.md`](sol/00_LEEME.md).
 
 ## Los once
 
@@ -164,17 +165,24 @@ las ideas de mejora.
 
 ## Por qué están escritos así
 
-Los dos modelos comparten lo que importa aquí: son proactivos y persistentes por
-defecto —reanudan tras un fallo de herramienta, encadenan ediciones, paralelizan
-cuando conviene— y ninguno necesita que lo empujen. Lo que necesitan es saber
-**dónde está la frontera** y **cuándo han terminado**. Por eso cada prompt dice el
-destino, el límite y los criterios de cierre, y no los pasos.
+Un agente de código moderno es proactivo y persistente por defecto: reanuda tras un
+fallo de herramienta, encadena ediciones y no necesita que lo empujen. Lo que
+necesita saber es **dónde está la frontera** y **cuándo ha terminado**. Por eso cada
+prompt dice el destino, el límite y los criterios de cierre, y no los pasos.
 
-Se separan en las tendencias, y ahí sí hay que hablarles distinto. Sol tiende a
-seguir el prompt al pie de la letra y a quedarse corto si no le dices el alcance;
-Opus 5 tiende a lo contrario — verifica de más, amplía el encargo, delega
-demasiado y escribe largo. Por eso los goals de Opus llevan un bloque de cuatro
-correcciones que los de Sol no necesitan.
+**Y por eso los goals no repiten lo que el modelo ya trae de fábrica.** El prompt de
+sistema de Grok 4.6 ya le ordena mantener a la vista todos los requisitos explícitos
+hasta cumplirlos, no afirmar que algo está hecho o probado sin salida de herramienta
+que lo sostenga, no ampliar el encargo, y responder en vez de devolver una pregunta
+cuando la respuesta está en el contexto. Repetírselo no lo refuerza: gasta sitio y le
+dice cosas que ya cree. Lo que sí llevan los goals es el bloque **«Cómo trabajas
+aquí»**: las tools, la shell, el esfuerzo, los subagentes y dónde se deja el estado
+—que es lo que el harness no le dice—.
+
+Las versiones anteriores llevaban además un bloque de tendencias por modelo. **El de
+Grok no está escrito porque no está medido**, y aquí no se escriben bloques por
+intuición: la sesión que cerró el 03B está en disco, con 976 mensajes, en
+`~/.grok/sessions/`, y ése es el sitio donde se mide antes de escribirlo.
 
 Cada prompt lleva además **lo que ya se midió y se rechazó**, para que ningún
 agente pague dos veces la misma corrida. Eso no es andamiaje: es evidencia.

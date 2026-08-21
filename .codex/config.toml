@@ -1,0 +1,72 @@
+# Configuración de Codex con ámbito de repositorio.
+#
+# ⚠ ESTADO MEDIDO (2026-08-18, codex-cli 0.144.1 en esta máquina):
+#   este fichero TODAVÍA NO SURTE EFECTO. Se comprobó comparando el prompt
+#   visible por el modelo con y sin él:
+#
+#     codex debug prompt-input > con.json
+#     mv .codex\config.toml tmp ; codex debug prompt-input > sin.json ; mv tmp .codex\config.toml
+#
+#   Los dos salieron byte a byte idénticos (24.609 B), mientras que el mismo
+#   ajuste pasado como `-c approval_policy=on-request` sí cambia el prompt.
+#   El ámbito de proyecto está documentado por OpenAI y llega en versiones
+#   posteriores (0.147.0 ya está disponible). Se deja escrito porque es el sitio
+#   correcto y entra solo al actualizar; hasta entonces, lo que manda son los
+#   perfiles de usuario de .codex/profiles/ — llevan los mismos valores.
+#
+#   Para verificar si ya está activo: repite el diff de arriba. Si difieren,
+#   este fichero está vivo.
+#
+# Sólo va aquí lo que es cierto *para este repositorio*. Codex ignora en un
+# fichero de proyecto las claves de proveedor, auth, notificaciones, telemetría
+# y `profile`/`profiles`: por eso los dos modos de trabajo (EFFICIENT y DEEP/1M)
+# se instalan como perfiles de usuario. Ver .codex/README.md.
+
+# El razonamiento es lo que se está comprando. El desperdicio que hay que quitar
+# es el contexto basura, no la inteligencia: los goals de este repositorio se
+# escribieron para `effort: high` y ése es el suelo, no el techo.
+# `xhigh` se sube a mano en la sesión concreta que lo merezca.
+# `ultra` NO: reparte el trabajo en subagentes automáticamente.
+model_reasoning_effort = "high"
+
+# Respuestas al usuario cortas; el pensamiento no se toca.
+model_verbosity = "low"
+
+[tools]
+# La ley 1 obliga a mirar el estado del arte después de la herencia, y varios
+# goals lo exigen. Es capacidad de verdad; el coste de su schema es marginal.
+web_search = true
+
+[agents]
+# Subagentes: capacidad conservada, coste acotado.
+#
+# Cada subagente arrastra su propio contexto y su propio trabajo de modelo, así
+# que un flujo con subagentes gasta más cuota que la misma tarea en el hilo
+# principal — lo dice la propia documentación de OpenAI. En esta máquina el
+# historial ya lo enseña: de 835 sesiones registradas, 636 son spawns de
+# subagente (`codex doctor` → rollout DB sources), y el intento anterior de este
+# proyecto dejó 322 en `documentacion/agentes/INDICE.md`.
+#
+# La forma que sí sale a cuenta: Sol decide y escribe; la exploración de sólo
+# lectura se delega a un modelo más barato y vuelve como rutas + rangos +
+# conclusión. Por eso el modelo por defecto de los hijos NO es el del padre.
+enabled = true
+max_concurrent_threads_per_session = 2
+default_subagent_model = "gpt-5.6-terra"
+default_subagent_reasoning_effort = "medium"
+
+# Deliberadamente NO se fija `approval_policy` ni `sandbox_mode`.
+#
+# Desarrollar BAXY es mutar la máquina de verdad: abrir apps, mover el volumen,
+# instalar el producto, matar procesos. La configuración global de esta máquina
+# ya es `never` + `danger-full-access` a propósito, y apretarla desde el
+# repositorio rompería el trabajo normal el día que el ámbito de proyecto se
+# active. Los límites de qué se puede tocar sin pedir autoridad son de conducta,
+# no de sandbox, y están en GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md.
+
+# Sin servidores MCP a propósito.
+#
+# Los schemas de las tools de un MCP se inyectan en *cada turno*, se usen o no.
+# Todo lo que este repositorio necesita ya lo cubre la shell: git, rg, dotnet,
+# pytest, pnpm, PowerShell. Un MCP sólo entra aquí si aporta algo que la CLI no
+# puede hacer, y entonces con `enabled_tools` acotado a las tools que se usan.

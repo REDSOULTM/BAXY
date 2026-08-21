@@ -38,10 +38,8 @@ correspondiente antes de materializarlo.
 
 Busca el símbolo y sus pruebas:
 
-```powershell
-rg -n 'NombreExacto|operacion\.exacta' src tests
-git log --oneline -- ruta\propietaria
-```
+Busca `NombreExacto|operacion\.exacta` con la tool `grep` acotada a `src tests`, y
+luego `git log --oneline -- ruta\propietaria`.
 
 No muevas una regla a la capa que resulta más cómoda para el caso feliz.
 
@@ -305,8 +303,8 @@ tests/test_planner_corpus.py
 
 ## Añadir o modificar un skill de producto
 
-Estos skills son archivos de guía consumidos por `baxy_mind`; no son skills de
-Codex ni plugins.
+Estos skills son archivos de guía consumidos por `baxy_mind`; no son skills del
+agente que desarrolla (las de `.agents/skills/`) ni plugins.
 
 Ruta:
 
@@ -519,10 +517,8 @@ No confundas hashes/content-id con firma del editor.
 
 Antes de borrar:
 
-```powershell
-rg -n 'Símbolo|archivo|operación' .
-git log --oneline -- ruta
-```
+Busca `Símbolo|archivo|operación` con `grep` sobre todo el árbol —aquí sí, porque
+un resto puede estar en cualquier sitio— y mira `git log --oneline -- ruta`.
 
 Clasifica el elemento:
 

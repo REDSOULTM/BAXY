@@ -1,0 +1,36 @@
+# PERFIL DE USUARIO — modo DEEP / 1M.
+#
+# Plantilla. Se instala con .\.codex\profiles\install.ps1 y se usa con
+#     codex --profile sol-deep
+#
+# Para qué, y sólo para esto: auditorías completas, arquitectura transversal,
+# migraciones grandes, leer muchas partes del árbol a la vez. En el trabajo
+# normal este perfil no mejora nada y sí gasta más.
+#
+# Cuándo NO usarlo: cualquier tarea que quepa en un módulo. Un contexto de 150K
+# bien elegido rinde más que uno de 800K lleno de lecturas obsoletas — la
+# degradación por contexto largo (retrieval y adherencia a instrucciones) es
+# medible bastante antes del límite.
+
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+model_verbosity = "low"
+
+# Ventana de 1M. Los dos valores van juntos: `model_auto_compact_token_limit`
+# deja margen para que la compactación entre antes de tocar el techo.
+#
+# RIESGO CONOCIDO: fijar `model_context_window` a mano ha provocado que la
+# auto-compactación deje de dispararse tras el primer desbordamiento
+# (openai/codex#16068, versiones 0.116/0.117). Si en una sesión larga la
+# compactación no entra o Codex entra en bucle, borra estas dos líneas y vuelve
+# al perfil sol-efficient. Comprueba el estado real con `/status`.
+model_context_window = 1000000
+model_auto_compact_token_limit = 900000
+
+[agents]
+# En una auditoría transversal la exploración de sólo lectura es justo el
+# trabajo que sí conviene delegar a un modelo barato.
+enabled = true
+max_concurrent_threads_per_session = 3
+default_subagent_model = "gpt-5.6-terra"
+default_subagent_reasoning_effort = "medium"

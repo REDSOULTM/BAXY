@@ -5,6 +5,12 @@ Pégalo entero en una sesión nueva, sobre
 El goal canónico es [`03C_ALCANCE.md`](03C_ALCANCE.md). Este fichero es
 la misma instrucción, lista para pegar.
 
+**Cómo se lanza.** Sesión nueva y limpia (`grok`, no `-c`), `/effort high`,
+y el bloque de abajo pegado con `/goal` delante: así Grok trabaja por
+rondas y **no da el goal por cumplido hasta que una revisión de evidencia
+independiente reproduce el número**. `/goal status` para ver dónde está.
+Una sesión por goal, no una sesión para todo el día.
+
 ---
 
 ```
@@ -53,7 +59,9 @@ identidad del reconocedor como retirada.
 
 CÓMO: una cosa cada vez, offline sobre la telemetría en disco antes de e2e,
 tres corridas para declarar un cambio bueno. Sin subagentes. Commit después
-de cada paso medido. No dos mediciones Goal 03 a la vez. Pytest con el venv
+de cada paso medido. Busca con grep acotado a src/tests/scripts y lee rangos
+con read_file: en la shell no hay rg, es PowerShell. Las corridas largas van
+en segundo plano y se recogen con get_command_or_subagent_output. No dos mediciones Goal 03 a la vez. Pytest con el venv
 viejo BAXY\experiments\mind_router_spike\.venv. Si tocas src/baxy_mind,
 repinas wake-validation-program-tree.
 

@@ -24,11 +24,9 @@ hardware, privacidad, idempotencia o compatibilidad.
 
 Para respuesta, auditoría o diagnóstico sin edición:
 
-```powershell
-git status --short --branch
-rg -n 'símbolo|operación|código' src tests
-git log --oneline -- ruta
-```
+`git status --short --branch`, `grep` del símbolo acotado a `src tests`, y
+`git log --oneline -- ruta`. La shell es PowerShell y no tiene `rg`: buscar y leer
+va con las tools del agente.
 
 Reporta evidencia y no implementes una corrección si la tarea solo pidió
 diagnosticar.

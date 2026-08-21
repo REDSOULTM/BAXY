@@ -8,7 +8,7 @@
 ## Dónde trabajas
 
 Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo`.
-Rama: `main`. Modelo: GPT-5.6 Sol, `reasoning.effort: high`.
+Rama: `main`. Modelo: **Grok 4.6**, esfuerzo `high`.
 
 **Ojo con el nombre.** En la misma carpeta `Programacion` hay un repositorio
 llamado `BAXY` a secas: ése es el intento anterior y es **fuente de herencia, no
@@ -70,6 +70,41 @@ de lo mismo son la acumulación con otro nombre.
 Y la consigna que une las cinco: ésta es la **quinta** escritura de BAXY y tiene
 que ser **la más rápida de las cinco**. No porque haga menos —es la definitiva—
 sino porque no vuelve a descubrir nada que ya se descubrió.
+
+---
+
+## Cómo trabajas aquí
+
+No es estilo: es lo que esta máquina y este harness te dan, y lo que este repositorio
+ya midió que hace falta decir.
+
+**Esfuerzo `high` de suelo.** Súbelo con `/effort xhigh` en el tramo que lo merezca —un
+diseño abierto, un fallo que no se explica— y bájalo después. Cada peldaño multiplica
+los tokens de razonamiento, y este goal está escrito para `high`.
+
+**Busca y lee con tus tools, no con la shell.** `grep` es ripgrep por dentro: acótalo a
+`src tests scripts main.py` salvo que vayas a la evidencia a propósito, y pide rutas
+antes que líneas. Lee rangos con `read_file`, no ficheros enteros. En la shell **no
+existe `rg`**: es PowerShell, y `run_terminal_command` es para git, pytest, dotnet y
+procesos. Antes de abrir algo grande, mira el tamaño: `git ls-tree -r -l HEAD -- ruta`.
+
+**Lo que tarda, en segundo plano.** Corridas de medición, compuerta y builds Release se
+lanzan en segundo plano y sigues con trabajo independiente; recoges el resultado con
+`get_command_or_subagent_output`, sin sondear en bucle.
+
+**Sin subagentes.** `spawn_subagent` hereda tu modelo: paga otra vez contexto y
+razonamiento para devolverte un informe que además tienes que leer. Esto se resuelve en
+el hilo principal. Única excepción: una exploración de sólo lectura acotada cuyo
+resultado quepa en rutas + rangos + conclusión.
+
+**El estado, escrito en el repositorio.** La ventana es de 500K y se compacta sola al
+80 %: lo que sólo esté en la conversación se pierde. Deja el mapa, la medición y las
+decisiones en ficheros a medida que avanzas, y haz commit después de cada paso medido.
+Plantilla: `docs/AI_HANDOFF_TEMPLATE.md`.
+
+**Verificas ejecutando, no navegando.** BAXY es un producto de escritorio y aquí no hay
+herramientas de navegador. Un cambio de interfaz se comprueba con `py main.py` y con
+sus pruebas, y dices qué no pudiste verificar.
 
 ---
 

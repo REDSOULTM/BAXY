@@ -43,8 +43,8 @@ git status --short --branch
 git log -5 --oneline
 ```
 
-La raíz debe contener `Baxy.slnx`, `main.py` y `AGENTS.md`; la rama base normal
-es `codex/baxy-rebuild-v3`. La ubicación física y la forma de abrirla dependen
+La raíz debe contener `Baxy.slnx`, `main.py` y `AGENTS.md`; la rama de trabajo es
+`main`. La ubicación física y la forma de abrirla dependen
 del equipo: no debe copiarse ni clonarse para continuar una tarea.
 
 Después:
@@ -112,7 +112,7 @@ documentación en el mismo cambio.
 | Decisiones y manuales | `contexto/04_arquitectura/ADR/`, `documentacion/01_ARQUITECTURA/` | Actualizar cuando cambia una frontera o un procedimiento |
 | Evidencia | `artifacts/` | Un resultado fechado, no código fuente ni permiso para repetir efectos |
 | Investigación | `experiments/` | No entra al runtime por existir; requiere promoción explícita |
-| Restauración privada | `bootstrap/`, rutas ignoradas descritas en `AGENT_HANDOFF.md` | No publicar ni regenerar aproximadamente |
+| Restauración privada | `bootstrap/`, rutas ignoradas descritas en `.gitignore` | No publicar ni regenerar aproximadamente |
 | Archivo histórico | `legacy/`, cortes y auditorías antiguas | Solo lectura y contexto; nunca importar como implementación activa |
 | Salida generada | `bin/`, `obj/`, caches, builds y runtime ignorados | No editar a mano ni tratar como fuente |
 
@@ -160,19 +160,18 @@ esas rutas sin producir el efecto externo.
 
 Empieza por símbolos y ownership, no por leer árboles completos:
 
+Busca el símbolo con la tool `grep` acotada a `src tests`, lista ficheros de un
+proyecto con `list_dir`, y para la historia:
+
 ```powershell
-rg -n "NombreDelSímbolo" src tests
-rg --files src\Baxy.Core tests\Baxy.Integration.Tests
 git log --oneline -- ruta\relevante
 git blame -L 1,120 -- ruta\relevante
 ```
 
 Para una operación pública, busca su nombre exacto en:
 
-```powershell
-rg -n '"operacion\.exacta"|operacion\.exacta' `
-  src tests contexto documentacion
-```
+Busca el nombre literal `"operacion.exacta"` con `grep` en `src tests contexto
+documentacion`.
 
 Esto revela catálogo, handler, provider, narración, contratos de App/mente y
 pruebas. No asumas que el primer resultado es el único dueño.

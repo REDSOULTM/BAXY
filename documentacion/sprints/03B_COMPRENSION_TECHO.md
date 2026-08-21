@@ -12,7 +12,7 @@
 ## Dónde trabajas
 
 Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo`.
-Rama: `main`. Modelo: GPT-5.6 Sol, `reasoning.effort: high`.
+Rama: `main`. Modelo: se abrió con GPT-5.6 Sol y se cerró con **Grok 4.6**.
 
 **Ojo con el nombre.** En la misma carpeta `Programacion` hay un repositorio
 llamado `BAXY` a secas: ése es el intento anterior y es **fuente de herencia, no
