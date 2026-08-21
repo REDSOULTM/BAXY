@@ -1165,6 +1165,15 @@ def _curated_domain_is_grounded(
             r"texto|text|mensaje|message|writing|screenwriting|"
             r"characters?|caracteres?)\b",
         )
+    if operation == "system.power":
+        return _has(
+            folded,
+            r"\b(?:equipo|pc|compu|computador(?:a)?|computer|maquina|machine|"
+            r"windows)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:telefono|movil|celular|phone|smartphone|tablet|iphone)\b",
+        )
     if operation == "system.process.terminate.named":
         return _has(
             folded,
@@ -1449,7 +1458,7 @@ def _curated_domain_is_grounded(
             r"\b(?:archivo|file)\b",
         ) and _has(
             folded,
-            r"\b(?:reciente|latest|ultimo|ultima|newest)\b",
+            r"\b(?:reciente|latest|last|ultimo|ultima|newest)\b",
         )
     if operation == "filesystem.known.duplicates":
         return _has(
@@ -5796,7 +5805,7 @@ _DEICTIC_DAY = (
     r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
     r"that\s+day|that\s+date|that\s+same\s+day)\b"
 )
-_OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta)"
+_OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
 _LIST = r"(?:lista|listar|enumera|enumerar|muestra|muestrame|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
 _CREATE = (
@@ -6682,6 +6691,7 @@ def _is_direct_request(text: str) -> bool:
         r"find|rastrea|rastrear|explora|explorar|ubica|consult|"
         r"look(?=\s+on\s+(?:the\s+)?web\b)|"
         r"confirma|confirm|verify|see|"
+        r"do(?=\s+i\s+have)|"
         r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
         r"establece|set|deja|dejar|put|leave|turn|"
         r"sube|subir|baja|bajar|aumenta|reduce|increment|decrease|"
@@ -8950,11 +8960,13 @@ def _review_audio_effects(
         elif (
             _head_is(
                 head,
-                r"(?:pon|poner|fija|ajusta|adjust|establece|set|cambia|change)",
+                r"(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
+                r"cambia|change|deja|dejame|leave)",
             )
             and _has(
                 folded,
-                r"\b(?:pon|poner|fija|ajusta|adjust|establece|set|cambia|change)\b",
+                r"\b(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
+                r"cambia|change|deja|dejame|leave)\b",
             )
             and (
                 _has(folded, r"(?:\b\d{1,3}\b|\bpor ciento\b|%)")
@@ -9189,7 +9201,8 @@ def _literal_percentage_word_value(text: str) -> int | None:
     matches = list(
         re.finditer(
             rf"\b(?:volumen|volume|sonido|sound)\b\s+"
-            rf"(?:a(?:l)?|en|to|at)\s*(?P<level>{_PERCENTAGE_WORD_PATTERN})"
+            rf"(?:a(?:l)?|en|to|at)\s*(?:la\s+|the\s+)?"
+            rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half)"
             rf"(?:\s*(?:%|por\s+ciento|percent))?\b",
             text,
             re.IGNORECASE,
@@ -9197,7 +9210,10 @@ def _literal_percentage_word_value(text: str) -> int | None:
     )
     if len(matches) != 1:
         return None
-    return _PERCENTAGE_WORD_VALUES.get(matches[0].group("level").casefold())
+    level = matches[0].group("level").casefold()
+    if level in {"mitad", "half"}:
+        return 50
+    return _PERCENTAGE_WORD_VALUES.get(level)
 
 
 def _bare_spoken_number_media_query(text: str) -> str | None:
@@ -9265,7 +9281,10 @@ def _review_installed_catalog_effects(
                 folded,
                 (
                     rf"^[¿?¡!\s]*(?:is|are|esta|estan)\s+(?:el|la|the)?\s*"
-                    rf"{_KNOWN_APPLICATION}\s+(?:instalad[oa]s?|installed)"
+                    rf"{_KNOWN_APPLICATION}\s+(?:even\s+)?"
+                    rf"(?:instalad[oa]s?|installed)"
+                    rf"(?:\s+(?:here|aqui|en este\s+(?:equipo|pc)|"
+                    rf"on this machine))?"
                     rf"(?:\s+(?:por favor|please|ahora|now))?[\s?!.]*$"
                 ),
             )
@@ -9306,6 +9325,25 @@ def _review_installed_catalog_effects(
             "app.installed",
             r"\b(?:instalad[oa]s?|installed)\b",
         )
+    elif (
+        _has(
+            folded,
+            r"^(?:do\s+i\s+have|tengo|is\s+there)\b",
+        )
+        and _has(folded, rf"\b{_KNOWN_APPLICATION}\b")
+        and _has(
+            folded,
+            r"\b(?:on this machine|en\s+(?:esta|este)\s+"
+            r"(?:maquina|equipo|pc|computador)|aqui|here)\b",
+        )
+        and not _has(folded, r"\b(?:juego|game)\b")
+    ):
+        _append(
+            matches,
+            folded,
+            "app.installed",
+            rf"\b{_KNOWN_APPLICATION}\b",
+        )
 
 
 def _review_file_and_game_effects(
@@ -9318,7 +9356,10 @@ def _review_file_and_game_effects(
     if (
         _head_is(head, _OPEN)
         and _has(folded, r"\b(?:archivo|file)\b")
-        and _has(folded, r"\b(?:ultimo|ultima|mas reciente|latest|most recent)\b")
+        and _has(
+            folded,
+            r"\b(?:ultimo|ultima|mas reciente|latest|most recent|last)\b",
+        )
         and _has(
             folded,
             r"\b(?:descargas|downloads?|escritorio|desktop|documentos?|"
@@ -9417,6 +9458,21 @@ def _review_application_and_window_effects(
         )
     elif authenticated_open is not None:
         matches.append((authenticated_open[0], 0, "app.open"))
+    elif (
+        _head_is(head, _OPEN)
+        and _has(folded, r"\b(?:navegador|browser)\b")
+        and not _has(folded, _KNOWN_APPLICATION)
+        and not _has(
+            folded,
+            r"\b(?:ventana|window|archivo|file|pagina|page|sitio|site)\b",
+        )
+    ):
+        _append(
+            matches,
+            folded,
+            "app.open",
+            r"\b(?:navegador|browser)\b",
+        )
     elif context_open_application:
         continued_application = _match(
             folded,
@@ -10130,15 +10186,16 @@ def _review_media_and_email_effects(
         (
             _head_is(
                 head,
-                rf"(?:{_SEARCH}|reproduce|reproducir|reproduzca|play|pon)",
+                rf"(?:{_SEARCH}|reproduce|reproducir|reproduzca|play|pon|ponme)",
             )
-            and not (_head_is(head, r"(?:pon|poner)") and audio_level)
+            and not (_head_is(head, r"(?:pon|poner|ponme)") and audio_level)
             and not audio_media_setting
             and not resume_existing_media
             and spotify_target
             and _has(
                 folded,
-                rf"\b{_SEARCH}\b|\b(?:reproduce|reproducir|reproduzca|play|pon)\b",
+                rf"\b{_SEARCH}\b|"
+                r"\b(?:reproduce|reproducir|reproduzca|play|pon|ponme)\b",
             )
         )
         or (
@@ -12107,6 +12164,24 @@ def resolve_explicit_effects(
         )
     ):
         return None
+    if (
+        len(clauses) == 1
+        and "system.power" in available
+        and _has(
+            folded,
+            r"^(?:apaga|apagame|shutdown|shut\s+down)\b",
+        )
+        and _has(
+            folded,
+            r"\b(?:equipo|pc|compu|computador(?:a)?|computer|maquina|"
+            r"machine|windows)\b",
+        )
+        and not _has(
+            folded,
+            r"\b(?:telefono|movil|celular|phone|smartphone|tablet|iphone)\b",
+        )
+    ):
+        return EffectIntent(("system.power",), (folded,))
     visible_click = _visible_click_intent(folded, available)
     if visible_click is not None:
         return visible_click

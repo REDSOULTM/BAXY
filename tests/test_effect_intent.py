@@ -739,6 +739,11 @@ CASES = [
         "devuelvele el tamano normal a la ventana",
         ("window.restore",),
     ),
+    ("open the last file I downloaded", ("filesystem.file.open.latest",)),
+    ("do I have discord on this machine", ("app.installed",)),
+    ("is steam even installed here", ("app.installed",)),
+    ("apaga la compu", ("system.power",)),
+    ("arrancame el navegador", ("app.open",)),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}
