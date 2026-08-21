@@ -1347,3 +1347,18 @@ V52 y V53 no existen. V55 reiniciará las **784** filas desde la primera,
 incluida la 401 que abortó; exige otra vez **≥431/477** hojas y **≤42/307**
 llamadas negativas. Sólo si pasa se permite V56 sobre las 60 órdenes reales
 limpias, con gate **≥55/60**; el fresco continúa cerrado.
+
+V55 rechaza Qwen3.5-9B antes del holdout real
+(`goal03_qwen35_9b_native_synthetic_v55.json`, SHA `b799a772…`). Pasa el gate
+de alcance: sólo **21/307** negativas producen una acción, por debajo del máximo
+42. Pero el selector elige la hoja esperada en sólo **343/477** positivas, 88
+menos que el mínimo 431. El modelo más capaz abstiene mejor que Qwen3-8B, pero
+no conserva la selección fina del catálogo bajo este quant.
+
+La reparación sí cumple su propósito. La antigua fila 401 esta vez produce
+`browser.page.read` válido y la corrida continúa; una respuesta distinta, la
+fila 415, vuelve a emitir argumentos JSON malformados y queda registrada como
+cero acciones y una inconsistencia de schema, sin autoridad ni aborto. No se
+ocultan fallos de transporte. La latencia es p50 **1,855 s**, p90 2,918 s y
+máximo 3,650 s. Se aplica la regla de parada: V56 no existe, el fresco permanece
+cerrado y no se integra ni se barren quants, prompts o sampling.
