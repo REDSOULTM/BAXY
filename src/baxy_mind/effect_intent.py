@@ -1174,8 +1174,12 @@ def _curated_domain_is_grounded(
             r"\b(?:proceso|process|aplicacion|application|app|programa|program)\b",
         )
     if operation == "task.create":
-        return _has(folded, r"\b(?:tarea|task|to-do|todo)\b") and _has(
-            folded, r"\b(?:crea|crear|create|anade|agrega|add|nueva|new)\b"
+        return _has(
+            folded,
+            r"\b(?:tarea|task|to-do|todo|pendiente)\b",
+        ) and _has(
+            folded,
+            r"\b(?:crea|crear|create|anade|agrega|agregame|add|nueva|new)\b",
         )
     if operation == "task.complete":
         return _has(folded, r"\b(?:tarea|task|to-do|todo)\b") and _has(
@@ -1515,6 +1519,12 @@ def _curated_domain_is_grounded(
             or _has(
                 folded,
                 r"\btext\s+fragment\b.{0,40}\b(?:copied|capid)\b",
+            )
+            or _has(
+                folded,
+                r"^(?:what\s+did\s+i\s+copy|last\s+(?:thing\s+)?(?:i\s+)?copied|"
+                r"que\s+(?:fue\s+lo\s+que\s+)?(?:copie|copié)\s+"
+                r"(?:ultimo|ayer|recien|last))\b",
             )
         )
     if operation == "email.latest.read":
@@ -2587,7 +2597,7 @@ def resolve_explicit_clarification_intent(
         _head_is(
             _request_head(clause),
             r"(?:crea|crear|añade|añadir|anade|anadir|agrega|agregar|"
-            r"haz|hacer|create|make|add|set|agenda|agendar|"
+            r"haz|hacer|create|make|add|set|agenda|agendar|agendame|"
             r"programa|programar|schedule)",
         )
         and not _head_is(
@@ -4646,6 +4656,12 @@ def _clipboard_paste_domain(text: str) -> bool:
         )
         or _has(
             text,
+            r"\b(?:pegalo|pegala|paste\s+it)\b.{0,24}"
+            r"\b(?:aca|aqui|ahi|here|there)\b|"
+            r"\b(?:aca|aqui|ahi|here|there)\b.{0,16}\b(?:pegalo|pegala|paste)\b",
+        )
+        or _has(
+            text,
             r"\b(?:campo|control|cuadro|casilla|field|box)\b"
             r".{0,24}\b(?:enfocad[oa]|activ[oa]|focused|active)\b"
             r"|\b(?:enfocad[oa]|focused)\b.{0,24}\b(?:campo|control|field)\b",
@@ -5058,6 +5074,15 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
     ):
         return False
     if _literal_note_payload_request(text):
+        return False
+    if _has(
+        text,
+        r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
+    ) and _has(
+        text,
+        r"\b(?:see\s+if|check\s+(?:if|whether)|mira\s+si|comprueba\s+si)\b"
+        r".{0,48}\b(?:answers?|responde|contest|reach|alcanza|ping)\b",
+    ):
         return False
     # Diferir un efecto no es lo mismo que no poder diferirlo. El catálogo tiene
     # `notification.schedule`, `reminder.create` y `calendar.event.create`: para
@@ -5770,7 +5795,7 @@ _LIST = r"(?:lista|listar|enumera|enumerar|muestra|muestrame|dime|show|list|enum
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
 _CREATE = (
     r"(?:crea|crear|anota|anotar|añade|añadir|anade|anadir|"
-    r"agrega|agregar|guarda|guardar|haz|hacer|create|make|add)"
+    r"agrega|agregar|agregame|guarda|guardar|haz|hacer|create|make|add)"
 )
 # Diferir un efecto no es lo mismo que no poder diferirlo. El catálogo tiene
 # `notification.schedule`, `reminder.create` y `calendar.event.create`: para
@@ -5830,7 +5855,8 @@ _COVERAGE_ACTION_HEAD = (
     r"guarda|guardar|save|descarga|descargar|download|comparte|share|"
     r"pega|pegar|paste|habilita|habilitar|enable|deshabilita|disable|"
     r"olvida|olvidar|forget|responde|responder|reply|programa|programar|"
-    r"schedule|agenda|agendar|avisa|avisame|cancela|cancelar|cancel|"
+    r"schedule|agenda|agendar|agendame|avisa|avisame|cancela|cancelar|cancel|"
+    r"trancame|tranca|bloqueame|bloquea|lock|"
     r"diagnostica|diagnosticar|diagnose|"
     r"completa|completar|complete|reabre|reabrir|reopen|actualiza|"
     r"actualizar|update|describe|describir|redimensiona|redimensionar|"
@@ -5949,7 +5975,7 @@ def _append_domain_actions(
 
     domain_patterns = {
         "note": r"\b(?:nota|notas|note|notes|memo|memos)\b",
-        "task": r"\b(?:tarea|tareas|task|tasks)\b",
+        "task": r"\b(?:tarea|tareas|task|tasks|pendiente|pendientes)\b",
         "reminder": r"\b(?:recordatorio|recordatorios|reminder|reminders)\b",
         "routine": r"\b(?:rutina|rutinas|routine|routines)\b",
     }
@@ -6332,10 +6358,17 @@ def _review_calendar_message_and_direct_reminder_effects(
     if (
         calendar_domain
         and temporal
-        and _head_is(head, rf"(?:{_CREATE}|programa|programar|schedule|agenda|agendar)")
-        and _has(
-            folded,
-            r"\b(?:llamad[oa]|titulad[oa]|called|named)\s+\S+",
+        and _head_is(
+            head,
+            rf"(?:{_CREATE}|programa|programar|programame|schedule|"
+            r"agenda|agendar|agendame)",
+        )
+        and (
+            _has(
+                folded,
+                r"\b(?:llamad[oa]|titulad[oa]|called|named)\s+\S+",
+            )
+            or _has(folded, r"\b(?:reunion|meeting|evento|event)\b")
         )
         and _has(
             folded,
@@ -6352,7 +6385,8 @@ def _review_calendar_message_and_direct_reminder_effects(
             matches,
             folded,
             "calendar.event.create",
-            rf"\b(?:{_CREATE}|programa|programar|schedule|agenda|agendar)\b",
+            rf"\b(?:{_CREATE}|programa|programar|programame|schedule|"
+            r"agenda|agendar|agendame)\b",
         )
 
     if (
@@ -6640,7 +6674,11 @@ def _is_direct_request(text: str) -> bool:
         r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
         r"establece|set|deja|dejar|put|leave|turn|"
         r"sube|subir|baja|bajar|aumenta|reduce|increment|decrease|"
-        r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|pega|pegar|paste|"
+        r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
+        r"pega|pegar|pegalo|pegala|paste|"
+        r"trancame|tranca|bloqueame|bloquea|lock|"
+        r"agendame|"
+        r"para(?=\s+lo\s+que\s+esta)|"
         r"maximiza|minimiza|restaura|escribe|escribi|escribele|escribile|write|type|"
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
@@ -6654,7 +6692,7 @@ def _is_direct_request(text: str) -> bool:
         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
         r"borra|borrar|elimina|eliminar|delete|"
         r"cierralo|cierrala|close it|dile|decile|tell|send|message|"
-        r"programa|programar|programame|schedule|agenda|agendar|"
+        r"programa|programar|programame|schedule|agenda|agendar|agendame|"
         r"ponme|pone|poneme|pongame|"
         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
         r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|connect|"
@@ -6795,6 +6833,21 @@ def _strict_catalog_request(
         if not operations or not set(operations) <= available_operations:
             return None
         return EffectIntent(operations, evidence or tuple(text for _ in operations))
+
+    if (
+        not deferred_effect
+        and _has(
+            text,
+            r"^(?:trancame|tranca|bloqueame|bloquea|lock)\b",
+        )
+        and _has(
+            text,
+            r"\b(?:equipo|pc|computador(?:a)?|computer|maquina|machine|windows)\b",
+        )
+    ):
+        resolved = intent("system.power")
+        if resolved is not None:
+            return resolved
 
     package_id = _spoken_package_id(text)
     if (
@@ -8689,6 +8742,24 @@ def _review_system_and_network_effects(
             r"\b(?:haz|hacer|ejecuta|run|ping)\b",
         )
     elif (
+        _head_is(head, r"(?:see|check|ping|haz|hacer|ejecuta|run)")
+        and _has(folded, r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+        and _has(
+            folded,
+            r"\b(?:answers?|responde|contest|ping|alcanza|reach)\b",
+        )
+        and not _has(
+            folded,
+            r"\b(?:en|on)\s+(?:la\s+|the\s+)?(?:web|internet)\b",
+        )
+    ):
+        _append(
+            matches,
+            folded,
+            "network.ping",
+            r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
+        )
+    elif (
         _head_is(head, r"(?:como|how|muestra|show|dime|que|what)")
         and _network_status_domain(folded)
         and _has(folded, r"\b(?:como|estado|status|health)\b")
@@ -9458,6 +9529,10 @@ def _review_input_and_capture_effects(
                 r"\b(?:en|into|in)\s+(?:la\s+|the\s+)?"
                 r"(?:busqueda|search|campo|field|cuadro|box|control)\b",
             )
+            or _has(
+                folded,
+                r"\b(?:type|escribe|escribi)\s+\S.{0,80}\b(?:for\s+me|por\s+mi)\b",
+            )
         )
     ):
         _append(
@@ -9507,19 +9582,37 @@ def _review_input_and_capture_effects(
             "clipboard.read.text",
             r"\b(?:portapapeles|clipboard)\b",
         )
+    if _has(
+        folded,
+        r"^(?:what\s+did\s+i\s+copy(?:\s+last)?|"
+        r"last\s+(?:thing\s+)?(?:i\s+)?copied|"
+        r"que\s+(?:fue\s+lo\s+que\s+)?(?:copie|copié)\s+"
+        r"(?:ultimo|ayer|recien|last))\b",
+    ):
+        _append(
+            matches,
+            folded,
+            "clipboard.read.text",
+            r"\b(?:copy|copied|copie|copié)\b",
+        )
     if (
-        _head_is(head, r"(?:pega|pegar|paste)")
-        and _has(folded, r"\b(?:pega|pegar|paste)\b")
+        _head_is(head, r"(?:pega|pegar|pegalo|pegala|paste)")
+        and _has(folded, r"\b(?:pega|pegar|pegalo|pegala|paste)\b")
         and _clipboard_paste_domain(folded)
     ):
-        paste = _match(folded, r"\b(?:pega|pegar|paste)\b")
+        paste = _match(folded, r"\b(?:pega|pegar|pegalo|pegala|paste)\b")
         if paste is not None and _has(
             folded,
             rf"\b(?:en|into)\b.{{0,80}}\b(?:archivo\s+nuevo|new\s+file)\b"
             rf".{{0,80}}\b(?:{_KNOWN_APPLICATION})\b",
         ):
             matches.append((paste.start(), -1, "app.open"))
-        _append(matches, folded, "clipboard.paste", r"\b(?:pega|pegar|paste)\b")
+        _append(
+            matches,
+            folded,
+            "clipboard.paste",
+            r"\b(?:pega|pegar|pegalo|pegala|paste)\b",
+        )
     if _head_is(head, r"(?:copia|copiar|copy)") and _clipboard_copy_domain(folded):
         _append(matches, folded, "clipboard.copy", r"\b(?:copia|copy)\b")
     active_window_capture = (
@@ -10062,6 +10155,25 @@ def _review_media_and_email_effects(
                 r"reanuda|reanudar|resume|reproduce|reproducir|reproduzca|play)\b"
             ),
             priority=1,
+        )
+    if (
+        not any(entry[2] == "media.control" for entry in matches)
+        and _head_is(head, r"(?:para|pausa|pausar|pause|deten|detener|stop)")
+        and _has(
+            folded,
+            r"\b(?:sonando|playing|reproduciendo|"
+            r"lo\s+que\s+esta\s+sonando)\b",
+        )
+        and not _has(
+            folded,
+            r"\b(?:alarma|alarm|grabacion|recording|microfono|microphone|mic)\b",
+        )
+    ):
+        _append(
+            matches,
+            folded,
+            "media.control",
+            r"\b(?:para|pausa|pausar|pause|deten|detener|stop)\b",
         )
     if (
         _head_is(head, r"(?:que|what|cual|which|dime|show|muestra)")

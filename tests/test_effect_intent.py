@@ -708,6 +708,17 @@ CASES = [
         "anota que hay reunion el jueves y avisame ese dia",
         ("note.create", "reminder.create"),
     ),
+    ("trancame el equipo que me voy", ("system.power",)),
+    ("see if 8.8.8.8 answers", ("network.ping",)),
+    ("para lo que esta sonando", ("media.control",)),
+    ("agregame al pendiente revisar el contrato", ("task.create",)),
+    ("pegalo aca", ("clipboard.paste",)),
+    ("what did I copy last", ("clipboard.read.text",)),
+    ("type hello world for me", ("input.text.type",)),
+    (
+        "agendame una reunion manana de diez a once",
+        ("calendar.event.create",),
+    ),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}
