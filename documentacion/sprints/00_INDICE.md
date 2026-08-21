@@ -9,19 +9,21 @@ correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
 |---|---|---|
 | **01–04** | **Claude Opus 5** | Esta carpeta. Son los que están en uso. |
 | 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/), por si vuelve el acceso a Codex |
-| **03B** | **GPT-5.6 Sol** | Esta carpeta. Escrito para Sol a propósito. |
+| **03B** | **GPT-5.6 Sol / Grok 4.6** | Esta carpeta. El 90 % se midió; el alcance no. |
+| **03C** | **Grok 4.6** | Esta carpeta. Cierra el alcance y los restos antes del 04. |
 | 05–11 | GPT-5.6 Sol | Esta carpeta. Se convertirán a Opus cuando toquen. |
 
-**Sobre el 03B.** El goal 03 cerró en 46 % con el 90 % **medido inalcanzable**:
-regalando decisión y vetos perfectos, la arquitectura de hoy topa en 84,7 %. El
-03B no es «volver a intentarlo»: es mover el techo, y por eso su salida honesta es
-más estrecha —sólo vale si el techo cambió—. Va después del 03 y antes del 04.
+**Sobre el 03B.** El goal 03 cerró en 46 % con el 90 % **medido inalcanzable**.
+El 03B movió el techo y el producto llegó a **112/124 (mediana de tres
+corridas)** el 2026-08-21. Lo que **no** cerró es el alcance: 12–15 de 36
+fuera de catálogo `acted` (listón ≤5) y 12 filas in-catalog aún fallan.
+Detalle en
+[`documentacion/base/03B_COMPRENSION_TECHO.md`](../base/03B_COMPRENSION_TECHO.md)
+§12.
 
-**Cerrado el 2026-08-19**, y el techo se movió: 84,7 % → 89,5 %, con la
-comprensión en 66,1 % (era 45,2 %). Lo que cambió es que la puerta de dominio dejó
-de borrar la capacidad y pasó a retenerla hasta que la persona confirma. Lo medido,
-lo rechazado y lo que queda abierto están en
-[`documentacion/base/03B_COMPRENSION_TECHO.md`](../base/03B_COMPRENSION_TECHO.md).
+**El 03C va después del 03B y antes del 04.** No se pasa al 04 con esa
+deuda. Prompt y criterios:
+[`03C_ALCANCE.md`](03C_ALCANCE.md).
 
 La conversión a Opus no es un cambio de nombre de modelo: `reasoning.effort` no
 existe en Claude Code, el harness pide permisos y compacta sesiones largas, y Opus
@@ -41,6 +43,7 @@ heredada, mismos criterios de cierre.
 | 02 | La base reproducible | La compuerta pasa entera, también en un clon limpio |
 | 03 | **La comprensión** | La petición llega a la operación correcta, o a una pregunta útil |
 | 03B | **Romper el techo** | El 90 % que el 03 midió inalcanzable — cambiando la arquitectura que lo limita |
+| 03C | **Cerrar el alcance** | ≤5/36 fuera de catálogo `acted` sin bajar de 112/124; las 12 in-catalog restantes no se aplazan al 04 |
 | 04 | La honestidad | Cero efectos no pedidos, cero éxitos falsos, cero frases fijas |
 | 05 | La ejecución verificada | Lo que dice que pasó, pasó — y algo independiente lo comprueba |
 | 06 | La voz del producto | Todo lo que la persona lee lo formula el modelo, y está bien escrito |
