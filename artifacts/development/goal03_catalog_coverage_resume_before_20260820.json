@@ -1,0 +1,1406 @@
+{
+  "by_family": {
+    "app": 3,
+    "audio": 5,
+    "backup": 8,
+    "bluetooth": 3,
+    "browser": 5,
+    "calendar": 2,
+    "capture": 2,
+    "clipboard": 4,
+    "email": 2,
+    "filesystem": 20,
+    "game": 11,
+    "input": 8,
+    "media": 6,
+    "memory": 11,
+    "message": 2,
+    "network": 5,
+    "note": 7,
+    "notification": 6,
+    "ocr": 1,
+    "office": 2,
+    "package": 2,
+    "peripheral": 3,
+    "reminder": 5,
+    "routine": 7,
+    "streaming": 2,
+    "system": 11,
+    "task": 9,
+    "vision": 1,
+    "web": 1,
+    "wifi": 6,
+    "window": 9
+  },
+  "by_risk": {
+    "external_communication": 11,
+    "installation": 3,
+    "low_reversible": 57,
+    "monetary": 1,
+    "privacy_sensitive": 24,
+    "read_only": 59,
+    "recoverable_delete": 7,
+    "work_loss": 7
+  },
+  "count": {
+    "families": 31,
+    "operations": 169,
+    "planner_reachable": 158
+  },
+  "coverage_ledger_sha256": "dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d",
+  "entries": [
+    {
+      "contract_sha256": "3b7297a1dabb4ee7fc3d6a20b2c4cdea2ea8954aecab51b32de94d26069c5839",
+      "description": "Solicita el cierre de una ventana resuelta y verifica su ausencia sin forzar la terminacion del proceso.",
+      "family": "app",
+      "operation": "app.close",
+      "planner_reachable": true,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "553dbbeb5ee575588bd6913e914a724f9ea00eb36a3840b49df830871081aaea",
+      "description": "Comprueba en el catalogo Inicio de Windows si una aplicacion concreta esta instalada sin abrirla.",
+      "family": "app",
+      "operation": "app.installed",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "aa4861a1286a1541d732bbe9f46ba261d0b6a1eda690fc942219e64da832f16c",
+      "description": "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; también acepta windows.notepad y windows.calculator.",
+      "family": "app",
+      "operation": "app.open",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "c0e584d98c2b701362d2a691b991eb533f18bc5e8654f216ce62682d23521728",
+      "description": "Silencia o reactiva el micrófono predeterminado de Windows y corrobora la postlectura del endpoint de captura.",
+      "family": "audio",
+      "operation": "audio.microphone.mute",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "1ebcececece754c7423dbe902f74cfe9bfaf35b2d66befeb70cecbfb0de9bc4c",
+      "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+      "family": "audio",
+      "operation": "audio.mute",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "6c18eb5a988ad123663ee1d72b4d3961262810552a0bb715ffa4553907959753",
+      "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+      "family": "audio",
+      "operation": "audio.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "96f7b49709544dd352c78a9fb62addbec5a0364aecc377f461a486376685b592",
+      "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.",
+      "family": "audio",
+      "operation": "audio.volume",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "fa5bd40131d18f7b59cee4130b2eb117dc7f19a7dfa3ad262b316e59a691cbf1",
+      "description": "Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.",
+      "family": "audio",
+      "operation": "audio.volume.adjust",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "30d160783151dd0b91fc033474bd4e93feacba4bc1afc625695fb34498f4555d",
+      "description": "Crea una copia privada inmutable de un archivo identificado y verifica su SHA-256.",
+      "family": "backup",
+      "operation": "backup.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "b8067fa99e007e11dfbd6f60100642aae9273fff90265d9b6f134838f7e92f4c",
+      "description": "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256.",
+      "family": "backup",
+      "operation": "backup.known.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "a84923c4dd39bbc11b1b2351487e82eb163b0ef0065ce7f3fc3423cddf5abfe3",
+      "description": "Lista los backups ZIP de carpetas conocidas y vuelve a verificar sus hashes.",
+      "family": "backup",
+      "operation": "backup.known.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "53a529f0004cbd17ad929c22780307eb9f8df82a022f88e72d3f408bf6f01e17",
+      "description": "Restaura el backup ZIP más reciente en un directorio privado nuevo y verifica archivos y bytes extraídos.",
+      "family": "backup",
+      "operation": "backup.known.restore.latest",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "b8aa451200252354e8a689d1076302c600caeedfb41ad592551c11ac33c8ada9",
+      "description": "Verifica el SHA-256 del backup ZIP más reciente de la carpeta indicada.",
+      "family": "backup",
+      "operation": "backup.known.verify.latest",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "fc5757da717bb97415e92767aa6270c778e804ed87e69c68cfe8a3e2716ec8e3",
+      "description": "Lista copias privadas verificadas, ordenadas desde la mas reciente, sin exponer rutas internas.",
+      "family": "backup",
+      "operation": "backup.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "0b32ef0faca12bf1d3b5cc78b4df45564632c9fa27f8451e83c2c05680baaef2",
+      "description": "Restaura un backup verificado únicamente en un destino libre del sandbox.",
+      "family": "backup",
+      "operation": "backup.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "77548b80de443e0bee4454cad327461c4128c914086676c3de7dc0a65ae0d301",
+      "description": "Reabre un backup privado y verifica tamaño y SHA-256.",
+      "family": "backup",
+      "operation": "backup.verify",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "cdca871798caff0141155d5c51651c148e879ee5a70df3123891faef81ff322d",
+      "description": "Enumera dispositivos Bluetooth mediante un adapter oficial y un gate físico de hardware.",
+      "family": "bluetooth",
+      "operation": "bluetooth.device.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "745067feef96b4e68393d9fe299ec1675beb564aeb15fb91770f615b5628ae6a",
+      "description": "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema.",
+      "family": "bluetooth",
+      "operation": "bluetooth.device.pair",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "8cd91ac8167b1a82708f2be65fa7fbb84b959eec763317d7abff5dff876edb6d",
+      "description": "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final.",
+      "family": "bluetooth",
+      "operation": "bluetooth.radio.set",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "2f94a56346c54a0d4c8bc1be64548a765fa7fd00bf4c123de2cc732ef3b3d0d0",
+      "description": "Controla la pagina CDP actual y verifica historial, desplazamiento o cierre mediante postlectura.",
+      "family": "browser",
+      "operation": "browser.control",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "384c2bab491780e93bb82b795f8a6211ab9e661ad660e86d29da387ce413ea6e",
+      "description": "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final.",
+      "family": "browser",
+      "operation": "browser.navigate",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "35fde72b84731786c1e1c3619f99c6f8bc72858a35bd8a0d4f8b6c46ccdf9bc0",
+      "description": "Navega Opera mediante un perfil CDP privado y verifica la URL final observada.",
+      "family": "browser",
+      "operation": "browser.navigate.named",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "c4018e889bae3805e262753bf6738b97694907f3b3337e1ecd691a1374d38166",
+      "description": "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+      "family": "browser",
+      "operation": "browser.page.read",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "15e5c868b3491055149bbff890bd5d3175a803a18fe969a1162adbb23e5c91c1",
+      "description": "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+      "family": "browser",
+      "operation": "browser.tabs.list",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "78d90ab8b5bb95e94f16e3e405638e498a986ff3c40387dd0f882d8dc5aa5979",
+      "description": "Crea un evento en una cuenta de calendario autenticada y verifica su identidad remota.",
+      "family": "calendar",
+      "operation": "calendar.event.create",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "8f848e978d311c6f20d39b890c62d654c46fa090b18494f76136e3f35260fcb5",
+      "description": "Lista eventos acotados desde una cuenta autenticada sin modificarlos.",
+      "family": "calendar",
+      "operation": "calendar.event.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "5551ff773be75099e9a5cd7c94dbf13c4a751a3ec188af7982a8ff9ef5431c61",
+      "description": "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados.",
+      "family": "capture",
+      "operation": "capture.active.window",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "4ab75356b23fdea5188d071af23329f4db2376ff7ce14f2843179db274e3c99b",
+      "description": "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash.",
+      "family": "capture",
+      "operation": "capture.screenshot",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "bf9a5e527961e761c3c47bdf1a088f6d55a94b5caaa56d9ff6107f2fb37fd7e1",
+      "description": "Copia la selección del control enfocado y verifica foco estable, aceptación completa de Ctrl+C y un cambio real del portapapeles.",
+      "family": "clipboard",
+      "operation": "clipboard.copy",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "f5f2d021b30cf82d4bdb1c5ec6e0a4a455dd5d21cb5f560ea3e632179372f0c6",
+      "description": "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V.",
+      "family": "clipboard",
+      "operation": "clipboard.paste",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "3d0a6ec8c8263a36b5eaa59f371b0053b1f1e56755b22363ab52f77e9c680989",
+      "description": "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos.",
+      "family": "clipboard",
+      "operation": "clipboard.read.text",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "e72af804e68b3ee464e5ef646ae1b8e4151dda9f75b836ee5f8dff72230ce8aa",
+      "description": "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura.",
+      "family": "clipboard",
+      "operation": "clipboard.write.text",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "a00d0fb624fb27fae744367d5afccba4838bb43c85f1ba32ee05d1f6acac207d",
+      "description": "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI.",
+      "family": "email",
+      "operation": "email.latest.read",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "6e66d0357dfe094fdf3d0d91ed287772f08ac951dbe999bc384e400fe3445010",
+      "description": "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora.",
+      "family": "email",
+      "operation": "email.latest.reply",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "1a8ddee596fe6ad07f68f07d18e2e9bcfbc9e2e17780398020a2b7d307f70081",
+      "description": "Copia un archivo identificado dentro del sandbox y verifica su hash en destino.",
+      "family": "filesystem",
+      "operation": "filesystem.copy",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "73a385852308bca8af5196f1b7f4b32edc1927e42afb158c82aed3d7453fec1f",
+      "description": "Crea un directorio relativo confinado y verifica su identidad sin aceptar rutas absolutas.",
+      "family": "filesystem",
+      "operation": "filesystem.create.directory",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "f0e1ea556cc71b347882e60ce4e698f57e3be54e59fdacd00d8cd884ea580a3e",
+      "description": "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y verifica el proceso observado.",
+      "family": "filesystem",
+      "operation": "filesystem.file.open.latest",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "cf79eb3ad3206d53a39ae9f1025c7071782d3104d2760882db8b5c8a79ee9ece",
+      "description": "Abre una carpeta conocida de Windows y verifica la ventana de Explorer observada.",
+      "family": "filesystem",
+      "operation": "filesystem.folder.open",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "ef61a932622c044c197f80679155ee785e5eddf291429a7d6abfab99e1fa2b72",
+      "description": "Calcula SHA-256 después de revalidar la identidad opaca del archivo.",
+      "family": "filesystem",
+      "operation": "filesystem.hash",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "2372717bb60f750e98984061403378d09198655e70892b7f31b12421d86e3b1f",
+      "description": "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos.",
+      "family": "filesystem",
+      "operation": "filesystem.known.duplicates",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "3fe67f73bca46c3251fe2ea554a6ec242c8ed73b97e8fa28c6b52714d741b31e",
+      "description": "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas.",
+      "family": "filesystem",
+      "operation": "filesystem.known.search",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "2fd688657af765aecdef9e60f94f9d60a6238b3d0bf0eeec24b6d0362d851d09",
+      "description": "Resuelve un archivo nombrado de forma única y lo mueve a una papelera privada después de confirmar.",
+      "family": "filesystem",
+      "operation": "filesystem.known.trash.named",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "8ed10fd9325953218ad1094edd6f8ca4788d0d57410feda7baa7fb986920d232",
+      "description": "Lista entradas acotadas del sandbox y emite identificadores opacos de corta vida.",
+      "family": "filesystem",
+      "operation": "filesystem.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "4af05d3a8aab3de0922e2a1f94083ad712d6703cef370a72417f116871f20378",
+      "description": "Mueve un archivo identificado y verifica hash de destino y ausencia de origen.",
+      "family": "filesystem",
+      "operation": "filesystem.move",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "232e16ed1f0c5316be535687ceacb2458f254106e68468dc47fa1001257394d9",
+      "description": "Verifica la ausencia de una ruta absoluta; si existe, solo mueve archivos del perfil o TEMP a una papelera privada recuperable.",
+      "family": "filesystem",
+      "operation": "filesystem.path.ensure.absent",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "0fadbfe6913849f76fc8843d73a9905be31b9174dab8ee9b81f1e49b0b37e703",
+      "description": "Lee UTF-8 acotado desde una identidad revalidada y devuelve su hash.",
+      "family": "filesystem",
+      "operation": "filesystem.read.text",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "1ae8b0793b5f48799d9c1ce3ab067821cb765e17ab75e98b6ba1f4d5605e58e9",
+      "description": "Añade texto a un archivo de nombre único del sandbox y verifica bytes y hashes.",
+      "family": "filesystem",
+      "operation": "filesystem.sandbox.append.named",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "5dc66fbaa017915f802ca84954dbc2145bb3a480e52cf5129653c2f3bef7d52b",
+      "description": "Compara dos archivos de texto resueltos de forma única y devuelve hashes y líneas diferentes.",
+      "family": "filesystem",
+      "operation": "filesystem.sandbox.diff.named",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "726e82bb11bd1dc14f5e6da07318fbc55bf52051f6a16fdf5767cfb13f6de35f",
+      "description": "Mueve un archivo de nombre único dentro del sandbox y verifica hash y ausencia del origen.",
+      "family": "filesystem",
+      "operation": "filesystem.sandbox.move.named",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "fb8d41d4dbe6afa48ae61ce3f055cb66c104b955c95810d4ffe0a9ef493f2058",
+      "description": "Busca nombres dentro del sandbox sin seguir puntos de reanálisis.",
+      "family": "filesystem",
+      "operation": "filesystem.search",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "e36d0ada8377e5e03fbbef205ea8c499de69ea75349cdd334f4a6b058ef10ed2",
+      "description": "Confirma una selección preparada y mueve el recurso a una papelera privada recuperable.",
+      "family": "filesystem",
+      "operation": "filesystem.trash.commit",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "6782776db76ad9310f22df688a664610e36a20004fd1a54c2d7374d554eb0ada",
+      "description": "Prepara una selección de papelera de un solo uso con etiqueta revisable.",
+      "family": "filesystem",
+      "operation": "filesystem.trash.prepare",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "38ac26cca260842b95bb17dba38666bd654be00ee328408c8d789acb09cbc91a",
+      "description": "Restaura un recurso de la papelera privada si su destino original sigue libre.",
+      "family": "filesystem",
+      "operation": "filesystem.trash.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "e5c345e345d9c3c9550bb9ebafcd3db063d29cf4b41596b441d47788784739fc",
+      "description": "Escribe UTF-8 atómicamente; reemplazar exige el SHA-256 exacto observado antes.",
+      "family": "filesystem",
+      "operation": "filesystem.write.text",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "c0e7869e20dc37512405787187df3dcb1a0bf7df6aad795fea438fcf22bf945a",
+      "description": "Lista el catálogo local de Steam mediante una sesión resuelta y acotada.",
+      "family": "game",
+      "operation": "game.catalog.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "b883499d9ffec50061976dff76100a3674e007451a40222473486377a6f19f6d",
+      "description": "Cancela una descarga parcial exacta desde el administrador autenticado de Steam y verifica que dejó de progresar.",
+      "family": "game",
+      "operation": "game.install.cancel",
+      "planner_reachable": true,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "f998057c2904fff1bef93c9f3fc7c13cb919cc8264e110fccf0cf904aa43b713",
+      "description": "Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando.",
+      "family": "game",
+      "operation": "game.install.cancel.active",
+      "planner_reachable": true,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "b20f5bf9f8670d88ac2f8c5a2ac212e0e57aee944e42380a8634d26fdc222276",
+      "description": "Confirma una instalación preparada en una sesión Steam autenticada y verifica su job.",
+      "family": "game",
+      "operation": "game.install.commit",
+      "planner_reachable": true,
+      "risk": "installation"
+    },
+    {
+      "contract_sha256": "54724fd652c9f46b8e1fed03ca954e91aed86bd8de22183826c86f0b0679add9",
+      "description": "Resuelve un título cerrado de Steam a su AppID, exige entitlement autenticado, inicia la instalación confirmada y verifica la transición del manifest.",
+      "family": "game",
+      "operation": "game.install.named",
+      "planner_reachable": true,
+      "risk": "installation"
+    },
+    {
+      "contract_sha256": "ccae9d1416fd74a30d00fb8fbd63bc514c4f80e1bace33146c7dd09c79af8188",
+      "description": "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos.",
+      "family": "game",
+      "operation": "game.install.prepare",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "41e5f407e05d39a34364a9f1b6dea77c940412ae037ccb7f9630e035eb2c0058",
+      "description": "Mide el estado y progreso local de una instalación Steam por AppID exacto.",
+      "family": "game",
+      "operation": "game.install.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "1a1f37cb33615d073019f519904f58789ab9e843689359cabbddee3aa3b5eb75",
+      "description": "Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local.",
+      "family": "game",
+      "operation": "game.installed.named",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "441b28959c1aaa24f90b05be1148f858b0eb17ed9c5617eb637f056d5156a08d",
+      "description": "Inicia un AppID poseído y verifica la identidad del proceso lanzado.",
+      "family": "game",
+      "operation": "game.launch",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "63c65dcf32f852f3ce272e529344fbc9f3fd935cbf16a3c490931457946381e1",
+      "description": "Confirma una compra preparada con precio exacto; nunca se prueba contra dinero real.",
+      "family": "game",
+      "operation": "game.purchase.commit",
+      "planner_reachable": true,
+      "risk": "monetary"
+    },
+    {
+      "contract_sha256": "185ed4275c8bdd5c90259a1abe5d145d7f77e4f6d655bf1be7eaf5ddf96efe4d",
+      "description": "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables.",
+      "family": "game",
+      "operation": "game.purchase.prepare",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "70ce32ee836b66fea5b877d7695a72b3f78bc741f23b89e1e99094d7ed9455ad",
+      "description": "Presiona una tecla o la combinación segura Ctrl+Shift+Escape en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput.",
+      "family": "input",
+      "operation": "input.key.press",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "ae0d84a0dee58c8e9d79a48cac20ba4d345bc2940256e0a51fe49a224c59049b",
+      "description": "Activa el teclado español en la ventana enfocada y verifica el idioma de entrada de su hilo mediante Win32.",
+      "family": "input",
+      "operation": "input.keyboard.layout",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "cfdd07a81688c55fe9d1456d83d6354e8159219b2406e925037d3ef9fcfe74a5",
+      "description": "Abre el teclado en pantalla de Windows y verifica su proceso y ventana visible sin quitar el foco al control de destino.",
+      "family": "input",
+      "operation": "input.keyboard.open",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "be6661d5592c8a13b5d3c2287f485fdead840a5d898aeea7ff4cedb3d914de00",
+      "description": "Lee y verifica el idioma de entrada del hilo de la ventana enfocada mediante Win32.",
+      "family": "input",
+      "operation": "input.keyboard.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "e0706f474e494f82332ddefa81c0440d89abc119bbea600f6c8727dedf4e15c9",
+      "description": "Mueve el puntero al centro, hace clic en su posición actual o desplaza hacia abajo y verifica el recibo Win32.",
+      "family": "input",
+      "operation": "input.pointer.control",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "0c8dd194508642637dea58a95ceaff077f89fb214a5bdcda583e49cedf261ad9",
+      "description": "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation.",
+      "family": "input",
+      "operation": "input.select.all",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "12a0b7ce98a24361fcb6279d63bf0c4d233500c9170f6e31c003484816faff1a",
+      "description": "Escribe texto Unicode literal en el control enfocado y verifica que Windows aceptó cada evento SendInput.",
+      "family": "input",
+      "operation": "input.text.type",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "5bcd10827f3b0b25f35a45d95bfc6c1d086ec49cb6355d6e0ed14b142f82d907",
+      "description": "Invoca un único botón visible por etiqueta mediante UI Automation y exige que desaparezca o quede deshabilitado.",
+      "family": "input",
+      "operation": "input.visible.click",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "c4f01cec8c741eab86109c8ee1ebf211accfe489f4be44df203e37e9e40c4119",
+      "description": "Controla una sesión SMTC seleccionada y verifica su estado posterior.",
+      "family": "media",
+      "operation": "media.control",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "618df1a0a0619b8df2700a979c8d13e79e7834ec6bbe89f5df4d96558ba56aff",
+      "description": "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+      "family": "media",
+      "operation": "media.play.exact",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "8b38579b114a8255979a2c31926db0cd636873eee47f32176c0afa8f0c77e6af",
+      "description": "Busca y reproduce el primer resultado musical pertinente en Spotify y verifica now-playing.",
+      "family": "media",
+      "operation": "media.play.query",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "819f309dd85ff8eca7d32cc701a366bf7bd6999db7b22215de41ab72a720316b",
+      "description": "Busca en YouTube, reproduce un resultado de video y verifica el elemento multimedia y su estado posterior.",
+      "family": "media",
+      "operation": "media.play.youtube",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "7d6483d12961194485a4e322f657b8009cb6c28b8a84826c0c7f2f77d863a7c0",
+      "description": "Adelanta o retrocede la sesión SMTC actual y verifica la posición final en su timeline.",
+      "family": "media",
+      "operation": "media.seek.relative",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "2e876a72d09dd8d4c14cb43478ae1e3df8847fd4699dccce8339e5ff953fc13e",
+      "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+      "family": "media",
+      "operation": "media.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "73e12b1b897a058c6dcd9dcbd68d3f153295ff1671ca9bffaabaeb6650194215",
+      "description": "Corrige una memoria local mediante comparación y sustitución.",
+      "family": "memory",
+      "operation": "memory.correct",
+      "planner_reachable": false,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "1c4a7e753ca90b4d071632c09a5ebd14e8cb3441f19be67c89ab276ad0398bb5",
+      "description": "Deshabilita nuevas lecturas y escrituras de memoria local.",
+      "family": "memory",
+      "operation": "memory.disable",
+      "planner_reachable": false,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "447bf683641ca951109984cf2df44185ce67d6c5032d26e7df230d1ce9de104a",
+      "description": "Habilita la memoria privada local con confirmación explícita.",
+      "family": "memory",
+      "operation": "memory.enable",
+      "planner_reachable": false,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "deee7f9d4eb10ef51066c3b62d0541df0da59d77e422f059a970d21c10112116",
+      "description": "Prepara una exportación privada local sin secretos.",
+      "family": "memory",
+      "operation": "memory.export",
+      "planner_reachable": false,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "940298e1c435c00e40ae98c695ed61de9a1578b518ca58c112da76e08f981058",
+      "description": "Elimina memorias locales del alcance confirmado.",
+      "family": "memory",
+      "operation": "memory.forget",
+      "planner_reachable": false,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "8214333cc2c356ef1cd88359f09c10ae6eef5c690762036c8ccb1e956996884a",
+      "description": "Lista memoria local visible de forma acotada.",
+      "family": "memory",
+      "operation": "memory.list",
+      "planner_reachable": false,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "8983841d3e325b3b123fecf42cdc9b0a816d75107af00a1fb9cde8f87f01f9ce",
+      "description": "Recupera memorias locales visibles para la sesión actual.",
+      "family": "memory",
+      "operation": "memory.recall",
+      "planner_reachable": false,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "c0433f55dc83f28793f1b1f294a7dd785a7c84e86b4143682317ec6c4ea05aa3",
+      "description": "Guarda una memoria explícita local no secreta.",
+      "family": "memory",
+      "operation": "memory.save",
+      "planner_reachable": false,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "d9219a6075f19168db666e622a82f302482b5f235c4c4173177fc68bdaa39a60",
+      "description": "Guarda una memoria sensible local después de confirmación.",
+      "family": "memory",
+      "operation": "memory.sensitive.save",
+      "planner_reachable": false,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "e9958dc3a707a4212c7ab61b646c5115ad51dd8a6cf78d130437433da79a603b",
+      "description": "Elimina únicamente la memoria temporal de la sesión actual.",
+      "family": "memory",
+      "operation": "memory.session.clear",
+      "planner_reachable": false,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "299467f2473e67ec8bdf8b6d8da8e05d4c92019114d71ad07d5529a594e14e9e",
+      "description": "Informa el estado y los límites de la memoria local.",
+      "family": "memory",
+      "operation": "memory.status",
+      "planner_reachable": false,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "dcce9c19193e51f18bb1f28ba361be42ae6f90cf31c7c7d1189bb7c12b57659e",
+      "description": "Resuelve un único destinatario autenticado y emite un identificador revisable.",
+      "family": "message",
+      "operation": "message.recipient.resolve",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "3a394300d2c9fb735d183cb318d87236f8d8b8260a2289951c17953f52ee4368",
+      "description": "Envía un mensaje a un destinatario resuelto y exige recibo del provider oficial.",
+      "family": "message",
+      "operation": "message.send",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "7e6b8fde3f8e646ca6c2eaaeb186a882c854882324ee3d99a0b43051f543699f",
+      "description": "Lee los servidores DNS de las interfaces activas de Windows y exige dos observaciones coherentes.",
+      "family": "network",
+      "operation": "network.dns.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "94697452f841931454e037bfee70145fcf3cacb0fc6e7cb3545aac60764c0ca0",
+      "description": "Enumera direcciones IP unicast activas del equipo y solo devuelve valores presentes en dos observaciones consecutivas, sin exponer nombres de interfaz.",
+      "family": "network",
+      "operation": "network.ip.list",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "cd1a39fd717d35cb51ba3a9e50a6901c959e07491d0b626d3c847580c906a0e4",
+      "description": "Envía un único eco ICMP acotado a un host explícito e informa su recibo, latencia o fallo de resolución.",
+      "family": "network",
+      "operation": "network.ping",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "ef00a2337eabbcf5eac79fdb935e5c4f92dc00f784ddc620dd8c3057778422c4",
+      "description": "Enumera puertos TCP y UDP locales en escucha y solo devuelve endpoints presentes en dos observaciones consecutivas.",
+      "family": "network",
+      "operation": "network.port.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "1f58f6542dcd232c352202f2f4db278835304c42195f6e1f30d7f9e5b98f965d",
+      "description": "Lee conectividad e interfaces activas sin exponer direcciones, SSID ni nombres locales.",
+      "family": "network",
+      "operation": "network.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "acdfef6e48ec36a5f441b4615a2eed6f446b62bfb93f707111cb578fabbefed8",
+      "description": "Crea una nota privada local y verifica su relectura.",
+      "family": "note",
+      "operation": "note.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "c268917ba59d11359754c8cf8ec1c2ff946aeb3cf92cc34dcfc3418e11ea6267",
+      "description": "Enumera notas privadas locales activas o enviadas a la papelera.",
+      "family": "note",
+      "operation": "note.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "60cb7181c69c9c9c0e0b56d62ef5fb5c9d4bb99425a8e13419c40e7f483cc145",
+      "description": "Lee una nota privada local por su identificador o título exacto.",
+      "family": "note",
+      "operation": "note.read",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "fcaa498ba51058d0fcf49b713a949bcb9b79a009bdebff43a21f5148611fcac8",
+      "description": "Restaura una nota privada local, seleccionada por identificador o título exacto, desde la papelera.",
+      "family": "note",
+      "operation": "note.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "bfec174f8fca69a7049490eeed0c5765e086efe1740c8133bb0df49631155839",
+      "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+      "family": "note",
+      "operation": "note.search",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "111f43dccf4c7ecf2557a69d6e89851d792d06350280669e80a37a90b5fea9c3",
+      "description": "Mueve una nota privada local, seleccionada por identificador o título exacto, a una papelera reversible.",
+      "family": "note",
+      "operation": "note.trash",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "2b916db4cbb3790447d8dcd81b826c9318079cf13523c2eb47443ee0f4a4165b",
+      "description": "Reemplaza titulo y contenido de una nota seleccionada por identidad y revision, y verifica su relectura.",
+      "family": "note",
+      "operation": "note.update",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "038ff779f626fc1b2bc1be2c91a63ab4fddca8239a1e5e34420de23f19d45ffb",
+      "description": "Cancela una única alarma o recordatorio futuro de BAXY que coincida con la hora local solicitada, después de resolver y volver a verificar su identidad exacta.",
+      "family": "notification",
+      "operation": "notification.cancel.at",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "fe963d889d9b0d2458a1c31c09f4e0e1667671e66ce343471a29629b24a88ee7",
+      "description": "Cancela la alarma o recordatorio de BAXY más reciente y verifica que su tarea ya no exista.",
+      "family": "notification",
+      "operation": "notification.cancel.latest",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "5c5badb1556fc69b15b0f12a9425274a30072fe8add2c12a23667e13168d40ab",
+      "description": "Diagnostica el servicio, las tareas y los recibos de alarmas de BAXY sin modificar el sistema.",
+      "family": "notification",
+      "operation": "notification.diagnose",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "6e44f3961f3aff431c7667b244d4875aa831548bb73c2c5f624e86933a06d6db",
+      "description": "Descarta una notificación vencida seleccionada mediante identidad y versión exactas.",
+      "family": "notification",
+      "operation": "notification.dismiss",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "972f1f750fd35cbd52cb33d7ec45843c7c07d675a3a0d25d1e2f7facaaa119db",
+      "description": "Enumera recordatorios vencidos no descartados para que la superficie de usuario los presente.",
+      "family": "notification",
+      "operation": "notification.list.due",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "7ee851044fa1ee2fffdba99957e2b84c59946a2574cdcb160b946525a78372b0",
+      "description": "Programa una alarma o recordatorio audible, único o recurrente, y verifica la tarea futura en Windows.",
+      "family": "notification",
+      "operation": "notification.schedule",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "c248e42e89a58a3d7b90ebb163c0bdedaa99bf47c11fbff230dee4b37e6bc6b0",
+      "description": "Ejecuta OCR local sobre una captura identificada y un language pack disponible.",
+      "family": "ocr",
+      "operation": "ocr.read",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "7b5c0d161754f6cbe53d8dceb46ffe859068521aba9a4fe6d733d15629ab8342",
+      "description": "Crea un documento mediante un adapter Office autenticado y devuelve su identidad.",
+      "family": "office",
+      "operation": "office.document.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "b6bfa34bee562ff9091ed19c259904ac6595fe7cf5e09a0a5b89891a4f1cb695",
+      "description": "Lee una proyección estructurada de un documento identificado mediante el adapter oficial.",
+      "family": "office",
+      "operation": "office.document.read",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "c3142d47d5f0c6627088cf8c75c6d310d8db558fe2e0ecbdea807e8d2ba265f6",
+      "description": "Confirma una instalación preparada mediante winget y verifica su recibo.",
+      "family": "package",
+      "operation": "package.install.commit",
+      "planner_reachable": true,
+      "risk": "installation"
+    },
+    {
+      "contract_sha256": "8551954537ca0db4cf043f4f3e85cfce05d1ca41d9c27c299354f073e042eaab",
+      "description": "Resuelve un paquete winget exacto y prepara una confirmación sin instalar.",
+      "family": "package",
+      "operation": "package.install.prepare",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "11fd8c439c1fe7ff7522942430aea89c561a731e55306924c2ff349daf62aea1",
+      "description": "Enumera periféricos conectados, incluidos mouse y teclado, mediante APIs de Windows; puede filtrar por tipo.",
+      "family": "peripheral",
+      "operation": "peripheral.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "d90f6d176c41e03341b5b996b963d21a21226752b3dc259e35bc1c64d79c75d3",
+      "description": "Envía un documento identificado a una impresora resuelta y verifica el job.",
+      "family": "peripheral",
+      "operation": "peripheral.print",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "f589f4a34fb911c3d6dbf1b67593151304bdb510b86b7ddcdf9cbba7c188b294",
+      "description": "Captura desde un escáner resuelto y devuelve una identidad privada verificable.",
+      "family": "peripheral",
+      "operation": "peripheral.scan",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "3fe50062a0a9c1b3468cca2706d7148c031a686dc5e01dc81d316bb653a6b499",
+      "description": "Crea un recordatorio local futuro durable sin confundirlo con una tarea.",
+      "family": "reminder",
+      "operation": "reminder.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "d22a28da7dfff38ff36b119990f8fe6429b3dfd490b686707284779d30fb0109",
+      "description": "Envía un recordatorio exacto a papelera recuperable después de revisar su etiqueta.",
+      "family": "reminder",
+      "operation": "reminder.delete",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "2f1ca288bc38b6d26ba4fe5086e686a1c8426e220dec21f88b4548734bc64237",
+      "description": "Lista recordatorios programados locales de forma acotada.",
+      "family": "reminder",
+      "operation": "reminder.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "d87aba32a8958366a69cb5de7114fd546579c40a62825ca01b13e07f36260d9f",
+      "description": "Resuelve un recordatorio por título literal y devuelve autoridad CAS.",
+      "family": "reminder",
+      "operation": "reminder.resolve.exact",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "620d8ce85ceee2ffff81c38aade097e451d617fe649e8c9fb27dc1ad950310e8",
+      "description": "Restaura un recordatorio eliminado mediante identidad y versión exactas.",
+      "family": "reminder",
+      "operation": "reminder.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "535bac292918b9702ec1b123b7683248d6c406a0c80ec2a7a87b0c233e44e8e2",
+      "description": "Elimina de forma recuperable una rutina ya seleccionada; nunca ejecuta sus pasos.",
+      "family": "routine",
+      "operation": "routine.delete",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "d57cb0570156d2eaf6328fa717caafc040fef65dd57093c92d96b29e52aa3649",
+      "description": "Lista definiciones de rutina creadas por el controlador confiable.",
+      "family": "routine",
+      "operation": "routine.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "ee970723501bbdf030fa6911ccb16c35c5934a7d0e4453bb688637631c848685",
+      "description": "Crea una rutina local acotada de reproducción o captura al oir una frase exacta.",
+      "family": "routine",
+      "operation": "routine.phrase.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "99f5db224d0e5b9cf1aba945f9d552b9a46844108c1b8829f229b6e460629b3d",
+      "description": "Lee metadatos de una rutina exacta sin ejecutarla.",
+      "family": "routine",
+      "operation": "routine.read",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "ef1c217ef3d709d8d45e4dbdfcb247504362792abe7082c730644a4bf29289d8",
+      "description": "Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs.",
+      "family": "routine",
+      "operation": "routine.resolve.exact",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "73bf486fbfe7c9738731f88dc525478985782f8a06e4e5c15c49e697c80e4855",
+      "description": "Restaura deshabilitada una rutina eliminada; no la ejecuta.",
+      "family": "routine",
+      "operation": "routine.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "cf2f2daf991c2cb79ed2f0a5b0d434239790d76be4c6bffec523914eec2e5303",
+      "description": "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla.",
+      "family": "routine",
+      "operation": "routine.set.enabled",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "2749f89b1090157a3fddfa21a3dd116fe920b4e0bf39d2052b486dfffb6b10ef",
+      "description": "Navega una sesión autenticada de streaming a un recurso exacto y verifica su URI.",
+      "family": "streaming",
+      "operation": "streaming.navigate",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "b8b8cfc72d0321884435a73b4e1c22f5a447bea412b7b4a032c28a623ddf242f",
+      "description": "Busca y reproduce un título en una sesión Netflix autenticada y verifica que el video avanza.",
+      "family": "streaming",
+      "operation": "streaming.play.named",
+      "planner_reachable": true,
+      "risk": "external_communication"
+    },
+    {
+      "contract_sha256": "5129f76b43aeb7e60fc8798eb3bf2894d3e3877fbbfc034d52adbd2efd11be41",
+      "description": "Consulta fallos y bloqueos recientes de aplicaciones en el registro Application de Windows y solo devuelve eventos con RecordId presentes en dos observaciones.",
+      "family": "system",
+      "operation": "system.application.crash.diagnose",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "11281c50503603792ffb94cb7275e1244b04548c1d40b5dad1833fe0ca172f42",
+      "description": "Lee el dominio y usuario efectivos del proceso BAXY mediante dos observaciones coherentes.",
+      "family": "system",
+      "operation": "system.identity",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "6ec70b188e3704759fac384984f970842ee51c913cc8692e8692f1313362e9cc",
+      "description": "Solicita una transición confirmada de bloqueo, cierre de sesión o energía mediante la API oficial de Windows y exige su recibo de aceptación.",
+      "family": "system",
+      "operation": "system.power",
+      "planner_reachable": true,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "0f2ea14c8220d86a0f91d8474e8e2129233779366009896474cc30a0caea6b7c",
+      "description": "Enumera procesos locales acotados por CPU, memoria o nombre y verifica PID, nombre y tiempo de creacion con dos observaciones; no expone rutas ni argumentos.",
+      "family": "system",
+      "operation": "system.process.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "0ac9e3f5cf3ce2d42d5e61dbe1d49b1fd36f480a601b057d2ea6c414f387c869",
+      "description": "Fuerza el cierre de un proceso por nombre ejecutable exacto, conserva sus identidades observadas y verifica que las identidades originales desaparecieron; acepta identidades nuevas creadas por reinicio automatico y requiere confirmacion por posible perdida de trabajo.",
+      "family": "system",
+      "operation": "system.process.terminate.named",
+      "planner_reachable": true,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "f2b0412e17c9f414b41649955ae2927ec140fcd61936724a0cfde45263c2b6f7",
+      "description": "Vacia la Papelera de reciclaje de Windows y verifica mediante postlectura que no queden elementos.",
+      "family": "system",
+      "operation": "system.recyclebin.empty",
+      "planner_reachable": true,
+      "risk": "work_loss"
+    },
+    {
+      "contract_sha256": "c87b82c434d054820f2fb81b5093d0a7158e36a26b22a4542475195bce96953c",
+      "description": "Sube o baja el brillo una cantidad acotada desde su valor observado y verifica cada monitor mediante WMI.",
+      "family": "system",
+      "operation": "system.settings.adjust",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "4339c5a1cb827b4d139979ad9eaf82ab9061f0dfe7cbc467f4dc393aa7265820",
+      "description": "Cambia un ajuste permitido mediante API oficial y verifica su postlectura.",
+      "family": "system",
+      "operation": "system.settings.set",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "beb9f1df391899268be029b47b0a759586d68dba9ec76a4568cbc265c845644d",
+      "description": "Lee el brillo actual de cada monitor compatible mediante WMI y exige dos observaciones coherentes sin modificarlo.",
+      "family": "system",
+      "operation": "system.settings.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "e9a6ed7695305e62b68f4331228c95328da0d8a2be8841c1e23eda88a7e4b1b5",
+      "description": "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo.",
+      "family": "system",
+      "operation": "system.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "2bc1f71aced18d36ac34e8e36d5968da84d7373a8b78bd90e6e706e628b48513",
+      "description": "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes.",
+      "family": "system",
+      "operation": "system.time",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "f3e4f9cde140d6f1c721179e6d286113dbc0b480f2c9bd0a73dc12c56fd064a9",
+      "description": "Marca completa una tarea local seleccionada por identidad y versión exactas.",
+      "family": "task",
+      "operation": "task.complete",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "839550911bb754bb8c0e4445aeb3e2e1d38bb81af36e7d4abcd6a104ae5e8bcf",
+      "description": "Crea una tarea local privada; la fecha opcional es metadato y no programa recordatorios.",
+      "family": "task",
+      "operation": "task.create",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "91ee78fac9a6b5e3cf0425c0603746e5421bcb5a3f04be44dd478b969ad73373",
+      "description": "Envía una tarea exacta a la papelera reversible después de revisar su etiqueta.",
+      "family": "task",
+      "operation": "task.delete",
+      "planner_reachable": true,
+      "risk": "recoverable_delete"
+    },
+    {
+      "contract_sha256": "cfba85a8684cbb22015f36dcce8108b01164150020663a090ca029c260d6f7c1",
+      "description": "Lista de forma acotada tareas locales abiertas, completadas o eliminadas.",
+      "family": "task",
+      "operation": "task.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "16c7612eecda2565d61a93de00bf007db0c58ee4c78ea71ce6963e8e42922cba",
+      "description": "Reabre una tarea completada usando identidad y versión exactas.",
+      "family": "task",
+      "operation": "task.reopen",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "e2b81108b17885085337eb86e489d445eb3ad5f09c7a37df53c34f3bfeb0d30e",
+      "description": "Resuelve un único título literal y emite autoridad CAS sin exponer detalles.",
+      "family": "task",
+      "operation": "task.resolve.exact",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "fa04720ef31d0f1ffed39553f97b33199d745907c3c0add769b63db4b6af6db6",
+      "description": "Restaura una tarea eliminada usando identidad y versión exactas.",
+      "family": "task",
+      "operation": "task.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "8b8253f79b08d848377a30e846419d39adcc5d9ba6ac1564eed9b08ce90c542f",
+      "description": "Busca en título y detalles de tareas locales sin crear índices de texto plano.",
+      "family": "task",
+      "operation": "task.search",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "15c031cf37a7364be4561089787a677052698e3bef2d40bde606682ebaac76a8",
+      "description": "Reemplaza los campos editables de una tarea bajo control de versión y postlectura.",
+      "family": "task",
+      "operation": "task.update",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "614a14b7db0098c88bb223737c25c0df837c45fcd4ae0775fad68ce0f26bf0d1",
+      "description": "Describe una captura identificada mediante un VLM configurado sin aceptar rutas arbitrarias.",
+      "family": "vision",
+      "operation": "vision.describe",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "1910fdd149bf8e09eedb1b385f932223fd069a35e1a332f614c737b1e913fa25",
+      "description": "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados.",
+      "family": "web",
+      "operation": "web.search",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "2ab410a6b722d7cb3e479097dd5d58ec344625ec7373b2a52d2814328d1c3927",
+      "description": "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
+      "family": "wifi",
+      "operation": "wifi.connect",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "b01b545bcdfe0040ade7de4c1f0383e4cbb3443c607e8d424658df84c9d3ec66",
+      "description": "Resuelve de forma única un perfil WLAN guardado por el nombre indicado, lo conecta y verifica el estado sin exponer credenciales.",
+      "family": "wifi",
+      "operation": "wifi.connect.named",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "9527724a177b0627ca545d3037d017348e75aec9a49a33d437cc05f6cb353c7b",
+      "description": "Desconecta WLAN mediante API oficial y verifica ausencia de conexión.",
+      "family": "wifi",
+      "operation": "wifi.disconnect",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "fc312e3a3ce4729cce9e996019048e5296f3368e754dc8a305a7dcc1e065c978",
+      "description": "Comprueba que Wi-Fi ya está conectado y devuelve la identidad opaca del perfil observado.",
+      "family": "wifi",
+      "operation": "wifi.ensure.connected",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "dc64fec448abc1109b51f57fba7cdb83317b57be56a3b01d5aae86c0b0763b29",
+      "description": "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales.",
+      "family": "wifi",
+      "operation": "wifi.profile.list",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "6f31fe2a4b6021c5b652fef738fd50ee9299c785abc67403ae498ceb829f3fff",
+      "description": "Lee dos veces el estado WLAN actual y devuelve conexión e identidad opaca del perfil sin exponer SSID ni credenciales.",
+      "family": "wifi",
+      "operation": "wifi.status",
+      "planner_reachable": true,
+      "risk": "privacy_sensitive"
+    },
+    {
+      "contract_sha256": "b32edd16d98e841e2f91d4a087c0648d32e2154248d0e6bea6b9dc993864cf76",
+      "description": "Lee la ventana visible en primer plano y verifica su proceso, estado, geometría e identidad efímera.",
+      "family": "window",
+      "operation": "window.active",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "2776edff08373680d7e0a44e71b4428d6d701fdec5712eb592c78d44cd9aeb3b",
+      "description": "Comprueba por nombre cualquier aplicación del catálogo Inicio y verifica si tiene una ventana visible sin abrirla ni modificarla.",
+      "family": "window",
+      "operation": "window.application.status",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "71a4daa6f7d9d805eb12cdc2f4680edeec5a27df175a45f38b7d38e267e6e6c7",
+      "description": "Enfoca una ventana resuelta previamente y verifica su identidad y foco.",
+      "family": "window",
+      "operation": "window.focus",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "b48b0f99acecb4f1103e00c2f17b634bd056794397a6250bee28f12d266b8ecc",
+      "description": "Maximiza una ventana resuelta previamente y verifica su identidad y estado.",
+      "family": "window",
+      "operation": "window.maximize",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "d63292009c1994439797c402a2ae4c13bb1b79d00cb41661f665ba108a0c3853",
+      "description": "Minimiza una ventana resuelta previamente y verifica su identidad y estado.",
+      "family": "window",
+      "operation": "window.minimize",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "0ef87c0931f881d375dbbd8cf466a85d6c605742c49059b6a484a4ceffac8c8c",
+      "description": "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos.",
+      "family": "window",
+      "operation": "window.move",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "d4d37dab88577bc70fc48c638d2869eb191db10b721e7c8ce48a1aa95d857cd3",
+      "description": "Redimensiona una ventana resuelta y verifica ancho y alto exactos.",
+      "family": "window",
+      "operation": "window.resize",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    },
+    {
+      "contract_sha256": "46a982c11d6a1c488b278cecb0bae50daa393d72f1d4e0650a9a254d026ee7b8",
+      "description": "Resuelve ventanas visibles por nombre de proceso y emite identificadores efimeros estables.",
+      "family": "window",
+      "operation": "window.resolve",
+      "planner_reachable": true,
+      "risk": "read_only"
+    },
+    {
+      "contract_sha256": "e001b325539a279a3c9fe155d1c90c50e3b704a0cc61cc66414e3ecd2f87dffa",
+      "description": "Restaura una ventana resuelta previamente y verifica su identidad y estado.",
+      "family": "window",
+      "operation": "window.restore",
+      "planner_reachable": true,
+      "risk": "low_reversible"
+    }
+  ],
+  "schema": "baxy.goal03-catalog-coverage.v1"
+}
