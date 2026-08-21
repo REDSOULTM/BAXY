@@ -1237,3 +1237,15 @@ deja **60** acciones reales independientes y conserva la regla de permitir como
 máximo un veto: gate **59/60**. `C=1`, E5, corpus de entrenamiento, threshold y
 los gates 473/477, 246/307 y 80/100 no cambian. El programa reparado pasa 4/4
 pruebas; V45/v2 son nombres nuevos y siguen prohibidos hasta este sello.
+
+V45 rechaza la cabeza antes de decisión o fresco
+(`goal03_real_scope_head_v45.json`, SHA `920e9d24…`). La logística aprende muy
+bien sus negativos públicos: conserva **473/477** acciones y rechaza **302/307**
+MASSIVE, AUC 0,999269; también rechaza **99/100** CLINC OOS. Pero sobre las 60
+acciones reales limpias conserva sólo **25/60**, frente al gate 59/60: vetaría
+35 órdenes legítimas. Los 274 ejemplos reales de train no corrigen la frontera.
+La cabeza pesa 2.095 bytes (SHA `784402c2…fdc0`) y su coste sería despreciable,
+pero no compra conducta válida. No se ejecuta Qwen condicionado, no se abre el
+fresco y no se integra. Junto a MTOP 0,98→0,58, esto agota las cabezas textuales
+E5 supervisadas sobre negativos públicos; cambiar dataset público o umbral sería
+repetir la misma distribución, no otra estrategia.

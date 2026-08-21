@@ -1,0 +1,100 @@
+{
+  "acceptance": {
+    "checks": {
+      "calibration_actions_kept": true,
+      "calibration_oos_refused": true,
+      "clinc_oos_refused": true,
+      "real_actions_kept": false
+    },
+    "passed": false,
+    "requirements": {
+      "calibration_actions_kept": 473,
+      "calibration_oos_refused": 246,
+      "clinc_oos_refused": 80,
+      "real_actions_kept": 59
+    }
+  },
+  "classifier": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "kind": "sklearn.LogisticRegression",
+    "random_state": 5601,
+    "solver": "lbfgs",
+    "threshold": 0.43775081634521484,
+    "threshold_rule": "lowest calibration-action score after allowing at most floor(1%-of-actions) lower scores"
+  },
+  "constraints": {
+    "clinc_test_opened": false,
+    "effects_executed": 0,
+    "fresh_corpus_opened": false,
+    "providers_enabled": false,
+    "runtime_modified": false
+  },
+  "encoder": {
+    "dimensions": 384,
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "evaluation": {
+    "calibration": {
+      "actions": 477,
+      "actions_kept": 473,
+      "oos": 307,
+      "oos_refused": 302,
+      "roc_auc": 0.999269,
+      "rows": 784
+    },
+    "clinc_oos_validation": {
+      "actions": 0,
+      "actions_kept": 0,
+      "oos": 100,
+      "oos_refused": 99,
+      "rows": 100
+    },
+    "inherited_real_actions": {
+      "actions": 60,
+      "actions_kept": 25,
+      "excluded_current_union_calibration_overlap": 3,
+      "excluded_current_union_train_overlap": 8,
+      "oos": 0,
+      "oos_refused": 0,
+      "rows": 60,
+      "source_rows": 71
+    }
+  },
+  "head": {
+    "path": "D:\\BAXYRuntime\\experiments\\goal03-real-scope-head-v2\\scope_head.npz",
+    "sha256": "784402c239f809d85243cf6a7fa8b6c9ee07d675414c890e9659b49c5d3bfdc0"
+  },
+  "schema": "baxy.goal03-real-scope-head.v1",
+  "sources": {
+    "D:\\BAXYRuntime\\datasets\\clinc150-v1\\source\\data_oos_plus.json": {
+      "rows": null,
+      "sha256": "bfcca9ae515623541dc1983c94c4ed7cae9d26b42ae47d74b972e51bb6f7a21f"
+    },
+    "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\train.jsonl": {
+      "rows": 6922,
+      "sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad"
+    },
+    "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\validation.jsonl": {
+      "rows": 784,
+      "sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2"
+    },
+    "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\current_union_validation.jsonl": {
+      "rows": 71,
+      "sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300"
+    },
+    "D:\\BAXYRuntime\\experiments\\functiongemma-real-language-v1\\mapped_train.jsonl": {
+      "rows": 274,
+      "sha256": "220ad03345aad2a6470be6c5e2353c7bc6c95689a6b5ab1c884212f8eabe853f"
+    }
+  },
+  "training": {
+    "actions": 4461,
+    "embedding_seconds": 20.788829,
+    "fit_seconds": 0.05539,
+    "oos": 2700,
+    "rows_after_normalized_deduplication": 7161,
+    "same_label_duplicates_removed": 35
+  }
+}
