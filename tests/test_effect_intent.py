@@ -744,6 +744,7 @@ CASES = [
     ("is steam even installed here", ("app.installed",)),
     ("apaga la compu", ("system.power",)),
     ("arrancame el navegador", ("app.open",)),
+    ("esta muy fuerte el audio, bajalo", ("audio.volume.adjust",)),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}

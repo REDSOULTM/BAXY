@@ -5848,7 +5848,7 @@ _SEARCH = r"(?:busca|buscar|encuentra|search|find|look\s+up)"
 _COVERAGE_ACTION_HEAD = (
     rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|"
     r"haz|toma|captura|take|capture|pon|deja|dejar|put|leave|"
-    r"fija|ajusta|adjust|establece|set|sube|baja|aumenta|"
+    r"fija|ajusta|adjust|establece|set|sube|baja|bajalo|subelo|aumenta|"
     r"pone|ponme|arranca|cambia|cambiar|change|get rid|"
     r"reduce|increment|decrease|silencia|silenciame|mute|unmute|mutea|mutear|desmutea|"
     r"desmutear|quita|quitar|saca|sacar|maximiza|minimiza|"
@@ -6694,7 +6694,7 @@ def _is_direct_request(text: str) -> bool:
         r"do(?=\s+i\s+have)|"
         r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
         r"establece|set|deja|dejar|put|leave|turn|"
-        r"sube|subir|baja|bajar|aumenta|reduce|increment|decrease|"
+        r"sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce|increment|decrease|"
         r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
         r"pega|pegar|pegalo|pegala|paste|"
         r"trancame|tranca|bloqueame|bloquea|lock|"
@@ -8937,14 +8937,26 @@ def _review_audio_effects(
             rf"\b{_MUTE_VERB}\b",
         )
     if audio_level:
-        if (
+        if _has(
+            folded,
+            r"\b(?:bajalo|bajala|subelo|subela)\b",
+        ):
+            _append(
+                matches,
+                folded,
+                "audio.volume.adjust",
+                r"\b(?:bajalo|bajala|subelo|subela)\b",
+            )
+        elif (
             _head_is(
                 head,
-                r"(?:sube|subir|baja|bajar|aumenta|reduce|increment|decrease)",
+                r"(?:sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce|"
+                r"increment|decrease)",
             )
             and _has(
                 folded,
-                r"\b(?:sube|subir|baja|bajar|aumenta|reduce|increment|decrease)\b",
+                r"\b(?:sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce|"
+                r"increment|decrease)\b",
             )
             and _has(
                 folded,
@@ -8989,8 +9001,13 @@ def _review_audio_effects(
                 "audio.volume",
                 r"\d{1,3}",
             )
+        already_set_volume = any(
+            entry[2] in {"audio.volume", "audio.volume.adjust"}
+            for entry in matches
+        )
         level_query = (
-            (
+            not already_set_volume
+            and (
                 (
                     _head_is(
                         head,
@@ -9011,7 +9028,7 @@ def _review_audio_effects(
                 not _has(
                     folded,
                     r"\b(?:pon|poner|fija|ajusta|adjust|establece|set|cambia|change|"
-                    r"sube|subir|baja|bajar|aumenta|reduce)\b",
+                    r"sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce)\b",
                 )
                 or _has(folded, r"\b(?:luego|despues|then|after|quedo)\b")
             )
@@ -12182,6 +12199,17 @@ def resolve_explicit_effects(
         )
     ):
         return EffectIntent(("system.power",), (folded,))
+    if (
+        len(clauses) <= 2
+        and "audio.volume.adjust" in available
+        and _volume_domain(folded)
+        and _has(folded, r"\b(?:bajalo|bajala|subelo|subela)\b")
+        and not _has(
+            folded,
+            r"\b(?:y|and)\s+(?:abre|open|crea|create|apaga|silencia)\b",
+        )
+    ):
+        return EffectIntent(("audio.volume.adjust",), (folded,))
     visible_click = _visible_click_intent(folded, available)
     if visible_click is not None:
         return visible_click
