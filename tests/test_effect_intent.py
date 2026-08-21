@@ -17,6 +17,7 @@ from baxy_mind.effect_intent import (
     unsupported_effect_demonstration_request,
     unsupported_live_machine_query,
     operation_domain_is_grounded,
+    operation_identity_is_a_near_miss,
     resolve_explicit_clarification,
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
@@ -2176,6 +2177,90 @@ def test_polysemous_domains_veto_semantic_operation_proposals(
     operation: str,
 ) -> None:
     assert operation_domain_is_grounded(text, operation) is False
+
+
+# Goal 03C: a catalogue leaf published as intent for an out-of-catalogue ask
+# counts as acted. These are the nine stable leaks plus their in-catalogue
+# counterparts: the substitute is contradicted, the real effect is not.
+_GOAL03C_NEAR_MISS_PAIRS = (
+    (
+        "pide un taxi para las ocho",
+        "agregame al pendiente revisar el contrato",
+        "task.create",
+    ),
+    (
+        "upload this video to youtube",
+        "play the tiny desk concert on youtube",
+        "media.play.youtube",
+    ),
+    (
+        "grabame la pantalla en video",
+        "captura de la ventana activa",
+        "capture.active.window",
+    ),
+    (
+        "connect to my work vpn",
+        "connect to my home wifi",
+        "wifi.connect.named",
+    ),
+    (
+        "cloname el disco duro a otro",
+        "copiame el archivo notas.txt a documentos",
+        "filesystem.copy",
+    ),
+    (
+        "editame el video y quitale los ultimos diez segundos",
+        "retrocede diez segundos la cancion",
+        "media.seek.relative",
+    ),
+    (
+        "convierteme este pdf a word",
+        "creame un documento de word en blanco",
+        "office.document.create",
+    ),
+    (
+        "unlock my phone for me",
+        "apaga la compu",
+        "system.power",
+    ),
+    (
+        "imprimeme en 3d esta figura",
+        "imprimime este documento en la impresora",
+        "peripheral.print",
+    ),
+)
+
+
+@pytest.mark.parametrize(
+    ("ooc_text", "in_catalog_text", "operation"),
+    _GOAL03C_NEAR_MISS_PAIRS,
+)
+def test_out_of_catalog_near_misses_cannot_ground_a_catalogue_leaf(
+    ooc_text: str,
+    in_catalog_text: str,
+    operation: str,
+) -> None:
+    assert operation_identity_is_a_near_miss(ooc_text, operation) is True
+    assert operation_domain_is_grounded(ooc_text, operation) is False
+    assert operation_identity_is_a_near_miss(in_catalog_text, operation) is False
+    assert operation_domain_is_grounded(in_catalog_text, operation) is not False
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("captura nada mas la ventana de adelante", "capture.active.window"),
+        ("conectate al wifi de casa", "wifi.connect.named"),
+        ("jump ahead thirty seconds", "media.seek.relative"),
+        ("para la descarga que tiene steam corriendo", "game.install.cancel.active"),
+        ("Dile a Ana que llegare tarde por WhatsApp", "message.send"),
+    ],
+)
+def test_in_catalog_paraphrases_are_not_near_miss_substitutes(
+    text: str,
+    operation: str,
+) -> None:
+    assert operation_identity_is_a_near_miss(text, operation) is False
 
 
 @pytest.mark.parametrize(

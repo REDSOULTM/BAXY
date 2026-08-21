@@ -706,6 +706,10 @@ def operation_domain_is_grounded(
     spoke.
     """
 
+    if operation_identity_is_a_near_miss(text, operation):
+        # A neighbouring substitute is not a missed paraphrase. The identity
+        # verifier may revive the latter; it must not revive the former.
+        return False
     verdict = _curated_domain_is_grounded(text, operation, application_names)
     if verdict is not None:
         return verdict
@@ -749,6 +753,146 @@ def _uncovered_family_floor(folded: str, operation: str) -> bool | None:
     if operation.startswith("filesystem."):
         return _has(folded, _FILESYSTEM_OBJECT_NOUN)
     return None
+
+
+def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
+    """True when the spoken request names a different effect than this leaf.
+
+    Domain grounding is one-sided and lexical: False both when the person
+    paraphrased a real catalogue effect and when they asked for a nearby
+    substitute. The identity verifier may revive the paraphrase. Publishing
+    the substitute as ``intent_operations`` would execute it if they say yes
+    — a taxi is not ``task.create``, a PDF conversion is not a blank Office
+    document. This is the contradiction side of that split.
+    """
+
+    folded = _fold(text)
+    if operation == "task.create":
+        return _has(
+            folded,
+            r"\b(?:taxi|uber|cab|lyft)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:tarea|task|to-do|todo|pendiente)\b",
+        )
+    if operation == "media.play.youtube":
+        return _has(
+            folded,
+            r"\b(?:upload|sube|subir|subime|publica|publicar|publish)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:reproduce|reproducir|play|pon|poner)\b",
+        )
+    if operation.startswith("capture."):
+        return (
+            _has(
+                folded,
+                r"\b(?:graba|grabar|grabame|record|recording|filma|filmar)\b",
+            )
+            and _has(folded, r"\b(?:pantalla|screen|video)\b")
+            and not _has(
+                folded,
+                r"\b(?:captura de pantalla|screenshot|pantallazo|"
+                r"window capture|captura (?:de )?(?:la )?ventana)\b",
+            )
+        )
+    if operation in {
+        "wifi.connect.named",
+        "wifi.connect",
+        "wifi.ensure.connected",
+    }:
+        return _has(folded, r"\b(?:vpn|virtual\s+private)\b") and not _has(
+            folded,
+            r"\b(?:wi[\s-]?fi|red\s+inalambrica|wireless)\b",
+        )
+    if operation.startswith("filesystem."):
+        return (
+            _has(folded, r"\b(?:clon(?:a|ar|ame)|clone)\b")
+            and _has(folded, r"\b(?:disco|disk|drive|hdd|ssd)\b")
+            and not _has(folded, _FILESYSTEM_OBJECT_NOUN)
+        ) or (
+            operation in {"filesystem.trash.restore", "filesystem.trash.commit"}
+            and _has(folded, r"\b(?:desfragmenta|desfragmentar|defrag)\b")
+        ) or (
+            operation == "filesystem.write.text"
+            and _has(folded, r"\b(?:formatea|formatear|format)\b")
+            and _has(folded, r"\b(?:pendrive|usb|disco|disk)\b")
+        )
+    if operation == "media.seek.relative":
+        return _has(
+            folded,
+            r"\b(?:edita|editar|editame|edit|recorta|recortar|trim|"
+            r"corta|cortar|cut|quita|quitar|quitale)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:adelanta|atrasa|retrocede|rewind|forward|jump|skip|seek)\b",
+        )
+    if operation == "office.document.create":
+        return _has(
+            folded,
+            r"\b(?:convierte|convertir|convierteme|convert|conversion)\b",
+        ) or (
+            _has(folded, r"\bpdf\b")
+            and _has(
+                folded,
+                r"\b(?:word|docx|excel|documento|document)\b",
+            )
+            and not _has(
+                folded,
+                r"\b(?:crea|crear|creame|create|nuevo|new|blanco|blank)\b",
+            )
+        )
+    if operation == "system.power":
+        return _has(
+            folded,
+            r"\b(?:telefono|movil|celular|phone|smartphone|iphone|tablet)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:equipo|pc|compu|computador(?:a)?|computer|"
+            r"maquina|machine|windows)\b",
+        )
+    if operation.startswith("peripheral."):
+        return _has(
+            folded,
+            r"\b(?:3d|tres\s+dimensiones|tridimensional|three[\s-]?d)\b",
+        )
+    if operation in {"game.install.cancel.active", "game.install.cancel"}:
+        return _has(
+            folded,
+            r"\b(?:torrent|series|pelicula|movie)\b",
+        ) and not _has(folded, r"\b(?:steam|juego|game)\b")
+    if operation == "game.purchase.prepare":
+        return _has(
+            folded,
+            r"\b(?:pizza|comida|food|hamburguesa|burger)\b",
+        ) and not _has(folded, r"\b(?:steam|juego|game)\b")
+    if operation == "routine.read":
+        return _has(
+            folded,
+            r"\b(?:riega|regar|agua|water(?:ing)?|plantas?|plants?)\b",
+        ) and not _has(folded, r"\b(?:rutina|routine|automation)\b")
+    if operation == "system.settings.set":
+        return _has(
+            folded,
+            r"\b(?:fondo de escritorio|wallpaper|desktop background)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:brillo|brightness|luz nocturna|night light|"
+            r"no molestar|do not disturb|dnd)\b",
+        )
+    if operation in {"message.send", "message.recipient.resolve"}:
+        return _has(
+            folded,
+            r"\b(?:flores?|flowers?|plomero|plumber|madre|mother|"
+            r"taxi|pizza)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:mensaje|message|whatsapp|discord|sms|chat|"
+            r"correo|email)\b",
+        )
+    if operation.startswith("backup."):
+        return _has(folded, r"\b(?:particion|partition)\b")
+    return False
 
 
 def _curated_domain_is_grounded(
@@ -1239,12 +1383,52 @@ def _curated_domain_is_grounded(
             and not _has(folded, r"https?://|\b(?:juego|game|steam)\b")
         )
     if operation == "office.document.create":
+        return (
+            _has(
+                folded,
+                r"\b(?:documento|document|word|excel|hoja de calculo|"
+                r"spreadsheet)\b",
+            )
+            and _has(
+                folded,
+                r"\b(?:crea|crear|creame|create|nuevo|new|blanco|blank)\b",
+            )
+            and not _has(
+                folded,
+                r"\b(?:powerpoint|presentacion|presentation|"
+                r"diapositivas?|slides?)\b",
+            )
+            and not _has(
+                folded,
+                r"\b(?:convierte|convertir|convierteme|convert|pdf)\b",
+            )
+        )
+    if operation == "media.seek.relative":
         return _has(
             folded,
-            r"\b(?:documento|document|word|excel|hoja de calculo|spreadsheet)\b",
+            r"\b(?:adelanta|atrasa|retrocede|rewind|forward|jump|skip|seek)\b",
         ) and not _has(
             folded,
-            r"\b(?:powerpoint|presentacion|presentation|diapositivas?|slides?)\b",
+            r"\b(?:edita|editar|editame|edit|recorta|trim|corta|cut|"
+            r"quita|quitar|quitale)\b",
+        )
+    if operation in {"game.install.cancel.active", "game.install.cancel"}:
+        return (
+            _has(folded, r"\b(?:steam|juego|game)\b")
+            and (
+                _has(
+                    folded,
+                    r"\b(?:cancela|cancelar|cancel|stop|detener|detene)\b",
+                )
+                or (
+                    _has(folded, r"\bpara\b")
+                    and _has(
+                        folded,
+                        r"\b(?:descarga|download|instalacion|install)\b",
+                    )
+                )
+            )
+            and not _has(folded, r"\b(?:torrent|series)\b")
         )
     if operation == "clipboard.write.text":
         return _has(folded, r"\b(?:portapapeles|clipboard)\b") and _has(

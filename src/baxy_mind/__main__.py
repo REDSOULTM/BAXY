@@ -2102,6 +2102,8 @@ def _withheld_invocation_operations(
     for operation in operations:
         if not isinstance(operation, str):
             return ()
+        if effect_intent.operation_identity_is_a_near_miss(objective, operation):
+            return ()
         contract = _turn_operation_contract(
             tool_by_name.get(operation),
             operation,

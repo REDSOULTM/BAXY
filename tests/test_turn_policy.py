@@ -10194,6 +10194,181 @@ def test_the_second_opinion_is_asked_only_about_what_was_withdrawn() -> None:
     assert llm.identity_calls == ["network.status"]
 
 
+def _goal03c_catalog_tool(operation: str) -> dict[str, object]:
+    return {
+        "type": "function",
+        "function": {
+            "name": operation.replace(".", "_"),
+            "canonical_name": operation,
+            "description": f"Authenticated catalog leaf {operation}.",
+            "risk": "read_only",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+class _ProposedLeafLlm:
+    """A decider that names one leaf and will identify it if asked."""
+
+    def __init__(self, operation: str) -> None:
+        self.operation = operation
+        self.identity_calls: list[str] = []
+        self.confirmations = 0
+
+    def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+        return {
+            "mode": "action",
+            "operation": self.operation,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [self.operation],
+            "effect_verification": "agreed",
+            "response_language": "es",
+        }
+
+    def operation_is_the_requested_effect(
+        self,
+        _text: str,
+        operation: str,
+        _contract: dict[str, object],
+    ) -> bool:
+        self.identity_calls.append(operation)
+        return True
+
+    def confirm_operation_before_acting(
+        self,
+        _text: str,
+        _effects: tuple[tuple[str, str], ...],
+        **_kwargs: object,
+    ) -> str:
+        self.confirmations += 1
+        return "¿Quieres que lo haga?"
+
+    @staticmethod
+    def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
+        return "no_effect", "zero"
+
+    @staticmethod
+    def consume_deferred_response_language(_text: str) -> tuple[bool, str | None]:
+        return True, "es"
+
+    @staticmethod
+    def retire_deferred_response_language(_text: str) -> None:
+        return None
+
+    @staticmethod
+    def detect_response_language(_text: str) -> str:
+        return "es"
+
+    @staticmethod
+    def chat(*_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+        return "Eso no lo hago.", []
+
+
+def _goal03c_final_operations(result: dict[str, object]) -> list[str]:
+    names: list[str] = []
+    operation = result.get("operation")
+    if isinstance(operation, str) and operation:
+        names.append(operation)
+    for key in ("effectOperations", "intentOperations"):
+        for value in result.get(key) or []:
+            if isinstance(value, str) and value and value not in names:
+                names.append(value)
+    return names
+
+
+def _goal03c_prepare_turn(text: str, operation: str) -> dict[str, object]:
+    tool = _goal03c_catalog_tool(operation)
+    return _prepare_turn_result(
+        {"id": f"goal03c-{operation}", "text": text},
+        llm=_ProposedLeafLlm(operation),
+        planner_catalog=PlannerCatalog([tool]),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={operation: tool},
+    )
+
+
+_GOAL03C_OOC_AND_COUNTERPARTS = (
+    (
+        "pide un taxi para las ocho",
+        "agregame al pendiente revisar el contrato",
+        "task.create",
+    ),
+    (
+        "upload this video to youtube",
+        "play the tiny desk concert on youtube",
+        "media.play.youtube",
+    ),
+    (
+        "grabame la pantalla en video",
+        "captura de la ventana activa",
+        "capture.active.window",
+    ),
+    (
+        "connect to my work vpn",
+        "connect to my home wifi",
+        "wifi.connect.named",
+    ),
+    (
+        "cloname el disco duro a otro",
+        "copiame el archivo notas.txt a documentos",
+        "filesystem.copy",
+    ),
+    (
+        "editame el video y quitale los ultimos diez segundos",
+        "retrocede diez segundos la cancion",
+        "media.seek.relative",
+    ),
+    (
+        "convierteme este pdf a word",
+        "creame un documento de word en blanco",
+        "office.document.create",
+    ),
+    (
+        "unlock my phone for me",
+        "apaga la compu",
+        "system.power",
+    ),
+    (
+        "imprimeme en 3d esta figura",
+        "imprimime este documento en la impresora",
+        "peripheral.print",
+    ),
+)
+
+
+@pytest.mark.parametrize(
+    ("ooc_text", "in_catalog_text", "operation"),
+    _GOAL03C_OOC_AND_COUNTERPARTS,
+)
+def test_out_of_catalog_near_miss_turns_publish_no_catalog_leaf(
+    ooc_text: str,
+    in_catalog_text: str,
+    operation: str,
+) -> None:
+    """Even a decider that identifies the substitute must not publish it.
+
+    The scorer unions operation, effectOperations and intentOperations. A
+    clarify that still names the leaf counts as acted. The in-catalog
+    counterpart of the same leaf may still be published.
+    """
+
+    ooc = _goal03c_prepare_turn(ooc_text, operation)
+    assert operation not in _goal03c_final_operations(ooc)
+    assert ooc["effectOperations"] == []
+    assert ooc["operation"] is None
+
+    counterpart = _goal03c_prepare_turn(in_catalog_text, operation)
+    assert operation in _goal03c_final_operations(counterpart)
+
+
 def test_a_silent_verifier_never_revives_withdrawn_authority() -> None:
     """Every guard added here is one-sided; a failure keeps the stricter side."""
 
