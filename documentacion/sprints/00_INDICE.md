@@ -53,7 +53,7 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | El uso diario | BAXY se usa todos los días y no decepciona |
+| 10 | El uso diario | 200 turnos reales y 24 h encendido no le sacan un fallo de honestidad |
 | 11 | **La validación y el cierre** | Aguanta cuando algo va mal — producto terminado |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes

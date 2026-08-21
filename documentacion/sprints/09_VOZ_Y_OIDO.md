@@ -329,6 +329,8 @@ cambio sea una tarde.
 - [ ] Las tres detrás de la frontera de proceso, declaradas en el manifiesto con su
       hash, y sus tres filas de `03_COSTURAS.md` rellenas.
 - [ ] Falsas activaciones medidas sobre horas de audio que no le hablan a BAXY.
+      **Audio grabado sirve** —una película, un pódcast, una reunión—: es una medición
+      por volumen de audio, no por horas de calendario delante del micrófono.
 - [ ] De fin de habla a primera señal, p50 ≤ 1,5 s, y nunca 3 s en silencio.
 - [ ] Se le puede interrumpir a media frase.
 - [ ] **Ninguna capacidad de BAXY exige ver la pantalla o usar el ratón.**

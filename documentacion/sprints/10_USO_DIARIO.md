@@ -208,9 +208,30 @@ siempre + escuchar siempre + hablar siempre** contra el presupuesto de recursos.
 salida no es recortar la presencia —ésa es una decisión del dueño— sino conseguir
 que la presencia cueste poco. Mide el consumo en reposo y publícalo.
 
+## Este goal se mide en dosis, no en calendario
+
+**Decisión del dueño, 2026-08-21: el producto sale antes de la semana de uso, no
+después.** Esperar días de calendario para poder entregar retrasa el lanzamiento sin
+comprarle nada al producto, y el uso continuado va a existir igual —de verdad y
+todos los días— en cuanto BAXY esté terminado. No lo restaures.
+
+Lo que una semana de uso compraba se compra de otra forma, y sigue siendo obligatorio:
+
+| Lo que daba el calendario | Cómo se consigue ahora |
+|---|---|
+| Volumen y variedad de peticiones reales | Una **dosis medida** de turnos reales, concentrada |
+| La fricción que sólo aparece repitiendo | **Repetir** lo que más se va a usar, no esperar a que se repita solo |
+| Fugas, degradación, arranque día tras día | Un **encendido continuo** que corre solo mientras trabajas en otra cosa |
+| Que se gane quedarse instalado | Eso lo dice el uso **después** de entregar, y no bloquea la entrega |
+
+Lo que el uso real siga encontrando después del lanzamiento entra por
+`documentacion/APLAZADOS.md` y se cobra en una tanda de mantenimiento. No desaparece:
+deja de ser una puerta antes de entregar.
+
 ## Qué haces
 
-Usarlo. De verdad, durante días, para cosas reales. Y arreglar lo que salga.
+Usarlo. De verdad, para cosas reales, hasta completar la dosis. Y arreglar lo que
+salga.
 
 Esto no es un goal de medición sobre corpus: los nueve anteriores ya midieron. Éste
 encuentra lo que ningún corpus contenía, porque el uso real siempre trae algo que
@@ -265,10 +286,20 @@ verde. Los invariantes de arquitectura siguen siendo invariantes.
 
 ## Criterios de cierre
 
-- [ ] **Una semana de uso diario** sin un solo momento en que BAXY afirme algo que
-      no era cierto, ejecute algo que no le pidieron, o suelte una frase de plantilla.
-- [ ] Consumo en reposo medido y publicado, con arranque automático y escucha
-      permanente encendidos.
+- [ ] **≥ 200 turnos reales**, pedidos por el dueño en uso normal —no guionizados, no
+      de corpus—, en **tres sesiones o más**, sin un solo momento en que BAXY afirme
+      algo que no era cierto, ejecute algo que no le pidieron, o suelte una frase de
+      plantilla. Un solo fallo de honestidad no se anota: se arregla y se repite la
+      sesión.
+- [ ] Dentro de esos turnos, **las cinco peticiones que más se van a usar, repetidas
+      veinte veces cada una**. La fricción sale de la repetición, y ahí es donde se
+      mide si algo cansa.
+- [ ] **≥ 24 h de encendido continuo** con arranque automático y escucha permanente,
+      mientras la máquina se usa para otra cosa, incluyendo **un apagado y encendido
+      de Windows** dentro del tramo. Al final BAXY sigue despertando igual que al
+      principio.
+- [ ] Consumo en reposo medido y publicado **al principio y al final** de ese tramo:
+      si sube, es una fuga y es un defecto, no una nota.
 - [ ] Los dos modos, la narración y el panel de memoria comprobados **usándolos**.
 - [ ] La compuerta verde sobre el árbol final del goal.
 - [ ] El registro de lo que encontraste usándolo: arreglado, abierto, o dejado como

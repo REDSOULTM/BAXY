@@ -190,8 +190,10 @@ limitaciones quedan nombradas una por una.
 Ese documento es lo que alguien lee para saber si puede confiar en el producto.
 Escríbelo para esa persona.
 
-La prueba final es ésta: dejar BAXY funcionando en una máquina, irse, volver a la
-semana, y que siga sirviendo sin haber mentido ni una vez.
+La prueba final es ésta: dejar BAXY funcionando en una máquina, irse, volver **al
+día siguiente** —24 h, con un apagado y encendido de Windows por medio— y que siga
+sirviendo sin haber mentido ni una vez. La semana llega después de entregar, y no es
+una puerta: es el uso.
 
 Publica el estado real. Un producto con tres limitaciones declaradas es entregable;
 uno con tres limitaciones ocultas, no.

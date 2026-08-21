@@ -294,6 +294,13 @@ señal exacta de fracaso.
 el éxito es *«que lo use a diario sin pensarlo»*. Eso hace del goal 10 —uso
 diario— una prueba del producto, no un adorno final.
 
+Y una precisión del dueño del **2026-08-21**, porque cambia cómo se cierra ese
+goal: **el uso continuado ocurre después de entregar, no antes**. El producto sale
+lo más rápido posible; en cuanto esté terminado se usa todos los días de verdad.
+Ningún goal se cierra esperando a que pase el calendario: el goal 10 mide una
+**dosis** de uso real —turnos, repetición y encendido continuo— y lo que el uso
+siga encontrando después entra por `APLAZADOS.md` a una tanda de mantenimiento.
+
 El momento en que el dueño dijo «esto no va» fue **cuando no acertaba la
 herramienta**. Ése es el fallo que el goal 03 tiene que cerrar, y es el mismo
 que hoy sigue abierto: la decisión ve hasta 28 candidatos y elige mal.
