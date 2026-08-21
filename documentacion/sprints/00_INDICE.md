@@ -20,9 +20,11 @@ Detalle en
 [`documentacion/base/03B_COMPRENSION_TECHO.md`](../base/03B_COMPRENSION_TECHO.md)
 §12.
 
-**El 03C va después del 03B y antes del 04.** No se pasa al 04 con esa
-deuda. Prompt y criterios:
-[`03C_ALCANCE.md`](03C_ALCANCE.md).
+**El 03C cerró esa deuda el 2026-08-21.** Tres corridas de **116, 114 y 113**
+—mediana **114/124 = 91,9 %**— con **0, 1 y 1** de 36 `acted`, listón ≤5, sin
+tocar el scorer. Evidencia y mecanismo en
+[`documentacion/base/03C_ALCANCE.md`](../base/03C_ALCANCE.md); el goal, en
+[`03C_ALCANCE.md`](03C_ALCANCE.md). **El 04 arranca sin deuda del 03.**
 
 **Cómo se lanza uno.** Sesión nueva y limpia, `/effort high`, y el goal pegado
 entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
