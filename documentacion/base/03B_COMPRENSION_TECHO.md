@@ -1267,3 +1267,17 @@ candidato, que ya dejaría de ser la señal gratuita propuesta por When2Tool. El
 siguiente escalón permitido no usará ese margen: preregistrará una sola política
 When2Call binaria explícita y selección de hoja en el mismo JSON/inferencia,
 primero sobre holdouts independientes; todavía no tiene autoridad ni integración.
+
+V47 sella esa única variante antes de medirla
+(`goal03_qwen_binary_scope_v47_preregistration.json`). Conserva Qwen3-8B IQ2,
+unión real, pensamiento 128, sampling oficial y semilla 0; sólo antepone
+`scope_decision: action|none` a `effect_operations` dentro del mismo JSON y la
+misma inferencia. Una contradicción entre ambos campos se convierte en cero
+acciones, nunca en autoridad. El arnés pasa **4/4** pruebas.
+
+Los gates no se ajustan al nuevo holdout: trasladan literalmente las proporciones
+del goal. V48 debe elegir la hoja esperada en **≥431/477** positivas sintéticas y
+emitir una acción en **≤42/307** negativas. Sólo entonces V49 podrá ver las 60
+órdenes reales descontaminadas y deberá elegir **≥55/60** hojas. Sólo si pasan
+los tres cortes se permite una corrida fresca. No hay margen logprob, segundo
+scoring, barrido de semilla ni cambio de runtime.
