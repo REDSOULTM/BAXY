@@ -33,36 +33,87 @@ internal sealed class RoutineHandler(string operation, IRoutineStore store) : IO
         try
         {
             JsonElement a = invocation.Arguments;
-            JsonElement result = operation switch
+            OperationOutcome outcome = operation switch
             {
-                "routine.phrase.create" => RoutineResultJson.Record(_store.CreatePhrase(
+                "routine.phrase.create" => VerifiedRecord(_store.CreatePhrase(
                     a.GetProperty("name").GetString()!,
                     a.GetProperty("phrase").GetString()!,
                     a.TryGetProperty("action", out JsonElement action)
                         ? action.GetString()! : "media.control")),
-                "routine.list" => RoutineResultJson.List(_store.List(
-                    Bool(a, "includeDeleted") ?? false, Int(a, "limit") ?? 20)),
-                "routine.read" => RoutineResultJson.Record(_store.Read(
-                    Id(a), Bool(a, "includeDeleted") ?? false)),
-                "routine.resolve.exact" => RoutineResultJson.Selection(_store.ResolveExact(
-                    a.GetProperty("name").GetString()!, Bool(a, "includeDeleted") ?? false)),
-                "routine.set.enabled" => RoutineResultJson.Mutation(_store.SetEnabled(
+                "routine.list" => OperationOutcome.Success(RoutineResultJson.List(
+                    VerifyAll(_store.List(
+                        Bool(a, "includeDeleted") ?? false, Int(a, "limit") ?? 20)))),
+                "routine.read" => OperationOutcome.Success(RoutineResultJson.Record(
+                    Verify(_store.Read(Id(a), Bool(a, "includeDeleted") ?? false)))),
+                "routine.resolve.exact" => OperationOutcome.Success(RoutineResultJson.Selection(
+                    Verify(_store.ResolveExact(
+                        a.GetProperty("name").GetString()!, Bool(a, "includeDeleted") ?? false)))),
+                "routine.set.enabled" => VerifiedMutation(_store.SetEnabled(
                     Id(a), a.GetProperty("expectedRevision").GetInt64(),
                     a.GetProperty("enabled").GetBoolean())),
-                "routine.delete" => RoutineResultJson.Mutation(_store.Delete(
+                "routine.delete" => VerifiedMutation(_store.Delete(
                     Id(a), a.GetProperty("expectedRevision").GetInt64(),
                     a.GetProperty("reviewLabel").GetString()!)),
-                "routine.restore" => RoutineResultJson.Mutation(_store.Restore(
+                "routine.restore" => VerifiedMutation(_store.Restore(
                     Id(a), a.GetProperty("expectedRevision").GetInt64())),
                 _ => throw new InvalidOperationException("Unknown routine operation."),
             };
-            return ValueTask.FromResult(OperationOutcome.Success(result));
+            return ValueTask.FromResult(outcome);
         }
         catch (JsonException) { return ValueTask.FromResult(OperationOutcome.Failure("invalid_arguments")); }
+        catch (LocalTaskStoreException exception) when (exception is not LocalTaskNotFoundException
+            and not LocalTaskAmbiguousException
+            and not LocalTaskVersionConflictException)
+        {
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
+        }
         catch (LocalTaskNotFoundException) { return ValueTask.FromResult(OperationOutcome.Failure("routine_not_found")); }
         catch (LocalTaskAmbiguousException) { return ValueTask.FromResult(OperationOutcome.Failure("routine_ambiguous")); }
         catch (LocalTaskVersionConflictException) { return ValueTask.FromResult(OperationOutcome.Failure("routine_version_conflict")); }
         catch (LocalTaskStoreException) { return ValueTask.FromResult(OperationOutcome.Failure("routine_store_failed")); }
+    }
+
+    private OperationOutcome VerifiedRecord(RoutineRecord changed) =>
+        OperationOutcome.Success(RoutineResultJson.Record(Verify(changed)));
+
+    private OperationOutcome VerifiedMutation(RoutineRecord changed) =>
+        OperationOutcome.Success(RoutineResultJson.Mutation(Verify(changed)));
+
+    private IReadOnlyList<RoutineRecord> VerifyAll(IReadOnlyList<RoutineRecord> items)
+    {
+        foreach (RoutineRecord item in items)
+        {
+            _ = Verify(item);
+        }
+
+        return items;
+    }
+
+    private RoutineRecord Verify(RoutineRecord expected)
+    {
+        RoutineRecord observed;
+        try
+        {
+            observed = _store.Read(expected.Id, includeDeleted: true);
+        }
+        catch (LocalTaskNotFoundException)
+        {
+            throw new LocalTaskStoreException("Routine verification failed.");
+        }
+
+        if (observed.Id != expected.Id
+            || observed.Revision != expected.Revision
+            || observed.Enabled != expected.Enabled
+            || observed.Deleted != expected.Deleted
+            || !string.Equals(observed.Name, expected.Name, StringComparison.Ordinal)
+            || !string.Equals(observed.WorkflowId, expected.WorkflowId, StringComparison.Ordinal))
+        {
+            throw new LocalTaskStoreException("Routine verification failed.");
+        }
+
+        return observed;
     }
 
     private static Guid Id(JsonElement a)

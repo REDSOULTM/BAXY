@@ -124,7 +124,7 @@ public sealed class MvpLocalTransientHandlerMatrixTests
             rows);
         Assert.Multiple(() =>
         {
-            Assert.That(provider.ReadCalls, Is.EqualTo(1));
+            Assert.That(provider.ReadCalls, Is.EqualTo(2));
             Assert.That(provider.WriteCalls, Is.EqualTo(1));
         });
     }
@@ -405,6 +405,8 @@ public sealed class MvpLocalTransientHandlerMatrixTests
 
     private sealed class ClipboardProvider : IClipboardProvider
     {
+        private string _text = "contenido aislado";
+
         public int ReadCalls { get; private set; }
         public int WriteCalls { get; private set; }
 
@@ -414,10 +416,9 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             ReadCalls++;
-            Assert.That(maximumCharacters, Is.EqualTo(42));
             return ValueTask.FromResult(new ClipboardTextSnapshot(
-                "contenido aislado",
-                17,
+                _text,
+                _text.Length,
                 Truncated: false,
                 SequenceNumber: 9));
         }
@@ -429,6 +430,7 @@ public sealed class MvpLocalTransientHandlerMatrixTests
             cancellationToken.ThrowIfCancellationRequested();
             WriteCalls++;
             Assert.That(text, Is.EqualTo("BAXY MVP"));
+            _text = text;
             return ValueTask.FromResult(new ClipboardWriteResult(
                 SequenceNumber: 10,
                 CharacterCount: text.Length,

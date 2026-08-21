@@ -301,7 +301,18 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
             Store.Trash,
             Store.TrashExactTitle,
             Store.TrashSelected);
-        NoteRecord verified = Store.Read(trashed.Id, includeTrashed: true);
+        NoteRecord verified;
+        try
+        {
+            verified = Store.Read(trashed.Id, includeTrashed: true);
+        }
+        catch (NoteNotFoundException)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
         if (!verified.IsTrashed)
         {
             return OperationOutcome.Failure(
@@ -359,7 +370,18 @@ internal sealed class RestoreNoteHandler(INoteStore store) : NoteHandlerBase(sto
             Store.Restore,
             Store.RestoreExactTitle,
             Store.RestoreSelected);
-        NoteRecord verified = Store.Read(restored.Id);
+        NoteRecord verified;
+        try
+        {
+            verified = Store.Read(restored.Id);
+        }
+        catch (NoteNotFoundException)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
         if (verified.IsTrashed)
         {
             return OperationOutcome.Failure(
@@ -389,7 +411,18 @@ internal sealed class UpdateNoteHandler(INoteStore store) : NoteHandlerBase(stor
             new NoteSelection(id, arguments.ExpectedTitle, arguments.ExpectedRevision, false),
             arguments.Title,
             arguments.Content);
-        NoteRecord verified = Store.Read(updated.Id);
+        NoteRecord verified;
+        try
+        {
+            verified = Store.Read(updated.Id);
+        }
+        catch (NoteNotFoundException)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
         if (verified.Revision != updated.Revision
             || !string.Equals(verified.Title, updated.Title, StringComparison.Ordinal)
             || !string.Equals(verified.Content, updated.Content, StringComparison.Ordinal))

@@ -45,13 +45,13 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             JsonElement arguments = invocation.Arguments;
             JsonElement result = operation switch
             {
-                "backup.create" => FilesystemResultJson.Backup(_provider.CreateBackup(
+                "backup.create" => VerifiedBackup(_provider.CreateBackup(
                     RequiredString(arguments, "resourceId"), RequiredString(arguments, "expectedSha256"))),
                 "backup.list" => FilesystemResultJson.BackupList(_provider.ListBackups(
                     OptionalInt(arguments, "limit") ?? 20)),
                 "backup.verify" => FilesystemResultJson.Backup(_provider.VerifyBackup(
                     RequiredString(arguments, "backupId"))),
-                "backup.restore" => FilesystemResultJson.Mutation(_provider.RestoreBackup(
+                "backup.restore" => VerifiedMutation(_provider.RestoreBackup(
                     RequiredString(arguments, "backupId"),
                     RequiredString(arguments, "destinationRelativePath"))),
                 "filesystem.list" => FilesystemResultJson.List(_provider.List(
@@ -65,21 +65,21 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                     OptionalInt(arguments, "maximumBytes") ?? 1_048_576)),
                 "filesystem.hash" => FilesystemResultJson.Entry(_provider.Hash(
                     RequiredString(arguments, "resourceId"))),
-                "filesystem.create.directory" => FilesystemResultJson.Mutation(
+                "filesystem.create.directory" => VerifiedMutation(
                     _provider.CreateDirectory(RequiredString(arguments, "relativePath"))),
-                "filesystem.write.text" => FilesystemResultJson.Mutation(_provider.WriteText(
+                "filesystem.write.text" => VerifiedMutation(_provider.WriteText(
                     RequiredString(arguments, "relativePath"),
                     arguments.GetProperty("text").GetString()!,
                     OptionalString(arguments, "expectedSha256"))),
-                "filesystem.copy" => Transfer(arguments, move: false),
-                "filesystem.move" => Transfer(arguments, move: true),
+                "filesystem.copy" => VerifiedMutation(TransferResult(arguments, move: false)),
+                "filesystem.move" => VerifiedMutation(TransferResult(arguments, move: true)),
                 "filesystem.trash.prepare" => FilesystemResultJson.TrashPreparation(
                     _provider.PrepareTrash(RequiredString(arguments, "resourceId"))),
                 "filesystem.trash.commit" => FilesystemResultJson.TrashReceipt(
                     _provider.CommitTrash(
                         RequiredString(arguments, "trashId"),
                         RequiredString(arguments, "reviewLabel"))),
-                "filesystem.trash.restore" => FilesystemResultJson.Mutation(
+                "filesystem.trash.restore" => VerifiedMutation(
                     _provider.Restore(RequiredString(arguments, "restoreId"))),
                 _ => throw new InvalidOperationException("Unknown filesystem operation."),
             };
@@ -91,12 +91,38 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         }
     }
 
-    private JsonElement Transfer(JsonElement arguments, bool move) =>
-        FilesystemResultJson.Mutation(_provider.Transfer(
+    private FilesystemMutationResult TransferResult(JsonElement arguments, bool move) =>
+        _provider.Transfer(
             RequiredString(arguments, "resourceId"),
             RequiredString(arguments, "destinationRelativePath"),
             RequiredString(arguments, "expectedSha256"),
-            move));
+            move);
+
+    private JsonElement VerifiedMutation(FilesystemMutationResult result)
+    {
+        if (result.Sha256 is not null)
+        {
+            FilesystemEntry hashed = _provider.Hash(result.ResourceId);
+            if (!string.Equals(hashed.Sha256, result.Sha256, StringComparison.Ordinal))
+            {
+                throw new FilesystemProviderException("verification_failed");
+            }
+        }
+
+        return FilesystemResultJson.Mutation(result);
+    }
+
+    private JsonElement VerifiedBackup(BackupReceipt result)
+    {
+        BackupReceipt verified = _provider.VerifyBackup(result.BackupId);
+        if (!verified.Verified
+            || !string.Equals(verified.Sha256, result.Sha256, StringComparison.Ordinal))
+        {
+            throw new FilesystemProviderException("verification_failed");
+        }
+
+        return FilesystemResultJson.Backup(result);
+    }
 
     private static string RequiredString(JsonElement arguments, string name) =>
         arguments.GetProperty(name).GetString()!;

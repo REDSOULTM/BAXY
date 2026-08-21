@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -8,6 +9,7 @@ using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Filesystem;
 using Baxy.Providers.Windows.Notes;
+using Baxy.Providers.Windows.Routines;
 using Baxy.Providers.Windows.Tasks;
 using NUnit.Framework;
 
@@ -128,6 +130,26 @@ public sealed class Goal05CatalogExecutionMatrixTests
             CancellationToken.None);
         string taskId = task.Result!.Value.GetProperty("taskId").GetString()!;
 
+        string due = DateTimeOffset.UtcNow.AddHours(1).ToString("O", CultureInfo.InvariantCulture);
+        IOperationHandler reminder = ReminderHandlers.Create(
+                new LocalTaskStore(Path.Combine(_dataRoot, "reminders")),
+                TimeProvider.System)
+            .Single(handler => handler.Definition.Name == "reminder.create");
+        OperationOutcome reminderCreated = await reminder.ExecuteAsync(
+            Invocation("reminder.create", $$"""{"title":"Goal05 reminder","dueUtc":"{{due}}"}"""),
+            CancellationToken.None);
+
+        var routines = new LocalRoutineStore(Path.Combine(_dataRoot, "routines"));
+        IOperationHandler routine = RoutineHandlers.Create(routines)
+            .Single(handler => handler.Definition.Name == "routine.phrase.create");
+        OperationOutcome routineCreated = await routine.ExecuteAsync(
+            Invocation(
+                "routine.phrase.create",
+                """{"name":"Goal05","phrase":"frase mvp","action":"capture.screenshot"}"""),
+            CancellationToken.None);
+        string routineId = routineCreated.Result!.Value.GetProperty("routine")
+            .GetProperty("routineId").GetString()!;
+
         Assert.Multiple(() =>
         {
             Assert.That(created.Succeeded && created.Verified, Is.True);
@@ -136,6 +158,9 @@ public sealed class Goal05CatalogExecutionMatrixTests
             Assert.That(hashed.Result!.Value.GetProperty("sha256").GetString(), Is.EqualTo(sha));
             Assert.That(task.Succeeded && task.Verified, Is.True);
             Assert.That(tasks.Read(Guid.Parse(taskId)).Title, Is.EqualTo("Goal05 task"));
+            Assert.That(reminderCreated.Succeeded && reminderCreated.Verified, Is.True);
+            Assert.That(routineCreated.Succeeded && routineCreated.Verified, Is.True);
+            Assert.That(routines.Read(Guid.Parse(routineId), includeDeleted: false).Name, Is.EqualTo("Goal05"));
         });
     }
 

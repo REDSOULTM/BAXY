@@ -846,6 +846,9 @@ public sealed class MemoryHandlersTests
 
     private sealed class SpyMemoryStore : IMemoryStore
     {
+        private readonly List<MemoryRecord> _saved = [];
+        private bool _enabled = true;
+
         public string RootDirectory => "memory-test";
 
         public List<MemoryConfigureRequest> ConfigureRequests { get; } = [];
@@ -882,6 +885,7 @@ public sealed class MemoryHandlersTests
         public MemoryConfigurationResult Configure(MemoryConfigureRequest request)
         {
             ConfigureRequests.Add(request);
+            _enabled = request.Enabled;
             return new MemoryConfigurationResult(request.Enabled, Replayed: false);
         }
 
@@ -894,7 +898,13 @@ public sealed class MemoryHandlersTests
         public MemoryStatusResult Status(MemoryStatusRequest request)
         {
             StatusRequests.Add(request);
-            return new MemoryStatusResult(true, 3, 1, 1, 1, LocalMemoryStore.MaximumRecords);
+            return new MemoryStatusResult(
+                _enabled,
+                Math.Max(3, _saved.Count),
+                1,
+                _saved.Count(record => record.Retention == MemoryRetention.Session),
+                1,
+                LocalMemoryStore.MaximumRecords);
         }
 
         public MemorySaveResult Save(MemorySaveRequest request)
@@ -905,12 +915,36 @@ public sealed class MemoryHandlersTests
             }
 
             SaveRequests.Add(request);
-            return new MemorySaveResult(Guid.NewGuid(), 1, request.Selector.ToUpperInvariant(), false);
+            Guid id = Guid.NewGuid();
+            string selector = request.Selector.ToUpperInvariant();
+            _saved.Add(new MemoryRecord(
+                id,
+                1,
+                selector,
+                request.Label,
+                request.Value,
+                request.Kind,
+                MemoryOrigin.Explicit,
+                request.Sensitivity,
+                request.Retention,
+                request.Tags ?? [],
+                request.CapturedAtUtc ?? DateTimeOffset.UtcNow,
+                request.CapturedAtUtc ?? DateTimeOffset.UtcNow,
+                request.ExpiresAtUtc,
+                request.SourceMissionId,
+                request.CapturedAtUtc ?? DateTimeOffset.UtcNow,
+                request.SessionId));
+            return new MemorySaveResult(id, 1, selector, false);
         }
 
         public MemoryRecallResult Recall(MemoryRecallRequest request)
         {
             RecallRequests.Add(request);
+            if (_saved.Count > 0)
+            {
+                return new MemoryRecallResult(_saved.ToArray());
+            }
+
             return RecallResult;
         }
 
@@ -923,14 +957,51 @@ public sealed class MemoryHandlersTests
         public MemoryCorrectResult Correct(MemoryCorrectRequest request)
         {
             CorrectRequests.Add(request);
-            return new MemoryCorrectResult(Guid.NewGuid(), 8, request.Selector.ToUpperInvariant(), false);
+            MemoryRecord? source = _saved.FirstOrDefault(record =>
+                    string.Equals(record.Selector, request.Selector, StringComparison.OrdinalIgnoreCase))
+                ?? RecallResult.Records.FirstOrDefault(record =>
+                    string.Equals(record.Selector, request.Selector, StringComparison.OrdinalIgnoreCase));
+            Guid id = source?.Id ?? Guid.NewGuid();
+            int revision = (source?.Revision ?? 7) + 1;
+            string selector = source?.Selector ?? request.Selector.ToUpperInvariant();
+            MemoryRecord updated = (source ?? Record(request.NewValue, request.SessionId)) with
+            {
+                Id = id,
+                Revision = revision,
+                Selector = selector,
+                Value = request.NewValue,
+            };
+            _saved.Clear();
+            _saved.Add(updated);
+            return new MemoryCorrectResult(id, revision, selector, false);
         }
 
         public MemoryForgetResult Forget(MemoryForgetRequest request)
         {
             ForgetRequests.Add(request);
-            return new MemoryForgetResult(1, false);
+            int deleted = _saved.Count > 0 ? _saved.Count : 1;
+            _saved.Clear();
+            RecallResult = new([]);
+            return new MemoryForgetResult(deleted, false);
         }
+
+        private static MemoryRecord Record(string value, string? sessionId) => new(
+            Guid.NewGuid(),
+            1,
+            "selector",
+            "selector",
+            value,
+            MemoryKind.Fact,
+            MemoryOrigin.Explicit,
+            MemorySensitivity.Normal,
+            MemoryRetention.Persistent,
+            [],
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            null,
+            null,
+            DateTimeOffset.UtcNow,
+            sessionId);
     }
 
     private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider

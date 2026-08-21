@@ -241,6 +241,12 @@ internal sealed class MemoryOperationHandler : IOperationHandler
 
         MemoryConfigurationResult result = _store.Configure(
             new MemoryConfigureRequest(invocation.InvocationId, enabled));
+        MemoryStatusResult status = _store.Status(new MemoryStatusRequest());
+        if (status.Enabled != result.Enabled)
+        {
+            return Failure("verification_failed", effectMayHaveOccurred: true);
+        }
+
         return Success(
             invocation,
             opened.SessionId,
@@ -319,6 +325,11 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             invocation.MissionId,
             now,
             storeSessionId));
+        if (!SavedRecordMatches(result, value, storeSessionId))
+        {
+            return Failure("verification_failed", effectMayHaveOccurred: true);
+        }
+
         return Success(
             invocation,
             opened.SessionId,
@@ -367,6 +378,11 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             _ => throw new JsonException("The forget scope is invalid."),
         };
         MemoryForgetResult result = _store.Forget(request);
+        if (!ForgottenStateMatches(request, result, opened.SessionId))
+        {
+            return Failure("verification_failed", effectMayHaveOccurred: true);
+        }
+
         return Success(
             invocation,
             opened.SessionId,
@@ -396,6 +412,17 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             invocation.InvocationId,
             MemoryForgetScope.Session,
             SessionId: opened.SessionId));
+        if (!ForgottenStateMatches(
+                new MemoryForgetRequest(
+                    invocation.InvocationId,
+                    MemoryForgetScope.Session,
+                    SessionId: opened.SessionId),
+                result,
+                opened.SessionId))
+        {
+            return Failure("verification_failed", effectMayHaveOccurred: true);
+        }
+
         return Success(
             invocation,
             opened.SessionId,
@@ -423,6 +450,15 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         MemoryExportResult result = _exportWriter.Export(new MemoryExportRequest(
             invocation.InvocationId,
             records));
+        if (!_exportWriter.Verify(new MemoryExportVerificationRequest(
+                invocation.InvocationId,
+                result.Path,
+                result.RecordCount,
+                result.Sha256)))
+        {
+            return Failure("verification_failed", effectMayHaveOccurred: true);
+        }
+
         return Success(
             invocation,
             opened.SessionId,
@@ -497,6 +533,14 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             SourceMissionId: invocation.MissionId,
             CapturedAtUtc: now,
             SessionId: opened.SessionId));
+        if (!SavedRecordMatches(
+                new MemorySaveResult(result.RecordId, result.Revision, result.Selector, result.Replayed),
+                newValue,
+                opened.SessionId))
+        {
+            return Failure("verification_failed", effectMayHaveOccurred: true);
+        }
+
         return Success(
             invocation,
             opened.SessionId,
@@ -689,8 +733,64 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         return OperationOutcome.PrivateSuccess(sealedResult);
     }
 
-    private static OperationOutcome Failure(string errorCode) =>
-        OperationOutcome.Failure(errorCode);
+    private bool SavedRecordMatches(
+        MemorySaveResult result,
+        string value,
+        string? sessionId)
+    {
+        MemoryRecord[] observed = _store.Recall(new MemoryRecallRequest(
+                result.Selector,
+                sessionId,
+                LocalMemoryStore.MaximumRecallResults))
+            .Records
+            .Where(record => record.Id == result.RecordId)
+            .ToArray();
+        return observed.Length == 1
+            && observed[0].Revision == result.Revision
+            && string.Equals(observed[0].Selector, result.Selector, StringComparison.Ordinal)
+            && (string.Equals(observed[0].Value, value, StringComparison.Ordinal)
+                || string.Equals(
+                    observed[0].Value,
+                    LocalMemoryStore.RedactedSecretValue,
+                    StringComparison.Ordinal));
+    }
+
+    private bool ForgottenStateMatches(
+        MemoryForgetRequest request,
+        MemoryForgetResult result,
+        string? sessionId)
+    {
+        if (result.DeletedCount <= 0)
+        {
+            return true;
+        }
+
+        if (request.Scope == MemoryForgetScope.Exact && request.Selector is not null)
+        {
+            return !_store.Recall(new MemoryRecallRequest(
+                    request.Selector,
+                    sessionId,
+                    LocalMemoryStore.MaximumRecallResults))
+                .Records
+                .Any(record => string.Equals(
+                    record.Selector,
+                    request.Selector,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (request.Scope == MemoryForgetScope.Session)
+        {
+            return _store.Status(new MemoryStatusRequest(sessionId)).SessionRecords == 0;
+        }
+
+        MemoryStatusResult status = _store.Status(new MemoryStatusRequest(sessionId));
+        return status.TotalRecords == 0;
+    }
+
+    private static OperationOutcome Failure(
+        string errorCode,
+        bool effectMayHaveOccurred = false) =>
+        OperationOutcome.Failure(errorCode, effectMayHaveOccurred: effectMayHaveOccurred);
 
     private static void RequireVersion(JsonElement payload)
     {

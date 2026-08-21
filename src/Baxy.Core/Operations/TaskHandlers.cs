@@ -103,8 +103,25 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
 
     protected OperationOutcome VerifiedMutation(LocalTaskRecord changed)
     {
-        LocalTaskRecord verified = Store.Read(changed.Id, includeDeleted: true);
-        if (verified != changed) return OperationOutcome.Failure("verification_failed");
+        LocalTaskRecord verified;
+        try
+        {
+            verified = Store.Read(changed.Id, includeDeleted: true);
+        }
+        catch (LocalTaskNotFoundException)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
+        if (verified != changed)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
         return OperationOutcome.Success(Serialize(ToResult(verified)));
     }
 

@@ -66,7 +66,8 @@ public sealed class ClipboardHandlerTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             LastLimit = maximumCharacters;
-            return ValueTask.FromResult(new ClipboardTextSnapshot("controlado", 10, false, 9));
+            string text = LastWritten ?? "controlado";
+            return ValueTask.FromResult(new ClipboardTextSnapshot(text, text.Length, false, 9));
         }
 
         public ValueTask<ClipboardWriteResult> WriteTextAsync(

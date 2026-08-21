@@ -27,7 +27,14 @@ Catálogo tipado: **170** operaciones (169 públicas + `app.status` interno).
   `GetStatus` por separado y exige que el endpoint coincida con lo reivindicado
   (tolerancia 2 puntos de volumen; silencio exacto).
 - **`note.create`:** ya decía `note.create.local.reopen.v1` y no reabría. Ahora
-  relee el documento y falla cerrado si no está.
+  relee el documento y falla cerrado si no está. Trash/update/restore igual.
+- **`reminder.*` / `notification.dismiss` / `routine.*` mutantes:** releen el
+  almacén (CAS) después de mutar; un `ILocalTaskStore`/`IRoutineStore` que
+  devuelve un registro que no existe no completa.
+- **`memory.save` y hermanas:** Recall/Status/Verify del export después de
+  mutar; un store que guarda sin que Recall lo vea no completa.
+- **`filesystem.write.text` y copias con SHA:** Hash independiente del recurso.
+- **`clipboard.write.text`:** segunda lectura del texto.
 - **Externas mutantes:** `Verified=true` sin `EffectObserved` no completa.
   Causa `external_effect_unobserved` o `external_effect_ambiguous`.
 - No hay registro de estrategias ni bus de verificadores.

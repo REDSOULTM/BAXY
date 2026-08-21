@@ -93,6 +93,16 @@ internal sealed class ClipboardWriteTextHandler(IClipboardProvider provider)
         ClipboardWriteResult written = await Provider.WriteTextAsync(
             arguments.Text,
             cancellationToken).ConfigureAwait(false);
+        ClipboardTextSnapshot observed = await Provider.ReadTextAsync(
+            Math.Max(arguments.Text.Length, 1),
+            cancellationToken).ConfigureAwait(false);
+        if (!string.Equals(observed.Text, arguments.Text, StringComparison.Ordinal))
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
         var result = new ClipboardWriteOutcome(
             written.SequenceNumber,
             written.CharacterCount,

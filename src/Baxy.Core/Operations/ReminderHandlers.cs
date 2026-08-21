@@ -38,25 +38,26 @@ internal sealed class ReminderHandler(
         try
         {
             JsonElement arguments = invocation.Arguments;
-            JsonElement result = operation switch
+            OperationOutcome outcome = operation switch
             {
                 "reminder.create" => Create(arguments),
-                "reminder.list" => List(arguments, dueOnly: false),
-                "notification.list.due" => List(arguments, dueOnly: true),
-                "reminder.resolve.exact" => ReminderResultJson.Selection(_store.ResolveExact(
-                    Required(arguments, "title"),
-                    OptionalBoolean(arguments, "includeDeleted") ?? false)),
-                "reminder.delete" => ReminderResultJson.Record(_store.Delete(
+                "reminder.list" => OperationOutcome.Success(List(arguments, dueOnly: false)),
+                "notification.list.due" => OperationOutcome.Success(List(arguments, dueOnly: true)),
+                "reminder.resolve.exact" => OperationOutcome.Success(ReminderResultJson.Selection(
+                    Verify(_store.ResolveExact(
+                        Required(arguments, "title"),
+                        OptionalBoolean(arguments, "includeDeleted") ?? false)))),
+                "reminder.delete" => VerifiedRecord(_store.Delete(
                     Id(arguments),
                     arguments.GetProperty("expectedVersion").GetInt64(),
                     Required(arguments, "reviewLabel"))),
-                "reminder.restore" => ReminderResultJson.Record(_store.Restore(
+                "reminder.restore" => VerifiedRecord(_store.Restore(
                     Id(arguments), arguments.GetProperty("expectedVersion").GetInt64())),
-                "notification.dismiss" => ReminderResultJson.Record(_store.SetCompleted(
+                "notification.dismiss" => VerifiedRecord(_store.SetCompleted(
                     Id(arguments), arguments.GetProperty("expectedVersion").GetInt64(), true)),
                 _ => throw new InvalidOperationException("Unknown reminder operation."),
             };
-            return ValueTask.FromResult(OperationOutcome.Success(result));
+            return ValueTask.FromResult(outcome);
         }
         catch (JsonException)
         {
@@ -65,6 +66,14 @@ internal sealed class ReminderHandler(
         catch (LocalTaskValidationException)
         {
             return ValueTask.FromResult(OperationOutcome.Failure("invalid_reminder"));
+        }
+        catch (LocalTaskStoreException exception) when (exception is not LocalTaskNotFoundException
+            and not LocalTaskAmbiguousException
+            and not LocalTaskVersionConflictException)
+        {
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
         catch (LocalTaskNotFoundException)
         {
@@ -80,18 +89,34 @@ internal sealed class ReminderHandler(
         }
     }
 
-    private JsonElement Create(JsonElement arguments)
+    private OperationOutcome Create(JsonElement arguments)
     {
         string due = Required(arguments, "dueUtc");
         if (!DateTimeOffset.TryParse(due, CultureInfo.InvariantCulture,
                 DateTimeStyles.AssumeUniversal, out DateTimeOffset parsed)
             || parsed.ToUniversalTime() <= _time.GetUtcNow())
             throw new LocalTaskValidationException("Reminder due time must be in the future.");
-        LocalTaskRecord created = _store.Create(
+        return VerifiedRecord(_store.Create(
             Required(arguments, "title"),
             OptionalString(arguments, "details") ?? string.Empty,
-            due);
-        return ReminderResultJson.Record(Verify(created));
+            due));
+    }
+
+    private OperationOutcome VerifiedRecord(LocalTaskRecord changed)
+    {
+        LocalTaskRecord observed;
+        try
+        {
+            observed = Verify(changed);
+        }
+        catch (LocalTaskNotFoundException)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
+        return OperationOutcome.Success(ReminderResultJson.Record(observed));
     }
 
     private JsonElement List(JsonElement arguments, bool dueOnly)
@@ -113,7 +138,11 @@ internal sealed class ReminderHandler(
     private LocalTaskRecord Verify(LocalTaskRecord expected)
     {
         LocalTaskRecord observed = _store.Read(expected.Id, includeDeleted: true);
-        if (observed != expected) throw new LocalTaskStoreException("Reminder verification failed.");
+        if (observed != expected)
+        {
+            throw new LocalTaskStoreException("Reminder verification failed.");
+        }
+
         return observed;
     }
 
