@@ -1059,7 +1059,8 @@ def _curated_domain_is_grounded(
             folded,
             r"\b(?:puntero|pointer|cursor|raton|mouse|trackpad|touchpad)\b"
             r"|\b(?:clic|click|clickea|clickear|doble\s+clic|double\s+click|"
-            r"arrastra|arrastrar|drag)\b",
+            r"arrastra|arrastrar|drag|"
+            r"scroll|scrollea|scrollear|rueda)\b",
         )
     if operation in {
         "input.key.press",
@@ -11377,6 +11378,55 @@ def _steam_install_status_intent(
     )
 
 
+def _steam_install_cancel_active_intent(
+    text: str,
+    available: frozenset[str],
+) -> EffectIntent | None:
+    """Stop the download Steam is already running, not a torrent or a listing."""
+
+    if "game.install.cancel.active" not in available:
+        return None
+    if _has(text, r"\b(?:torrent|series|pelicula|movie)\b"):
+        return None
+    request = _match(
+        text,
+        (
+            r"^[¿?¡!\s]*(?:para|cancela|cancelar|cancel|stop|detene|"
+            r"detener)\b.{0,96}\b(?:descarga|download|instalacion|install)"
+            r"\b.{0,96}\bsteam\b[\s?!.]*$"
+        ),
+    )
+    if request is None or _is_negated_match(text, request):
+        return None
+    return EffectIntent(
+        ("game.install.cancel.active",),
+        (request.group(0).strip(" ,;:-")[:240],),
+    )
+
+
+def _pointer_scroll_intent(
+    text: str,
+    available: frozenset[str],
+) -> EffectIntent | None:
+    """A spoken scroll is pointer motion, not a page read."""
+
+    if "input.pointer.control" not in available:
+        return None
+    request = _match(
+        text,
+        (
+            r"^[¿?¡!\s]*(?:scroll|scrollea|scrollear)\b"
+            r".{0,48}\b(?:down|up|abajo|arriba|a\s+bit|un\s+poco)\b[\s?!.]*$"
+        ),
+    )
+    if request is None or _is_negated_match(text, request):
+        return None
+    return EffectIntent(
+        ("input.pointer.control",),
+        (request.group(0).strip(" ,;:-")[:240],),
+    )
+
+
 def _steam_catalog_list_intent(
     text: str,
     available: frozenset[str],
@@ -11463,6 +11513,12 @@ def _resolve_clause_local_special_effects(
     steam_status = _steam_install_status_intent(clause, available)
     if steam_status is not None:
         return steam_status
+    steam_cancel = _steam_install_cancel_active_intent(clause, available)
+    if steam_cancel is not None:
+        return steam_cancel
+    pointer_scroll = _pointer_scroll_intent(clause, available)
+    if pointer_scroll is not None:
+        return pointer_scroll
     if (
         "reminder.delete" in available
         and _exact_local_reminder_title(clause) is not None

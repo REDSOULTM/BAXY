@@ -756,6 +756,11 @@ CASES = [
         "que archivos tengo en la carpeta de trabajo",
         ("filesystem.list",),
     ),
+    (
+        "para la descarga que tiene steam corriendo",
+        ("game.install.cancel.active",),
+    ),
+    ("scroll down a bit", ("input.pointer.control",)),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}
@@ -2267,6 +2272,16 @@ def test_trim_video_is_not_media_control_either() -> None:
     text = "editame el video y quitale los ultimos diez segundos"
     assert operation_identity_is_a_near_miss(text, "media.control") is True
     assert operation_domain_is_grounded(text, "media.control") is False
+
+
+def test_torrent_download_is_not_a_steam_cancel() -> None:
+    assert (
+        resolve_explicit_effects(
+            "download this series over torrent",
+            AVAILABLE | {"game.install.cancel.active"},
+        )
+        is None
+    )
 
 
 @pytest.mark.parametrize(
