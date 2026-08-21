@@ -132,3 +132,5 @@ goal.
 - **«necesito el bloc de notas» no es un listado de notas** — `notas?` coincidía dentro de «bloc de notas». El reconocedor ahora distingue el inventario de notas del objeto Notepad. *Goal 03B, retoma 2026-08-21.*
 - **Filtrar las hojas no grounded en vez de vetar la lista entera abre el fuera-de-catálogo** — offline sobre rec5e2e7 recuperaría net-01 y pkg-01, y dejaría keep en ooc-09/11/13/14/15/22/25/30. No se cambia la política all-or-nothing. *Goal 03B, retoma 2026-08-21.*
 - **La pila FunctionGemma del router heredado ya estaba agotada** — abstain_head 110→76, mMARCO 0/14 residuales, deícticos sólo clp-02, splitter al goal 07, LoRA fresco 24/124. No se re-mide. *Goal 03B, retoma 2026-08-21.*
+- **Filtrar hojas ungrounded sigue abriendo el fuera-de-catálogo** — reconfirmado en r2/r3/r4: cmp-01, net-01 y win-01 siguen siendo listas mixtas que el veto all-or-nothing tira enteras. No se cambia. *Goal 03C.*
+- **`ooc-12` «commit and push my changes to git» → `package.install.commit`** — 1 de 3 corridas de cierre (`goal03c_r3/r4`). El listón es ≤5 y las nueve estables ya no actúan; no se añade otra contradicción por esta fila. *Goal 03C.*

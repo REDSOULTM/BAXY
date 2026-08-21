@@ -1,0 +1,453 @@
+{
+  "by_kind": {
+    "action": 1,
+    "clarify": 4,
+    "conversation": 5,
+    "plan": 5
+  },
+  "by_language": {
+    "en": {
+      "rows": 5,
+      "whole": 0
+    },
+    "es": {
+      "rows": 7,
+      "whole": 3
+    },
+    "es_en": {
+      "rows": 3,
+      "whole": 3
+    }
+  },
+  "corpus": {
+    "path": "artifacts\\development\\goal03b_compound_missions.v1.jsonl",
+    "rows": 15,
+    "sha256": "f66e981c454415999e1f1304b030dabde8e137300c48a237887f8b054bf3c724"
+  },
+  "latency_seconds": {
+    "max": 5.764,
+    "p50": 1.791,
+    "p90": 4.362
+  },
+  "missions": {
+    "rate": 0.4,
+    "rows": 15,
+    "whole": 6
+  },
+  "rows": [
+    {
+      "case_id": "cmp-b01",
+      "decision_path": "explicit_effects",
+      "dependency": "sequencing head",
+      "final_operations": [
+        "app.open",
+        "game.catalog.list"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.066457,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "app.open"
+        ],
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b02",
+      "decision_path": "explicit_effects",
+      "dependency": "elided object in the second clause",
+      "final_operations": [
+        "media.play.query"
+      ],
+      "kind": "action",
+      "language": "en",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.028829,
+      "step_named": [
+        false,
+        true
+      ],
+      "steps": [
+        [
+          "app.open"
+        ],
+        [
+          "media.play.query",
+          "media.play.exact",
+          "streaming.play.named"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b03",
+      "decision_path": "model",
+      "dependency": "the note body is the first step's result",
+      "final_operations": [
+        "note.create",
+        "web.search"
+      ],
+      "kind": "clarify",
+      "language": "es_en",
+      "question": "Quieres que busque en internet la altura del Everest y guarde la información en una nota llamada Everest?",
+      "reply_text": "",
+      "seconds": 3.655093,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "web.search"
+        ],
+        [
+          "note.create"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b04",
+      "decision_path": "model",
+      "dependency": "conditional on the first step",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "question": "",
+      "reply_text": "No puedo crear la tarea \"pagar el arriendo\" tal como fue pedido.",
+      "seconds": 2.439271,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "task.search",
+          "task.list",
+          "task.resolve.exact"
+        ],
+        [
+          "task.create"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b05",
+      "decision_path": "explicit_conversation",
+      "dependency": "conditional plus pronoun",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "You mentioned checking if Discord is installed and, if so, opening it.",
+      "seconds": 1.791292,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "app.installed",
+          "window.application.status"
+        ],
+        [
+          "app.open"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b06",
+      "decision_path": "model",
+      "dependency": "the second step consumes the first step's identity",
+      "final_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "question": "¿Qué quieres que te diga después de capturar la pantalla?",
+      "reply_text": "",
+      "seconds": 5.76355,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "capture.screenshot",
+          "capture.active.window"
+        ],
+        [
+          "ocr.read",
+          "vision.describe"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b07",
+      "decision_path": "explicit_effects",
+      "dependency": "sequencing tail",
+      "final_operations": [
+        "network.status",
+        "system.status"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.013592,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "system.status"
+        ],
+        [
+          "network.status"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b08",
+      "decision_path": "explicit_conversation",
+      "dependency": "bare anaphora on the first list",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "I cannot list your saved wifi profiles and tell you which one you are connected to.",
+      "seconds": 1.599426,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "wifi.profile.list"
+        ],
+        [
+          "wifi.status",
+          "wifi.ensure.connected"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b09",
+      "decision_path": "explicit_effects",
+      "dependency": "demonstrative referring to the created note",
+      "final_operations": [
+        "note.create",
+        "note.read"
+      ],
+      "kind": "plan",
+      "language": "es_en",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.016922,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "note.create"
+        ],
+        [
+          "note.read",
+          "note.list",
+          "note.search"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b10",
+      "decision_path": "model",
+      "dependency": "elided verb in the second clause",
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "kind": "clarify",
+      "language": "es",
+      "question": "Quieres que ajuste el volumen en tres puntos y luego te diga cómo quedó?",
+      "reply_text": "",
+      "seconds": 2.448031,
+      "step_named": [
+        true,
+        false
+      ],
+      "steps": [
+        [
+          "audio.volume.adjust",
+          "audio.volume"
+        ],
+        [
+          "audio.status"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b11",
+      "decision_path": "model",
+      "dependency": "the read observes the write",
+      "final_operations": [],
+      "kind": "clarify",
+      "language": "en",
+      "question": "What is currently on your clipboard?",
+      "reply_text": "",
+      "seconds": 4.362115,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "clipboard.copy"
+        ],
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b12",
+      "decision_path": "explicit_effects",
+      "dependency": "three read-only clauses, serial comma",
+      "final_operations": [
+        "bluetooth.device.list",
+        "peripheral.list",
+        "system.status"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.009455,
+      "step_named": [
+        true,
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "bluetooth.device.list"
+        ],
+        [
+          "peripheral.list"
+        ],
+        [
+          "system.status"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b13",
+      "decision_path": "explicit_conversation",
+      "dependency": "elided head plus bare ordinal",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "I cannot create a note named \"Rio\" with \"cauce\" and a note named \"Valle\" with \"hondo\", then read the first one.",
+      "seconds": 1.515225,
+      "step_named": [
+        false,
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "note.create"
+        ],
+        [
+          "note.create"
+        ],
+        [
+          "note.read"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b14",
+      "decision_path": "model",
+      "dependency": "code-switched second clause",
+      "final_operations": [
+        "notification.schedule",
+        "reminder.create",
+        "system.time"
+      ],
+      "kind": "plan",
+      "language": "es_en",
+      "question": "",
+      "reply_text": "",
+      "seconds": 2.516062,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "system.time"
+        ],
+        [
+          "notification.schedule",
+          "reminder.create"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b15",
+      "decision_path": "model",
+      "dependency": "the second read observes the first effect",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "question": "",
+      "reply_text": "No puedo minimizar la ventana de adelante y decir cuál quedó en primer plano.",
+      "seconds": 2.832328,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "window.minimize"
+        ],
+        [
+          "window.active"
+        ]
+      ],
+      "whole": false
+    }
+  ],
+  "schema": "baxy.goal03b-compound-missions.v1",
+  "steps": {
+    "named": 15,
+    "rate": 0.4688,
+    "total": 32
+  },
+  "three_zeros": {
+    "effects_executed": 0,
+    "providers_enabled": false
+  }
+}

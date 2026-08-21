@@ -540,23 +540,25 @@ Buscado, leído y citado; lo que no entró dice por qué.
 
 | Criterio | Estado |
 |---|---|
-| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **Tres corridas: 112, 112, 110** (mediana 112/124 = 90,3 %). `rec5e2e8/9/10`. Reconocedor 0, recuperación 0, decisión 5–7, veto 5–7. El suelo de 13 filas de §6 ya no es el techo |
+| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **Tres corridas del 03B: 112, 112, 110** (mediana 112/124 = 90,3 %). `rec5e2e8/9/10`. El goal 03C lo vuelve a medir: 116, 114, 113 (mediana **114/124 = 91,9 %**), `goal03c_r2/r3/r4`. Reconocedor 0, recuperación 0 |
 | El techo re-medido y **movido**, con la aritmética publicada | **Cumplido: 84,7 % → 89,5 %**, §6, con la misma fórmula del goal 03 |
 | Las 17 filas del contrato resueltas, con el estado nuevo y su prueba | **Cumplido**: el veto pierde 6 donde perdía 27, y 8 pruebas de regresión en `tests/test_turn_policy.py` |
 | Cobertura y cuenta antes y después, con el sello | **Cumplido**: 169/158/31 y `dc0a7893…` idéntico — el catálogo no se tocó |
-| El banco de misiones compuestas medido antes y después: no bajó | **Cumplido**: 3/15 → 5/15 misiones, 8/32 → 13/32 pasos. Subió |
+| El banco de misiones compuestas medido antes y después: no bajó | **Cumplido en el 03B**: 3/15 → 5/15, 8/32 → 13/32. El 03C lo re-mide en **6/15 y 15/32** (`goal03b_compound_goal03c_cmp2.json`) |
 | La puerta curada más pequeña, o retirada, con el sobreveto medido en los dos casos | **Medido y publicado, §5.** No se retira ni se le quitan reglas: quitarla compra 3–6 filas y abre 22 efectos no pedidos. Lo que encogió es su autoridad |
 | Latencia junto al acierto, p50 y p90, cargado y tranquilo | **Cumplido, §8**, y el listón de 3 s **sigue sin cumplirse con el equipo en uso** |
-| Los tres ceros intactos, y ≤ 3–5 de 36 decisiones que ejecutarían | **Cumplido: 2–4 de 36**, y dos estados de máquina inventados que estaban abiertos pasan a 0 |
+| Los tres ceros intactos, y ≤ 3–5 de 36 decisiones que ejecutarían | **El 03B tardío dejó esto abierto (12–15/36 `acted`)**. El 03C lo cierra: **0, 1, 1 de 36** en `goal03c_r2/r3/r4`, tres ceros intactos. Ver `documentacion/base/03C_ALCANCE.md` |
 | Publicado qué se heredó y qué del estado del arte, con la fuente | **Cumplido, §10**, incluido lo que se probó y no funcionó con su mecanismo |
 | Filas de `03_COSTURAS.md` rellenas | **Cumplido**: reconocedor y puerta de alcance actualizadas, y una fila nueva para el verificador de identidad |
 
 ### El 90 % en una corrida, techo re-medido
 
 El suelo de trece filas de §6 **ya no es el techo**: el reconocedor nombra esas
-hojas. `goal03_rec5e2e8.json` sirve **112/124**. El techo actual son las 12 que
-aún pierde el modelo (decisión 7, veto 5), no una forma de catálogo. Faltan dos
-corridas y el fuera-de-catálogo ≤5/36.
+hojas. `goal03_rec5e2e8.json` sirve **112/124**. El 03C mueve la mediana a
+**114/124** y cierra el fuera-de-catálogo en ≤5/36; el detalle está en
+`documentacion/base/03C_ALCANCE.md`. El techo que queda son las cuatro
+in-catalog estables que el veto all-or-nothing y `total_recovery` siguen
+comiéndose (cmp-01, net-01, net-10, win-01), no una forma de catálogo.
 
 **V9 sigue sin abrir.** Ninguna corrida de este goal lo tocó.
 

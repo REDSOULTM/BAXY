@@ -63,12 +63,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # a veto that removed a proposed effect used to publish it as ``unsupported``,
 # and now withholds it for confirmation instead. V8 priced veto damage on the
 # path where the veto deleted the capability; that path is gone.
+# Goal 03C moved __main__.py again: a near-miss substitute may not be revived
+# as intent_operations after the curated gate withdraws it.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "a9625bac2fbf2e4cf94d4c413a131d9714aabdb7d569b267586147146a3742f9"
+        "0c1966a4b5edd5aa957d94a1347343ad45e47b7933be0f3c8b8c3836b20c4d1c"
     ),
     "src/baxy_mind/llm.py": (
-        "b62e058ca2b89533995332276b4a5a1af3dbd69ac8f957b49094a0e7d24bb536"
+        "4da4b73e62cd18a7ca6064b47ee4b9f3bbff221640e55393d9bc5e9fd881feff"
     ),
 }
 
