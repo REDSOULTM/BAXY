@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
 from .effect_intent import enumerated_note_dependency_order
+from .operation_ranker import OperationRanker
 
 MAX_PLAN_STEPS = 16
 # Cuántas operaciones ve el decisor. El ranking es por operación: no hay ventana
@@ -31,6 +32,7 @@ MAX_PLAN_STEPS = 16
 # El tope se midió: bajarlo a 8 sólo sube el acierto condicionado del decisor de
 # 79,6 % a 82,4 % y cuesta doce filas de recuperación.
 MAX_SHORTLIST_OPERATIONS = 28
+UNION_PER_SIGNAL = 14
 MAX_PURPOSE_CHARS = 512
 MAX_QUESTION_CHARS = 512
 MAX_OBJECTIVE_CHARS = 16_384
@@ -328,6 +330,9 @@ class PlannerCatalog:
             if encoder is not None
             else None
         )
+        self._ranker: OperationRanker | None = (
+            OperationRanker() if encoder is not None else None
+        )
 
     @property
     def tools(self) -> tuple[PlannerTool, ...]:
@@ -392,7 +397,21 @@ class PlannerCatalog:
             ),
             reverse=True,
         )
-        selected = list(ranked[:MAX_SHORTLIST_OPERATIONS])
+        if self._ranker is not None:
+            ranker_names = [
+                name
+                for name in self._ranker.rank(objective)
+                if name in self._by_name
+            ]
+            merged = list(
+                dict.fromkeys(
+                    ranker_names[:UNION_PER_SIGNAL]
+                    + [tool.name for tool in ranked[:UNION_PER_SIGNAL]]
+                )
+            )
+            selected = [self._by_name[name] for name in merged[:MAX_SHORTLIST_OPERATIONS]]
+        else:
+            selected = list(ranked[:MAX_SHORTLIST_OPERATIONS])
 
         # Las dependencias de identidad son conocimiento del contrato, no una
         # inferencia del modelo. Se incluyen si su consumidor quedó visible.
