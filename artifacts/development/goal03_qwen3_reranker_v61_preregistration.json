@@ -1,0 +1,36 @@
+{
+  "acceptance": {
+    "inherited_real_clean_selected_expected_minimum": 55,
+    "rule_basis": "ceil(112/124 * population positives) and floor(5/36 * population negatives)",
+    "synthetic_oos_selected_action_calls_maximum": 42,
+    "synthetic_selected_expected_minimum": 431
+  },
+  "constraints": {
+    "fresh_corpus_evaluation_opened": false,
+    "no_threshold_search": true,
+    "providers_enabled": false,
+    "runtime_manifest_will_change": false,
+    "sampling_or_prompt_sweep": false
+  },
+  "model": {
+    "id": "Qwen/Qwen3-Reranker-0.6B",
+    "paper": "arXiv:2506.05176",
+    "safetensors_bytes": 1191588280,
+    "safetensors_sha256": "27cd75a405b9c1b46b59abfd88aaa209e6fed2a1972cde9b70e7659537c5e65b",
+    "source": "https://huggingface.co/Qwen/Qwen3-Reranker-0.6B"
+  },
+  "policy": {
+    "document": "operation_name plus native_selection_description",
+    "instruction": "Given a user's request to a local computer assistant, retrieve the catalog operation whose complete effect matches the request. Partial, related, or sibling operations are not relevant.",
+    "instruction_language": "en",
+    "threshold": 0.5,
+    "threshold_source": "P(yes) midpoint of the official yes/no scoring head"
+  },
+  "schema": "baxy.goal03-qwen3-reranker-preregistration.v1",
+  "smoke": {
+    "app_open_score": 0.9414,
+    "capital_of_france_max_score": 0.0002,
+    "result": "app.open selected; no-call abstained"
+  },
+  "stop_rule": "Run V61 synthetic. If either gate fails, reject without V62 or fresh. Do not fit a new threshold on this holdout."
+}

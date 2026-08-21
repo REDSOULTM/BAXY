@@ -1408,3 +1408,29 @@ V60 no existe, el fresco permanece cerrado y no se barren quants, prompts ni
 parser. Tampoco vale como guarda call/no-call: veta 221 órdenes legítimas de
 477, el mismo patrón del SVM. La siguiente familia no puede ser otro generador
 de function-calling.
+
+V61 prueba un cross-encoder de hoja, no otro LLM de tools:
+Qwen3-Reranker-0.6B (arXiv 2506.05176, SHA `27cd75a4…`, 1.192.588.280 bytes).
+Lee (pedido, descripción) juntas, instrucción en inglés preregistrada, umbral
+**P(yes) ≥ 0,5** copiado de la cabeza yes/no, no ajustado al holdout. El control
+previo dio `app.open` 0,941 y «capital of France» ≤ 0,0002.
+
+V61 acepta el holdout sintético
+(`goal03_qwen3_reranker_synthetic_v61.json`, SHA `efc39a37…`): **433/477**
+hojas (mínimo 431) y **3/307** acciones negativas (máximo 42), 0
+inconsistencias, 169 s de corrida. Sin umbral el top-1 crudo llega a 443/477;
+los diez que corta 0,5 son el precio de la guarda. V62 (60 reales limpios,
+mínimo 55) queda autorizado; el fresco sigue cerrado hasta que pase.
+
+V62 rechaza el reranker antes de promoverlo
+(`goal03_qwen3_reranker_real_v62.json`, SHA `f90b3391…`): **10/60** hojas
+(mínimo 55), top-1 sin umbral 28/60. El corte histórico vuelve a ser otro
+idioma: «cerrá Paint» puntúa 0,06, «Abre Steam» se va a `game.catalog.list`
+con 0,957. No se ajusta el umbral.
+
+V63 es la única apertura sobre la telemetría fresca ya congelada — mismos
+bytes del corpus, union-28 de V10, misma instrucción y 0,5
+(`goal03_qwen3_reranker_fresh_frozen_v63.json`). **63/124** y **0/36**
+acciones fuera de catálogo; sin umbral 90/124. La guarda es perfecta y la
+hoja no. Una composición offline 8B-si-el-reranker-llama baja a 72/124.
+No se integra, no se calibra 0,5 sobre este corte, no se apila con el 8B.
