@@ -1184,3 +1184,13 @@ elige hasta ocho reales y completa cada operación con el orden heredado. Con
 sus defaults reproduce V28. La nueva corrida queda fijada a SDPA/1.408 y los
 hiperparámetros ya escritos; saldrá desde el base, no continuará el adapter
 fallido. Sus pesos no podrán ver ninguno de los dos holdouts.
+
+La corrida sellada termina sin alterar la receta
+(`goal03_functiongemma_real_mixed_train_v37.json`, SHA `cf0f4f67…`). Entrena
+exactamente **2.028** filas durante **254** updates, incluidos los **96**
+mensajes reales y 676 `no_action`, en 5.789,125 s; pérdida 0,000864→0,001086.
+El adapter resultante tiene SHA `f8b8f1fc…add04`. El pico CUDA asignado de
+4.726,6 MiB corresponde al entrenamiento y no decide el techo de 4 GB del
+producto, que se mide en inferencia. El siguiente paso permanece cerrado por
+la preregistración: evaluar primero el holdout real y rechazar sin mirar los
+holdouts sintético o fresco si no alcanza **50/71**.
