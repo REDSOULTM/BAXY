@@ -1,0 +1,2428 @@
+[
+  {
+    "case_id": "aud-01",
+    "effect_operations": [
+      "audio.volume.adjust"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "audio.volume.adjust"
+    ],
+    "text": "che ponelo mas bajito que estoy en una llamada",
+    "visible_text": ""
+  },
+  {
+    "case_id": "aud-02",
+    "effect_operations": [
+      "audio.volume"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.volume"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "audio.volume"
+    ],
+    "text": "dejame el sonido a la mitad",
+    "visible_text": ""
+  },
+  {
+    "case_id": "aud-03",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "audio.status",
+      "audio.mute",
+      "audio.volume",
+      "audio.microphone.mute"
+    ],
+    "text": "kill the sound completely, I need silence",
+    "visible_text": "I cannot eliminate the sound completely."
+  },
+  {
+    "case_id": "aud-04",
+    "effect_operations": [
+      "audio.microphone.mute"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.microphone.mute"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "audio.microphone.mute"
+    ],
+    "text": "mutea el mic que ya vuelvo",
+    "visible_text": ""
+  },
+  {
+    "case_id": "aud-05",
+    "effect_operations": [
+      "audio.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.status"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "audio.status"
+    ],
+    "text": "como esta el sonido ahora mismo",
+    "visible_text": ""
+  },
+  {
+    "case_id": "aud-06",
+    "effect_operations": [
+      "audio.volume.adjust"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.volume.adjust"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "audio.volume.adjust"
+    ],
+    "text": "turn it up a bit, I can barely hear it",
+    "visible_text": ""
+  },
+  {
+    "case_id": "aud-07",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.mute"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "audio.mute"
+    ],
+    "text": "quitale el silencio a los parlantes",
+    "visible_text": "¿Quieres que quites el silencio de los parlantes?"
+  },
+  {
+    "case_id": "aud-08",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.volume.adjust"
+    ],
+    "kind": "clarify",
+    "raw_operations": [],
+    "text": "baja el volume tres puntos nomas",
+    "visible_text": "¿Cuál es el volumen que deseas ajustar?"
+  },
+  {
+    "case_id": "app-01",
+    "effect_operations": [
+      "app.open"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "app.open"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "app.open"
+    ],
+    "text": "necesito el bloc de notas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "app-02",
+    "effect_operations": [
+      "app.installed"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "app.installed"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "app.installed"
+    ],
+    "text": "do I have discord on this machine",
+    "visible_text": ""
+  },
+  {
+    "case_id": "app-03",
+    "effect_operations": [
+      "app.close"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "app.close"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "app.close"
+    ],
+    "text": "cierrame la ventana que tengo adelante",
+    "visible_text": ""
+  },
+  {
+    "case_id": "app-04",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "app.open"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "app.open"
+    ],
+    "text": "abrime el calculator porfa",
+    "visible_text": "¿Quieres que te abra el calculator?"
+  },
+  {
+    "case_id": "app-05",
+    "effect_operations": [
+      "app.installed"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "app.installed"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "app.installed"
+    ],
+    "text": "is steam even installed here",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "clarify",
+    "raw_operations": [
+      "window.active",
+      "media.play.query",
+      "audio.status",
+      "wifi.ensure.connected",
+      "media.play.exact",
+      "window.focus",
+      "app.open",
+      "task.search"
+    ],
+    "text": "que tengo en primer plano ahora",
+    "visible_text": "¿cuál es el tema principal del que te hablaba?"
+  },
+  {
+    "case_id": "win-02",
+    "effect_operations": [
+      "window.maximize"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.maximize"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "window.maximize"
+    ],
+    "text": "hazme grande esta ventana que no veo nada",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-03",
+    "effect_operations": [
+      "window.minimize"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.minimize"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "window.minimize"
+    ],
+    "text": "send this window down to the taskbar",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-04",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.move"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "window.move"
+    ],
+    "text": "corre la ventana a la esquina de arriba a la izquierda",
+    "visible_text": "¿Quieres que mueva la ventana a la esquina de arriba a la izquierda?"
+  },
+  {
+    "case_id": "win-05",
+    "effect_operations": [
+      "window.resize"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.resize"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "window.resize"
+    ],
+    "text": "make this window eight hundred by six hundred",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-06",
+    "effect_operations": [
+      "window.focus"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.focus"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "window.focus"
+    ],
+    "text": "trae la ventana de chrome al frente",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-07",
+    "effect_operations": [
+      "window.application.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.application.status"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "window.application.status"
+    ],
+    "text": "spotify tiene alguna ventana abierta",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-08",
+    "effect_operations": [
+      "window.restore"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.restore"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "window.restore"
+    ],
+    "text": "devuelvele el tamano normal a la ventana",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.status"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "system.status"
+    ],
+    "text": "como anda la maquina en general",
+    "visible_text": "¿Quieres que mida el estado general de la máquina?"
+  },
+  {
+    "case_id": "sys-02",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.time"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "system.time"
+    ],
+    "text": "que fecha y hora tenemos",
+    "visible_text": "¿Quieres que te diga la fecha y hora actuales, en UTC y en tu zona local?"
+  },
+  {
+    "case_id": "sys-03",
+    "effect_operations": [
+      "system.application.crash.diagnose"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.application.crash.diagnose"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "system.application.crash.diagnose"
+    ],
+    "text": "which apps crashed on me lately",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-04",
+    "effect_operations": [
+      "system.power"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.power"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.power"
+    ],
+    "text": "trancame el equipo que me voy",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-05",
+    "effect_operations": [
+      "system.process.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.process.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.process.list"
+    ],
+    "text": "que programas se estan comiendo la memoria",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-06",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.process.terminate.named"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "system.process.terminate.named"
+    ],
+    "text": "force quit chrome, it is frozen solid",
+    "visible_text": "¿Quieres que force quit chrome?"
+  },
+  {
+    "case_id": "sys-07",
+    "effect_operations": [
+      "system.recyclebin.empty"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.recyclebin.empty"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "system.recyclebin.empty"
+    ],
+    "text": "vaciame la papelera de reciclaje",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-08",
+    "effect_operations": [
+      "system.settings.adjust"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.settings.adjust"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.settings.adjust"
+    ],
+    "text": "subile un poco a la luz de la pantalla",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-09",
+    "effect_operations": [
+      "system.settings.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.settings.status"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.settings.status"
+    ],
+    "text": "how bright is my screen right now",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-10",
+    "effect_operations": [
+      "system.identity"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.identity"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "system.identity"
+    ],
+    "text": "con que usuario estoy entrado",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-11",
+    "effect_operations": [
+      "system.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.status"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.status"
+    ],
+    "text": "cuanta ram me queda libre",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-12",
+    "effect_operations": [
+      "system.power"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.power"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.power"
+    ],
+    "text": "apaga la compu",
+    "visible_text": ""
+  },
+  {
+    "case_id": "net-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "network.status",
+      "wifi.status",
+      "network.dns.status",
+      "network.ping"
+    ],
+    "text": "tengo internet o no",
+    "visible_text": "No puedo verificar si tengo internet."
+  },
+  {
+    "case_id": "net-02",
+    "effect_operations": [
+      "network.ping"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "network.ping"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "network.ping"
+    ],
+    "text": "see if 8.8.8.8 answers",
+    "visible_text": ""
+  },
+  {
+    "case_id": "net-03",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "network.ip.list"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "network.ip.list"
+    ],
+    "text": "cual es mi direccion ip",
+    "visible_text": "¿Quieres que te muestre la dirección IP actual de tu equipo?"
+  },
+  {
+    "case_id": "net-04",
+    "effect_operations": [
+      "network.dns.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "network.dns.status"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "network.dns.status"
+    ],
+    "text": "que servidores de nombres estoy usando",
+    "visible_text": ""
+  },
+  {
+    "case_id": "net-05",
+    "effect_operations": [
+      "network.port.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "network.port.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "network.port.list"
+    ],
+    "text": "what ports are listening on this box",
+    "visible_text": ""
+  },
+  {
+    "case_id": "net-06",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "network.status",
+      "wifi.status",
+      "wifi.ensure.connected"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "network.status",
+      "wifi.status",
+      "wifi.ensure.connected"
+    ],
+    "text": "a que red inalambrica estoy pegado",
+    "visible_text": "¿Quieres que te diga la red inalámbrica a la que estás conectado sin mostrar detalles?"
+  },
+  {
+    "case_id": "net-07",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "wifi.profile.list"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "wifi.profile.list"
+    ],
+    "text": "mostrame las redes que tengo guardadas",
+    "visible_text": "Quieres que te muestre las redes que tienes guardadas?"
+  },
+  {
+    "case_id": "net-08",
+    "effect_operations": [
+      "wifi.disconnect"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "wifi.disconnect"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "wifi.disconnect"
+    ],
+    "text": "drop the wireless connection",
+    "visible_text": ""
+  },
+  {
+    "case_id": "net-09",
+    "effect_operations": [
+      "wifi.connect"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "wifi.connect"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "wifi.connect"
+    ],
+    "text": "conectate al wifi de casa",
+    "visible_text": ""
+  },
+  {
+    "case_id": "med-01",
+    "effect_operations": [
+      "media.control"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "media.control"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "media.control"
+    ],
+    "text": "para lo que esta sonando",
+    "visible_text": ""
+  },
+  {
+    "case_id": "med-02",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "media.status"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "media.status"
+    ],
+    "text": "que cancion es esta",
+    "visible_text": "¿Quieres que te diga el título y el artista de la canción que estás reproduciendo ahora?"
+  },
+  {
+    "case_id": "med-03",
+    "effect_operations": [
+      "media.seek.relative"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "media.seek.relative"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "media.seek.relative"
+    ],
+    "text": "jump ahead thirty seconds",
+    "visible_text": ""
+  },
+  {
+    "case_id": "med-04",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [],
+    "text": "ponme algo de bad bunny en spotify",
+    "visible_text": "No puedo poner algo de Bad Bunny en Spotify."
+  },
+  {
+    "case_id": "med-05",
+    "effect_operations": [
+      "media.play.youtube"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "media.play.youtube"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "media.play.youtube"
+    ],
+    "text": "play the tiny desk concert on youtube",
+    "visible_text": ""
+  },
+  {
+    "case_id": "med-06",
+    "effect_operations": [
+      "media.control"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "media.control"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "media.control"
+    ],
+    "text": "pasa a la siguiente cancion",
+    "visible_text": ""
+  },
+  {
+    "case_id": "not-01",
+    "effect_operations": [
+      "note.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.create"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "note.create"
+    ],
+    "text": "apuntame que tengo que llamar al dentista",
+    "visible_text": ""
+  },
+  {
+    "case_id": "not-02",
+    "effect_operations": [
+      "note.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "note.list"
+    ],
+    "text": "que apuntes tengo guardados",
+    "visible_text": ""
+  },
+  {
+    "case_id": "not-03",
+    "effect_operations": [
+      "note.search"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.search"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "note.search"
+    ],
+    "text": "find the note where I wrote the wifi password",
+    "visible_text": ""
+  },
+  {
+    "case_id": "not-04",
+    "effect_operations": [
+      "note.trash"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.trash"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "note.trash"
+    ],
+    "text": "tira a la papelera la nota de la lista del super",
+    "visible_text": ""
+  },
+  {
+    "case_id": "not-05",
+    "effect_operations": [
+      "note.read"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.read"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "note.read"
+    ],
+    "text": "leeme la note que se llama ideas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "tsk-01",
+    "effect_operations": [
+      "task.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "task.create"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "task.create"
+    ],
+    "text": "agregame al pendiente revisar el contrato",
+    "visible_text": ""
+  },
+  {
+    "case_id": "tsk-02",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "clarify",
+    "raw_operations": [
+      "task.list"
+    ],
+    "text": "what is on my to do list",
+    "visible_text": "What is on your to do list?"
+  },
+  {
+    "case_id": "tsk-03",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "task.complete"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "task.complete"
+    ],
+    "text": "da por terminada la tarea de pagar el arriendo",
+    "visible_text": "¿cuál es la versión esperada de la tarea 'pagar el arriendo'?"
+  },
+  {
+    "case_id": "tsk-04",
+    "effect_operations": [
+      "task.search"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "task.search"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "task.search"
+    ],
+    "text": "busca entre mis pendientes los que hablen del banco",
+    "visible_text": ""
+  },
+  {
+    "case_id": "tsk-05",
+    "effect_operations": [
+      "task.delete"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "task.delete"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "task.delete"
+    ],
+    "text": "borra el task de comprar cables",
+    "visible_text": ""
+  },
+  {
+    "case_id": "rem-01",
+    "effect_operations": [
+      "reminder.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "reminder.create"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "reminder.create"
+    ],
+    "text": "avisame manana a las nueve que tengo medico",
+    "visible_text": ""
+  },
+  {
+    "case_id": "rem-02",
+    "effect_operations": [
+      "reminder.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "reminder.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "reminder.list"
+    ],
+    "text": "what reminders are set up",
+    "visible_text": ""
+  },
+  {
+    "case_id": "rem-03",
+    "effect_operations": [
+      "notification.cancel.at"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "notification.cancel.at"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "notification.cancel.at"
+    ],
+    "text": "cancela la alarma de las siete de la manana",
+    "visible_text": ""
+  },
+  {
+    "case_id": "rem-04",
+    "effect_operations": [
+      "notification.schedule"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "notification.schedule"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "notification.schedule"
+    ],
+    "text": "ponme un alarm para las seis de la tarde",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-01",
+    "effect_operations": [
+      "filesystem.folder.open"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.folder.open"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "filesystem.folder.open"
+    ],
+    "text": "abrime la carpeta de descargas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-02",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.known.search"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "filesystem.known.search"
+    ],
+    "text": "look for a pdf with factura in the name in my documents",
+    "visible_text": "¿Quieres que busque un PDF con 'factura' en el nombre en mis documentos?"
+  },
+  {
+    "case_id": "fs-03",
+    "effect_operations": [
+      "filesystem.known.duplicates"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.known.duplicates"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "filesystem.known.duplicates"
+    ],
+    "text": "hay archivos repetidos en descargas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-04",
+    "effect_operations": [
+      "note.trash",
+      "filesystem.trash.prepare",
+      "filesystem.trash.commit"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.trash",
+      "filesystem.trash.prepare",
+      "filesystem.trash.commit"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "note.trash",
+      "filesystem.trash.prepare",
+      "filesystem.trash.commit"
+    ],
+    "text": "manda a la papelera el archivo notas.txt de descargas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-05",
+    "effect_operations": [
+      "filesystem.file.open.latest"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.file.open.latest"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "filesystem.file.open.latest"
+    ],
+    "text": "open the last file I downloaded",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-06",
+    "effect_operations": [
+      "filesystem.create.directory"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.create.directory"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "filesystem.create.directory"
+    ],
+    "text": "creame una carpeta que se llame proyectos",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-07",
+    "effect_operations": [
+      "filesystem.hash"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.hash"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "filesystem.hash"
+    ],
+    "text": "sacale el hash al archivo reporte.txt",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-08",
+    "effect_operations": [
+      "filesystem.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "filesystem.list"
+    ],
+    "text": "que archivos tengo en la carpeta de trabajo",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-09",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.write.text"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "filesystem.write.text"
+    ],
+    "text": "write hello into a file called saludo.txt",
+    "visible_text": "What is the path and content for the file named saludo.txt?"
+  },
+  {
+    "case_id": "clp-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "clipboard.copy"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "clipboard.copy"
+    ],
+    "text": "copiame lo que tengo seleccionado",
+    "visible_text": "¿Quieres que copie lo que tienes seleccionado?"
+  },
+  {
+    "case_id": "clp-02",
+    "effect_operations": [
+      "clipboard.paste"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "clipboard.paste"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "clipboard.paste"
+    ],
+    "text": "pegalo aca",
+    "visible_text": ""
+  },
+  {
+    "case_id": "clp-03",
+    "effect_operations": [
+      "clipboard.read.text"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "clipboard.read.text"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "clipboard.read.text"
+    ],
+    "text": "what did I copy last",
+    "visible_text": ""
+  },
+  {
+    "case_id": "clp-04",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "clipboard.write.text"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "clipboard.write.text"
+    ],
+    "text": "deja mi correo en el portapapeles",
+    "visible_text": "¿Quieres que deje tu correo en el portapapeles?"
+  },
+  {
+    "case_id": "inp-01",
+    "effect_operations": [
+      "input.key.press"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.key.press"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.key.press"
+    ],
+    "text": "dale enter",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-02",
+    "effect_operations": [
+      "input.select.all"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.select.all"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.select.all"
+    ],
+    "text": "selecciona todo lo que hay ahi",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-03",
+    "effect_operations": [
+      "input.text.type"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.text.type"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.text.type"
+    ],
+    "text": "type hello world for me",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-04",
+    "effect_operations": [
+      "input.keyboard.open"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.keyboard.open"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "input.keyboard.open"
+    ],
+    "text": "sacame el teclado de pantalla",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-05",
+    "effect_operations": [
+      "input.keyboard.layout"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.keyboard.layout"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.keyboard.layout"
+    ],
+    "text": "cambia el keyboard a espanol",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-06",
+    "effect_operations": [
+      "input.pointer.control"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.pointer.control"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.pointer.control"
+    ],
+    "text": "scroll down a bit",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-07",
+    "effect_operations": [
+      "input.visible.click"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.visible.click"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.visible.click"
+    ],
+    "text": "hazle clic al boton de aceptar",
+    "visible_text": ""
+  },
+  {
+    "case_id": "inp-08",
+    "effect_operations": [
+      "input.keyboard.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "input.keyboard.status"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "input.keyboard.status"
+    ],
+    "text": "en que idioma esta el teclado",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cap-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "capture.screenshot"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "capture.screenshot"
+    ],
+    "text": "sacame una foto de la pantalla",
+    "visible_text": "¿Quieres que capture.screenshot?"
+  },
+  {
+    "case_id": "cap-02",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "capture.active.window"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "capture.active.window"
+    ],
+    "text": "captura nada mas la ventana de adelante",
+    "visible_text": "¿Quieres que capture la ventana activa y devuelva los metadatos verificados?"
+  },
+  {
+    "case_id": "cap-03",
+    "effect_operations": [
+      "capture.screenshot"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "capture.screenshot"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "capture.screenshot"
+    ],
+    "text": "read the text out of that screenshot",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cap-04",
+    "effect_operations": [
+      "vision.describe"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "vision.describe"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "vision.describe"
+    ],
+    "text": "describime que se ve en la captura",
+    "visible_text": ""
+  },
+  {
+    "case_id": "brw-01",
+    "effect_operations": [
+      "browser.navigate"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "browser.navigate"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "browser.navigate"
+    ],
+    "text": "llevame a wikipedia",
+    "visible_text": ""
+  },
+  {
+    "case_id": "brw-02",
+    "effect_operations": [
+      "browser.control"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "browser.control"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "browser.control"
+    ],
+    "text": "go back one page",
+    "visible_text": ""
+  },
+  {
+    "case_id": "brw-03",
+    "effect_operations": [
+      "browser.tabs.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "browser.tabs.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "browser.tabs.list"
+    ],
+    "text": "que pestanas tengo abiertas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "brw-04",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "browser.page.read"
+    ],
+    "kind": "clarify",
+    "raw_operations": [],
+    "text": "what does this page actually say",
+    "visible_text": "¿Quieres que lea el título, la URL y el texto visible de la página CDP activa sin modificarla?"
+  },
+  {
+    "case_id": "gam-01",
+    "effect_operations": [
+      "game.catalog.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "game.catalog.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "game.catalog.list"
+    ],
+    "text": "que juegos tengo instalados",
+    "visible_text": ""
+  },
+  {
+    "case_id": "gam-02",
+    "effect_operations": [
+      "game.launch"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "game.launch"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "game.launch"
+    ],
+    "text": "launch counter strike",
+    "visible_text": ""
+  },
+  {
+    "case_id": "gam-03",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "game.installed.named"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "game.installed.named"
+    ],
+    "text": "tengo instalado el hollow knight",
+    "visible_text": "¿cuál es el nombre del juego que tienes instalado?"
+  },
+  {
+    "case_id": "gam-04",
+    "effect_operations": [
+      "game.install.cancel.active"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "game.install.cancel.active"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "game.install.cancel.active"
+    ],
+    "text": "para la descarga que tiene steam corriendo",
+    "visible_text": ""
+  },
+  {
+    "case_id": "blu-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "bluetooth.radio.set"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "bluetooth.radio.set"
+    ],
+    "text": "apagame el bluetooth",
+    "visible_text": "¿cuál es el estado actual del bluetooth?"
+  },
+  {
+    "case_id": "blu-02",
+    "effect_operations": [
+      "bluetooth.device.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "bluetooth.device.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "bluetooth.device.list"
+    ],
+    "text": "which bluetooth devices are around",
+    "visible_text": ""
+  },
+  {
+    "case_id": "per-01",
+    "effect_operations": [
+      "peripheral.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "peripheral.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "peripheral.list"
+    ],
+    "text": "que cosas tengo conectadas al equipo",
+    "visible_text": ""
+  },
+  {
+    "case_id": "bak-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "backup.create",
+      "filesystem.copy",
+      "backup.known.create",
+      "backup.known.verify.latest"
+    ],
+    "text": "hazme una copia de seguridad de documentos",
+    "visible_text": "No puedo hacer una copia de seguridad de documentos."
+  },
+  {
+    "case_id": "bak-02",
+    "effect_operations": [
+      "backup.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "backup.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "backup.list"
+    ],
+    "text": "list the backups you have made",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cal-01",
+    "effect_operations": [
+      "calendar.event.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "calendar.event.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "calendar.event.list"
+    ],
+    "text": "que tengo en la agenda para hoy",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cal-02",
+    "effect_operations": [
+      "calendar.event.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "calendar.event.create"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "calendar.event.create"
+    ],
+    "text": "agendame una reunion manana de diez a once",
+    "visible_text": ""
+  },
+  {
+    "case_id": "eml-01",
+    "effect_operations": [
+      "email.latest.read"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "email.latest.read"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "email.latest.read"
+    ],
+    "text": "read me the last email that came in",
+    "visible_text": ""
+  },
+  {
+    "case_id": "eml-02",
+    "effect_operations": [
+      "email.latest.read"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "email.latest.read"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "email.latest.read"
+    ],
+    "text": "contestale al ultimo correo que ya lo vi",
+    "visible_text": ""
+  },
+  {
+    "case_id": "msg-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "message.send"
+    ],
+    "kind": "clarify",
+    "raw_operations": [],
+    "text": "mandale un mensaje a juan diciendo que llego tarde",
+    "visible_text": "¿a qué canal mandarle un mensaje a juan diciendo que llego tarde?"
+  },
+  {
+    "case_id": "off-01",
+    "effect_operations": [
+      "office.document.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "office.document.create"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "office.document.create"
+    ],
+    "text": "creame un documento de word en blanco",
+    "visible_text": ""
+  },
+  {
+    "case_id": "pkg-01",
+    "effect_operations": [
+      "game.install.named"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "game.install.named"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "game.install.named"
+    ],
+    "text": "install vlc on this machine",
+    "visible_text": ""
+  },
+  {
+    "case_id": "str-01",
+    "effect_operations": [
+      "streaming.play.named"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "streaming.play.named"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "streaming.play.named"
+    ],
+    "text": "pon la casa de papel en netflix",
+    "visible_text": ""
+  },
+  {
+    "case_id": "web-01",
+    "effect_operations": [
+      "web.search"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "web.search"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "web.search"
+    ],
+    "text": "busca en internet cuanto mide el everest",
+    "visible_text": ""
+  },
+  {
+    "case_id": "rou-01",
+    "effect_operations": [
+      "routine.list"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "routine.list"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "routine.list"
+    ],
+    "text": "que rutinas tengo configuradas",
+    "visible_text": ""
+  },
+  {
+    "case_id": "aud-09",
+    "effect_operations": [
+      "audio.volume.adjust"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.volume.adjust"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "audio.volume.adjust"
+    ],
+    "text": "esta muy fuerte el audio, bajalo",
+    "visible_text": ""
+  },
+  {
+    "case_id": "sys-13",
+    "effect_operations": [
+      "system.status"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.status"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.status"
+    ],
+    "text": "cuanto storage me queda en el disco",
+    "visible_text": ""
+  },
+  {
+    "case_id": "win-09",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "window.minimize"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "window.minimize"
+    ],
+    "text": "minimize everything I have open right now",
+    "visible_text": "¿Quieres que minimize everything I have open right now?"
+  },
+  {
+    "case_id": "net-10",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "clarify",
+    "raw_operations": [
+      "network.status"
+    ],
+    "text": "chequea si el internet anda",
+    "visible_text": "¿qué quieres preguntar o hacer?"
+  },
+  {
+    "case_id": "med-07",
+    "effect_operations": [
+      "media.seek.relative"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "media.seek.relative"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "media.seek.relative"
+    ],
+    "text": "retrocede diez segundos la cancion",
+    "visible_text": ""
+  },
+  {
+    "case_id": "fs-10",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [
+      "filesystem.folder.open"
+    ],
+    "kind": "clarify",
+    "raw_operations": [
+      "filesystem.folder.open"
+    ],
+    "text": "abrime la carpeta de imagenes",
+    "visible_text": "Abrame la carpeta de imagenes?"
+  },
+  {
+    "case_id": "sys-14",
+    "effect_operations": [
+      "system.power"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "system.power"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "system.power"
+    ],
+    "text": "log me out of windows",
+    "visible_text": ""
+  },
+  {
+    "case_id": "app-06",
+    "effect_operations": [
+      "app.open"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "app.open"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "app.open"
+    ],
+    "text": "arrancame el navegador",
+    "visible_text": ""
+  },
+  {
+    "case_id": "not-06",
+    "effect_operations": [
+      "note.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.create"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "note.create"
+    ],
+    "text": "jot down that the router password is on the fridge",
+    "visible_text": ""
+  },
+  {
+    "case_id": "tsk-06",
+    "effect_operations": [
+      "task.reopen"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "task.reopen"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "task.reopen"
+    ],
+    "text": "volve a abrir la tarea de llamar al banco",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cmp-01",
+    "effect_operations": [],
+    "in_catalog": true,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "media.play.query",
+      "app.open"
+    ],
+    "text": "abre spotify y ponme musica",
+    "visible_text": "No puedo abrir Spotify y poner música."
+  },
+  {
+    "case_id": "cmp-02",
+    "effect_operations": [
+      "capture.screenshot"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "capture.screenshot"
+    ],
+    "kind": "action",
+    "raw_operations": [
+      "capture.screenshot"
+    ],
+    "text": "saca un screenshot y decime que dice",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cmp-03",
+    "effect_operations": [
+      "audio.mute",
+      "system.power"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "audio.mute",
+      "system.power"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "audio.mute",
+      "system.power"
+    ],
+    "text": "mute the audio and lock the machine",
+    "visible_text": ""
+  },
+  {
+    "case_id": "cmp-04",
+    "effect_operations": [
+      "note.create",
+      "reminder.create"
+    ],
+    "in_catalog": true,
+    "intent_operations": [
+      "note.create",
+      "reminder.create"
+    ],
+    "kind": "plan",
+    "raw_operations": [
+      "note.create",
+      "reminder.create"
+    ],
+    "text": "anota que hay reunion el jueves y avisame ese dia",
+    "visible_text": ""
+  },
+  {
+    "case_id": "ooc-01",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "task.create"
+    ],
+    "text": "pide un taxi para las ocho",
+    "visible_text": "No puedo pedir un taxi para las ocho."
+  },
+  {
+    "case_id": "ooc-02",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.purchase.prepare",
+      "note.search",
+      "audio.status",
+      "notification.list.due",
+      "audio.mute",
+      "note.read",
+      "window.resize",
+      "media.play.exact"
+    ],
+    "text": "book me a table for two tonight",
+    "visible_text": "I cannot book you a table for two tonight."
+  },
+  {
+    "case_id": "ooc-03",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.purchase.prepare",
+      "game.purchase.commit"
+    ],
+    "text": "pedime una pizza a domicilio",
+    "visible_text": "No puedo pedir una pizza a domicilio."
+  },
+  {
+    "case_id": "ooc-04",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "notification.cancel.at",
+      "notification.cancel.latest"
+    ],
+    "text": "call my mother",
+    "visible_text": "I cannot call your mother."
+  },
+  {
+    "case_id": "ooc-05",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.purchase.commit"
+    ],
+    "text": "transfiere cincuenta dolares a mi hermano",
+    "visible_text": "No puedo transferir cincuenta dólares a mi hermano."
+  },
+  {
+    "case_id": "ooc-06",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "window.focus",
+      "window.restore",
+      "window.resize",
+      "window.move",
+      "window.minimize",
+      "window.maximize"
+    ],
+    "text": "prende las luces del living",
+    "visible_text": "No puedo prender las luces del living."
+  },
+  {
+    "case_id": "ooc-07",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "media.play.youtube"
+    ],
+    "text": "upload this video to youtube",
+    "visible_text": "I cannot upload this video to YouTube."
+  },
+  {
+    "case_id": "ooc-08",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "filesystem.write.text"
+    ],
+    "text": "formatea el pendrive",
+    "visible_text": "No puedo formatear el pendrive."
+  },
+  {
+    "case_id": "ooc-09",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "system.status",
+      "wifi.status",
+      "system.settings.set",
+      "backup.known.verify.latest",
+      "filesystem.known.trash.named",
+      "note.update",
+      "email.latest.read",
+      "backup.verify"
+    ],
+    "text": "update the bios on this laptop",
+    "visible_text": "I cannot update the BIOS on this laptop."
+  },
+  {
+    "case_id": "ooc-10",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [],
+    "text": "sacame un pasaje de avion a madrid",
+    "visible_text": "No puedo sacar un pasaje de avión a Madrid."
+  },
+  {
+    "case_id": "ooc-11",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "package.install.commit",
+      "game.install.commit",
+      "game.install.status",
+      "routine.phrase.create",
+      "routine.resolve.exact",
+      "routine.list",
+      "routine.delete",
+      "routine.read"
+    ],
+    "text": "compilame el proyecto de rust",
+    "visible_text": "I cannot compile the Rust project as requested."
+  },
+  {
+    "case_id": "ooc-12",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.install.commit",
+      "package.install.commit"
+    ],
+    "text": "commit and push my changes to git",
+    "visible_text": "I cannot commit and push my changes to Git."
+  },
+  {
+    "case_id": "ooc-13",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "system.status",
+      "app.installed",
+      "filesystem.trash.prepare",
+      "backup.verify",
+      "system.application.crash.diagnose",
+      "wifi.connect",
+      "filesystem.trash.commit",
+      "window.restore"
+    ],
+    "text": "pasale el antivirus al equipo",
+    "visible_text": "No puedo desinfectar el equipo."
+  },
+  {
+    "case_id": "ooc-14",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "system.status"
+    ],
+    "text": "desfragmenta el disco duro",
+    "visible_text": "No puedo desfragmentar el disco duro tal como fue pedido."
+  },
+  {
+    "case_id": "ooc-15",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.launch"
+    ],
+    "text": "spin up a virtual machine",
+    "visible_text": "I cannot spin up a virtual machine."
+  },
+  {
+    "case_id": "ooc-16",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [],
+    "text": "cambiame la contrasena de windows",
+    "visible_text": "No puedo cambiar la contraseña de Windows tal como se pidió."
+  },
+  {
+    "case_id": "ooc-17",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "capture.screenshot"
+    ],
+    "text": "grabame la pantalla en video",
+    "visible_text": "No puedo grabar la pantalla en video."
+  },
+  {
+    "case_id": "ooc-18",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "network.status",
+      "wifi.status",
+      "wifi.connect.named"
+    ],
+    "text": "connect to my work vpn",
+    "visible_text": "I cannot connect to your work VPN."
+  },
+  {
+    "case_id": "ooc-19",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "filesystem.copy"
+    ],
+    "text": "cloname el disco duro a otro",
+    "visible_text": "No puedo clonar el disco duro a otro."
+  },
+  {
+    "case_id": "ooc-20",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "routine.read"
+    ],
+    "text": "riega las plantas del balcon",
+    "visible_text": "No puedo regar las plantas del balcon."
+  },
+  {
+    "case_id": "ooc-21",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "notification.schedule"
+    ],
+    "text": "programa el aire acondicionado a veintidos grados",
+    "visible_text": "No puedo programar el aire acondicionado a veintidos grados."
+  },
+  {
+    "case_id": "ooc-22",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.install.cancel.active",
+      "game.install.cancel",
+      "streaming.navigate",
+      "streaming.play.named",
+      "filesystem.sandbox.diff.named",
+      "filesystem.copy",
+      "filesystem.known.duplicates",
+      "filesystem.known.trash.named"
+    ],
+    "text": "download this series over torrent",
+    "visible_text": "I cannot download that file over torrent."
+  },
+  {
+    "case_id": "ooc-23",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "media.control"
+    ],
+    "text": "editame el video y quitale los ultimos diez segundos",
+    "visible_text": "No puedo editar el video y quitar los últimos diez segundos."
+  },
+  {
+    "case_id": "ooc-24",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "office.document.create",
+      "office.document.read",
+      "peripheral.print"
+    ],
+    "text": "convierteme este pdf a word",
+    "visible_text": "I cannot convert this PDF to Word."
+  },
+  {
+    "case_id": "ooc-25",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "wifi.disconnect"
+    ],
+    "text": "order me an uber to the airport",
+    "visible_text": "I cannot order you an Uber to the airport."
+  },
+  {
+    "case_id": "ooc-26",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "task.create"
+    ],
+    "text": "reservame hora en la peluqueria",
+    "visible_text": "No puedo reservar hora en la peluqueria."
+  },
+  {
+    "case_id": "ooc-27",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "backup.known.restore.latest"
+    ],
+    "text": "cambiame el fondo de escritorio",
+    "visible_text": "No puedo cambiar el fondo de escritorio tal como se pidió."
+  },
+  {
+    "case_id": "ooc-28",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "filesystem.write.text",
+      "system.status",
+      "filesystem.create.directory",
+      "filesystem.copy",
+      "backup.verify",
+      "filesystem.read.text",
+      "backup.known.create",
+      "filesystem.list"
+    ],
+    "text": "encrypt this whole drive with bitlocker",
+    "visible_text": "I cannot encrypt this whole drive with BitLocker."
+  },
+  {
+    "case_id": "ooc-29",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "office.document.create",
+      "peripheral.print"
+    ],
+    "text": "mandame flores a la oficina",
+    "visible_text": "No puedo mandar flores a la oficina."
+  },
+  {
+    "case_id": "ooc-30",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "game.install.prepare",
+      "filesystem.move",
+      "game.launch",
+      "task.resolve.exact",
+      "game.purchase.prepare",
+      "routine.phrase.create",
+      "web.search",
+      "app.installed"
+    ],
+    "text": "hazme un deploy a produccion",
+    "visible_text": "No puedo hacer un depósito a producción."
+  },
+  {
+    "case_id": "ooc-31",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "system.power"
+    ],
+    "text": "unlock my phone for me",
+    "visible_text": "I cannot unlock your phone for you."
+  },
+  {
+    "case_id": "ooc-32",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "clarify",
+    "raw_operations": [
+      "reminder.create"
+    ],
+    "text": "llamame un plomero para manana",
+    "visible_text": "¿Te refieres a que necesitas un plomero el lunes por la mañana?"
+  },
+  {
+    "case_id": "ooc-33",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "peripheral.print"
+    ],
+    "text": "imprimeme en 3d esta figura",
+    "visible_text": "No puedo imprimir en 3D esa figura."
+  },
+  {
+    "case_id": "ooc-34",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "system.status"
+    ],
+    "text": "overclock the graphics card",
+    "visible_text": "I cannot overclock the graphics card as requested."
+  },
+  {
+    "case_id": "ooc-35",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "filesystem.move"
+    ],
+    "text": "crea una particion nueva en el disco",
+    "visible_text": "No puedo crear una partición nueva en el disco."
+  },
+  {
+    "case_id": "ooc-36",
+    "effect_operations": [],
+    "in_catalog": false,
+    "intent_operations": [],
+    "kind": "conversation",
+    "raw_operations": [
+      "wifi.disconnect",
+      "wifi.status",
+      "backup.known.restore.latest",
+      "bluetooth.radio.set",
+      "window.restore",
+      "window.resize",
+      "window.maximize",
+      "window.minimize"
+    ],
+    "text": "resetea el router de la casa",
+    "visible_text": "No puedo resetear el router de la casa."
+  }
+]

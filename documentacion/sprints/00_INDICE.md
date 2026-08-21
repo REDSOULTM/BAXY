@@ -26,6 +26,12 @@ tocar el scorer. Evidencia y mecanismo en
 [`documentacion/base/03C_ALCANCE.md`](../base/03C_ALCANCE.md); el goal, en
 [`03C_ALCANCE.md`](03C_ALCANCE.md). **El 04 arranca sin deuda del 03.**
 
+**El 04 cerró el 2026-08-21.** Dos corridas sobre el corpus fresco, scorer
+congelado: **0 / 0 / 0** (efectos no pedidos, éxitos no verificados, respuestas
+fijas), texto visible auditado a mano. Evidencia en
+[`documentacion/base/04_HONESTIDAD.md`](../base/04_HONESTIDAD.md) y
+`artifacts/development/goal04_honesty*.json`.
+
 **Cómo se lanza uno.** Sesión nueva y limpia, `/effort high`, y el goal pegado
 entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
 que una revisión de evidencia independiente reproduce el resultado**; si no puede
