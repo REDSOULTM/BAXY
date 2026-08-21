@@ -67,7 +67,7 @@ export interface SettingsConfig {
   specDraftModel: string;      // GEMMA4_SPEC_DRAFT_MODEL (path)
   llamaApiKey: string;         // GEMMA4_LLAMA_API_KEY
   voiceLang: string;           // GEMMA4_VOICE_LANG ("" = auto | es/en/pt/fr/de/it)
-  confirmationPolicy: string;  // GEMMA4_CONFIRMATION_POLICY ("" = confirm_risky | never | all | always)
+  confirmationPolicy: string;  // normal | bypass
   // paths
   memoryJson: string; stateJson: string; traceJsonl: string;
   sessionsDir: string; timelineDir: string;
@@ -379,24 +379,22 @@ function AgentTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <Field label=" ">
         <STCheck value={c.safetyFilter} onChange={set('safetyFilter')} label="safety filter on" />
       </Field>
-      <Field label="confirmaciones" hint="cuándo Baxy te pide confirmar antes de actuar">
+      <Field label="confirmaciones" hint="un ajuste, dos valores, el mismo camino">
         <Select
-          value={c.confirmationPolicy || 'confirm_risky'}
-          onChange={(v) => set('confirmationPolicy')(v === 'confirm_risky' ? '' : v)}
+          value={c.confirmationPolicy === 'bypass' ? 'bypass' : 'normal'}
+          onChange={(v) => set('confirmationPolicy')(v)}
           options={[
-            { value: 'confirm_risky', label: 'normal (confirma lo riesgoso)', hint: 'default' },
-            { value: 'never', label: 'permisivo (solo confirma lo destructivo)', hint: 'cerrar apps, settings → sin confirmar' },
-            { value: 'all', label: 'TODO permisivo (nada confirma)', hint: '⚠ ejecuta hasta borrar/apagar sin preguntar' },
-            { value: 'always', label: 'estricto (confirma todo)', hint: 'auditoría' },
+            { value: 'normal', label: 'normal', hint: 'confirma borrar, sobrescribir y cerrar sin guardar; apagar y cerrar sesión van directos' },
+            { value: 'bypass', label: 'bypass', hint: 'no confirma nada; se queda encendido hasta que lo apagues. no miente ni ejecuta lo que no pediste' },
           ]}
           ariaLabel="confirmation policy"
         />
       </Field>
       <STTip warn>
-        safety <b className="carmine">off</b> means destructive tools run <b className="carmine">without</b> confirmation.
-        recommended on for unattended sessions; off only if you trust every prompt you give and you watch every turn.
-        {c.confirmationPolicy === 'all' && (
-          <> <b className="carmine">modo TODO permisivo activo</b>: Baxy ejecuta cualquier acción (incl. borrar archivos, apagar, desinstalar) sin pedirte confirmación.</>
+        {c.confirmationPolicy === 'bypass' ? (
+          <>modo <b className="carmine">bypass</b> activo: no pregunta, pero sigue sin ejecutar lo no pedido y sin afirmar un éxito no verificado.</>
+        ) : (
+          <>modo normal: confirma sólo si se destruyen datos. apagar y cerrar sesión van directos.</>
         )}
       </STTip>
     </STSection>

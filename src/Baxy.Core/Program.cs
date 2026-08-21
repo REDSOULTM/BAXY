@@ -7,6 +7,7 @@ using Baxy.Core.Operations;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.Audio;
 using Baxy.Providers.Windows.Clipboard;
@@ -170,7 +171,14 @@ internal static class Program
         using var engine = new MissionEngine(
             registry,
             journal,
-                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(memoryCodec, memoryExportWriter), Narrator = ProductOperationNarrator.Instance });
+            new MissionEngineOptions
+            {
+                PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(
+                    memoryCodec,
+                    memoryExportWriter),
+                Narrator = ProductOperationNarrator.Instance,
+                ConfirmationMode = () => ConfirmationModeStore.Read(dataRoot),
+            });
         await using Stream input = Console.OpenStandardInput();
         await using Stream output = Console.OpenStandardOutput();
         var lineReader = new BoundedLineReader(input, MaximumLineBytes);

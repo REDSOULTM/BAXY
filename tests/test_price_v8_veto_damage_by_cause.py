@@ -67,10 +67,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # as intent_operations after the curated gate withdraws it.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "0c1966a4b5edd5aa957d94a1347343ad45e47b7933be0f3c8b8c3836b20c4d1c"
+        "7d87d9f79a51a0b74ba4c6008a657ab02e139cd0c5f503dbce166e9605aba6ff"
     ),
     "src/baxy_mind/llm.py": (
-        "4da4b73e62cd18a7ca6064b47ee4b9f3bbff221640e55393d9bc5e9fd881feff"
+        "558a9f5ab6af611c20acfa3b08f30da7e34cc45baf31d050250f8993a6299fc3"
     ),
 }
 

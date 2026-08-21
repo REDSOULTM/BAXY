@@ -86,6 +86,7 @@ from baxy_mind.llm import (
     visible_reply_asserts_an_unread_machine_state,
     visible_reply_denies_a_served_capability,
     visible_reply_invents_a_spanish_infinitive,
+    visible_reply_is_a_fixed_stall,
     visible_reply_restates_the_request,
     visible_text_leaks_internal_vocabulary,
 )
@@ -444,6 +445,33 @@ def test_a_visible_reply_may_not_invent_a_spanish_infinitive(reply: str) -> None
     drift apart.
     """
     assert visible_reply_invents_a_spanish_infinitive(reply)
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "Cambia tetera por calentador e inventa Descalzica.",
+        "Inflata el globo del escritorio.",
+        "Lo dejé alredad de la mesa.",
+        "No puedo cosear las lentejas.",
+        "I cannot call your motherient.",
+    ],
+)
+def test_measured_invented_visible_tokens_are_honesty_failures(reply: str) -> None:
+    assert visible_reply_invents_a_spanish_infinitive(reply)
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "un momento…",
+        "Un momento",
+        "one moment...",
+    ],
+)
+def test_a_canned_stall_is_not_a_visible_reply(reply: str) -> None:
+    assert visible_reply_is_a_fixed_stall(reply)
+    assert _shaped_conversation_answer_violates_contract(reply, "espera", None)
 
 
 @pytest.mark.parametrize(
@@ -2722,6 +2750,64 @@ def test_new_literal_operation_domains_preserve_valid_authority(
     }
 
     assert apply_operation_domain_grounding_veto(decision, text) == decision
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("apagame el bluetooth", "bluetooth.radio.set"),
+        ("drop the wireless connection", "wifi.disconnect"),
+    ],
+)
+def test_measured_paraphrases_keep_authority_when_the_domain_is_named(
+    text: str,
+    operation: str,
+) -> None:
+    decision = {
+        "mode": "action",
+        "operation": operation,
+        "question": "",
+        "conversation_kind": "",
+        "effect_count": "one",
+        "effect_operations": [operation],
+        "effect_verification": "primary",
+        "response_language": "es",
+    }
+
+    assert apply_operation_domain_grounding_veto(decision, text) == decision
+    assert decision["effect_operations"] == [operation]
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("pide un taxi al aeropuerto", "task.create"),
+        ("Barre las hojas del sendero", "filesystem.sandbox.append.named"),
+        ("¿Cómo está la red neuronal?", "network.status"),
+        ("cambiame el fondo de escritorio", "backup.known.restore.latest"),
+        ("commit and push my changes to git", "game.install.commit"),
+    ],
+)
+def test_out_of_catalogue_requests_do_not_keep_unsolicited_effects(
+    text: str,
+    operation: str,
+) -> None:
+    vetoed = apply_operation_domain_grounding_veto(
+        {
+            "mode": "action",
+            "operation": operation,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [operation],
+            "effect_verification": "primary",
+            "response_language": "es",
+        },
+        text,
+    )
+
+    assert vetoed["effect_operations"] == []
+    assert vetoed["mode"] == "conversation"
 
 
 def test_message_dispatch_cannot_degrade_to_recipient_resolution_only() -> None:

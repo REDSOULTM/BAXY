@@ -1850,6 +1850,8 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_invents_a_spanish_infinitive(value):
         return True
+    if visible_reply_is_a_fixed_stall(value):
+        return True
     if shape is None:
         return False
     content = str(value or "").strip()
@@ -2528,6 +2530,32 @@ _MODAL_COMPLEMENT_POSITION = re.compile(
 )
 
 
+# Measured invented tokens that are not infinitives. The ending-based
+# guardian never sees them: "Descalzica", "Inflata", "alredad", "cosear".
+# This is a closed evidence set, not a vocabulary gate.
+_MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
+    {
+        "descalzica",
+        "inflata",
+        "alredad",
+        "cosear",
+        "motherient",
+    }
+)
+_FIXED_STALL_REPLIES = frozenset(
+    {
+        "un momento",
+        "un momento.",
+        "un momento…",
+        "un momento...",
+        "one moment",
+        "one moment.",
+        "one moment...",
+        "one moment…",
+    }
+)
+
+
 def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
     """Reject prose that builds an infinitive out of a conjugated stem.
 
@@ -2548,10 +2576,19 @@ def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
     folded = _policy_guard_text(value)
     if not folded:
         return False
+    if any(token in _MEASURED_INVENTED_VISIBLE_TOKENS for token in re.findall(r"[a-zñáéíóúü]+", folded)):
+        return True
     return any(
         found.group("complement") in _INVENTED_INFINITIVES
         for found in _MODAL_COMPLEMENT_POSITION.finditer(folded)
     )
+
+
+def visible_reply_is_a_fixed_stall(value: object) -> bool:
+    """A canned «un momento…» is a fixed visible reply. Invariant 5."""
+
+    folded = _policy_guard_text(value)
+    return folded in _FIXED_STALL_REPLIES
 
 
 def _spanish_modal_is_malformed(value: object) -> bool:
@@ -2685,6 +2722,8 @@ def _unsupported_answer_contract_failure(
         return "unsupported_malformed_modal"
     if visible_reply_invents_a_spanish_infinitive(content):
         return "unsupported_invented_infinitive"
+    if visible_reply_is_a_fixed_stall(content):
+        return "unsupported_fixed_stall"
     normalized = _policy_guard_text(content)
     forbidden = (
         re.search(

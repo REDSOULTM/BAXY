@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 
@@ -443,7 +444,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
         if (method == "PUT" && route == "/settings")
         {
-            return Error("settings_are_managed_by_baxy", 409);
+            return PutConfirmationMode(body);
         }
 
         if (method == "GET" && route == "/agent/system_prompt")
@@ -818,8 +819,33 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             ["voiceEnabled"] = _viewModel.IsMicAvailable,
             ["visionAlways"] = false,
             ["telemetry"] = false,
-            ["confirmationPolicy"] = "risk-aware",
+            ["confirmationPolicy"] = ConfirmationModeStore.Read(
+                MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
+                ? "bypass"
+                : "normal",
         };
+    }
+
+    private static FieldHttpResponse PutConfirmationMode(string? body)
+    {
+        JsonNode? node;
+        try
+        {
+            node = string.IsNullOrWhiteSpace(body) ? null : JsonNode.Parse(body);
+        }
+        catch (JsonException)
+        {
+            return Error("invalid_settings", 400);
+        }
+
+        string? raw = node?["confirmationPolicy"]?.GetValue<string>();
+        ConfirmationMode mode = ConfirmationModeStore.Parse(raw) ?? ConfirmationMode.Normal;
+        ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(), mode);
+        return Json(new JsonObject
+        {
+            ["ok"] = true,
+            ["confirmationPolicy"] = mode == ConfirmationMode.Bypass ? "bypass" : "normal",
+        });
     }
 
     private static JsonObject ModelInfo()

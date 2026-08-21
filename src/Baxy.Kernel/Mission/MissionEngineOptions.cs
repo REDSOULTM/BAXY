@@ -1,4 +1,5 @@
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.Kernel.Mission;
 
@@ -32,4 +33,10 @@ public sealed class MissionEngineOptions
     /// kernel para observar la emisión y revocación de retos.
     /// </summary>
     internal InMemoryConfirmationAuthority? ConfirmationAuthority { get; init; }
+
+    /// <summary>
+    /// Lee el ajuste de confirmación en cada invocación. Dos valores, un
+    /// camino. Por defecto, <see cref="ConfirmationMode.Normal"/>.
+    /// </summary>
+    public Func<ConfirmationMode>? ConfirmationMode { get; init; }
 }

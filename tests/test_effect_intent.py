@@ -4474,6 +4474,50 @@ def test_operation_domain_preflight_preserves_literal_contract_matches(
     assert operation_domain_is_grounded(text, operation, ("Paint", "Steam")) is True
 
 
+def test_git_commit_is_not_a_game_or_package_install() -> None:
+    assert (
+        operation_domain_is_grounded(
+            "commit and push my changes to git",
+            "game.install.commit",
+        )
+        is False
+    )
+    assert (
+        operation_domain_is_grounded(
+            "commit and push my changes to git",
+            "package.install.commit",
+        )
+        is False
+    )
+
+
+def test_wallpaper_request_is_not_a_backup_restore() -> None:
+    assert (
+        operation_domain_is_grounded(
+            "cambiame el fondo de escritorio",
+            "backup.known.restore.latest",
+        )
+        is False
+    )
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("apagame el bluetooth", "bluetooth.radio.set"),
+        ("drop the wireless connection", "wifi.disconnect"),
+    ],
+)
+def test_measured_paraphrases_are_not_rejected_for_missing_whitelist_tokens(
+    text: str,
+    operation: str,
+) -> None:
+    # Goal 04: the curated gate is one-sided. These two paraphrases named the
+    # real domain and were vetoed only because extra verb/token lists missed
+    # them. Absence of a whitelist surface is not a rejection.
+    assert operation_domain_is_grounded(text, operation) is not False
+
+
 @pytest.mark.parametrize(
     "text",
     [

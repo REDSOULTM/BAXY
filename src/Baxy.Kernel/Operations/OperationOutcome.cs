@@ -19,6 +19,21 @@ public sealed record OperationOutcome(
     public static OperationOutcome Success(JsonElement? result = null) =>
         new(true, true, result, null);
 
+    /// <summary>
+    /// El efecto parece haber ocurrido pero la verificación lo niega.
+    /// Nunca se publica como éxito. El motor lo corrige solo.
+    /// </summary>
+    public static OperationOutcome Unverified(
+        string errorCode = "verification_failed",
+        JsonElement? result = null,
+        bool effectMayHaveOccurred = true,
+        string? causeCode = "honesty_self_correction") =>
+        new(true, false, result, errorCode)
+        {
+            EffectMayHaveOccurred = effectMayHaveOccurred,
+            CauseCode = causeCode,
+        };
+
     public static OperationOutcome PrivateSuccess(JsonElement protectedResult)
     {
         if (protectedResult.ValueKind != JsonValueKind.Object)

@@ -539,6 +539,7 @@ _KNOWN_RISKS = {
     "privacy_sensitive",
     "read_only",
     "recoverable_delete",
+    "session_disruption",
     "work_loss",
 }
 
@@ -964,7 +965,7 @@ def configure_application_catalog(value: object) -> tuple[str, ...]:
             ).split()
         )
         if not key or key in normalized:
-            raise PlannerContractError("catálogo de aplicaciones ambiguo o duplicado")
+            continue
         normalized.add(key)
         retained.append(name)
     return tuple(retained)
@@ -6275,6 +6276,11 @@ def _prepare_turn_result(
         "kind": result["kind"],
         "intent_operations": result["intentOperations"],
         "effect_operations": result["effectOperations"],
+    }
+    turn_audit["honesty"] = {
+        "offered_before_veto": list(effects_before_information_veto),
+        "proposed_before_veto": list(effects_before_domain_grounding),
+        "visible_text": reply_text or str(decision.get("question") or ""),
     }
     _append_turn_audit(turn_audit)
     return result

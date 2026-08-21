@@ -46,6 +46,19 @@ public sealed class OperationRegistryTests
         Assert.That(RiskPolicy.Evaluate(risk), Is.EqualTo(expected));
     }
 
+    [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]
+    [TestCase(OperationRisk.Sensitive, ConfirmationMode.Bypass, PolicyDecision.Allow)]
+    [TestCase(OperationRisk.External, ConfirmationMode.Bypass, PolicyDecision.Allow)]
+    [TestCase(OperationRisk.Forbidden, ConfirmationMode.Bypass, PolicyDecision.Deny)]
+    [TestCase(OperationRisk.Reversible, ConfirmationMode.Normal, PolicyDecision.Allow)]
+    public void Confirmation_mode_is_one_setting_on_the_same_path(
+        OperationRisk risk,
+        ConfirmationMode mode,
+        PolicyDecision expected)
+    {
+        Assert.That(RiskPolicy.Evaluate(risk, mode), Is.EqualTo(expected));
+    }
+
     private sealed class StubHandler(string name) : IOperationHandler
     {
         public OperationDefinition Definition { get; } =

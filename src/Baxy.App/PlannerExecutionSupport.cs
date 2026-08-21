@@ -176,7 +176,9 @@ internal static class MindPlanBoundary
         }
 
         var definition = new Baxy.Kernel.Operations.OperationDefinition(descriptor);
-        return Baxy.Kernel.Policy.RiskPolicy.Evaluate(definition.Risk)
+        return Baxy.Kernel.Policy.RiskPolicy.Evaluate(
+                definition.Risk,
+                operation: pending.OperationName)
             == Baxy.Kernel.Policy.PolicyDecision.RequireConfirmation;
     }
 

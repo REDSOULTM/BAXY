@@ -52,8 +52,8 @@ def test_cut_b_cannot_price_the_domain_gate() -> None:
     candidate = _module()
     cut_b = candidate.build()["populations"][0]
     gate = cut_b["domain_gate"]
-    assert gate["would_veto_the_expected_operation"] == 156
-    assert gate["rescued_because_the_recogniser_resolved_first"] == 152
+    assert gate["would_veto_the_expected_operation"] == 162
+    assert gate["rescued_because_the_recogniser_resolved_first"] == 158
     assert gate["veto_actually_reaches_the_turn"] == 4
 
 

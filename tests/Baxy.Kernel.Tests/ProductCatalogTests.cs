@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using NUnit.Framework;
 
 namespace Baxy.Kernel.Tests;
@@ -242,18 +243,52 @@ public sealed class ProductCatalogTests
     }
 
     [Test]
-    public void PowerTransitionsIncludeConfirmedSessionSignout()
+    public void PowerTransitionsAllowSessionSignoutWithoutConfirmation()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("system.power");
         using JsonDocument signout = JsonDocument.Parse("{\"action\":\"signout\"}");
+        using JsonDocument shutdown = JsonDocument.Parse("{\"action\":\"shutdown\"}");
 
         Assert.Multiple(() =>
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.WorkLoss));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk),
+                    operation: descriptor.Name),
+                Is.EqualTo(PolicyDecision.Allow));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("system.power.windows.transition.receipt.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
                 signout.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(OperationArgumentValidator.IsValid(
+                shutdown.RootElement, descriptor.ArgumentsSchema), Is.True);
+        });
+    }
+
+    [Test]
+    public void WorkLossChallengesInNormalModeAndBypassSkipsIt()
+    {
+        ProductOperationDescriptor recycle = ProductCatalog.GetRequired("system.recyclebin.empty");
+        ProductOperationDescriptor close = ProductCatalog.GetRequired("app.close");
+        ProductOperationDescriptor overwrite = ProductCatalog.GetRequired("memory.forget");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(recycle.Risk, Is.EqualTo(OperationRisks.WorkLoss));
+            Assert.That(close.Risk, Is.EqualTo(OperationRisks.WorkLoss));
+            Assert.That(overwrite.Risk, Is.EqualTo(OperationRisks.WorkLoss));
+            Assert.That(
+                RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(recycle.Risk)),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+            Assert.That(
+                RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(close.Risk)),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(recycle.Risk),
+                    ConfirmationMode.Bypass),
+                Is.EqualTo(PolicyDecision.Allow));
         });
     }
 

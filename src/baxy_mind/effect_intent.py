@@ -903,7 +903,16 @@ def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
             r"correo|email)\b",
         )
     if operation.startswith("backup."):
-        return _has(folded, r"\b(?:particion|partition)\b")
+        return _has(
+            folded,
+            r"\b(?:particion|partition|fondo de escritorio|wallpaper|"
+            r"desktop background)\b",
+        )
+    if operation.startswith(("game.install", "package.install")):
+        return _has(folded, r"\b(?:git|github|gitlab)\b") and _has(
+            folded,
+            r"\b(?:commit|push|pull|clone)\b",
+        )
     return False
 
 
@@ -912,13 +921,14 @@ def _curated_domain_is_grounded(
     operation: str,
     application_names: Iterable[str] | ApplicationCatalogIndex = (),
 ) -> bool | None:
-    """Veto ambiguous operation families that lack their literal domain.
+    """Remove authority when a family names the wrong domain.
 
-    The semantic model may propose a closed-catalog operation, but words such
-    as ``red``, ``página``, ``volumen`` and ``captura`` are polysemous.  This
-    one-sided gate never selects an operation.  For the families below it only
-    confirms that the request names the physical/computing domain consumed by
-    that operation; ``None`` leaves all other catalog operations untouched.
+    One-sided: this never selects an operation.  A named computing domain
+    (``bluetooth``, ``wifi``/``wireless``) is enough to keep the proposal;
+    extra action-verb lists must not fail closed on a paraphrase that already
+    names that domain.  ``False`` is for contradiction or an unnamed domain
+    on a covered family.  ``None`` leaves uncovered catalogue operations
+    untouched.
     """
 
     folded = _fold(text)
@@ -1023,18 +1033,17 @@ def _curated_domain_is_grounded(
             )
         )
     if operation == "bluetooth.radio.set":
-        return (
-            _has(folded, r"\bbluetooth\b")
-            and _has(
-                folded,
-                r"\b(?:activa|activar|enciende|encender|prende|prender|"
-                r"desactiva|desactivar|apaga|apagar|turn on|turn off|enable|disable)\b",
-            )
-            and not _has(
-                folded,
-                r"\b(?:configuracion|settings|entra|enter|abre|open)\b",
-            )
-        )
+        # Domain noun is the gate. Requiring a closed verb list vetoed
+        # "apagame el bluetooth" because "apagame" is not "apaga". Opening
+        # Bluetooth settings is a different effect and stays a contradiction.
+        if not _has(folded, r"\bbluetooth\b"):
+            return False
+        if _has(
+            folded,
+            r"\b(?:configuracion|settings|entra|enter|abre|open)\b",
+        ):
+            return False
+        return True
     if operation == "bluetooth.device.list":
         return (
             _has(folded, r"\bbluetooth\b")
@@ -1502,15 +1511,15 @@ def _curated_domain_is_grounded(
     }:
         wifi_domain = _has(
             folded,
-            r"\b(?:wi[\s-]?fi|red\s+inalambrica|wireless\s+network)\b",
+            r"\b(?:wi[\s-]?fi|red\s+inalambrica|wireless)\b",
         )
         if not wifi_domain:
             return False
         if operation == "wifi.disconnect":
-            return _has(
-                folded,
-                r"\b(?:apaga|apagar|desconecta|desconectar|disconnect|turn\s+off)\b",
-            )
+            # "drop the wireless connection" names the domain and the
+            # disconnect; a closed verb list that omitted "drop" was the
+            # whitelist-absence defect. Domain named is enough here.
+            return True
         if operation == "wifi.profile.list":
             return _has(folded, r"\b(?:perfiles?|profiles?)\b") and _has(
                 folded,

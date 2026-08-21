@@ -865,8 +865,10 @@ class PlannerCatalogTests(unittest.TestCase):
             configure_application_catalog(catalog),
             ("Paint", "Visual Studio Code"),
         )
-        with self.assertRaises(PlannerContractError):
-            configure_application_catalog({**catalog, "names": ["Paint", "paint"]})
+        self.assertEqual(
+            configure_application_catalog({**catalog, "names": ["Paint", "paint"]}),
+            ("Paint",),
+        )
         with self.assertRaises(PlannerContractError):
             configure_application_catalog({**catalog, "verified": False})
         with self.assertRaises(PlannerContractError):

@@ -17,7 +17,14 @@ public sealed class MissionEngine : IDisposable
     private readonly InMemoryConfirmationAuthority _confirmationAuthority;
     private readonly IPrivateOperationEnvelopeAuthenticator? _privateEnvelopeAuthenticator;
     private readonly IOperationResponseNarrator _narrator;
+    private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
+
+    /// <summary>
+    /// Última autocorrección de este motor: afirmación, verificación que la
+    /// desmintió y texto de corrección. Nulo si el último turno no corrigió.
+    /// </summary>
+    public HonestyCorrectionTrace? LastHonestyCorrection { get; private set; }
 
     /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
@@ -35,6 +42,8 @@ public sealed class MissionEngine : IDisposable
             ?? new InMemoryConfirmationAuthority(options?.TimeProvider);
         _privateEnvelopeAuthenticator = options?.PrivateEnvelopeAuthenticator;
         _narrator = options?.Narrator ?? DefaultOperationResponseNarrator.Instance;
+        _confirmationMode = options?.ConfirmationMode
+            ?? (() => ConfirmationMode.Normal);
     }
 
     public async ValueTask<OperationResponse> ExecuteAsync(
@@ -90,7 +99,10 @@ public sealed class MissionEngine : IDisposable
                 || handler is null
                 || HasValidArguments(request, handler);
             PolicyDecision? policy = knownOperation && handler is not null && validArguments
-                ? RiskPolicy.Evaluate(handler.Definition.Risk)
+                ? RiskPolicy.Evaluate(
+                    handler.Definition.Risk,
+                    _confirmationMode(),
+                    handler.Definition.Name)
                 : null;
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
@@ -209,6 +221,7 @@ public sealed class MissionEngine : IDisposable
         OperationRequest request,
         OperationOutcome outcome)
     {
+        LastHonestyCorrection = null;
         bool completed = outcome.Succeeded && outcome.Verified;
         string status = outcome.Retryable
             ? OperationStatuses.Pending
@@ -218,6 +231,14 @@ public sealed class MissionEngine : IDisposable
         string? errorCode = completed
             ? null
             : outcome.ErrorCode ?? (outcome.Succeeded ? "verification_failed" : "operation_failed");
+        string message = _narrator.Narrate(request.Operation, outcome);
+        if (outcome.Succeeded && !outcome.Verified)
+        {
+            LastHonestyCorrection = new HonestyCorrectionTrace(
+                Claim: "in_progress_non_asserting",
+                Verification: "denied",
+                Correction: message);
+        }
 
         return new OperationResponse(
             ProtocolTypes.OperationResponse,
@@ -225,7 +246,7 @@ public sealed class MissionEngine : IDisposable
             request.MissionId,
             request.InvocationId,
             status,
-            _narrator.Narrate(request.Operation, outcome),
+            message,
             completed,
             false,
             outcome.Result,
