@@ -1,0 +1,10 @@
+{
+  "schema": "baxy.goal03-vram-peak.v1",
+  "method": "nvidia-smi memory.used every 200ms during 6 in-catalog turn.decide with the registered Qwen3-4B loaded",
+  "samples": 225,
+  "min_mib": 957,
+  "peak_mib": 4026,
+  "idle_after_mib": 966,
+  "limit_mib": 4096,
+  "within_limit": true
+}

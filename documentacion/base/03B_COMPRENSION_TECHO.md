@@ -540,7 +540,7 @@ Buscado, leído y citado; lo que no entró dice por qué.
 
 | Criterio | Estado |
 |---|---|
-| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **Una corrida: 90,3 %** (112 de 124, `goal03_rec5e2e8.json`). Faltan las otras dos de la dispersión ±3. Reparto: reconocedor 0, recuperación 0, decisión 7, veto 5. El suelo de 13 filas de §6 ya no es el techo |
+| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **Tres corridas: 112, 112, 110** (mediana 112/124 = 90,3 %). `rec5e2e8/9/10`. Reconocedor 0, recuperación 0, decisión 5–7, veto 5–7. El suelo de 13 filas de §6 ya no es el techo |
 | El techo re-medido y **movido**, con la aritmética publicada | **Cumplido: 84,7 % → 89,5 %**, §6, con la misma fórmula del goal 03 |
 | Las 17 filas del contrato resueltas, con el estado nuevo y su prueba | **Cumplido**: el veto pierde 6 donde perdía 27, y 8 pruebas de regresión en `tests/test_turn_policy.py` |
 | Cobertura y cuenta antes y después, con el sello | **Cumplido**: 169/158/31 y `dc0a7893…` idéntico — el catálogo no se tocó |
@@ -1453,7 +1453,11 @@ el veto de dominio aún tiraba — mitad/bajito, hash, process list, `ponme`+Spo
 `vlc` como paquete, `terminada`, `luz de la pantalla`, wifi `pegado` — da
 **112/124** en `goal03_rec5e2e8.json` (90,3 %), p50 1,50 s, reconocedor 0,
 recuperación 0, decisión 7, veto 5, `explicit_effects` 56/56. Corpus SHA
-`761c1bc3…`. Fuera de catálogo: 24/36 abstenciones honestas; el listón ≤5 no
-pedidas **no se cumple** (12 `acted`). Faltan dos corridas más y bajar el
-fuera-de-catálogo. La pila FunctionGemma (abstain_head, mMARCO, deícticos,
-splitter, LoRA) ya estaba rechazada en APLAZADOS; no se reabrió.
+`761c1bc3…`. Tres corridas 112/112/110. Cobertura 169/158/31 sello `dc0a7893…`.
+Banco compuesto 6/15 misiones y 15/32 pasos (subió). Pico VRAM 4026 MiB de 4096
+con el 4B cargado (`goal03_vram_rec5e2e8.json`). Sobrecarga de la capa LLM:
+p50 BAXY 0,497 s vs POST directo idéntico 0,480 s (Δ 17 ms,
+`goal03_overhead_rec5e2e8.json`). El turno completo p50 1,50–1,60 s; el camino
+determinista 6 ms; el modelo ~2,05 s. Fuera de catálogo: 21–24/36 abstenciones
+honestas; el listón ≤5 no pedidas **no se cumple**. La pila FunctionGemma ya
+estaba rechazada en APLAZADOS; no se reabrió.
