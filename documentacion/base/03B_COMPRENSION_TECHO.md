@@ -1395,3 +1395,16 @@ controles (`goal03_xlam2_3b_native_smoke_v58b.json`): `open calculator` →
 consistente. V59 queda preregistrado con los mismos gates 431/477 y ≤42/307;
 V60/fresco siguen cerrados hasta que pase. No se barrerá quant, prompt ni
 sampling.
+
+V59 rechaza xLAM-2-3B antes del holdout real
+(`goal03_xlam2_3b_native_synthetic_v59.json`, SHA `51d5cac8…`). Pasa el gate de
+alcance: **22/307** negativas producen una acción, por debajo del máximo 42.
+Pero elige la hoja esperada en sólo **180/477** positivas: 221 se abstienen, 76
+eligen una hermana o vecina y 141 inventan un nombre fuera de la shortlist.
+Hay 278 filas con JSON malformado; recuperar el `name` no acerca al 431. p50
+**0,497 s**, p90 0,944 s. El modelo pequeño abstiene casi tan bien como el
+Qwen3.5-9B y selecciona peor que FunctionGemma R2. Se aplica la regla de parada:
+V60 no existe, el fresco permanece cerrado y no se barren quants, prompts ni
+parser. Tampoco vale como guarda call/no-call: veta 221 órdenes legítimas de
+477, el mismo patrón del SVM. La siguiente familia no puede ser otro generador
+de function-calling.
