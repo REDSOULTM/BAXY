@@ -1296,3 +1296,17 @@ de alcance, consistente con las 18/36 abstenciones del V16 fresco. Se aplica la
 regla de parada: V49 real no se crea, el fresco no se abre y no se integra esta
 política. Cambiar el wording, el orden de enums o la semilla después de 784
 respuestas sería un barrido del mismo prompt, no una estrategia distinta.
+
+Agotadas la pila interna y las cabezas, el siguiente candidato cambia capacidad,
+no otra regla (`goal03_qwen35_9b_native_candidate_v50.json`). La ficha oficial de
+[Qwen3.5-9B](https://huggingface.co/Qwen/Qwen3.5-9B) publica **66,1** en BFCL‑V4
+frente a **50,3** del Qwen3.5‑4B ya rechazado, además de 201 idiomas/dialectos y
+parser de tools propio. Se fija un único cuant UD‑IQ2‑XXS de 3.190.613.216 bytes,
+SHA `570ce2bb…`, desde la revisión Unsloth `3885219…`; no se barrerán quants.
+
+El build b9980 heredado carga ese GGUF con las 99 capas y respeta su contrato
+nativo opcional: `open calculator` → `app.open`; `tell me a joke` → ninguna
+llamada. El segundo control caliente tarda **0,858 s**; los 4,906 s del primero
+incluyen carga y no son latencia de turno. Son sólo controles no frescos, sin
+providers. La compatibilidad autoriza sellar un holdout, no promover el modelo;
+VRAM y latencia de población siguen sin medir.

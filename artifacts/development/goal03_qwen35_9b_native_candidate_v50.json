@@ -1,0 +1,56 @@
+{
+  "candidate_decision": "compatible_and_authorized_for_preregistered_holdout",
+  "controls": [
+    {
+      "message": "open calculator",
+      "no_match": false,
+      "seconds_including_first_startup": 4.905681800009916,
+      "selected_operations": [
+        "app.open"
+      ]
+    },
+    {
+      "message": "tell me a joke",
+      "no_match": true,
+      "seconds_warm": 0.8579578999924706,
+      "selected_operations": []
+    }
+  ],
+  "fresh_corpus_rows_used": 0,
+  "model": {
+    "base": "Qwen/Qwen3.5-9B",
+    "base_capability_evidence": {
+      "bfcl_v4_4b": 50.3,
+      "bfcl_v4_9b": 66.1,
+      "languages_and_dialects": 201
+    },
+    "bytes": 3190613216,
+    "gguf": "D:\\BAXYRuntime\\candidates\\qwen35-9b-iq2xxs\\Qwen3.5-9B-UD-IQ2_XXS.gguf",
+    "quant_repository": "unsloth/Qwen3.5-9B-GGUF",
+    "quant_repository_revision": "3885219b6810b007914f3a7950a8d1b469d598a5",
+    "sha256": "570ce2bbc92545cffbcb01df43cba59d86093dadc34c25da9f554d256bc70b91"
+  },
+  "policy": {
+    "no_match_mode": "absence_of_tool_calls",
+    "parallel_tool_calls": false,
+    "temperature": 0.0,
+    "tool_choice": "auto"
+  },
+  "runtime": {
+    "gpu_layers": 99,
+    "llama_cpp_build": 9980,
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "schema": "baxy.goal03-qwen35-9b-native-candidate.v1",
+  "sources": [
+    "https://huggingface.co/Qwen/Qwen3.5-9B",
+    "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/tree/3885219b6810b007914f3a7950a8d1b469d598a5",
+    "biblioteca/gemma4-agent/documentacion/02_router/research/compass_artifact_wf-121625c8-3cc2-45be-943d-c7cae0427a64_text_markdown.md:46"
+  ],
+  "verification": {
+    "hash_matches_hugging_face_lfs_oid": true,
+    "initial_harness_import_failure_reached_model": false,
+    "providers_enabled": false,
+    "size_matches_hugging_face_metadata": true
+  }
+}
