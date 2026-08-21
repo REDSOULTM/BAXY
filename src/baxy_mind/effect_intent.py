@@ -767,14 +767,17 @@ def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
     """
 
     folded = _fold(text)
-    if operation == "task.create":
-        return _has(
-            folded,
-            r"\b(?:taxi|uber|cab|lyft)\b",
-        ) and not _has(
-            folded,
-            r"\b(?:tarea|task|to-do|todo|pendiente)\b",
-        )
+    # Physical errands this machine cannot do: any leaf is a substitute.
+    if _has(folded, r"\b(?:taxi|uber|cab|lyft)\b") and not _has(
+        folded,
+        r"\b(?:tarea|task|to-do|todo|pendiente)\b",
+    ):
+        return True
+    if _has(
+        folded,
+        r"\b(?:riega|regar|watering|plantas?|plants?)\b",
+    ) and not _has(folded, r"\b(?:rutina|routine|automation)\b"):
+        return True
     if operation == "media.play.youtube":
         return _has(
             folded,
@@ -818,7 +821,7 @@ def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
             and _has(folded, r"\b(?:formatea|formatear|format)\b")
             and _has(folded, r"\b(?:pendrive|usb|disco|disk)\b")
         )
-    if operation == "media.seek.relative":
+    if operation in {"media.seek.relative", "media.control"}:
         return _has(
             folded,
             r"\b(?:edita|editar|editame|edit|recorta|recortar|trim|"
@@ -861,16 +864,25 @@ def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
             folded,
             r"\b(?:torrent|series|pelicula|movie)\b",
         ) and not _has(folded, r"\b(?:steam|juego|game)\b")
-    if operation == "game.purchase.prepare":
+    if operation.startswith("game.purchase"):
         return _has(
             folded,
-            r"\b(?:pizza|comida|food|hamburguesa|burger)\b",
+            r"\b(?:pizza|comida|food|hamburguesa|burger|"
+            r"dolares?|dollars?|transfer(?:e|ir|iere)?|transfiere)\b",
         ) and not _has(folded, r"\b(?:steam|juego|game)\b")
-    if operation == "routine.read":
+    if operation == "note.create":
         return _has(
             folded,
-            r"\b(?:riega|regar|agua|water(?:ing)?|plantas?|plants?)\b",
-        ) and not _has(folded, r"\b(?:rutina|routine|automation)\b")
+            r"\b(?:call|llama|llamame|phone)\b",
+        ) and _has(
+            folded,
+            r"\b(?:madre|mother|mom|papa|father|dad)\b",
+        ) and not _has(folded, r"\b(?:nota|note|notas|notes)\b")
+    if operation == "system.status":
+        return _has(folded, r"\b(?:antivirus|virus)\b") and not _has(
+            folded,
+            r"\b(?:estado|status|salud|health)\b",
+        )
     if operation == "system.settings.set":
         return _has(
             folded,

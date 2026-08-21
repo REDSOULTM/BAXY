@@ -2263,6 +2263,12 @@ def test_in_catalog_paraphrases_are_not_near_miss_substitutes(
     assert operation_identity_is_a_near_miss(text, operation) is False
 
 
+def test_trim_video_is_not_media_control_either() -> None:
+    text = "editame el video y quitale los ultimos diez segundos"
+    assert operation_identity_is_a_near_miss(text, "media.control") is True
+    assert operation_domain_is_grounded(text, "media.control") is False
+
+
 @pytest.mark.parametrize(
     ("text", "operation"),
     [
