@@ -1249,3 +1249,21 @@ pero no compra conducta válida. No se ejecuta Qwen condicionado, no se abre el
 fresco y no se integra. Junto a MTOP 0,98→0,58, esto agota las cabezas textuales
 E5 supervisadas sobre negativos públicos; cambiar dataset público o umbral sería
 repetir la misma distribución, no otra estrategia.
+
+V46 comprueba la señal interna disponible en el `llama-server` heredado sin leer
+el corte fresco (`goal03_qwen_binary_scope_logprobs_smoke_v46.json`). El endpoint
+sí devuelve `logprobs` en la misma inferencia, pero la gramática compacta fuerza
+tokens del schema y de la hoja que el modelo crudo no prefería: en el control
+positivo fuerza `action` con logprob -4,757 mientras `app` tenía -0,009, y varios
+tokens del nombre de la propiedad caen por debajo de -19. Por ello la
+probabilidad de la hoja elegida **no es confianza calibrada** y queda descartada.
+
+La decisión binaria antepuesta sí produce los dos polos correctos en controles
+no frescos: `open calculator` → `action` + `app.open`; `tell me a joke` → `none`
++ `no_operation`. Sin embargo `none` se tokeniza como `no` + `ne`, mientras
+`action` ocupa un token, y la clase contraria no aparece en top-20 en ninguno de
+los dos. Obtener un margen comparable exigiría otra pasada o scoring por
+candidato, que ya dejaría de ser la señal gratuita propuesta por When2Tool. El
+siguiente escalón permitido no usará ese margen: preregistrará una sola política
+When2Call binaria explícita y selección de hoja en el mismo JSON/inferencia,
+primero sobre holdouts independientes; todavía no tiene autoridad ni integración.

@@ -1,0 +1,60 @@
+{
+  "conclusion": {
+    "binary_scope_schema": "technically_observable_not_validated",
+    "leaf_logprob_confidence": "rejected",
+    "reason": "The compact grammar can force schema and leaf tokens whose raw model probability is far below illegal alternatives. The raw leaf logprob is therefore not calibrated selection confidence. A first binary action/none field does produce the intended branch in both controls, but its tokenization is asymmetric and no comparable two-class margin is available in top-20 without another scoring pass."
+  },
+  "controls": [
+    {
+      "effect_operations": [
+        "app.open"
+      ],
+      "message": "open calculator",
+      "scope_decision": "action",
+      "scope_first_token": {
+        "chosen": "action",
+        "chosen_raw_logprob": -4.757498264312744,
+        "highest_raw_alternative": "app",
+        "highest_raw_alternative_logprob": -0.008669596165418625,
+        "other_class_in_top_20": false
+      }
+    },
+    {
+      "effect_operations": [
+        "no_operation"
+      ],
+      "message": "tell me a joke",
+      "scope_decision": "none",
+      "scope_first_token": {
+        "chosen": "no",
+        "chosen_raw_logprob": 0.0,
+        "none_single_token_raw_logprob": -19.957332611083984,
+        "other_class_in_top_20": false
+      }
+    }
+  ],
+  "fresh_corpus_rows_used": 0,
+  "inference": {
+    "reasoning_budget": 128,
+    "sampling_profile": "qwen-thinking",
+    "seed": 0,
+    "top_logprobs": 20
+  },
+  "model": {
+    "bytes": 3110897472,
+    "path": "D:\\BAXYRuntime\\candidates\\qwen3-8b-iq2\\Qwen3-8B-UD-IQ2_M.gguf",
+    "sha256": "1dfd67f311a5a82f57ecc1763b54884066ccf1727c45cbe1a619f85ac96368b2"
+  },
+  "schema": "baxy.goal03-qwen-binary-scope-logprobs-smoke.v1",
+  "server": {
+    "inheritance_source": "previous BAXY repository",
+    "path": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY\\legacy\\models\\artifacts\\llama-b9980\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "sources": [
+    "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+    "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/server-task.cpp",
+    "https://aclanthology.org/2025.naacl-long.174/",
+    "https://arxiv.org/abs/2605.09252"
+  ]
+}
