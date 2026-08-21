@@ -1378,3 +1378,20 @@ reales) y el SVM histórico sólo **54/124**, aunque este último sí abstiene 3
 Todos compran seguridad vetando cobertura legítima. No queda código anterior que
 copiar para esta frontera; la siguiente búsqueda puede pasar a fuentes primarias
 actuales y deberá cambiar de familia, no combinar otra capa de las ya rechazadas.
+
+V58 abre esa familia externa: Salesforce xLAM-2-3B Q4_K_M, el único GGUF
+especializado en function-calling ya descargado
+(`D:\BAXYRuntime\candidates\xlam-2-3b-fc-r\xLAM-2-3B-fc-r-Q4_K_M.gguf`,
+1.929.902.656 bytes, SHA `bd1a0480…`). Publica BFCL-V4 overall **41,22** frente
+a 35,68 del Qwen3-4B-Instruct-2507; la ficha es de investigación, no un runtime
+enviable. El control OpenAI-tools heredado (`goal03_xlam2_3b_native_smoke_v58.json`)
+carga en b9980 pero emite **0 tool_calls**: la plantilla del GGUF es un array JSON
+en el content (`<|im_start|>`, instrucción Salesforce) y `tools` en el API dispara
+HTTP 500 `peg-native format`. No es el mismo mecanismo que FunctionGemma.
+
+V58b adapta el arnés a esa plantilla, copiada del propio GGUF, y pasa los dos
+controles (`goal03_xlam2_3b_native_smoke_v58b.json`): `open calculator` →
+`app.open` en 1,96 s y «capital of France» se abstiene en 0,54 s, schema
+consistente. V59 queda preregistrado con los mismos gates 431/477 y ≤42/307;
+V60/fresco siguen cerrados hasta que pase. No se barrerá quant, prompt ni
+sampling.

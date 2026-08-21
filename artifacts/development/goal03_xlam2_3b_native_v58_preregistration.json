@@ -1,0 +1,98 @@
+{
+  "acceptance": {
+    "inherited_real_clean_selected_expected_minimum": 55,
+    "rule_basis": "ceil(112/124 * population positives) and floor(5/36 * population negatives)",
+    "synthetic_oos_selected_action_calls_maximum": 42,
+    "synthetic_selected_expected_minimum": 431
+  },
+  "constraints": {
+    "fresh_corpus_evaluation_opened": false,
+    "license": "Salesforce xLAM-2 research release; not a shippable runtime even if gates pass",
+    "no_other_quant_or_model_size": true,
+    "providers_enabled": false,
+    "runtime_manifest_will_change": false,
+    "sampling_or_prompt_sweep": false
+  },
+  "evidence": {
+    "naive_openai_tools_smoke": "artifacts/development/goal03_xlam2_3b_native_smoke_v58.json",
+    "naive_openai_tools_smoke_sha256": "ec7fcb627d8d2fa86e06b729183214b930cdb27afebc548ad59dbaf5541da47a",
+    "program_sha256": "b14ff6564e9c6f8f57a60554c3935be3d1498547824b894d61a06b29b239c349",
+    "template_adapted_smoke": "artifacts/development/goal03_xlam2_3b_native_smoke_v58b.json",
+    "template_adapted_smoke_sha256": "a0c7a7ef3b9e78eeaf9ce8093f639fc14e586baac506e45ce60d1c93208800b0",
+    "test_command": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY\\experiments\\mind_router_spike\\.venv\\Scripts\\python.exe -m pytest tests/test_probe_goal03_xlam2_3b_native_holdout.py -q",
+    "test_result": "9 passed in 1.98s",
+    "test_sha256": "c168d38491999149371cb5992750d8a8e1f5c0cb4c2c4443dfdb8cc431c2419e"
+  },
+  "model": {
+    "architecture": "qwen2",
+    "base": "Salesforce/xLAM-2-3b-fc-r",
+    "bfcl_v4_overall": 41.22,
+    "bytes": 1929902656,
+    "gguf": "D:\\BAXYRuntime\\candidates\\xlam-2-3b-fc-r\\xLAM-2-3B-fc-r-Q4_K_M.gguf",
+    "quant": "Q4_K_M",
+    "sha256": "bd1a0480eadf5eddced7159e4b7aa68cc3cb47715d7410c99d3b4c485e47ae43",
+    "source": "https://huggingface.co/Salesforce/xLAM-2-3b-fc-r-gguf"
+  },
+  "naive_openai_tools_result": {
+    "app_open_selected": false,
+    "decision": "protocol_alive_but_zero_tool_calls",
+    "no_call_abstained": true,
+    "reason": "GGUF chat template emits a JSON array in content; llama-server tools API either returns prose or HTTP 500 peg-native mismatch"
+  },
+  "order": [
+    {
+      "output": "artifacts/development/goal03_xlam2_3b_native_synthetic_v59.json",
+      "phase": "synthetic",
+      "rows": 784,
+      "stop_if_failed": true
+    },
+    {
+      "output": "artifacts/development/goal03_xlam2_3b_native_real_v60.json",
+      "phase": "inherited-real-clean",
+      "rows": 60,
+      "stop_if_failed": true
+    },
+    {
+      "phase": "goal03-fresh",
+      "rows": 160,
+      "run_only_if_all_prior_gates_pass": true
+    }
+  ],
+  "policy": {
+    "format_instruction": "copied from GGUF tokenizer.chat_template",
+    "gpu_layers": 99,
+    "malformed_json_array_with_recoverable_name": "count the recovered leaf, mark schema_consistent=false",
+    "max_tokens": 256,
+    "no_match_mode": "prose_or_empty_array",
+    "seed": 0,
+    "temperature": 0.0,
+    "tools_injected_as_prompt_text": true
+  },
+  "populations": {
+    "inherited_real_validation": {
+      "clean_rows": 60,
+      "excluded_current_union_calibration_overlap": 3,
+      "excluded_current_union_train_overlap": 8,
+      "source_rows": 71,
+      "source_sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300"
+    },
+    "synthetic_validation": {
+      "no_action": 307,
+      "positive": 477,
+      "rows": 784,
+      "sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2"
+    }
+  },
+  "runtime": {
+    "llama_cpp_build": 9980,
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "schema": "baxy.goal03-xlam2-3b-native-preregistration.v1",
+  "smoke_v58b": {
+    "app_open_selected": true,
+    "latency_seconds_p50": 1.246,
+    "no_call_abstained": true,
+    "schema_inconsistent_rows": 0
+  },
+  "stop_rule": "Run the complete V59 synthetic population. If either synthetic gate fails, reject without V60 or fresh. If V59 passes, V60 must select at least 55/60 expected leaves before any fresh run. Do not sweep quant, prompt or sampling."
+}
