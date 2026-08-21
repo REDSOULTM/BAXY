@@ -1281,3 +1281,18 @@ emitir una acción en **≤42/307** negativas. Sólo entonces V49 podrá ver las
 órdenes reales descontaminadas y deberá elegir **≥55/60** hojas. Sólo si pasan
 los tres cortes se permite una corrida fresca. No hay margen logprob, segundo
 scoring, barrido de semilla ni cambio de runtime.
+
+V48 rechaza la política binaria antes del holdout real
+(`goal03_qwen_binary_scope_synthetic_v48.json`, SHA `6e9543b4…`). La separación
+explícita conserva **476/477** órdenes como `action` y el selector acierta la hoja
+en **449/477**, dos más que FunctionGemma en este holdout. Pero clasifica
+`action` en **187/307** negativas y sólo `none` en 120/307: rebasa por 145 el
+máximo preregistrado de 42 acciones indebidas. Las 784 respuestas son coherentes
+con el schema; el problema es la decisión del modelo, no el parser.
+
+La inferencia cuesta p50 **2,896 s**, p90 3,112 s y máximo 3,444 s. Anteponer la
+pregunta When2Call dentro del mismo Qwen preserva hojas pero no cambia su sesgo
+de alcance, consistente con las 18/36 abstenciones del V16 fresco. Se aplica la
+regla de parada: V49 real no se crea, el fresco no se abre y no se integra esta
+política. Cambiar el wording, el orden de enums o la semilla después de 784
+respuestas sería un barrido del mismo prompt, no una estrategia distinta.
