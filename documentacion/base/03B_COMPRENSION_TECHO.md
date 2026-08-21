@@ -1445,3 +1445,21 @@ E5-primero rellenando a 28 (`goal03_union14e2e2.json`) sirve **81/124**, ofrece
 cobra la cobertura extra: es el mismo intercambio que el 8B e2e (109 mínimo →
 89 producto). El planner vuelve al E5-28 anterior; el sello
 wake-validation-program-tree permanece `b7f218e6…`.
+
+El reconocedor reclamaba hermanas en las cinco filas del suelo. No es un
+sexto gate: son agujeros de la gramática existente. Offline, antes y después
+sobre el catálogo vivo:
+
+| Fila | Pedido | Antes | Después |
+|---|---|---|---|
+| app-01 | necesito el bloc de notas | note.list | app.open |
+| med-05 | play the tiny desk concert on youtube | media.play.query | media.play.youtube |
+| fs-03 | hay archivos repetidos en descargas | filesystem.known.search | filesystem.known.duplicates |
+| per-01 | que cosas tengo conectadas al equipo | system.status | peripheral.list |
+| cmp-04 | anota … y avisame ese dia | None / aclaración | note.create + reminder.create |
+
+Controles intactos: «abre el bloc de notas» sigue app.open, «lista mis notas»
+sigue note.list, «como esta el equipo» sigue system.status, «Play Bohemian
+Rhapsody by Queen.» sigue media.play.query. 1843 pruebas de effect_intent y
+alias en verde. El sello wake pasa a `266cc159…`. Falta la corrida punta a
+punta sobre el corpus fresco.

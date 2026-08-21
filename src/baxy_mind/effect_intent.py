@@ -1082,12 +1082,18 @@ def _curated_domain_is_grounded(
         )
     if operation == "peripheral.list":
         return (
-            _has(
-                folded,
-                r"\b(?:perifericos?|peripherals?|impresoras?|printers?|"
-                r"escaneres?|scanners?|teclados?|keyboards?|mouse|mice|usb)\b",
+            (
+                _has(
+                    folded,
+                    r"\b(?:perifericos?|peripherals?|impresoras?|printers?|"
+                    r"escaneres?|scanners?|teclados?|keyboards?|mouse|mice|usb)\b",
+                )
+                or _has(folded, _CONNECTED_INVENTORY)
             )
-            and _has(folded, rf"\b(?:{_LIST}|muestra|show|cuales|which|what)\b")
+            and _has(
+                folded,
+                rf"\b(?:{_LIST}|muestra|show|cuales|which|what|que|tengo)\b",
+            )
             and not _has(folded, r"\b(?:predeterminad[oa]|default|establece|set)\b")
         )
     if operation in {"notification.cancel.at", "notification.cancel.latest"}:
@@ -1116,7 +1122,7 @@ def _curated_domain_is_grounded(
         )
     if operation == "note.list":
         return (
-            _has(folded, r"\b(?:notas?|notes?|apuntes?|memos?)\b")
+            _note_inventory_object(folded)
             and _has(
                 folded,
                 rf"\b(?:{_LIST}|indice|index|inventario|inventory|"
@@ -1440,6 +1446,11 @@ def _curated_domain_is_grounded(
             folded,
             r"\b(?:reciente|latest|ultimo|ultima|newest)\b",
         )
+    if operation == "filesystem.known.duplicates":
+        return _has(
+            folded,
+            r"\b(?:archivos?|files?|documentos?|documents?|descargas|downloads?)\b",
+        ) and _has(folded, _DUPLICATE_FILES)
     if operation == "filesystem.known.search":
         return (
             not _has(
@@ -1447,6 +1458,7 @@ def _curated_domain_is_grounded(
                 r"\b(?:instala|instalar|install|installation|alista(?:lo|la)?|"
                 r"prepare|prepara|preparado|ready|staged|tied)\b",
             )
+            and not _has(folded, _DUPLICATE_FILES)
             and _has(
                 folded,
                 rf"\b(?:{_SEARCH}|locate|ubica|ubicar|find)\b|"
@@ -4198,10 +4210,25 @@ def _is_machine_knowledge_or_diagnosis(text: str) -> bool:
     ) or _has(text, rf"\b{_KNOWN_APPLICATION}\b")
 
 
+def _note_inventory_object(text: str) -> bool:
+    """True when the person is listing notes, not asking for Notepad."""
+
+    remainder = re.sub(_NOTEPAD_OBJECT, " ", text, flags=re.IGNORECASE)
+    return bool(
+        re.search(
+            r"\b(?:notas?|notes?|apuntes?|anotaciones?|memos?)\b",
+            remainder,
+            re.IGNORECASE,
+        )
+    )
+
+
 def _system_status_domain(text: str) -> bool:
     if _is_machine_knowledge_or_diagnosis(text) or _is_past_or_hypothetical_state(
         text,
     ):
+        return False
+    if _has(text, _CONNECTED_INVENTORY):
         return False
     if _has(
         text,
@@ -5712,6 +5739,22 @@ _KNOWN_APPLICATION = (
     r"microsoft edge|firefox|whatsapp|excel|powerpoint|vlc|"
     r"configuracion(?:es)?(?: de windows)?|windows settings)"
 )
+_NOTEPAD_OBJECT = r"\b(?:(?:bloc|app|coso)\s+de\s+notas|notepad)\b"
+_DUPLICATE_FILES = (
+    r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b"
+)
+_CONNECTED_INVENTORY = (
+    r"\b(?:cosas?|things?|dispositivos?|devices?|perifericos?|peripherals?|"
+    r"accesorios?|accessories)\b.{0,48}"
+    r"\b(?:conectad[oa]s?|connected|enchufad[oa]s?|plugged|attached)\b|"
+    r"\b(?:conectad[oa]s?|connected|enchufad[oa]s?|plugged|attached)\b.{0,40}"
+    r"\b(?:al\s+equipo|a\s+(?:la\s+)?(?:maquina|computadora|pc)|"
+    r"to\s+(?:the\s+)?(?:machine|computer|pc|equipment))\b"
+)
+_DEICTIC_DAY = (
+    r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
+    r"that\s+day|that\s+date|that\s+same\s+day)\b"
+)
 _OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta)"
 _LIST = r"(?:lista|listar|enumera|enumerar|muestra|muestrame|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
@@ -6307,7 +6350,7 @@ def _review_calendar_message_and_direct_reminder_effects(
             head,
             r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)",
         )
-        and temporal
+        and (temporal or _has(folded, _DEICTIC_DAY))
         and _has(
             folded,
             r"^[¿?¡!\s]*(?:recuerdame|recuerdamelo|recordame|recordamelo|"
@@ -7000,7 +7043,9 @@ def _strict_catalog_request(
             ),
             (
                 "note.list",
-                r"\b(?:notas?|notes?|apuntes?|anotaciones?|memos?)\b",
+                r"\b(?:apuntes?|anotaciones?|memos?)\b|"
+                r"(?<!bloc de )(?<!app de )(?<!coso de )\bnotas?\b|"
+                r"\bnotes?\b",
             ),
             (
                 "clipboard.read.text",
@@ -7081,6 +7126,10 @@ def _strict_catalog_request(
                 r"conectividad\s+inalambrica|conexion\s+sin\s+cable)\b",
             ),
             ("web.search", r"\b(?:web|online|internet|en\s+linea)\b"),
+            (
+                "filesystem.known.duplicates",
+                r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b",
+            ),
             (
                 "filesystem.known.search",
                 r"\b(?:documentos|documents|descargas|downloads)\b",
@@ -7178,6 +7227,17 @@ def _strict_catalog_request(
             found = _match(text, pattern)
             if found is not None:
                 found_domains.append((found.start(), operation))
+        found_domains = [
+            item
+            for item in found_domains
+            if item[1] != "note.list" or _note_inventory_object(text)
+        ]
+        if any(operation == "filesystem.known.duplicates" for _, operation in found_domains):
+            found_domains = [
+                item
+                for item in found_domains
+                if item[1] != "filesystem.known.search"
+            ]
         installed_game_catalog = next(
             (
                 index
@@ -8032,7 +8092,8 @@ def _strict_catalog_request(
             r"dispositivos?\s+externos?|external\s+devices?|"
             r"accesorios?\s+enchufados?|plugged-in\s+accessories|"
             r"accesorios?\b.{0,56}\b(?:reconoce|enchufad[oa]s?|conectad[oa]s?)|"
-            r"accessories\b.{0,64}\b(?:recognizes?|attached|plugged|connected))\b",
+            r"accessories\b.{0,64}\b(?:recognizes?|attached|plugged|connected))\b|"
+            rf"{_CONNECTED_INVENTORY}",
         )
         and _has(
             text,
@@ -8050,7 +8111,7 @@ def _strict_catalog_request(
 
     if (
         request_observation
-        and _has(text, r"\b(?:notas?|notes?|apuntes?|anotaciones?)\b")
+        and _note_inventory_object(text)
         and _has(
             text,
             r"\b(?:lista|list|enumera|enumerate|muestra|show|display|revisa|inspect|"
@@ -8208,6 +8269,26 @@ def _strict_catalog_request(
             return resolved
 
     if (
+        (
+            request_observation
+            or _has(
+                text,
+                r"^(?:busca|buscar|encuentra|find|search|localiza|locate|"
+                r"hay|there\s+are)\b",
+            )
+        )
+        and _has(
+            text,
+            r"\b(?:archivos?|files?|documentos?|documents?|descargas|downloads?)\b",
+        )
+        and _has(text, _DUPLICATE_FILES)
+        and not _has(text, r"\b(?:web|internet|online|google|bing)\b")
+    ):
+        resolved = intent("filesystem.known.duplicates")
+        if resolved is not None:
+            return resolved
+
+    if (
         _has(
             text,
             r"^(?:busca|buscar|encuentra|find|search|localiza|locate|"
@@ -8220,6 +8301,7 @@ def _strict_catalog_request(
             r"\b(?:documentos?|documents?|descargas|downloads?|escritorio|desktop|"
             r"imagenes|pictures)\b",
         )
+        and not _has(text, _DUPLICATE_FILES)
         and not _has(text, r"\b(?:web|internet|online|google|bing)\b")
     ):
         resolved = intent("filesystem.known.search")
@@ -9890,6 +9972,7 @@ def _review_media_and_email_effects(
             and _media_play_domain(folded)
             and not resume_existing_media
             and not media_navigation
+            and not _has(folded, r"\byoutube\b")
             and _has(
                 folded,
                 r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
@@ -9902,6 +9985,24 @@ def _review_media_and_email_effects(
             folded,
             "media.play.query",
             rf"\b{_SEARCH}\b|\b(?:reproduce|reproducir|play|pon)\b",
+        )
+    if (
+        _head_is(head, r"(?:reproduce|reproducir|reproduzca|play|pon)")
+        and _has(folded, r"\byoutube\b")
+        and not _has(
+            folded,
+            r"\b(?:primer|primero|first|segundo|second|tercer|third|"
+            r"resultado|result)\b",
+        )
+        and not resume_existing_media
+        and not media_navigation
+        and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
+    ):
+        _append(
+            matches,
+            folded,
+            "media.play.youtube",
+            r"\b(?:reproduce|reproducir|play|pon)\b",
         )
     if (
         media_navigation
@@ -10484,7 +10585,7 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
         (
             r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
             r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"{_OPEN}\b(?:\s+(?:el|la|the))?\s+"
+            rf"(?:{_OPEN}|necesito|quiero|i\s+need|i\s+want)\b(?:\s+(?:el|la|the|un|una|a))?\s+"
             rf"(?:(?:aplicacion|application|app|programa|program)\s+)?"
             rf"(?P<body>{_KNOWN_APPLICATION}"
             rf"(?:\s*,\s*(?:el|la|the)?\s*{_KNOWN_APPLICATION})*)"

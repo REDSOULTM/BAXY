@@ -696,6 +696,18 @@ CASES = [
         "Abre Spotify, reproduce exactamente Beat It y después pausa",
         ("media.play.exact", "media.control"),
     ),
+    ("necesito el bloc de notas", ("app.open",)),
+    ("I need notepad", ("app.open",)),
+    ("play the tiny desk concert on youtube", ("media.play.youtube",)),
+    ("Reproduce lofi en YouTube", ("media.play.youtube",)),
+    ("hay archivos repetidos en descargas", ("filesystem.known.duplicates",)),
+    ("busca duplicados en descargas", ("filesystem.known.duplicates",)),
+    ("que cosas tengo conectadas al equipo", ("peripheral.list",)),
+    ("what do I have connected to the computer", ("peripheral.list",)),
+    (
+        "anota que hay reunion el jueves y avisame ese dia",
+        ("note.create", "reminder.create"),
+    ),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}
