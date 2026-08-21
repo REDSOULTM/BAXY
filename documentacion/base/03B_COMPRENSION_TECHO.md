@@ -1194,3 +1194,12 @@ El adapter resultante tiene SHA `f8b8f1fc…add04`. El pico CUDA asignado de
 producto, que se mide en inferencia. El siguiente paso permanece cerrado por
 la preregistración: evaluar primero el holdout real y rechazar sin mirar los
 holdouts sintético o fresco si no alcanza **50/71**.
+
+El gate real rechaza el challenger
+(`goal03_functiongemma_real_mixed_validation_v38.json`, SHA `37d85b86…`). La
+mezcla mejora el mismo holdout de **11/71 a 38/71**, pero queda por debajo del
+mínimo preregistrado de **50/71**. Sus 33 fallos son 17 `no_action`, tres
+salidas sin llamada parseable y 13 hojas equivocadas; no es sólo calibración de
+abstención. La inferencia cuesta p50 0,894 s y 655,7 MiB asignados. Conforme al
+orden cerrado, no se ejecutan ni el holdout sintético V39 ni otra corrida
+fresca, y el adapter no se integra.
