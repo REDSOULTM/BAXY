@@ -1322,3 +1322,16 @@ hojas y **≤42/307** llamadas negativas; sólo si pasa, V53 exige **≥55/60** 
 limpias; sólo entonces se abre el fresco. Se fijan las 99 capas porque el smoke
 ya demostró que cargan; la VRAM pico se medirá antes de cualquier integración.
 No se cambiarán quant, prompt, temperatura ni modo `auto` tras ver resultados.
+
+La primera ejecución reservada para V52 no llega al gate
+(`goal03_qwen35_9b_native_abort_v52.json`). Tras **400/784** filas, la 401 emite
+argumentos de tool que no son JSON válido y `_select` propaga
+`JSONDecodeError`; no se escriben V52 ni V53 y las 400 decisiones en memoria se
+descartan. No es una cifra de calidad ni autoriza inspeccionar aciertos.
+
+El defecto está en el límite del arnés heredado: ya interpreta ausencia de call
+como no-match, pero no convierte argumentos malformados en el mismo resultado
+seguro. Repararlo no cambia modelo, prompt, sampling, candidatos ni gates: una
+respuesta nativa inválida debe contabilizarse como cero acciones y error de
+forma. Esa semántica fail-closed se sellará con nombres de salida nuevos antes de
+repetir la población completa; no se saltará la fila 401.

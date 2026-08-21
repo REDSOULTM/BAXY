@@ -1,0 +1,22 @@
+{
+  "completed_rows_discarded": 400,
+  "decision": "aborted_before_gate",
+  "error": {
+    "case_id": "committee-0bdeef342f5561c0",
+    "exception": "json.decoder.JSONDecodeError",
+    "message": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+    "operation": "browser.page.read",
+    "population_index_one_based": 401,
+    "reason": "native tool-call arguments were not valid JSON and the inherited selector propagated the decoder error instead of returning a fail-closed no-action result"
+  },
+  "fresh_corpus_rows_used": 0,
+  "gates_evaluated": false,
+  "model_sha256": "570ce2bbc92545cffbcb01df43cba59d86093dadc34c25da9f554d256bc70b91",
+  "outputs": {
+    "real_v53_created": false,
+    "synthetic_v52_created": false
+  },
+  "program_sha256": "feeb245226ad5a595285275e87dd435dbc9e2ffa94dc7c8418192188d4db4139",
+  "schema": "baxy.goal03-qwen35-9b-native-abort.v1",
+  "status": "not_a_quality_measurement"
+}
