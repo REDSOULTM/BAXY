@@ -1435,11 +1435,13 @@ acciones fuera de catálogo; sin umbral 90/124. La guarda es perfecta y la
 hoja no. Una composición offline 8B-si-el-reranker-llama baja a 72/124.
 No se integra, no se calibra 0,5 sobre este corte, no se apila con el 8B.
 
-La unión simétrica ranker+E5, que ya ofrecía **119/124** en V10, entra al
-planner de producto: top-14 del LinearSVC congelado `operation_shortlist_v3`
-(pesos heredados byte a byte SHA `63de7aae…`) y top-14 de E5, 28 plazas, orden
-ranker-primero como en la política mínima. Sin encoder se conserva el ranking
-léxico. Offline, el ranker vivo más el E5 congelado de
-`goal03_frozen_operation_ranker_v1.json` sigue ofreciendo **119/124**. El sello
-wake-validation-program-tree pasa de `b7f218e6…` a `0aa70249…` porque cambia
-`src/baxy_mind`. Falta la corrida punta a punta con el decisor vigente.
+La unión simétrica ranker+E5, que ya ofrecía **119/124** en V10, se midió
+punta a punta con el decisor vigente y se retiró (ley 2). Offline el ranker
+vivo más el E5 congelado sigue en 119; en producto el E5 vivo sólo ofrece 111
+o 113. Ranker-primero (`goal03_union14e2e1.json`) sirve **82/124**, ofrece 111,
+pierde 28 en decisión y 4 en recuperación, abstiene 30/36, p50 1,90 s.
+E5-primero rellenando a 28 (`goal03_union14e2e2.json`) sirve **81/124**, ofrece
+113, sube la decisión cruda a 88 y el veto a 10, abstiene 25/36. El 4B no
+cobra la cobertura extra: es el mismo intercambio que el 8B e2e (109 mínimo →
+89 producto). El planner vuelve al E5-28 anterior; el sello
+wake-validation-program-tree permanece `b7f218e6…`.
