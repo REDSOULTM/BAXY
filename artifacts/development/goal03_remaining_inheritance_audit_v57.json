@@ -1,0 +1,79 @@
+{
+  "authority": "read-only inheritance audit; no model run, provider, runtime or manifest change",
+  "conclusion": "No remaining inherited selector or guard composition can meet both positive coverage and out-of-catalog gates. External primary-source research is permitted next.",
+  "effects_executed": 0,
+  "findings": {
+    "antiprimacy": {
+      "current_v16_expected_first": 52,
+      "current_v16_expected_first_but_wrong": 4,
+      "current_v16_honest_abstentions": 18,
+      "current_v16_positive_rows": 124,
+      "current_v16_selected_expected": 110,
+      "historical_behavior": "Preserve a capped set while putting its highest-score domain tool first and infrastructure last.",
+      "reason_not_run": "The current shortlist already begins with one ranker's highest score; four V16 errors occur with the expected leaf already first, and ordering cannot raise 18/36 abstentions to the required 31/36."
+    },
+    "functiongemma_as_guard": {
+      "fresh_action_calls": 32,
+      "fresh_honest_abstentions": 33,
+      "fresh_positive_rows": 124,
+      "mixed_real_action_calls": 51,
+      "mixed_real_rows": 71,
+      "reason_rejected": "Both adapters veto far more legitimate real-language actions than a guard may lose."
+    },
+    "historical_svm_as_guard": {
+      "fresh_action_calls": 54,
+      "fresh_honest_abstentions": 31,
+      "fresh_positive_rows": 124,
+      "reason_rejected": "It reaches the negative gate only by vetoing 70/124 legitimate actions."
+    },
+    "mdeberta": {
+      "mtop_cases": 185,
+      "mtop_top_1_accuracy": 0.772973,
+      "mtop_top_3_accuracy": 0.864865,
+      "reason_not_run": "Its independently measured leaf ceiling is below the goal's 112/124 rate; the inherited 1,430-blend ensemble reached only 0.440789 on its current cut."
+    },
+    "ministral_3b": {
+      "decode_change_vs_gemma": "-29%",
+      "policy_latency_change_vs_gemma": "+51%",
+      "vram_change_mib": 968,
+      "reason_not_run": "The prior BAXY already rejected the exact downloaded model physically before later phases."
+    }
+  },
+  "providers_enabled": false,
+  "schema": "baxy.goal03-remaining-inheritance-audit.v1",
+  "sources": [
+    {
+      "path": "biblioteca/gemma4-agent/documentacion/02_router/05_HISTORIAL_SPRINTS.md",
+      "sha256": "66fac62061b6a5efec5d61298c3616b83ac0c3c2e44d03c3626ae77282c2e4ee"
+    },
+    {
+      "path": "C:/Users/usuario/Desktop/ETC/Programacion/BAXY/artifacts/research/full_catalog_mdeberta_v2_mtop_r4.json",
+      "sha256": "1bc2e7b396e1c25ada15eec43b1fd06fc2e165059d23ab358f91f97f8950ce67"
+    },
+    {
+      "path": "C:/Users/usuario/Desktop/ETC/Programacion/BAXY/artifacts/research/operation_shortlist_balancing_ensemble_v1.json",
+      "sha256": "194d922565dee9cde157d329722cb016d4571149518162fda4f012089bec963b"
+    },
+    {
+      "path": "C:/Users/usuario/Desktop/ETC/Programacion/BAXY/artifacts/fixes/ministral_phase2_ab_v2_20260730.json",
+      "sha256": "3596f578982031a77142a6a2aa5b4e6a1852ef1309b80c6689d84946ce40b07a"
+    },
+    {
+      "path": "artifacts/development/goal03_qwen3_8b_iq2_think128_official_sampling_s0_v16.json",
+      "sha256": "99b5e0f577736dd8a659919c9ecf226c384826fb335515bdc69b64b176786d24"
+    },
+    {
+      "path": "artifacts/development/goal03_functiongemma_current_union_v30.json",
+      "sha256": "da18e827b3526e2ffecd3c44f93941c1b1e4f983d614803116449c2fa29cfc06"
+    },
+    {
+      "path": "artifacts/development/goal03_functiongemma_real_mixed_validation_v38.json",
+      "sha256": "37d85b86a9e1f3e56432c0cfb8b551decc2978cc0d66bfb88704ec4b33b2592c"
+    },
+    {
+      "path": "artifacts/development/goal03_historical_family_classifier_v1.json",
+      "sha256": "0031378a7e3b8b4d5b9a678e61bfb65430e455c570e8287e177a78afff0c9ab6"
+    }
+  ],
+  "unsolicited_effects": 0
+}

@@ -1362,3 +1362,19 @@ cero acciones y una inconsistencia de schema, sin autoridad ni aborto. No se
 ocultan fallos de transporte. La latencia es p50 **1,855 s**, p90 2,918 s y
 máximo 3,650 s. Se aplica la regla de parada: V56 no existe, el fresco permanece
 cerrado y no se integra ni se barren quants, prompts o sampling.
+
+V57 agota el resto de la herencia por composición, sin otra inferencia
+(`goal03_remaining_inheritance_audit_v57.json`). El mDeBERTa bidireccional del
+BAXY anterior sólo alcanzó **77,3 %** top-1 y 86,5 % top-3 sobre 185 MTOP; su
+ensemble de 1.430 mezclas dio 44,1 % en el corte `current`. Ministral-3-3B ya
+había sido medido físicamente y rechazado por decode −29 %, decisión P +51 % y
++968 MiB frente a Gemma. Repetirlos no aporta una frontera nueva.
+
+El orden anti-primacía de Carter tampoco puede cerrar esta guarda. V16 ya tenía
+la hoja esperada primera en 52/124 filas y falló cuatro de ellas; ordenar no
+convierte sus 18/36 abstenciones en las 31/36 exigidas. Como guards separados,
+FunctionGemma deja pasar sólo **32/124** acciones frescas (la LoRA mixta 51/71
+reales) y el SVM histórico sólo **54/124**, aunque este último sí abstiene 31/36.
+Todos compran seguridad vetando cobertura legítima. No queda código anterior que
+copiar para esta frontera; la siguiente búsqueda puede pasar a fuentes primarias
+actuales y deberá cambiar de familia, no combinar otra capa de las ya rechazadas.
