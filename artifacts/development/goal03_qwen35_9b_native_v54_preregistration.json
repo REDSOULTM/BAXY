@@ -1,0 +1,86 @@
+{
+  "acceptance": {
+    "inherited_real_clean_selected_expected_minimum": 55,
+    "rule_basis": "ceil(112/124 * population positives) and floor(5/36 * population negatives)",
+    "synthetic_oos_selected_action_calls_maximum": 42,
+    "synthetic_selected_expected_minimum": 431
+  },
+  "abort_repair": {
+    "full_population_restarted_from_row_one": true,
+    "malformed_native_arguments_result": "zero actions, no-match, schema_consistent=false",
+    "original_abort": "artifacts/development/goal03_qwen35_9b_native_abort_v52.json",
+    "transport_process_and_timeout_errors_remain_fatal": true,
+    "v52_output_exists": false,
+    "v53_output_exists": false
+  },
+  "constraints": {
+    "fresh_corpus_evaluation_opened": false,
+    "model_prompt_sampling_candidates_and_gates_unchanged_from_v51": true,
+    "no_other_quant_or_model_size": true,
+    "providers_enabled": false,
+    "runtime_manifest_will_change": false,
+    "sampling_or_prompt_sweep": false
+  },
+  "evidence": {
+    "program_sha256": "8396d9cdad7c1c687168cf64ead376aa8a57d6ff7cfc1fdda3a2db9e14d673ba",
+    "test_command": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY\\experiments\\mind_router_spike\\.venv\\Scripts\\python.exe -m pytest tests/test_probe_goal03_qwen35_9b_native_holdout.py -q",
+    "test_result": "5 passed in 2.95s",
+    "test_sha256": "c89b931adf02acd9e49965a45de8fc9bcad797fb06f983e87a25532545c65eda"
+  },
+  "model": {
+    "base": "Qwen/Qwen3.5-9B",
+    "bytes": 3190613216,
+    "gguf": "D:\\BAXYRuntime\\candidates\\qwen35-9b-iq2xxs\\Qwen3.5-9B-UD-IQ2_XXS.gguf",
+    "quant_repository_revision": "unsloth/Qwen3.5-9B-GGUF@3885219b6810b007914f3a7950a8d1b469d598a5",
+    "sha256": "570ce2bbc92545cffbcb01df43cba59d86093dadc34c25da9f554d256bc70b91"
+  },
+  "order": [
+    {
+      "output": "artifacts/development/goal03_qwen35_9b_native_synthetic_v55.json",
+      "phase": "synthetic",
+      "rows": 784,
+      "stop_if_failed": true
+    },
+    {
+      "output": "artifacts/development/goal03_qwen35_9b_native_real_v56.json",
+      "phase": "inherited-real-clean",
+      "rows": 60,
+      "stop_if_failed": true
+    },
+    {
+      "phase": "goal03-fresh",
+      "rows": 160,
+      "run_only_if_all_prior_gates_pass": true
+    }
+  ],
+  "policy": {
+    "gpu_layers": 99,
+    "malformed_response_mode": "fail_closed",
+    "no_match_mode": "absence_of_tool_calls",
+    "parallel_tool_calls": false,
+    "seed": 0,
+    "temperature": 0.0,
+    "tool_choice": "auto"
+  },
+  "populations": {
+    "inherited_real_validation": {
+      "clean_rows": 60,
+      "excluded_current_union_calibration_overlap": 3,
+      "excluded_current_union_train_overlap": 8,
+      "source_rows": 71,
+      "source_sha256": "c42d27e6ccdc03d0ee6dcce20ca26a52b5c1e49e869b8bdfa91db2b88e622300"
+    },
+    "synthetic_validation": {
+      "no_action": 307,
+      "positive": 477,
+      "rows": 784,
+      "sha256": "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2"
+    }
+  },
+  "runtime": {
+    "llama_cpp_build": 9980,
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "schema": "baxy.goal03-qwen35-9b-native-preregistration.v2",
+  "stop_rule": "Run the complete V55 population, including the row that aborted V52. If either synthetic gate fails, reject without V56 or fresh. If V55 passes, V56 must select at least 55/60 expected leaves before any fresh run."
+}

@@ -1335,3 +1335,15 @@ seguro. Repararlo no cambia modelo, prompt, sampling, candidatos ni gates: una
 respuesta nativa inválida debe contabilizarse como cero acciones y error de
 forma. Esa semántica fail-closed se sellará con nombres de salida nuevos antes de
 repetir la población completa; no se saltará la fila 401.
+
+V54 sella esa reparación antes de repetir nada
+(`goal03_qwen35_9b_native_v54_preregistration.json`). El arnés pasa **5/5**
+pruebas: sólo `JSONDecodeError`, `KeyError`, `TypeError` y `ValueError` al leer la
+respuesta nativa se convierten en cero acciones, no-match y error de schema;
+fallos de conexión, proceso o timeout siguen abortando. Modelo, quant, prompt,
+sampling, candidatos, poblaciones y gates de V51 permanecen idénticos.
+
+V52 y V53 no existen. V55 reiniciará las **784** filas desde la primera,
+incluida la 401 que abortó; exige otra vez **≥431/477** hojas y **≤42/307**
+llamadas negativas. Sólo si pasa se permite V56 sobre las 60 órdenes reales
+limpias, con gate **≥55/60**; el fresco continúa cerrado.

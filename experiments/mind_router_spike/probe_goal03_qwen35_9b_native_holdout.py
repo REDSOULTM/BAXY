@@ -61,8 +61,8 @@ SERVER = Path(
     r"C:\Users\usuario\Desktop\ETC\Programacion\BAXY"
     r"\legacy\models\artifacts\llama-b9980\llama-server.exe"
 )
-SYNTHETIC_OUTPUT = REPO / "artifacts/development/goal03_qwen35_9b_native_synthetic_v52.json"
-REAL_OUTPUT = REPO / "artifacts/development/goal03_qwen35_9b_native_real_v53.json"
+SYNTHETIC_OUTPUT = REPO / "artifacts/development/goal03_qwen35_9b_native_synthetic_v55.json"
+REAL_OUTPUT = REPO / "artifacts/development/goal03_qwen35_9b_native_real_v56.json"
 EXPECTED_SHA256 = {
     VALIDATION: "a81a50fc80af209d9c6827ac81e300d2ebcc9f493c473b2708e58aa5b52ddab2",
     TRAIN: "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad",
@@ -113,6 +113,25 @@ def configure_runtime() -> tuple[LlmRuntime, int]:
     return LlmRuntime(), registered.gpu_layers
 
 
+def safe_native_select(
+    runtime: LlmRuntime,
+    text: str,
+    candidates: list[dict[str, Any]],
+) -> tuple[tuple[str, ...], bool, dict[str, str] | None]:
+    try:
+        selected, no_match = _select(
+            runtime,
+            text,
+            candidates,
+            no_match_mode="none",
+            tool_choice="auto",
+            parallel_tool_calls=False,
+        )
+    except (json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
+        return (), True, {"type": type(error).__name__, "message": str(error)}
+    return selected, no_match, None
+
+
 def run(phase: str) -> Path:
     for path, expected in EXPECTED_SHA256.items():
         if not path.is_file() or sha256(path) != expected:
@@ -130,24 +149,18 @@ def run(phase: str) -> Path:
     results: list[dict[str, Any]] = []
     try:
         warm_names = ["app.open", "system.time", "web.search"]
-        _select(
+        safe_native_select(
             runtime,
             "open calculator",
             [by_name[name] for name in warm_names],
-            no_match_mode="none",
-            tool_choice="auto",
-            parallel_tool_calls=False,
         )
         for index, row in enumerate(rows, 1):
             names = list(row["candidate_operations"])
             started = time.perf_counter()
-            selected, no_match = _select(
+            selected, no_match, native_error = safe_native_select(
                 runtime,
                 str(row["text"]),
                 [by_name[name] for name in names],
-                no_match_mode="none",
-                tool_choice="auto",
-                parallel_tool_calls=False,
             )
             seconds = time.perf_counter() - started
             expected = str(row["operation"])
@@ -161,7 +174,8 @@ def run(phase: str) -> Path:
                     "selected_no_match": bool(no_match),
                     "selected_operations": list(selected),
                     "selected_expected": expected in selected,
-                    "schema_consistent": True,
+                    "schema_consistent": native_error is None,
+                    "native_error": native_error,
                     "seconds": seconds,
                 }
             )

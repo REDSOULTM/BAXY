@@ -26,3 +26,37 @@ def test_native_policy_uses_preregistered_goal_ratio_gates() -> None:
     assert probe.MAXIMUM_SYNTHETIC_OOS_ACTIONS == 42
     assert probe.MINIMUM_REAL_EXACT == 55
     assert probe.MODEL.name == "Qwen3.5-9B-UD-IQ2_XXS.gguf"
+
+
+def test_malformed_native_response_fails_closed(monkeypatch) -> None:
+    def malformed(*args, **kwargs):
+        raise ValueError("selector response emitted arguments")
+
+    monkeypatch.setattr(probe, "_select", malformed)
+
+    selected, no_match, error = probe.safe_native_select(
+        object(),
+        "open calculator",
+        [{"name": "app.open"}],
+    )
+
+    assert selected == ()
+    assert no_match is True
+    assert error == {
+        "type": "ValueError",
+        "message": "selector response emitted arguments",
+    }
+
+
+def test_transport_failures_are_not_hidden(monkeypatch) -> None:
+    def unavailable(*args, **kwargs):
+        raise ConnectionError("server unavailable")
+
+    monkeypatch.setattr(probe, "_select", unavailable)
+
+    try:
+        probe.safe_native_select(object(), "open calculator", [{"name": "app.open"}])
+    except ConnectionError as error:
+        assert str(error) == "server unavailable"
+    else:
+        raise AssertionError("transport failure was hidden")
