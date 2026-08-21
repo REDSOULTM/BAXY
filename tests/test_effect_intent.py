@@ -745,6 +745,16 @@ CASES = [
     ("apaga la compu", ("system.power",)),
     ("arrancame el navegador", ("app.open",)),
     ("esta muy fuerte el audio, bajalo", ("audio.volume.adjust",)),
+    ("dejame el sonido a la mitad", ("audio.volume",)),
+    (
+        "que programas se estan comiendo la memoria",
+        ("system.process.list",),
+    ),
+    ("sacale el hash al archivo reporte.txt", ("filesystem.hash",)),
+    (
+        "que archivos tengo en la carpeta de trabajo",
+        ("filesystem.list",),
+    ),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}

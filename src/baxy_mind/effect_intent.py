@@ -1017,6 +1017,12 @@ def _curated_domain_is_grounded(
                 r"ausente|absent|no existe|does not exist|verifica|verify|check)\b",
             )
         )
+    if operation == "filesystem.hash":
+        if _has(folded, r"\bhash\b") and _has(
+            folded, r"\b(?:archivo|file)\b"
+        ):
+            return True
+        return None
     if operation == "filesystem.list":
         return _has(
             folded,
@@ -1194,8 +1200,8 @@ def _curated_domain_is_grounded(
     if operation == "task.complete":
         return _has(folded, r"\b(?:tarea|task|to-do|todo)\b") and _has(
             folded,
-            r"\b(?:completa|completar|complete|termina|finish|"
-            r"marca|mark)\b",
+            r"\b(?:completa|completar|complete|termina|terminada|terminado|"
+            r"finish|finished|marca|mark)\b",
         )
     if operation == "reminder.delete":
         return _exact_local_reminder_title(folded) is not None
@@ -1275,7 +1281,11 @@ def _curated_domain_is_grounded(
     if operation == "system.status":
         return _is_direct_request(folded) and _system_status_domain(folded)
     if operation in {"system.settings.adjust", "system.settings.status"}:
-        return _has(folded, r"\b(?:brillo|brightness)\b")
+        return _has(
+            folded,
+            r"\b(?:brillo|brightness|luz\s+de\s+la\s+pantalla|"
+            r"screen\s+(?:light|brightness)|how\s+bright)\b",
+        )
     if operation == "system.settings.set":
         return _has(
             folded,
@@ -1312,7 +1322,8 @@ def _curated_domain_is_grounded(
         if operation == "wifi.status":
             return _has(
                 folded,
-                r"\b(?:estado|status|conectad[oa]|connected|como|how|which|cual)\b",
+                r"\b(?:estado|status|conectad[oa]|connected|como|how|which|cual|"
+                r"pegad[oa]|a\s+que)\b",
             )
         return _has(
             folded,
@@ -4278,7 +4289,9 @@ def _system_status_domain(text: str) -> bool:
 def _process_list_domain(text: str) -> bool:
     names_process = _has(
         text,
-        r"\b(?:procesos?|processes|task manager|administrador de tareas)\b",
+        r"\b(?:procesos?|processes|task manager|administrador de tareas)\b|"
+        r"\b(?:programas?|programs?)\b.{0,48}"
+        r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
     )
     excluded = _has(
         text,
@@ -4346,6 +4359,12 @@ def _volume_domain(text: str) -> bool:
     if _has_app_scoped_audio(text):
         return False
     if _has(text, r"\b(?:audio|sonido|sound)\b"):
+        return True
+    if _has(
+        text,
+        r"\b(?:bajito|mas\s+bajo|turn\s+it\s+up|turn\s+it\s+down|"
+        r"barely\s+hear)\b",
+    ) and not _has(text, r"\b(?:brillo|brightness|luz\s+de\s+la\s+pantalla)\b"):
         return True
     if _has(text, r"\b(?:musica|music)\b"):
         # Music is primarily a media object. It denotes the global audio
@@ -4728,6 +4747,7 @@ def _spoken_package_id(text: str) -> str | None:
             r"\bgithub[\s.,-]+github[\s.,-]*desktop\b",
             "GitHub.GitHubDesktop",
         ),
+        (r"\bvlc\b", "VideoLAN.VLC"),
     )
     for pattern, package_id in aliases:
         if _has(folded, pattern):
@@ -4933,7 +4953,7 @@ def _media_play_domain(text: str) -> bool:
         ),
     ) and _has(
         text,
-        r"\b(?:reproduce|reproducir|play|pon)\b",
+        r"\b(?:reproduce|reproducir|play|pon|ponme)\b",
     )
     direct_query = (
         _head_is(_request_head(text), r"(?:reproduce|reproducir|play)")
@@ -7532,6 +7552,18 @@ def _strict_catalog_request(
             found_domains = [
                 item for item in found_domains if item[1] != "system.status"
             ]
+        if any(
+            operation == "audio.status" for _, operation in found_domains
+        ) and _has(
+            text,
+            r"\b(?:a la mitad|to half|bajito|bajalo|subelo)\b",
+        ):
+            found_domains = [
+                (start, "audio.volume")
+                if operation == "audio.status"
+                else (start, operation)
+                for start, operation in found_domains
+            ]
         found_operation_set = frozenset(operation for _, operation in found_domains)
         unresolved_mail_collection = (
             request_observation
@@ -8728,8 +8760,24 @@ def _review_system_and_network_effects(
             "system.process.list",
             r"\b(?:procesos?|processes)\b",
         )
-    elif (
-        (
+    if (
+        not any(entry[2] == "system.process.list" for entry in matches)
+        and _has(folded, r"\b(?:programas?|programs?)\b")
+        and _has(
+            folded,
+            r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
+        )
+        and not _has(folded, r"\b(?:instalad[oa]s?|installed)\b")
+    ):
+        _append(
+            matches,
+            folded,
+            "system.process.list",
+            r"\b(?:programas?|programs?)\b",
+        )
+    if (
+        not any(entry[2] == "system.process.list" for entry in matches)
+        and (
             _head_is(head, rf"(?:{_MACHINE_STATUS_HEAD}|tell)")
             or _has(
                 folded,
@@ -8989,7 +9037,8 @@ def _review_audio_effects(
                 matches,
                 folded,
                 "audio.volume",
-                r"\b(?:pon|poner|fija|ajusta|adjust|establece|set|cambia|change)\b",
+                r"\b(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
+                r"cambia|change|deja|dejame|leave)\b",
             )
         elif context_audio and _has(
             folded,
@@ -9388,6 +9437,22 @@ def _review_file_and_game_effects(
             folded,
             "filesystem.file.open.latest",
             rf"\b{_OPEN}\b",
+        )
+    if _has(folded, r"\bhash\b") and _has(
+        folded, r"\b(?:archivo|file)\b"
+    ):
+        _append(matches, folded, "filesystem.hash", r"\bhash\b")
+    if (
+        _head_is(head, r"(?:que|cuales|what|which)")
+        and _has(folded, r"\b(?:archivos?|files?)\b")
+        and _has(folded, r"\b(?:carpeta|folder|directorio|directory)\b")
+        and not _has(folded, r"\b(?:busca|buscar|search|find|hash)\b")
+    ):
+        _append(
+            matches,
+            folded,
+            "filesystem.list",
+            r"\b(?:archivos?|files?)\b",
         )
     if (
         _head_is(head, _SEARCH)
@@ -12210,6 +12275,13 @@ def resolve_explicit_effects(
         )
     ):
         return EffectIntent(("audio.volume.adjust",), (folded,))
+    if (
+        len(clauses) == 1
+        and "audio.volume" in available
+        and _volume_domain(folded)
+        and _has(folded, r"\ba la mitad\b|\bto half\b")
+    ):
+        return EffectIntent(("audio.volume",), (folded,))
     visible_click = _visible_click_intent(folded, available)
     if visible_click is not None:
         return visible_click

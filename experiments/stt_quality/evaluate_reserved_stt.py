@@ -45,7 +45,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # value belonged to the consumed and rejected wake v17 campaign, and the tree
 # had already drifted past it before the request-completion repair landed.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "45b27ee3ecf5fbfb91f24e96853c6f6b34fcce1202b63733d6552023f082893e"
+    "a2542f9162cc92721a0589ac15b11ddefbe89ab2c8b7fc4c6c170f3f91298cc8"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
