@@ -21,11 +21,15 @@ siguen abiertas a propósito.
 - Hallazgo 7 — «BAXY no es una aplicación web» dicho en `AGENTS.md` y en cada goal.
 - Hallazgo 8 — `.grok/` creado con el método de medición; `.codex/` marcado como
   archivado.
+- Hallazgo 3 — `git status --short` pasa de **80 líneas a 0**. Los 21 marcadores
+  `.json` de las corridas sueltas y las dos corridas que la documentación cita entran
+  al repositorio; las 47 trazas crudas que nadie cita (17,7 MB) se mueven a
+  `artifacts/_trazas_locales/`, ignorada por Git y descrita en `.gitignore`. La regla
+  no es nueva: es la proporción que el árbol ya tenía —712 `.json` versionados frente
+  a 44 `turn-audit`—, ahora escrita.
 
 **Abierto, y por qué:**
 
-- Hallazgo 3 — los 77 ficheros sin versionar siguen ahí. Decidir cuáles son evidencia
-  que se commitea y cuáles son basura es del dueño del proyecto, no de un agente.
 - Hallazgo 9 — ninguna capacidad nueva se ha encendido. Ninguna entra sin medir antes
   con la sonda de `.grok/README.md`.
 
