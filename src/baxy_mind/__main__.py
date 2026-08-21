@@ -5679,26 +5679,11 @@ def _prepare_turn_result(
             game_catalog,
         )
     )
-    if explicit_intent is not None and not _recogniser_identity_holds(
-        explicit_intent,
-        objective,
-        tool_by_name,
-        llm,
-        application_names,
-    ):
-        # The deterministic recogniser publishes the operations it resolved; it
-        # ranks nothing, so when a rule fires on the wrong leaf the shortlist it
-        # hands downstream *is* that wrong leaf and every later stage inherits
-        # it. Goal 03 measured the cost -- 12 of 124 -- and measured that
-        # sending all 38 of its rows to the model instead is worse, 24 served
-        # against 26. What it never had was the third option: keep the rows it
-        # gets right and decline the ones it does not. That is what this is, and
-        # it is the same one-sided contract verifier the domain refusal already
-        # uses, so no new mechanism enters the tree.
-        recogniser_declined = list(explicit_intent.operations)
-        explicit_intent = None
-    else:
-        recogniser_declined = []
+    # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
+    # (app.open, note.create, task.create) after the grammar already named
+    # them, and only one false sister (audio.status for a volume request).
+    # Domain grounding still vetoes ungrounded families. Keep the recogniser.
+    recogniser_declined: list[str] = []
     catalog_unavailable_decision = _catalog_unavailable_turn_decision(
         objective,
         explicit_intent,
