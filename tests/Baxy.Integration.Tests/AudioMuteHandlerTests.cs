@@ -364,10 +364,14 @@ public sealed class AudioMuteHandlerTests
     {
         private readonly Func<AudioVolumeCommand, AudioControlReceipt> _volume;
         private readonly Func<AudioMuteCommand, AudioControlReceipt> _mute;
+        private readonly Func<AudioStatusQuery, AudioStatusReceipt>? _status;
+        private AudioControlReceipt? _lastVolume;
+        private AudioControlReceipt? _lastMute;
 
         public StubProvider(
             Func<AudioVolumeCommand, AudioControlReceipt>? volume = null,
-            Func<AudioMuteCommand, AudioControlReceipt>? mute = null)
+            Func<AudioMuteCommand, AudioControlReceipt>? mute = null,
+            Func<AudioStatusQuery, AudioStatusReceipt>? status = null)
         {
             _volume = volume ?? (command => SuccessVolume(
                 command.InvocationId,
@@ -375,6 +379,7 @@ public sealed class AudioMuteHandlerTests
             _mute = mute ?? (command => SuccessMute(
                 command.InvocationId,
                 command.State));
+            _status = status;
         }
 
         public int VolumeCallCount { get; private set; }
@@ -388,12 +393,23 @@ public sealed class AudioMuteHandlerTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (_status is not null)
+            {
+                return ValueTask.FromResult(_status(query));
+            }
+
+            AudioEndpointState state = _lastMute?.Final
+                ?? _lastVolume?.Final
+                ?? new AudioEndpointState(55, false);
+            string? endpointHash = _lastMute?.EndpointIdHash
+                ?? _lastVolume?.EndpointIdHash
+                ?? EndpointHash;
             return ValueTask.FromResult(new AudioStatusReceipt(
                 query.InvocationId,
                 AudioOperationIds.Status,
                 AudioTargetIds.DefaultOutput,
-                EndpointHash,
-                new AudioEndpointState(55, false),
+                endpointHash,
+                state,
                 Verified: true,
                 ErrorCode: null));
         }
@@ -404,7 +420,9 @@ public sealed class AudioMuteHandlerTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             VolumeCallCount++;
-            return ValueTask.FromResult(_volume(command));
+            AudioControlReceipt receipt = _volume(command);
+            _lastVolume = receipt;
+            return ValueTask.FromResult(receipt);
         }
 
         public ValueTask<AudioControlReceipt> SetMuteAsync(
@@ -414,7 +432,9 @@ public sealed class AudioMuteHandlerTests
             cancellationToken.ThrowIfCancellationRequested();
             MuteCallCount++;
             LastMuteCommand = command;
-            return ValueTask.FromResult(_mute(command));
+            AudioControlReceipt receipt = _mute(command);
+            _lastMute = receipt;
+            return ValueTask.FromResult(receipt);
         }
 
         private static AudioControlReceipt SuccessVolume(

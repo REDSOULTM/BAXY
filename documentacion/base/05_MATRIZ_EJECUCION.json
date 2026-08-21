@@ -1,0 +1,1919 @@
+{
+  "schema": "baxy.goal05-execution-matrix.v1",
+  "measuredAtUtc": "2026-08-21T21:58:46.3152313+00:00",
+  "catalogOperations": 170,
+  "observed": 82,
+  "unverifiable": 88,
+  "liveRuns": [
+    {
+      "operation": "audio.status",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "audio.volume",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": true
+    },
+    {
+      "operation": "note.create",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "note.read",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "app.open",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": true
+    },
+    {
+      "operation": "app.status",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "app.installed",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.time",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.identity",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.status",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.process.list",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "network.status",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.active",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.resolve",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.application.status",
+      "round": 1,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "audio.status",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "audio.volume",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": true
+    },
+    {
+      "operation": "note.create",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "note.read",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "app.open",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": true
+    },
+    {
+      "operation": "app.status",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "app.installed",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.time",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.identity",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.status",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.process.list",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "network.status",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.active",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.resolve",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.application.status",
+      "round": 2,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "network.dns.status",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "network.ip.list",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "network.port.list",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "system.settings.status",
+      "round": 0,
+      "status": "failed",
+      "verified": false,
+      "errorCode": "brightness_status_verification_failed",
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "window.resolve",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "app.close",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": true
+    },
+    {
+      "operation": "clipboard.read.text",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "clipboard.write.text",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "clipboard.read.text",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "capture.screenshot",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    },
+    {
+      "operation": "audio.volume",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": true
+    },
+    {
+      "operation": "clipboard.write.text",
+      "round": 0,
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "effectMayHaveOccurred": false,
+      "messageStartsListo": false
+    }
+  ],
+  "rows": [
+    {
+      "operation": "app.close",
+      "verifierContractId": "app.close.identity.window.absence.v1",
+      "risk": "work_loss",
+      "observation": "HWND de la ventana resuelta ausente tras WM_CLOSE, sin matar el proceso.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "app.installed",
+      "verifierContractId": "app.installed.windows.catalog.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Catálogo Inicio de Windows: la aplicación está o no está, sin abrirla.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "app.open",
+      "verifierContractId": "app.open.process.window.focus.v1",
+      "risk": "low_reversible",
+      "observation": "Proceso vivo + ventana visible + foco, independientes del recibo del lanzador.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "app.status",
+      "verifierContractId": "app.status.catalog.ready.v1",
+      "risk": "read_only",
+      "observation": "El núcleo local responde y enumera el catálogo tipado.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "audio.microphone.mute",
+      "verifierContractId": "audio.microphone.mute.capture.endpoint.postread.v1",
+      "risk": "low_reversible",
+      "observation": "audio.microphone.mute.capture.endpoint.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "El adapter externo puede postleer el endpoint, pero no se muta el audio del usuario fuera de audio.volume/mute restaurables."
+    },
+    {
+      "operation": "audio.mute",
+      "verifierContractId": "audio.mute.endpoint.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del endpoint Core Audio, más una segunda lectura de estado en Core.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "audio.status",
+      "verifierContractId": "audio.status.endpoint.read.v1",
+      "risk": "read_only",
+      "observation": "Lectura del volumen y silencio del endpoint predeterminado, sin mutar.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "audio.volume",
+      "verifierContractId": "audio.volume.endpoint.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del endpoint Core Audio, más una segunda lectura de estado en Core.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "audio.volume.adjust",
+      "verifierContractId": "audio.volume.adjust.endpoint.postread.v1",
+      "risk": "low_reversible",
+      "observation": "audio.volume.adjust.endpoint.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "El adapter externo puede postleer el endpoint, pero no se muta el audio del usuario fuera de audio.volume/mute restaurables."
+    },
+    {
+      "operation": "backup.create",
+      "verifierContractId": "backup.create.sandbox.hash.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "backup.known.create",
+      "verifierContractId": "backup.known.create.windows.zip.hash.postread.v1",
+      "risk": "low_reversible",
+      "observation": "backup.known.create.windows.zip.hash.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "ZIP de carpetas conocidas del usuario; no se copia Desktop/Documents para rellenar la celda."
+    },
+    {
+      "operation": "backup.known.list",
+      "verifierContractId": "backup.known.list.windows.manifest.hash.snapshot.v1",
+      "risk": "read_only",
+      "observation": "backup.known.list.windows.manifest.hash.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "ZIP de carpetas conocidas del usuario; no se copia Desktop/Documents para rellenar la celda."
+    },
+    {
+      "operation": "backup.known.restore.latest",
+      "verifierContractId": "backup.known.restore.latest.windows.extract.hash.postread.v1",
+      "risk": "low_reversible",
+      "observation": "backup.known.restore.latest.windows.extract.hash.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "ZIP de carpetas conocidas del usuario; no se copia Desktop/Documents para rellenar la celda."
+    },
+    {
+      "operation": "backup.known.verify.latest",
+      "verifierContractId": "backup.known.verify.latest.windows.hash.postread.v1",
+      "risk": "read_only",
+      "observation": "backup.known.verify.latest.windows.hash.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "ZIP de carpetas conocidas del usuario; no se copia Desktop/Documents para rellenar la celda."
+    },
+    {
+      "operation": "backup.list",
+      "verifierContractId": "backup.list.sandbox.hash.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "backup.restore",
+      "verifierContractId": "backup.restore.sandbox.hash.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "backup.verify",
+      "verifierContractId": "backup.verify.sandbox.hash.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "bluetooth.device.list",
+      "verifierContractId": "bluetooth.device.list.hardware.snapshot.v1",
+      "risk": "read_only",
+      "observation": "bluetooth.device.list.hardware.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Requiere radio Bluetooth y el adapter de hardware; no se recorre aquí para no enumerar dispositivos del usuario como pass simulado."
+    },
+    {
+      "operation": "bluetooth.device.pair",
+      "verifierContractId": "bluetooth.device.pair.hardware.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "bluetooth.device.pair.hardware.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutación de radio/emparejamiento no restaurable en esta sesión."
+    },
+    {
+      "operation": "bluetooth.radio.set",
+      "verifierContractId": "bluetooth.radio.set.windows.radio.postread.v1",
+      "risk": "low_reversible",
+      "observation": "bluetooth.radio.set.windows.radio.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutación de radio/emparejamiento no restaurable en esta sesión."
+    },
+    {
+      "operation": "browser.control",
+      "verifierContractId": "browser.control.cdp.postread.v1",
+      "risk": "low_reversible",
+      "observation": "browser.control.cdp.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión CDP viva; sin ella el provider falla cerrado (cdp_browser_session_required)."
+    },
+    {
+      "operation": "browser.navigate",
+      "verifierContractId": "browser.navigate.cdp.url.postread.v1",
+      "risk": "external_communication",
+      "observation": "browser.navigate.cdp.url.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión CDP viva; sin ella el provider falla cerrado (cdp_browser_session_required)."
+    },
+    {
+      "operation": "browser.navigate.named",
+      "verifierContractId": "browser.navigate.named.cdp.url.postread.v1",
+      "risk": "external_communication",
+      "observation": "browser.navigate.named.cdp.url.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión CDP viva; sin ella el provider falla cerrado (cdp_browser_session_required)."
+    },
+    {
+      "operation": "browser.page.read",
+      "verifierContractId": "browser.page.read.cdp.dom.snapshot.v1",
+      "risk": "privacy_sensitive",
+      "observation": "browser.page.read.cdp.dom.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión CDP viva; sin ella el provider falla cerrado (cdp_browser_session_required)."
+    },
+    {
+      "operation": "browser.tabs.list",
+      "verifierContractId": "browser.tabs.list.cdp.targets.snapshot.v1",
+      "risk": "privacy_sensitive",
+      "observation": "browser.tabs.list.cdp.targets.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión CDP viva; sin ella el provider falla cerrado (cdp_browser_session_required)."
+    },
+    {
+      "operation": "calendar.event.create",
+      "verifierContractId": "calendar.event.create.account.postread.v1",
+      "risk": "external_communication",
+      "observation": "calendar.event.create.account.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una cuenta Microsoft Graph autenticada."
+    },
+    {
+      "operation": "calendar.event.list",
+      "verifierContractId": "calendar.event.list.account.snapshot.v1",
+      "risk": "read_only",
+      "observation": "calendar.event.list.account.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una cuenta Microsoft Graph autenticada."
+    },
+    {
+      "operation": "capture.active.window",
+      "verifierContractId": "capture.active.window.gdi.foreground.bounds.bmp.hash.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Hash SHA-256 del BMP GDI escrito en el almacén privado de capturas.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "capture.screenshot",
+      "verifierContractId": "capture.screenshot.gdi.bmp.hash.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Hash SHA-256 del BMP GDI escrito en el almacén privado de capturas.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "clipboard.copy",
+      "verifierContractId": "clipboard.copy.win32.foreground.sendinput.sequence.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "clipboard.copy.win32.foreground.sendinput.sequence.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "SendInput sobre la ventana enfocada; el efecto semántico en la app no es observable de forma restaurable sin robar el foco de esta sesión."
+    },
+    {
+      "operation": "clipboard.paste",
+      "verifierContractId": "clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1",
+      "risk": "privacy_sensitive",
+      "observation": "clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "SendInput sobre la ventana enfocada; el efecto semántico en la app no es observable de forma restaurable sin robar el foco de esta sesión."
+    },
+    {
+      "operation": "clipboard.read.text",
+      "verifierContractId": "clipboard.read.text.sequence.secondread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Segunda lectura de la secuencia del portapapeles de Windows.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "clipboard.write.text",
+      "verifierContractId": "clipboard.write.text.sequence.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Segunda lectura de la secuencia del portapapeles de Windows.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "email.latest.read",
+      "verifierContractId": "email.latest.read.outlook.mapi.snapshot.v1",
+      "risk": "privacy_sensitive",
+      "observation": "email.latest.read.outlook.mapi.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige un perfil Outlook autenticado."
+    },
+    {
+      "operation": "email.latest.reply",
+      "verifierContractId": "email.latest.reply.outlook.sent.postread.v1",
+      "risk": "external_communication",
+      "observation": "email.latest.reply.outlook.sent.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige un perfil Outlook autenticado."
+    },
+    {
+      "operation": "filesystem.copy",
+      "verifierContractId": "filesystem.copy.sandbox.hash.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.create.directory",
+      "verifierContractId": "filesystem.create.directory.sandbox.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.file.open.latest",
+      "verifierContractId": "filesystem.file.open.latest.windows.shell.process.postread.v1",
+      "risk": "low_reversible",
+      "observation": "filesystem.file.open.latest.windows.shell.process.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Abriría Explorer sobre carpetas del usuario; no se lanza un shell persistente para rellenar la celda."
+    },
+    {
+      "operation": "filesystem.folder.open",
+      "verifierContractId": "filesystem.folder.open.windows.shell.postread.v1",
+      "risk": "low_reversible",
+      "observation": "filesystem.folder.open.windows.shell.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Abriría Explorer sobre carpetas del usuario; no se lanza un shell persistente para rellenar la celda."
+    },
+    {
+      "operation": "filesystem.hash",
+      "verifierContractId": "filesystem.hash.sandbox.revalidated.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.known.duplicates",
+      "verifierContractId": "filesystem.known.duplicates.windows.size.hash.snapshot.v1",
+      "risk": "read_only",
+      "observation": "filesystem.known.duplicates.windows.size.hash.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Opera sobre carpetas conocidas del usuario (Desktop/Documents/…); no restaurable aquí."
+    },
+    {
+      "operation": "filesystem.known.search",
+      "verifierContractId": "filesystem.known.search.windows.identities.v1",
+      "risk": "read_only",
+      "observation": "filesystem.known.search.windows.identities.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Opera sobre carpetas conocidas del usuario (Desktop/Documents/…); no restaurable aquí."
+    },
+    {
+      "operation": "filesystem.known.trash.named",
+      "verifierContractId": "filesystem.known.trash.named.windows.absence.v1",
+      "risk": "recoverable_delete",
+      "observation": "filesystem.known.trash.named.windows.absence.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Opera sobre carpetas conocidas del usuario (Desktop/Documents/…); no restaurable aquí."
+    },
+    {
+      "operation": "filesystem.list",
+      "verifierContractId": "filesystem.list.sandbox.identities.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.move",
+      "verifierContractId": "filesystem.move.sandbox.hash.absence.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.path.ensure.absent",
+      "verifierContractId": "filesystem.path.ensure.absent.windows.private.trash.postread.v1",
+      "risk": "recoverable_delete",
+      "observation": "filesystem.path.ensure.absent.windows.private.trash.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Opera sobre carpetas conocidas del usuario (Desktop/Documents/…); no restaurable aquí."
+    },
+    {
+      "operation": "filesystem.read.text",
+      "verifierContractId": "filesystem.read.text.sandbox.hash.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.sandbox.append.named",
+      "verifierContractId": "filesystem.sandbox.append.named.hash.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.sandbox.diff.named",
+      "verifierContractId": "filesystem.sandbox.diff.named.hash.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.sandbox.move.named",
+      "verifierContractId": "filesystem.sandbox.move.named.hash.absence.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.search",
+      "verifierContractId": "filesystem.search.sandbox.identities.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.trash.commit",
+      "verifierContractId": "filesystem.trash.commit.sandbox.absence.v1",
+      "risk": "recoverable_delete",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.trash.prepare",
+      "verifierContractId": "filesystem.trash.prepare.sandbox.selection.v1",
+      "risk": "read_only",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.trash.restore",
+      "verifierContractId": "filesystem.trash.restore.sandbox.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "filesystem.write.text",
+      "verifierContractId": "filesystem.write.text.sandbox.cas.hash.v1",
+      "risk": "low_reversible",
+      "observation": "Postlectura del sandbox CAS: existencia, ausencia o SHA-256 del recurso.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "game.catalog.list",
+      "verifierContractId": "game.catalog.list.steam.snapshot.v1",
+      "risk": "read_only",
+      "observation": "game.catalog.list.steam.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Inventario Steam/Epic; sin cliente autorizado el adapter no observa un catálogo."
+    },
+    {
+      "operation": "game.install.cancel",
+      "verifierContractId": "game.install.cancel.steam.postread.v1",
+      "risk": "work_loss",
+      "observation": "game.install.cancel.steam.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.install.cancel.active",
+      "verifierContractId": "game.install.cancel.active.steam.all.postread.v1",
+      "risk": "work_loss",
+      "observation": "game.install.cancel.active.steam.all.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.install.commit",
+      "verifierContractId": "game.install.commit.steam.job.v1",
+      "risk": "installation",
+      "observation": "game.install.commit.steam.job.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.install.named",
+      "verifierContractId": "game.install.named.steam.manifest.postread.v1",
+      "risk": "installation",
+      "observation": "game.install.named.steam.manifest.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.install.prepare",
+      "verifierContractId": "game.install.prepare.steam.selection.v1",
+      "risk": "read_only",
+      "observation": "game.install.prepare.steam.selection.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.install.status",
+      "verifierContractId": "game.install.status.steam.snapshot.v1",
+      "risk": "read_only",
+      "observation": "game.install.status.steam.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Inventario Steam/Epic; sin cliente autorizado el adapter no observa un catálogo."
+    },
+    {
+      "operation": "game.installed.named",
+      "verifierContractId": "game.installed.named.steam.epic.manifest.directory.postread.v1",
+      "risk": "read_only",
+      "observation": "game.installed.named.steam.epic.manifest.directory.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Inventario Steam/Epic; sin cliente autorizado el adapter no observa un catálogo."
+    },
+    {
+      "operation": "game.launch",
+      "verifierContractId": "game.launch.steam.process.postread.v1",
+      "risk": "low_reversible",
+      "observation": "game.launch.steam.process.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.purchase.commit",
+      "verifierContractId": "game.purchase.commit.steam.receipt.v1",
+      "risk": "monetary",
+      "observation": "game.purchase.commit.steam.receipt.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "game.purchase.prepare",
+      "verifierContractId": "game.purchase.prepare.steam.selection.v1",
+      "risk": "read_only",
+      "observation": "game.purchase.prepare.steam.selection.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Instalación, lanzamiento o cobro en Steam: no restaurable y, en purchase, efecto monetario."
+    },
+    {
+      "operation": "input.key.press",
+      "verifierContractId": "input.key.press.win32.sendinput.accepted.v1",
+      "risk": "low_reversible",
+      "observation": "input.key.press.win32.sendinput.accepted.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Win32 SendInput aceptado no es el efecto semántico en la app enfocada; dispararlo aquí escribiría en esta sesión."
+    },
+    {
+      "operation": "input.keyboard.layout",
+      "verifierContractId": "input.keyboard.layout.win32.foreground.postread.v1",
+      "risk": "low_reversible",
+      "observation": "input.keyboard.layout.win32.foreground.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría teclado, puntero o control UIA enfocado; no restaurable sin robar el foco."
+    },
+    {
+      "operation": "input.keyboard.open",
+      "verifierContractId": "input.keyboard.open.window.visible.postread.v1",
+      "risk": "low_reversible",
+      "observation": "input.keyboard.open.window.visible.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría teclado, puntero o control UIA enfocado; no restaurable sin robar el foco."
+    },
+    {
+      "operation": "input.keyboard.status",
+      "verifierContractId": "input.keyboard.status.win32.foreground.read.v1",
+      "risk": "read_only",
+      "observation": "input.keyboard.status.win32.foreground.read.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría teclado, puntero o control UIA enfocado; no restaurable sin robar el foco."
+    },
+    {
+      "operation": "input.pointer.control",
+      "verifierContractId": "input.pointer.control.win32.postread.v1",
+      "risk": "low_reversible",
+      "observation": "input.pointer.control.win32.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría teclado, puntero o control UIA enfocado; no restaurable sin robar el foco."
+    },
+    {
+      "operation": "input.select.all",
+      "verifierContractId": "input.select.all.focused.uia.postread.v1",
+      "risk": "low_reversible",
+      "observation": "input.select.all.focused.uia.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría teclado, puntero o control UIA enfocado; no restaurable sin robar el foco."
+    },
+    {
+      "operation": "input.text.type",
+      "verifierContractId": "input.text.type.win32.sendinput.accepted.v1",
+      "risk": "privacy_sensitive",
+      "observation": "input.text.type.win32.sendinput.accepted.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Win32 SendInput aceptado no es el efecto semántico en la app enfocada; dispararlo aquí escribiría en esta sesión."
+    },
+    {
+      "operation": "input.visible.click",
+      "verifierContractId": "input.visible.click.windows.uia.invoke.postread.v1",
+      "risk": "external_communication",
+      "observation": "input.visible.click.windows.uia.invoke.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría teclado, puntero o control UIA enfocado; no restaurable sin robar el foco."
+    },
+    {
+      "operation": "media.control",
+      "verifierContractId": "media.control.smtc.postread.v1",
+      "risk": "low_reversible",
+      "observation": "media.control.smtc.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "SMTC observa la sesión multimedia, pero no hay una sesión restaurable garantizada en esta máquina."
+    },
+    {
+      "operation": "media.play.exact",
+      "verifierContractId": "media.play.exact.session.postread.v1",
+      "risk": "external_communication",
+      "observation": "media.play.exact.session.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Reproducción de Spotify/YouTube: Windows no expone un API de «está sonando esta pista» sin sesión SMTC/CDP autenticada."
+    },
+    {
+      "operation": "media.play.query",
+      "verifierContractId": "media.play.query.session.postread.v1",
+      "risk": "external_communication",
+      "observation": "media.play.query.session.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Reproducción de Spotify/YouTube: Windows no expone un API de «está sonando esta pista» sin sesión SMTC/CDP autenticada."
+    },
+    {
+      "operation": "media.play.youtube",
+      "verifierContractId": "media.play.youtube.cdp.video.postread.v1",
+      "risk": "external_communication",
+      "observation": "media.play.youtube.cdp.video.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Reproducción de Spotify/YouTube: Windows no expone un API de «está sonando esta pista» sin sesión SMTC/CDP autenticada."
+    },
+    {
+      "operation": "media.seek.relative",
+      "verifierContractId": "media.seek.relative.smtc.timeline.postread.v1",
+      "risk": "low_reversible",
+      "observation": "media.seek.relative.smtc.timeline.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "SMTC observa la sesión multimedia, pero no hay una sesión restaurable garantizada en esta máquina."
+    },
+    {
+      "operation": "media.status",
+      "verifierContractId": "media.status.smtc.read.v1",
+      "risk": "read_only",
+      "observation": "media.status.smtc.read.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "SMTC observa la sesión multimedia, pero no hay una sesión restaurable garantizada en esta máquina."
+    },
+    {
+      "operation": "memory.correct",
+      "verifierContractId": "memory.correct.protected.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.disable",
+      "verifierContractId": "memory.disable.protected.status.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.enable",
+      "verifierContractId": "memory.enable.protected.status.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.export",
+      "verifierContractId": "memory.export.protected.receipt.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.forget",
+      "verifierContractId": "memory.forget.protected.absence.v1",
+      "risk": "work_loss",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.list",
+      "verifierContractId": "memory.list.protected.page.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.recall",
+      "verifierContractId": "memory.recall.protected.records.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.save",
+      "verifierContractId": "memory.save.protected.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.sensitive.save",
+      "verifierContractId": "memory.sensitive.save.protected.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.session.clear",
+      "verifierContractId": "memory.session.clear.protected.scope.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "memory.status",
+      "verifierContractId": "memory.status.protected.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "message.recipient.resolve",
+      "verifierContractId": "message.recipient.resolve.session.identity.v1",
+      "risk": "read_only",
+      "observation": "message.recipient.resolve.session.identity.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige WhatsApp/Discord con sesión; el tick de enviado vive en UIA de esa app, no en el código de retorno."
+    },
+    {
+      "operation": "message.send",
+      "verifierContractId": "message.send.session.receipt.v1",
+      "risk": "external_communication",
+      "observation": "message.send.session.receipt.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige WhatsApp/Discord con sesión; el tick de enviado vive en UIA de esa app, no en el código de retorno."
+    },
+    {
+      "operation": "network.dns.status",
+      "verifierContractId": "network.dns.status.windows.interfaces.secondread.v1",
+      "risk": "read_only",
+      "observation": "Dos observaciones consecutivas de interfaces, listeners o eco ICMP de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "network.ip.list",
+      "verifierContractId": "network.ip.list.windows.unicast.secondread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "Dos observaciones consecutivas de interfaces, listeners o eco ICMP de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "network.ping",
+      "verifierContractId": "network.ping.icmp.reply.receipt.v1",
+      "risk": "read_only",
+      "observation": "Dos observaciones consecutivas de interfaces, listeners o eco ICMP de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "network.port.list",
+      "verifierContractId": "network.port.list.windows.listeners.secondread.v1",
+      "risk": "read_only",
+      "observation": "Dos observaciones consecutivas de interfaces, listeners o eco ICMP de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "network.status",
+      "verifierContractId": "network.status.interfaces.secondread.v1",
+      "risk": "read_only",
+      "observation": "Dos observaciones consecutivas de interfaces, listeners o eco ICMP de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "note.create",
+      "verifierContractId": "note.create.local.reopen.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "note.list",
+      "verifierContractId": "note.list.local.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "note.read",
+      "verifierContractId": "note.read.local.identity.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "note.restore",
+      "verifierContractId": "note.restore.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "note.search",
+      "verifierContractId": "note.search.local.reopen.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "note.trash",
+      "verifierContractId": "note.trash.local.postread.v1",
+      "risk": "recoverable_delete",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "note.update",
+      "verifierContractId": "note.update.local.reopen.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "notification.cancel.at",
+      "verifierContractId": "notification.cancel.windows.task.clock.identity.absent.v1",
+      "risk": "low_reversible",
+      "observation": "notification.cancel.windows.task.clock.identity.absent.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Crearía o borraría tareas visibles del Programador de tareas de Windows."
+    },
+    {
+      "operation": "notification.cancel.latest",
+      "verifierContractId": "notification.cancel.windows.task.absent.v1",
+      "risk": "low_reversible",
+      "observation": "notification.cancel.windows.task.absent.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Crearía o borraría tareas visibles del Programador de tareas de Windows."
+    },
+    {
+      "operation": "notification.diagnose",
+      "verifierContractId": "notification.diagnose.windows.task.receipt.postread.v1",
+      "risk": "read_only",
+      "observation": "notification.diagnose.windows.task.receipt.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Crearía o borraría tareas visibles del Programador de tareas de Windows."
+    },
+    {
+      "operation": "notification.dismiss",
+      "verifierContractId": "notification.dismiss.reminder.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local de recordatorios vencidos.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "notification.list.due",
+      "verifierContractId": "notification.list.due.clock.postread.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local de recordatorios vencidos.",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "notification.schedule",
+      "verifierContractId": "notification.schedule.windows.task.postread.v1",
+      "risk": "low_reversible",
+      "observation": "notification.schedule.windows.task.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Crearía o borraría tareas visibles del Programador de tareas de Windows."
+    },
+    {
+      "operation": "ocr.read",
+      "verifierContractId": "ocr.read.windows.capture.binding.v1",
+      "risk": "privacy_sensitive",
+      "observation": "ocr.read.windows.capture.binding.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Tesseract en esta máquina no tiene spa.traineddata; el OCR de una captura en español no es verificable con el paquete instalado."
+    },
+    {
+      "operation": "office.document.create",
+      "verifierContractId": "office.document.create.adapter.postread.v1",
+      "risk": "low_reversible",
+      "observation": "office.document.create.adapter.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige un adapter Office autenticado."
+    },
+    {
+      "operation": "office.document.read",
+      "verifierContractId": "office.document.read.adapter.snapshot.v1",
+      "risk": "read_only",
+      "observation": "office.document.read.adapter.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige un adapter Office autenticado."
+    },
+    {
+      "operation": "package.install.commit",
+      "verifierContractId": "package.install.commit.winget.receipt.v1",
+      "risk": "installation",
+      "observation": "package.install.commit.winget.receipt.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "winget instalaría software; prepare sin commit no afirma un efecto, y commit no es restaurable."
+    },
+    {
+      "operation": "package.install.prepare",
+      "verifierContractId": "package.install.prepare.winget.selection.v1",
+      "risk": "read_only",
+      "observation": "package.install.prepare.winget.selection.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "winget instalaría software; prepare sin commit no afirma un efecto, y commit no es restaurable."
+    },
+    {
+      "operation": "peripheral.list",
+      "verifierContractId": "peripheral.list.hardware.snapshot.v1",
+      "risk": "read_only",
+      "observation": "peripheral.list.hardware.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Enumeraría hardware del usuario; no se toma como pass sin un inventario restaurable acotado."
+    },
+    {
+      "operation": "peripheral.print",
+      "verifierContractId": "peripheral.print.hardware.job.v1",
+      "risk": "privacy_sensitive",
+      "observation": "peripheral.print.hardware.job.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Enviaría un trabajo a impresora o escáner reales."
+    },
+    {
+      "operation": "peripheral.scan",
+      "verifierContractId": "peripheral.scan.hardware.capture.v1",
+      "risk": "privacy_sensitive",
+      "observation": "peripheral.scan.hardware.capture.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Enviaría un trabajo a impresora o escáner reales."
+    },
+    {
+      "operation": "reminder.create",
+      "verifierContractId": "reminder.create.local.clock.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "reminder.delete",
+      "verifierContractId": "reminder.delete.local.postread.v1",
+      "risk": "recoverable_delete",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "reminder.list",
+      "verifierContractId": "reminder.list.local.postread.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "reminder.resolve.exact",
+      "verifierContractId": "reminder.resolve.exact.local.identity.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "reminder.restore",
+      "verifierContractId": "reminder.restore.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.delete",
+      "verifierContractId": "routine.delete.local.postread.v1",
+      "risk": "recoverable_delete",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.list",
+      "verifierContractId": "routine.list.local.postread.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.phrase.create",
+      "verifierContractId": "routine.phrase.create.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.read",
+      "verifierContractId": "routine.read.local.identity.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.resolve.exact",
+      "verifierContractId": "routine.resolve.exact.local.identity.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.restore",
+      "verifierContractId": "routine.restore.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "routine.set.enabled",
+      "verifierContractId": "routine.set.enabled.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "streaming.navigate",
+      "verifierContractId": "streaming.navigate.session.uri.postread.v1",
+      "risk": "external_communication",
+      "observation": "streaming.navigate.session.uri.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión autenticada de Netflix/Prime/YouTube."
+    },
+    {
+      "operation": "streaming.play.named",
+      "verifierContractId": "streaming.play.named.netflix.cdp.video.progress.v1",
+      "risk": "external_communication",
+      "observation": "streaming.play.named.netflix.cdp.video.progress.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige una sesión autenticada de Netflix/Prime/YouTube."
+    },
+    {
+      "operation": "system.application.crash.diagnose",
+      "verifierContractId": "system.application.crash.diagnose.windows.eventlog.recordid.secondread.v1",
+      "risk": "read_only",
+      "observation": "system.application.crash.diagnose.windows.eventlog.recordid.secondread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Leería el registro Application; no se recorre el Event Log del usuario para rellenar la celda."
+    },
+    {
+      "operation": "system.identity",
+      "verifierContractId": "system.identity.windows.environment.secondread.v1",
+      "risk": "read_only",
+      "observation": "Dos lecturas coherentes de entorno, procesos o reloj de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "system.power",
+      "verifierContractId": "system.power.windows.transition.receipt.v1",
+      "risk": "work_loss",
+      "observation": "system.power.windows.transition.receipt.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Lock/restart/shutdown/signout/sleep no son restaurables: la API oficial acepta la transición y la máquina abandona la sesión."
+    },
+    {
+      "operation": "system.process.list",
+      "verifierContractId": "system.process.list.windows.identity.secondread.v1",
+      "risk": "read_only",
+      "observation": "Dos lecturas coherentes de entorno, procesos o reloj de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "system.process.terminate.named",
+      "verifierContractId": "system.process.terminate.named.windows.original.identity.absence.postread.v1",
+      "risk": "work_loss",
+      "observation": "system.process.terminate.named.windows.original.identity.absence.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mataría procesos por nombre; no restaurable."
+    },
+    {
+      "operation": "system.recyclebin.empty",
+      "verifierContractId": "system.recyclebin.empty.windows.zero.count.postread.v1",
+      "risk": "work_loss",
+      "observation": "system.recyclebin.empty.windows.zero.count.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Vaciaría la Papelera del usuario."
+    },
+    {
+      "operation": "system.settings.adjust",
+      "verifierContractId": "system.settings.adjust.windows.postread.v1",
+      "risk": "low_reversible",
+      "observation": "system.settings.adjust.windows.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "WMI de brillo en esta máquina devolvió brightness_status_verification_failed; no se muta el brillo del usuario y no se afirma un estado que Windows no corroboró."
+    },
+    {
+      "operation": "system.settings.set",
+      "verifierContractId": "system.settings.set.windows.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "system.settings.set.windows.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "WMI de brillo en esta máquina devolvió brightness_status_verification_failed; no se muta el brillo del usuario y no se afirma un estado que Windows no corroboró."
+    },
+    {
+      "operation": "system.settings.status",
+      "verifierContractId": "system.settings.status.windows.monitor.brightness.secondread.v1",
+      "risk": "read_only",
+      "observation": "system.settings.status.windows.monitor.brightness.secondread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "WMI de brillo en esta máquina devolvió brightness_status_verification_failed; no se muta el brillo del usuario y no se afirma un estado que Windows no corroboró."
+    },
+    {
+      "operation": "system.status",
+      "verifierContractId": "system.status.windows.measurement.v1",
+      "risk": "read_only",
+      "observation": "Dos lecturas coherentes de entorno, procesos o reloj de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "system.time",
+      "verifierContractId": "system.time.clock.secondread.v1",
+      "risk": "read_only",
+      "observation": "Dos lecturas coherentes de entorno, procesos o reloj de Windows.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "task.complete",
+      "verifierContractId": "task.complete.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.create",
+      "verifierContractId": "task.create.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.delete",
+      "verifierContractId": "task.delete.local.postread.v1",
+      "risk": "recoverable_delete",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.list",
+      "verifierContractId": "task.list.local.reopen.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.reopen",
+      "verifierContractId": "task.reopen.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.resolve.exact",
+      "verifierContractId": "task.resolve.exact.local.identity.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.restore",
+      "verifierContractId": "task.restore.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.search",
+      "verifierContractId": "task.search.local.reopen.v1",
+      "risk": "read_only",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "task.update",
+      "verifierContractId": "task.update.local.postread.v1",
+      "risk": "low_reversible",
+      "observation": "Relectura del almacén local (CAS / reapertura del documento).",
+      "verdict": "observed",
+      "surface": "isolated_store",
+      "reason": null
+    },
+    {
+      "operation": "vision.describe",
+      "verifierContractId": "vision.describe.provider.capture.binding.v1",
+      "risk": "privacy_sensitive",
+      "observation": "vision.describe.provider.capture.binding.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Exige un VLM configurado sobre una captura; pertenece al goal 07."
+    },
+    {
+      "operation": "web.search",
+      "verifierContractId": "web.search.provider.results.v1",
+      "risk": "read_only",
+      "observation": "web.search.provider.results.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "El proveedor web no está configurado (web_search_provider_not_configured)."
+    },
+    {
+      "operation": "wifi.connect",
+      "verifierContractId": "wifi.connect.wlan.profile.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "wifi.connect.wlan.profile.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría la radio WLAN del usuario; no restaurable."
+    },
+    {
+      "operation": "wifi.connect.named",
+      "verifierContractId": "wifi.connect.named.wlan.profile.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "wifi.connect.named.wlan.profile.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría la radio WLAN del usuario; no restaurable."
+    },
+    {
+      "operation": "wifi.disconnect",
+      "verifierContractId": "wifi.disconnect.wlan.postread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "wifi.disconnect.wlan.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría la radio WLAN del usuario; no restaurable."
+    },
+    {
+      "operation": "wifi.ensure.connected",
+      "verifierContractId": "wifi.ensure.connected.wlan.current.profile.postread.v1",
+      "risk": "read_only",
+      "observation": "wifi.ensure.connected.wlan.current.profile.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "WLAN netsh/WlanApi puede leerse, pero wifi.status es privacy_sensitive y exige confirmación; no se afirma un SSID ni se toma un pending como pass."
+    },
+    {
+      "operation": "wifi.profile.list",
+      "verifierContractId": "wifi.profile.list.wlan.snapshot.v1",
+      "risk": "read_only",
+      "observation": "wifi.profile.list.wlan.snapshot.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "WLAN netsh/WlanApi puede leerse, pero wifi.status es privacy_sensitive y exige confirmación; no se afirma un SSID ni se toma un pending como pass."
+    },
+    {
+      "operation": "wifi.status",
+      "verifierContractId": "wifi.status.netsh.wlan.secondread.v1",
+      "risk": "privacy_sensitive",
+      "observation": "wifi.status.netsh.wlan.secondread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "WLAN netsh/WlanApi puede leerse, pero wifi.status es privacy_sensitive y exige confirmación; no se afirma un SSID ni se toma un pending como pass."
+    },
+    {
+      "operation": "window.active",
+      "verifierContractId": "window.active.identity.foreground.v1",
+      "risk": "read_only",
+      "observation": "Identidad HWND: proceso, visibilidad y geometría observados, sin mutar.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "window.application.status",
+      "verifierContractId": "window.application.status.catalog.visible.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Identidad HWND: proceso, visibilidad y geometría observados, sin mutar.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "window.focus",
+      "verifierContractId": "window.focus.identity.foreground.v1",
+      "risk": "low_reversible",
+      "observation": "window.focus.identity.foreground.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría una ventana arbitraria del escritorio; sólo se ejercita app.open de Bloc de notas, que se deja como se encontró o se cierra si esta sesión la lanzó."
+    },
+    {
+      "operation": "window.maximize",
+      "verifierContractId": "window.maximize.identity.state.v1",
+      "risk": "low_reversible",
+      "observation": "window.maximize.identity.state.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría una ventana arbitraria del escritorio; sólo se ejercita app.open de Bloc de notas, que se deja como se encontró o se cierra si esta sesión la lanzó."
+    },
+    {
+      "operation": "window.minimize",
+      "verifierContractId": "window.minimize.identity.state.v1",
+      "risk": "low_reversible",
+      "observation": "window.minimize.identity.state.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría una ventana arbitraria del escritorio; sólo se ejercita app.open de Bloc de notas, que se deja como se encontró o se cierra si esta sesión la lanzó."
+    },
+    {
+      "operation": "window.move",
+      "verifierContractId": "window.move.identity.bounds.v1",
+      "risk": "low_reversible",
+      "observation": "window.move.identity.bounds.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría una ventana arbitraria del escritorio; sólo se ejercita app.open de Bloc de notas, que se deja como se encontró o se cierra si esta sesión la lanzó."
+    },
+    {
+      "operation": "window.resize",
+      "verifierContractId": "window.resize.identity.bounds.v1",
+      "risk": "low_reversible",
+      "observation": "window.resize.identity.bounds.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría una ventana arbitraria del escritorio; sólo se ejercita app.open de Bloc de notas, que se deja como se encontró o se cierra si esta sesión la lanzó."
+    },
+    {
+      "operation": "window.resolve",
+      "verifierContractId": "window.resolve.identity.snapshot.v1",
+      "risk": "read_only",
+      "observation": "Identidad HWND: proceso, visibilidad y geometría observados, sin mutar.",
+      "verdict": "observed",
+      "surface": "live_windows",
+      "reason": null
+    },
+    {
+      "operation": "window.restore",
+      "verifierContractId": "window.restore.identity.state.v1",
+      "risk": "low_reversible",
+      "observation": "window.restore.identity.state.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Mutaría una ventana arbitraria del escritorio; sólo se ejercita app.open de Bloc de notas, que se deja como se encontró o se cierra si esta sesión la lanzó."
+    }
+  ]
+}

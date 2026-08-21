@@ -65,6 +65,14 @@ internal sealed class AudioMuteHandler(IAudioControlProvider provider) : IOperat
             return AudioControlEvidence.VerificationFailure(receipt);
         }
 
+        AudioStatusReceipt observed = await _provider.GetStatusAsync(
+            new AudioStatusQuery(invocation.InvocationId),
+            cancellationToken).ConfigureAwait(false);
+        if (!AudioControlEvidence.MatchesIndependentStatus(receipt, observed))
+        {
+            return AudioControlEvidence.VerificationFailure(receipt);
+        }
+
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);
         return OperationOutcome.Success(serialized);
     }

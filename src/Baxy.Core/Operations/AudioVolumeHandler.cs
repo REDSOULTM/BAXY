@@ -70,6 +70,14 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
             return AudioControlEvidence.VerificationFailure(receipt);
         }
 
+        AudioStatusReceipt observed = await _provider.GetStatusAsync(
+            new AudioStatusQuery(invocation.InvocationId),
+            cancellationToken).ConfigureAwait(false);
+        if (!AudioControlEvidence.MatchesIndependentStatus(receipt, observed))
+        {
+            return AudioControlEvidence.VerificationFailure(receipt);
+        }
+
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);
         return OperationOutcome.Success(serialized);
     }
@@ -202,6 +210,23 @@ internal static class AudioControlEvidence
             : OperationOutcome.Failure(
                 errorCode,
                 effectMayHaveOccurred: effectMayHaveOccurred);
+    }
+
+    internal static bool MatchesIndependentStatus(
+        AudioControlReceipt receipt,
+        AudioStatusReceipt status)
+    {
+        AudioEndpointState? claimed = receipt.Final;
+        AudioEndpointState? observed = status.State;
+        return status.Verified
+            && status.ErrorCode is null
+            && claimed is not null
+            && observed is not null
+            && string.Equals(status.Operation, AudioOperationIds.Status, StringComparison.Ordinal)
+            && string.Equals(status.TargetId, receipt.TargetId, StringComparison.Ordinal)
+            && string.Equals(status.EndpointIdHash, receipt.EndpointIdHash, StringComparison.Ordinal)
+            && Math.Abs(observed.VolumePercent - claimed.VolumePercent) <= MaximumVolumeTolerance
+            && observed.Muted == claimed.Muted;
     }
 
     internal static OperationOutcome VerificationFailure(AudioControlReceipt? receipt) =>

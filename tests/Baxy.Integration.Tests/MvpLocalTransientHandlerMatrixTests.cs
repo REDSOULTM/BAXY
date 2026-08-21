@@ -306,6 +306,8 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         private const string EndpointHash =
             "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
+        private AudioEndpointState _observed = new(55, false);
+
         public int MuteCalls { get; private set; }
         public int VolumeCalls { get; private set; }
 
@@ -319,7 +321,7 @@ public sealed class MvpLocalTransientHandlerMatrixTests
                 AudioOperationIds.Status,
                 AudioTargetIds.DefaultOutput,
                 EndpointHash,
-                new AudioEndpointState(55, false),
+                _observed,
                 Verified: true,
                 ErrorCode: null));
         }
@@ -330,6 +332,9 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             VolumeCalls++;
+            AudioEndpointState baseline = _observed;
+            AudioEndpointState final = new(command.Level, baseline.Muted);
+            _observed = final;
             return ValueTask.FromResult(new AudioControlReceipt(
                 command.InvocationId,
                 AudioOperationIds.Volume,
@@ -337,8 +342,8 @@ public sealed class MvpLocalTransientHandlerMatrixTests
                 EndpointHash,
                 command.Level,
                 RequestedState: null,
-                new AudioEndpointState(55, false),
-                new AudioEndpointState(command.Level, false),
+                baseline,
+                final,
                 Applied: true,
                 Reconciled: false,
                 Verified: true,
@@ -351,6 +356,8 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             MuteCalls++;
+            AudioEndpointState final = new(55, command.State);
+            _observed = final;
             return ValueTask.FromResult(new AudioControlReceipt(
                 command.InvocationId,
                 AudioOperationIds.Mute,
@@ -359,7 +366,7 @@ public sealed class MvpLocalTransientHandlerMatrixTests
                 RequestedLevel: null,
                 command.State,
                 new AudioEndpointState(55, !command.State),
-                new AudioEndpointState(55, command.State),
+                final,
                 Applied: true,
                 Reconciled: false,
                 Verified: true,

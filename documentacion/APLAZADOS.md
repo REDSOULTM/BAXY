@@ -138,3 +138,9 @@ goal.
 - **V9 no se abrió** — el único sello ciego sin consumir. Esta medición usa el corpus fresco del goal 03 (`761c1bc3…`), ya abierto. Abrir V9 sin scorer congelado lo quema. *Goal 04.*
 - **El catálogo de aplicaciones de Windows trae nombres duplicados al plegar** — «Developer Command Prompt for VS 2022» aparece dos veces; `catalog.configure` ahora se salta el duplicado en vez de rechazar el handshake. No se desduplica en Core. *Goal 04.*
 - **«¿Quieres que capture.screenshot?» (cap-01)** — nombra la hoja interna en la pregunta. No es un éxito no verificado ni un «un momento…». *Goal 04.*
+- **`input.key.press` / `input.text.type`:** Win32 SendInput aceptado no es el efecto semántico en la app enfocada. Dispararlo aquí escribiría en esta sesión. *Goal 05.*
+- **`window.move` / `resize` / `focus` / `minimize` / `maximize` / `restore`:** el observador HWND existe; no se mutó una ventana arbitraria del escritorio. Sólo se abrió y cerró el Bloc de notas que lanzó esta sesión. *Goal 05.*
+- **SMTC / «está sonando»:** Windows expone `GlobalSystemMediaTransportControlsSessionManager`, pero sin sesión multimedia restaurable no se afirma reproducción. *Goal 05.*
+- **`system.settings.status` brillo:** WMI devolvió `brightness_status_verification_failed` en dos lecturas. No se toca el brillo del usuario. *Goal 05.*
+- **`audio.volume.adjust` y `audio.microphone.mute` siguen por el handler externo** — el volumen absoluto y el mute de salida ya postleen el endpoint en Core; no se unificó el catálogo (eso es forma, goal 03). *Goal 05.*
+- **La matriz MVP externa (`actualEffectsExecuted=0`) sigue como prueba de contrato** — recibo no verificado → rechazo. No es pass de ejecución. No se borra porque todavía cubre el borde del provider inerte. *Goal 05.*

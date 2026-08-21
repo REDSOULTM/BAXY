@@ -189,8 +189,29 @@ internal sealed class CreateNoteHandler(INoteStore store) : NoteHandlerBase(stor
             arguments.Title,
             arguments.Content,
             invocation.InvocationId);
+        NoteRecord observed;
+        try
+        {
+            observed = Store.Read(created.Id);
+        }
+        catch (NoteNotFoundException)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
 
-        return OperationOutcome.Success(Serialize(ToResult(created)));
+        if (observed.Id != created.Id
+            || observed.IsTrashed
+            || !string.Equals(observed.Title, created.Title, StringComparison.Ordinal)
+            || !string.Equals(observed.Content, created.Content, StringComparison.Ordinal))
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
+        }
+
+        return OperationOutcome.Success(Serialize(ToResult(observed)));
     }
 }
 
@@ -283,7 +304,9 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
         NoteRecord verified = Store.Read(trashed.Id, includeTrashed: true);
         if (!verified.IsTrashed)
         {
-            return OperationOutcome.Failure("verification_failed");
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
         }
 
         return OperationOutcome.Success(Serialize(ToResult(verified)));
@@ -306,7 +329,9 @@ internal sealed class SearchNotesHandler(INoteStore store) : NoteHandlerBase(sto
                 || !string.Equals(verified.Title, summary.Title, StringComparison.Ordinal)
                 || verified.IsTrashed != summary.IsTrashed)
             {
-                return OperationOutcome.Failure("verification_failed");
+                return OperationOutcome.Failure(
+                    "verification_failed",
+                    effectMayHaveOccurred: false);
             }
         }
 
@@ -337,7 +362,9 @@ internal sealed class RestoreNoteHandler(INoteStore store) : NoteHandlerBase(sto
         NoteRecord verified = Store.Read(restored.Id);
         if (verified.IsTrashed)
         {
-            return OperationOutcome.Failure("verification_failed");
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
         }
 
         return OperationOutcome.Success(Serialize(ToResult(verified)));
@@ -367,7 +394,9 @@ internal sealed class UpdateNoteHandler(INoteStore store) : NoteHandlerBase(stor
             || !string.Equals(verified.Title, updated.Title, StringComparison.Ordinal)
             || !string.Equals(verified.Content, updated.Content, StringComparison.Ordinal))
         {
-            return OperationOutcome.Failure("verification_failed");
+            return OperationOutcome.Failure(
+                "verification_failed",
+                effectMayHaveOccurred: true);
         }
         return OperationOutcome.Success(Serialize(ToResult(verified)));
     }

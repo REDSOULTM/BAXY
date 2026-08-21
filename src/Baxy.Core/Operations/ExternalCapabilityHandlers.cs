@@ -142,6 +142,17 @@ internal sealed class ExternalCapabilityHandler(
                 effectMayHaveOccurred: effectMayHaveOccurred,
                 causeCode: effectMayHaveOccurred ? "external_effect_ambiguous" : null);
         }
+
+        if (Definition.Risk != OperationRisk.ReadOnly && !receipt.EffectObserved)
+        {
+            return OperationOutcome.Failure(
+                "external_verification_failed",
+                effectMayHaveOccurred: receipt.EffectMayHaveOccurred,
+                causeCode: receipt.EffectMayHaveOccurred
+                    ? "external_effect_ambiguous"
+                    : "external_effect_unobserved");
+        }
+
         return OperationOutcome.Success(receipt.Result.Value);
     }
 }

@@ -570,10 +570,14 @@ public sealed class AudioVolumeHandlerTests
     {
         private readonly Func<AudioVolumeCommand, AudioControlReceipt> _volume;
         private readonly Func<AudioMuteCommand, AudioControlReceipt> _mute;
+        private readonly Func<AudioStatusQuery, AudioStatusReceipt>? _status;
+        private AudioControlReceipt? _lastVolume;
+        private AudioControlReceipt? _lastMute;
 
         public StubProvider(
             Func<AudioVolumeCommand, AudioControlReceipt>? volume = null,
-            Func<AudioMuteCommand, AudioControlReceipt>? mute = null)
+            Func<AudioMuteCommand, AudioControlReceipt>? mute = null,
+            Func<AudioStatusQuery, AudioStatusReceipt>? status = null)
         {
             _volume = volume ?? (command => SuccessVolume(
                 command.InvocationId,
@@ -581,11 +585,14 @@ public sealed class AudioVolumeHandlerTests
             _mute = mute ?? (command => SuccessMute(
                 command.InvocationId,
                 command.State));
+            _status = status;
         }
 
         public int VolumeCallCount { get; private set; }
 
         public int MuteCallCount { get; private set; }
+
+        public int StatusCallCount { get; private set; }
 
         public AudioVolumeCommand? LastVolumeCommand { get; private set; }
 
@@ -594,12 +601,24 @@ public sealed class AudioVolumeHandlerTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            StatusCallCount++;
+            if (_status is not null)
+            {
+                return ValueTask.FromResult(_status(query));
+            }
+
+            AudioEndpointState state = _lastVolume?.Final
+                ?? _lastMute?.Final
+                ?? new AudioEndpointState(55, false);
+            string? endpointHash = _lastVolume?.EndpointIdHash
+                ?? _lastMute?.EndpointIdHash
+                ?? EndpointHash;
             return ValueTask.FromResult(new AudioStatusReceipt(
                 query.InvocationId,
                 AudioOperationIds.Status,
                 AudioTargetIds.DefaultOutput,
-                EndpointHash,
-                new AudioEndpointState(55, false),
+                endpointHash,
+                state,
                 Verified: true,
                 ErrorCode: null));
         }
@@ -611,7 +630,9 @@ public sealed class AudioVolumeHandlerTests
             cancellationToken.ThrowIfCancellationRequested();
             VolumeCallCount++;
             LastVolumeCommand = command;
-            return ValueTask.FromResult(_volume(command));
+            AudioControlReceipt receipt = _volume(command);
+            _lastVolume = receipt;
+            return ValueTask.FromResult(receipt);
         }
 
         public ValueTask<AudioControlReceipt> SetMuteAsync(
@@ -620,7 +641,9 @@ public sealed class AudioVolumeHandlerTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             MuteCallCount++;
-            return ValueTask.FromResult(_mute(command));
+            AudioControlReceipt receipt = _mute(command);
+            _lastMute = receipt;
+            return ValueTask.FromResult(receipt);
         }
 
         private static AudioControlReceipt SuccessMute(

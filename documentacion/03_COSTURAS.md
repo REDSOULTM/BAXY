@@ -165,7 +165,7 @@ mentirosa.
 
 | Pieza | Borde | Qué decide el cambio | Elegido hoy | Goal | Fecha |
 |---|---|---|---|---|---|
-| Verificación de efectos | Contrato | | | 05 | |
+| Verificación de efectos | Contrato | **Matriz `documentacion/base/05_MATRIZ_EJECUCION.json`:** 170 operaciones del catálogo tipado, cada una con postlectura directa del estado reivindicado o razón de no verificable. Un observador candidato se mide contra las mismas filas: mismas observaciones, mismo degradado honesto. Un recibo simulado (`Verified=true`, `actualEffectsExecuted=0`) no cuenta. Tres provocaciones de ejecutor mentiroso (audio, app.open, note.create) tienen que seguir en `failed` / no «Listo» | Postlecturas directas por operación: Core Audio `GetStatus` aparte del setter, inventario HWND/proceso aparte del lanzador, reapertura de nota/CAS. Cero registro de estrategias. `VerifierContractId` es identidad de catálogo | 05 | 2026-08-21 |
 | Automatización de apps (UIA) | Contrato | | Sólo `WindowsDeviceControlAdapter.cs` toca UIA en C#; el UIA real vive en `DesktopClickVisible.ps1` y `DesktopSelectAll.ps1`, ya sin nombre de aplicación | 01 → 07 | 2026-08-16 |
 | OCR | Proceso | | Tesseract 5.4.0 vía `CaptureVisionAdapter.cs`. **Le falta `spa.traineddata`**: hoy sólo tiene `eng` y `osd` | 01 → 07 | 2026-08-16 |
 | Motor de visión | Proceso | | | 07 | |
@@ -175,7 +175,7 @@ mentirosa.
 | Pieza | Borde | Qué decide el cambio | Elegido hoy | Goal | Fecha |
 |---|---|---|---|---|---|
 | Almacén de memoria | Contrato | | | 10 | |
-| Journal de invocaciones | Contrato | | | 05 | |
+| Journal de invocaciones | Contrato | Tres números sobre el mismo `invocationId`: (1) un `failed` con `effectMayHaveOccurred` se asienta y la segunda ejecución es replay — el handler no corre; (2) `pending` no asienta y el mismo id reintenta; (3) un token de confirmación no autoriza otro `invocationId`. Integridad HMAC/ancla ya la miden `FileInvocationJournalTests` | `FileInvocationJournal` JSONL + HMAC; replay de respuestas terminales. `pending` (reintentable y `confirmation_required`) no se journala como terminal | 05 | 2026-08-21 |
 | Capa visual (bandeja / WebView) | Contrato | | | 10 | |
 | Instalación y arranque | Contrato | | | 10 | |
 
