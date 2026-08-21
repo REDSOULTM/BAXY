@@ -1310,3 +1310,15 @@ llamada. El segundo control caliente tarda **0,858 s**; los 4,906 s del primero
 incluyen carga y no son latencia de turno. Son sólo controles no frescos, sin
 providers. La compatibilidad autoriza sellar un holdout, no promover el modelo;
 VRAM y latencia de población siguen sin medir.
+
+V51 sella el challenger antes de abrir sus holdouts
+(`goal03_qwen35_9b_native_v51_preregistration.json`). Reutiliza sin cambios el
+selector nativo heredado: `tool_choice=auto`, temperatura 0, semilla 0, sin calls
+paralelas; ausencia de `tool_calls` es abstención y sólo acepta nombres del
+catálogo. El arnés verifica 169 contratos y pasa **3/3** pruebas.
+
+El orden y los gates son los mismos de V47: V52 sintético exige **≥431/477**
+hojas y **≤42/307** llamadas negativas; sólo si pasa, V53 exige **≥55/60** reales
+limpias; sólo entonces se abre el fresco. Se fijan las 99 capas porque el smoke
+ya demostró que cargan; la VRAM pico se medirá antes de cualquier integración.
+No se cambiarán quant, prompt, temperatura ni modo `auto` tras ver resultados.
