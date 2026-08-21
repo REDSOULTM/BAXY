@@ -5829,6 +5829,15 @@ def _prepare_turn_result(
                     required,
                     planner_catalog,
                 )
+        if recogniser_declined:
+            # The identity verifier may withdraw a true colloquial leaf that
+            # E5 never ranked. Keep that leaf visible to the model path so a
+            # decline cannot become a retrieval hole.
+            shortlist = _shortlist_with_required_effects(
+                shortlist,
+                tuple(recogniser_declined),
+                planner_catalog,
+            )
     candidates = [
         {
             "name": tool.name,

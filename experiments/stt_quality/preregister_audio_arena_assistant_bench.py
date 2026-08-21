@@ -35,7 +35,7 @@ EXPECTED_FORMAT = {
 # Re-sealed against the current tree; this benchmark has never been opened.
 # See audit_fresh_postweight_stt_sources.py for the full lineage.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2f0ed2e2b84dd270332f98ff1a373288bb8a74d628e7fbe7ad3fe7da8a06c32d"
+    "b270a98db2dd62a79934fa20390521e5bd7a1acd8d04be2321dfe1767ba22de0"
 )
 TURN_PATTERN = re.compile(r"turn_(\d{3})\.wav\Z")
 

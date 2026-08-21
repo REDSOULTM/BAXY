@@ -719,6 +719,26 @@ CASES = [
         "agendame una reunion manana de diez a once",
         ("calendar.event.create",),
     ),
+    ("pasa a la siguiente cancion", ("media.control",)),
+    ("dale enter", ("input.key.press",)),
+    ("llevame a wikipedia", ("browser.navigate",)),
+    (
+        "apuntame que tengo que llamar al dentista",
+        ("note.create",),
+    ),
+    (
+        "jot down that the router password is on the fridge",
+        ("note.create",),
+    ),
+    ("hazme grande esta ventana que no veo nada", ("window.maximize",)),
+    (
+        "send this window down to the taskbar",
+        ("window.minimize",),
+    ),
+    (
+        "devuelvele el tamano normal a la ventana",
+        ("window.restore",),
+    ),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}

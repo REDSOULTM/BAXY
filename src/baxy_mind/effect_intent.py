@@ -917,7 +917,8 @@ def _curated_domain_is_grounded(
             r"\b(?:teclado|keyboard|tecla|teclas|key|keys|"
             r"escribe|escribir|escribi|tipea|type|typing|teclea|teclear|"
             r"atajo|shortcut|combinacion|combination|presiona|press|"
-            r"distribucion|layout)\b",
+            r"distribucion|layout|"
+            r"dale\s+(?:enter|intro|return)|(?:press|hit|type)\s+enter)\b",
         )
     if operation in {"calendar.event.create", "calendar.event.list"}:
         names_calendar = _has(
@@ -4603,6 +4604,11 @@ def _window_domain(text: str) -> bool:
         ),
     ):
         return True
+    if _has(
+        text,
+        r"\b(?:esta|this)\s+(?:ventana|window)\b(?!\s+of\s+opportunity)",
+    ):
+        return True
     return _has(
         text,
         (
@@ -6052,10 +6058,15 @@ def _review_local_data_effects(
 ) -> bool:
     """Append clause-local data effects and report explicit web-search intent."""
 
-    if _head_is(head, r"(?:anota|anotar|note down)") and not _has(
-        folded, r"\b(?:nota|note)\b"
-    ):
-        _append(matches, folded, "note.create", r"\b(?:anota|anotar|note down)\b")
+    if _head_is(
+        head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)"
+    ) and not _has(folded, r"\b(?:nota|note)\b"):
+        _append(
+            matches,
+            folded,
+            "note.create",
+            r"\b(?:anota|anotar|anotame|apunta|apuntame|jot)\b",
+        )
     if _head_is(head, r"(?:write|escribe|escribir)") and _has(
         folded, r"\b(?:nota|note)\b"
     ):
@@ -6679,6 +6690,10 @@ def _is_direct_request(text: str) -> bool:
         r"trancame|tranca|bloqueame|bloquea|lock|"
         r"agendame|"
         r"para(?=\s+lo\s+que\s+esta)|"
+        r"apuntame|apunta|jot|"
+        r"dale(?=\s+(?:enter|intro|return))|"
+        r"llevame|"
+        r"devuelvele|devuelve|devuelveme|"
         r"maximiza|minimiza|restaura|escribe|escribi|escribele|escribile|write|type|"
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
@@ -9479,6 +9494,47 @@ def _review_application_and_window_effects(
             )
         ):
             _append_all(matches, folded, operation, pattern)
+    if not any(
+        entry[2] in {"window.maximize", "window.minimize", "window.restore"}
+        for entry in matches
+    ) and _has(folded, r"\b(?:ventana|window)\b"):
+        if _has(
+            folded,
+            r"\b(?:hazme|make|pon)\b.{0,24}\bgrande\b.{0,24}"
+            r"\b(?:ventana|window)\b|"
+            r"\b(?:hazme|make|pon)\b.{0,24}\b(?:ventana|window)\b.{0,24}"
+            r"\bgrande\b",
+        ):
+            _append(
+                matches,
+                folded,
+                "window.maximize",
+                r"\b(?:grande|maximize)\b",
+            )
+        elif _has(
+            folded,
+            r"\b(?:taskbar|barra\s+de\s+tareas)\b",
+        ) and _has(
+            folded,
+            r"\b(?:abajo|down|send|manda|minimiza|minimize)\b",
+        ):
+            _append(
+                matches,
+                folded,
+                "window.minimize",
+                r"\b(?:taskbar|barra\s+de\s+tareas)\b",
+            )
+        elif _has(
+            folded,
+            r"\b(?:tamano|size)\s+normal\b|"
+            r"\b(?:tamano|size)\s+(?:original|usual|regular)\b",
+        ):
+            _append(
+                matches,
+                folded,
+                "window.restore",
+                r"\b(?:tamano|size)\b",
+            )
     window_mutations = [
         entry
         for entry in matches
@@ -9518,6 +9574,16 @@ def _review_input_and_capture_effects(
 ) -> None:
     """Append keyboard, clipboard, screenshot, and OCR effects."""
 
+    if _head_is(head, r"(?:dale|press|hit)") and _has(
+        folded,
+        r"\b(?:dale|press|hit)\s+(?:enter|intro|return)\b",
+    ):
+        _append(
+            matches,
+            folded,
+            "input.key.press",
+            r"\b(?:enter|intro|return)\b",
+        )
     if (
         _head_is(head, r"(?:escribe|escribir|escribi|type)")
         and _has(folded, r"\b(?:escribe|escribir|escribi|type)\b")
@@ -9921,6 +9987,17 @@ def _review_web_and_browser_effects(
             "browser.navigate",
             rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b",
         )
+    elif (
+        _head_is(head, r"(?:llevame|take|ve|go|navega|navigate)")
+        and _has(folded, r"\bwikipedia\b")
+        and not _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")
+    ):
+        _append(
+            matches,
+            folded,
+            "browser.navigate",
+            r"\bwikipedia\b",
+        )
     browser_page_context = context_browser is not None or _has(
         folded,
         r"\b(?:actual|current|navegador|browser|web|sitio|site)\b",
@@ -10174,6 +10251,24 @@ def _review_media_and_email_effects(
             folded,
             "media.control",
             r"\b(?:para|pausa|pausar|pause|deten|detener|stop)\b",
+        )
+    if (
+        not any(entry[2] == "media.control" for entry in matches)
+        and _head_is(head, r"(?:pasa|pasar|skip|siguiente|next)")
+        and _has(
+            folded,
+            r"\b(?:siguiente|next|anterior|previous)\b",
+        )
+        and _has(
+            folded,
+            r"\b(?:cancion|song|pista|track|musica|music|tema)\b",
+        )
+    ):
+        _append(
+            matches,
+            folded,
+            "media.control",
+            r"\b(?:pasa|pasar|skip|siguiente|next)\b",
         )
     if (
         _head_is(head, r"(?:que|what|cual|which|dime|show|muestra)")
