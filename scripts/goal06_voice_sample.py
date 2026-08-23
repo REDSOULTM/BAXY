@@ -24,6 +24,7 @@ from scripts.measure_mind_budget import (  # noqa: E402
     sidecar_environment,
 )
 from baxy_mind.llm import (  # noqa: E402
+    compose_visible_defect,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
 )
@@ -70,7 +71,7 @@ CASES = [
       "target": "Spotify"}),
     ("en-clarify", "open it", "clarification",
      {"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"}),
-    ("en-deny", "that I don't do", "error",
+    ("en-deny", "order a pizza", "error",
      {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}),
     ("en-welcome", "hi", "welcome", {"kind": "welcome", "polarity": "success"}),
     ("mix-success", "abre Spotify and play", "status",
@@ -84,39 +85,173 @@ CASES = [
 
 def _expand_cases() -> list[tuple[str, str, str, dict]]:
     extras: list[tuple[str, str, str, dict]] = []
-    templates = [
-        ("volume", "sube el volumen", "status",
+    apps = [
+        ("Steam", "abre Steam", "open Steam"),
+        ("Chrome", "abre Chrome", "open Chrome"),
+        ("Notepad", "abre el Bloc de notas", "open Notepad"),
+        ("Discord", "abre Discord", "open Discord"),
+        ("VLC", "abre VLC", "open VLC"),
+        ("Word", "abre Word", "open Word"),
+        ("Excel", "abre Excel", "open Excel"),
+        ("Firefox", "abre Firefox", "open Firefox"),
+        ("Calculadora", "abre Calculadora", "open Calculator"),
+        ("Terminal", "abre la terminal", "open Terminal"),
+    ]
+    for i, (app, es, en) in enumerate(apps):
+        extras.append((
+            f"open-ok-{app}", es, "status",
+            {"kind": "operation", "operation": "app.open", "polarity": "success",
+             "verified": True, "observed": {"app": app}},
+        ))
+        extras.append((
+            f"open-fail-{app}", es, "error",
+            {"kind": "failure", "cause": "app_not_found", "polarity": "failure",
+             "target": app},
+        ))
+        extras.append((
+            f"open-en-{app}", en, "status",
+            {"kind": "operation", "operation": "app.open", "polarity": "success",
+             "verified": True, "observed": {"app": app}},
+        ))
+        extras.append((
+            f"timeout-{app}", es, "error",
+            {"kind": "failure", "cause": "timeout", "polarity": "failure",
+             "target": app},
+        ))
+    extras.extend([
+        ("vol-10", "pon el volumen a 10", "status",
          {"kind": "operation", "operation": "audio.volume", "polarity": "success",
-          "verified": True, "observed": {"level": 40}}),
-        ("mute", "silencia el audio", "status",
+          "verified": True, "observed": {"level": 10}}),
+        ("vol-80", "sube el volumen a 80", "status",
+         {"kind": "operation", "operation": "audio.volume", "polarity": "success",
+          "verified": True, "observed": {"level": 80}}),
+        ("unmute", "reactiva el audio", "status",
+         {"kind": "operation", "operation": "audio.mute", "polarity": "success",
+          "verified": True, "observed": {"muted": False}}),
+        ("note-ideas", "crea una nota Ideas", "status",
+         {"kind": "operation", "operation": "note.create", "polarity": "success",
+          "verified": True, "observed": {"title": "Ideas"}}),
+        ("note-fail", "lee la nota Inexistente", "error",
+         {"kind": "failure", "cause": "app_not_found", "polarity": "failure",
+          "target": "Inexistente"}),
+        ("deny-en", "order a pizza", "error",
+         {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}),
+        ("clarify-en", "close it", "clarification",
+         {"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"}),
+        ("welcome-es2", "buenos días", "welcome",
+         {"kind": "welcome", "polarity": "success"}),
+        ("confirm-en", "delete the note Ideas", "confirmation",
+         {"kind": "confirmation", "cause": "memory_forget_irreversible",
+          "polarity": "pending",
+          "choices": ["confirmar", "confirm", "cancelar", "cancel"]}),
+        ("acting-en", "open Steam and go to the library", "status",
+         {"kind": "status", "cause": "acting", "polarity": "success"}),
+        ("mix-timeout", "pausa Chrome please", "error",
+         {"kind": "failure", "cause": "timeout", "polarity": "failure",
+          "target": "Chrome"}),
+        ("mix-ok", "open Discord y silencia", "status",
+         {"kind": "operation", "operation": "app.open", "polarity": "success",
+          "verified": True, "observed": {"app": "Discord"}}),
+        ("mission-ok2", "abre Word y crea una nota", "status",
+         {"kind": "status", "cause": "mission_completed", "polarity": "success",
+          "stepCount": 2, "steps": ["Abrí Word.", "Creé la nota «Borrador»."]}),
+        ("provider-vlc", "abre VLC", "error",
+         {"kind": "failure", "cause": "provider_down", "polarity": "failure",
+          "target": "VLC"}),
+        ("invalid-en", "turn the volume up", "error",
+         {"kind": "failure", "cause": "model_invalid", "polarity": "failure"}),
+        ("ask-which", "ábrela", "clarification",
+         {"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"}),
+        ("time-en", "what time is it", "status",
+         {"kind": "operation", "operation": "system.time", "polarity": "success",
+          "verified": True, "observed": {"localTime": "09:05"}}),
+        ("close-ok", "cierra la ventana activa", "status",
+         {"kind": "operation", "operation": "app.close", "polarity": "success",
+          "verified": True}),
+        ("close-steam", "cierra Steam", "status",
+         {"kind": "operation", "operation": "app.close", "polarity": "success",
+          "verified": True, "observed": {"app": "Steam"}}),
+        ("vol-0", "silencia bajando el volumen a 0", "status",
+         {"kind": "operation", "operation": "audio.volume", "polarity": "success",
+          "verified": True, "observed": {"level": 0}}),
+        ("vol-50", "pon el volumen a 50", "status",
+         {"kind": "operation", "operation": "audio.volume", "polarity": "success",
+          "verified": True, "observed": {"level": 50}}),
+        ("note-alfa", "guarda la nota Alfa", "status",
+         {"kind": "operation", "operation": "note.create", "polarity": "success",
+          "verified": True, "observed": {"title": "Alfa"}}),
+        ("note-beta", "crea la nota Beta", "status",
+         {"kind": "operation", "operation": "note.create", "polarity": "success",
+          "verified": True, "observed": {"title": "Beta"}}),
+        ("deny-es2", "compra bitcoins", "error",
+         {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}),
+        ("deny-en2", "send this email to everyone", "error",
+         {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}),
+        ("timeout-en", "close Chrome", "error",
+         {"kind": "failure", "cause": "timeout", "polarity": "failure",
+          "target": "Chrome"}),
+        ("provider-en", "open Discord", "error",
+         {"kind": "failure", "cause": "provider_down", "polarity": "failure",
+          "target": "Discord"}),
+        ("welcome-en2", "hello there", "welcome",
+         {"kind": "welcome", "polarity": "success"}),
+        ("confirm-es2", "borra la nota Ideas", "confirmation",
+         {"kind": "confirmation", "cause": "memory_forget_irreversible",
+          "polarity": "pending",
+          "choices": ["confirmar", "confirm", "cancelar", "cancel"]}),
+        ("mix-fail2", "abre Firefox please", "error",
+         {"kind": "failure", "cause": "app_not_found", "polarity": "failure",
+          "target": "Firefox"}),
+        ("acting-es2", "abre Excel y ve a hoja 2", "status",
+         {"kind": "status", "cause": "acting", "polarity": "success"}),
+        ("time-es2", "qué hora es ahora", "status",
+         {"kind": "operation", "operation": "system.time", "polarity": "success",
+          "verified": True, "observed": {"localTime": "22:10"}}),
+        ("close-en", "close the window", "status",
+         {"kind": "operation", "operation": "app.close", "polarity": "success",
+          "verified": True}),
+        ("unmute-en", "unmute the audio", "status",
+         {"kind": "operation", "operation": "audio.mute", "polarity": "success",
+          "verified": True, "observed": {"muted": False}}),
+        ("mute-en", "mute the speakers", "status",
          {"kind": "operation", "operation": "audio.mute", "polarity": "success",
           "verified": True, "observed": {"muted": True}}),
-        ("note", "crea una nota Compras", "status",
+        ("mission-fail-en", "open Word and wipe the disk", "error",
+         {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+          "reason": "out_of_catalog", "stepCount": 1,
+          "steps": ["I opened Word."]}),
+        ("clarify-es2", "cierra eso", "clarification",
+         {"kind": "clarification", "cause": "ambiguous_request",
+          "polarity": "pending"}),
+        ("vol-en", "set volume to 25", "status",
+         {"kind": "operation", "operation": "audio.volume", "polarity": "success",
+          "verified": True, "observed": {"level": 25}}),
+        ("mute-es", "silencia los altavoces", "status",
+         {"kind": "operation", "operation": "audio.mute", "polarity": "success",
+          "verified": True, "observed": {"muted": True}}),
+        ("note-gamma", "crea la nota Gamma", "status",
          {"kind": "operation", "operation": "note.create", "polarity": "success",
-          "verified": True, "observed": {"title": "Compras"}}),
-        ("time", "qué hora es", "status",
-         {"kind": "operation", "operation": "system.time", "polarity": "success",
-          "verified": True, "observed": {"localTime": "14:25"}}),
-        ("fail-app", "abre Calculadora", "error",
-         {"kind": "failure", "cause": "app_not_found", "polarity": "failure",
-          "target": "Calculadora"}),
-    ]
-    while len(CASES) + len(extras) < 100:
-        index = len(CASES) + len(extras)
-        name, user, intent, facts = templates[index % len(templates)]
-        extras.append((f"{name}-{index}", user, intent, facts))
-    return CASES + extras
+          "verified": True, "observed": {"title": "Gamma"}}),
+    ])
+    combined = CASES + extras
+    if len(combined) != 100:
+        raise RuntimeError(f"goal 06 sample must be 100 cases, got {len(combined)}")
+    return combined
 
 
-def _score(text: str) -> dict[str, object]:
+def _score(text: str, intent: str, user_text: str, facts: dict) -> dict[str, object]:
     stripped = (text or "").strip()
     sentences = [part for part in stripped.replace("?", ".").replace("!", ".").split(".") if part.strip()]
+    defect = compose_visible_defect(
+        stripped, intent, user_text, {"situation": json.dumps(facts, ensure_ascii=False)}
+    )
     return {
         "empty": not stripped,
         "invented": visible_reply_invents_a_spanish_infinitive(stripped),
         "stall": visible_reply_is_a_fixed_stall(stripped),
         "json": stripped.startswith("{"),
         "sentences": len(sentences) if stripped else 0,
+        "defect": defect,
         "known_constant": stripped.casefold() in {
             "un momento…", "un momento...", "estoy lista para ayudarte con este equipo.",
             "estoy entendiendo tu petición.",
@@ -171,7 +306,7 @@ def main() -> int:
                 "reply_type": reply.get("type"),
                 "reply_text": text,
                 "latency_s": round(time.perf_counter() - started, 3),
-                "score": _score(text),
+                "score": _score(text, intent, user, facts),
             }
             rows.append(row)
         sample_path.write_text(
@@ -182,7 +317,16 @@ def main() -> int:
             json.dumps({"hello": hello.get("type"), "rows": rows[:2]}, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
-        invented = sum(1 for row in rows if row["score"]["invented"] or row["score"]["stall"] or row["score"]["known_constant"] or row["score"]["json"] or row["score"]["empty"])
+        invented = sum(
+            1
+            for row in rows
+            if row["score"]["invented"]
+            or row["score"]["stall"]
+            or row["score"]["known_constant"]
+            or row["score"]["json"]
+            or row["score"]["empty"]
+            or row["score"]["defect"]
+        )
         ab_path.write_text(
             json.dumps(
                 {

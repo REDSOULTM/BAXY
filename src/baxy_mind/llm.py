@@ -181,44 +181,35 @@ TRANSLATION_PRESENTATION_PROMPT = (
 
 USER_MESSAGE_PROMPT = (
     "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
-    "Redacta UNA frase (no un párrafo, no un volcado) en el idioma del pedido. "
-    "situation es un JSON de HECHOS de este turno: nombra sólo lo que viene "
-    "ahí. No copies el JSON. No arrastres nombres de un ejemplo o de un turno "
-    "anterior. "
-    "Éxito (polarity=success): confirma el estado observable, cálido y breve, "
-    "empezando por «Listo,» y nombrando lo observado. "
-    "Fallo (polarity=failure): «No pude:» y la causa de ESTE JSON. "
-    "Welcome no empieza por Listo y no usa femenino. Confirmation no afirma; "
-    "copia todas las choices. Acting no afirma que ya terminó. "
-    "cause=out_of_catalog → «eso no lo hago». "
-    "kind=clarification → una pregunta corta. "
-    "kind=confirmation → pide la decisión e incluye literalmente todas las "
-    "palabras de choices; no elijas. "
-    "kind=welcome → saluda breve; no menciones ninguna app. "
-    "kind=status con cause=acting → no afirmes un resultado, sólo que sigues. "
-    "Nunca menciones planner, router, tool, catálogo, schema, operación, "
-    "capacidad, datos verificables, pasos verificables, grounding, JSON, "
-    "checkpoint, reconciliación, identificadores internos ni razonamiento del "
-    "sistema. Conserva acción, actor y resultado: enfocar no es abrir. "
-    "Si BAXY hizo algo, primera persona; nunca se lo atribuyas al usuario. "
-    "Si hay requiredAction o requiredActions, copia cada acción literalmente. "
-    "Si hay requiredResponseWords, el mensaje debe contener cada una. "
-    "Nunca conviertas un éxito en «no pude» ni un fallo en un éxito. "
-    "Para status, declarativo, sin pregunta genérica ni imperativo del pedido. "
-    "No inventes resultados. No cierres con «¿necesitas algo más?». "
-    "Devuelve únicamente el mensaje, sin títulos ni comillas."
+    "Redacta UNA frase en el idioma del pedido. situation es JSON de ESTE turno: "
+    "nombra sólo lo que viene ahí, nunca un código interno (nada con _). "
+    "Pedido en español, polarity=success y kind no es welcome ni confirmation "
+    "ni acting: «Listo,» + el estado observable. "
+    "Pedido en español, polarity=failure: «No pude:» y la causa en prosa "
+    "(se agotó el tiempo; no responde; eso no lo hago; no la encontré; "
+    "no pude usar esa respuesta). "
+    "Pedido en inglés, polarity=success: una frase declarativa del estado; "
+    "nunca Listo ni un imperativo. "
+    "Pedido en inglés, polarity=failure: «I couldn't:» y la causa en inglés. "
+    "kind=welcome: Hola o Hi, masculino, sin Listo y sin apps. "
+    "kind=confirmation: una pregunta con confirm* y cancel*; no copies las "
+    "cuatro; no afirmes. "
+    "cause=acting: di que sigues, sin afirmar el resultado. "
+    "kind=clarification: una pregunta corta, de tú. "
+    "Nunca planner, router, tool, catálogo, schema, operación, JSON ni "
+    "identificadores. Primera persona si BAXY actuó. Una frase. "
+    "Devuelve sólo el mensaje."
 )
 
 NARRATOR_PROMPT = USER_MESSAGE_PROMPT
 
 CPU_USER_MESSAGE_PROMPT = (
     "Eres BAXY, un compañero, un él. Tuteas. Una frase en el idioma del pedido. "
-    "situation es JSON de ESTE turno: formula prosa con esos hechos, no copies "
-    "el JSON ni un ejemplo. Éxito: «Listo,» + lo observado. Fallo: «No pude:» + "
-    "la causa de este JSON. out_of_catalog: «eso no lo hago». Welcome: saluda, "
-    "sin apps. Acting: no afirmes resultado. Conserva actor, acción, polaridad "
-    "y el contrato literal. Confirmation incluye todas las choices. Sin JSON "
-    "ni jerga interna."
+    "Hechos de ESTE turno, sin códigos. Español y fallo: «No pude:» en prosa. "
+    "Español y éxito observado: «Listo,» + lo visto. Inglés y fallo: "
+    "I couldn't. Inglés y éxito: estado, sin Listo. Welcome: Hola o Hi, sin "
+    "Listo. Confirmation: pregunta con confirm* y cancel*. Acting: no afirmes. "
+    "out_of_catalog: eso no lo hago. Sin JSON ni _internos."
 )
 
 
@@ -234,12 +225,16 @@ def _message_response_language(text: str) -> str:
         tokens
         & {
             "abre",
+            "borra",
+            "buenos",
             "busca",
+            "cierra",
             "crea",
             "dime",
             "el",
             "encuentra",
             "haz",
+            "hola",
             "la",
             "lista",
             "muestra",
@@ -247,6 +242,9 @@ def _message_response_language(text: str) -> str:
             "notas",
             "pon",
             "procesos",
+            "reactiva",
+            "silencia",
+            "sube",
             "tarea",
             "tareas",
             "volumen",
@@ -258,28 +256,43 @@ def _message_response_language(text: str) -> str:
         & {
             "and",
             "calendar",
+            "close",
             "create",
+            "delete",
+            "email",
             "event",
             "find",
+            "hello",
+            "hi",
             "invite",
+            "library",
             "list",
             "mute",
             "my",
             "note",
             "notes",
             "open",
+            "order",
+            "please",
             "process",
             "processes",
             "send",
             "set",
             "show",
+            "speakers",
             "task",
             "tasks",
             "tell",
             "the",
+            "there",
             "time",
             "to",
+            "turn",
+            "unmute",
             "volume",
+            "what",
+            "window",
+            "wipe",
         }
     )
     if spanish and english:
@@ -2513,8 +2526,12 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "alredad",
         "cosear",
         "motherient",
+        "spotifylight",
+        "successfullyinished",
+        "riagesystem",
     }
 )
+_THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
 _FIXED_STALL_REPLIES = frozenset(
     {
         "un momento",
@@ -2562,6 +2579,218 @@ def visible_reply_is_a_fixed_stall(value: object) -> bool:
 
     folded = _policy_guard_text(value)
     return folded in _FIXED_STALL_REPLIES
+
+
+_SNAKE_CODE = re.compile(r"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b")
+_DOTTED_OP = re.compile(r"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b")
+_SUCCESS_OPENERS = re.compile(
+    r"^\s*(?:listo\b|ready\b|done\b|¡?\s*listo)",
+    re.IGNORECASE,
+)
+_FAILURE_MARKERS = re.compile(
+    r"(?:no pude|no puedo|couldn't|could not|can't|cannot|"
+    r"eso no lo hago|i don't do that|i do not do that|"
+    r"no la encontré|no responde|se agotó|"
+    r"didn't find|did not find|didn't respond|did not respond|"
+    r"time ran out)",
+    re.IGNORECASE,
+)
+_CAUSE_PLAIN = {
+    "timeout": "se agotó el tiempo",
+    "provider_down": "no responde",
+    "out_of_catalog": "eso no lo hago",
+    "model_invalid": "no pude usar esa respuesta",
+    "app_not_found": "no la encontré",
+    "mission_failed": "no pude completar la misión",
+    "acting": "sigo en ello",
+    "ambiguous_request": "no queda claro qué pediste",
+    "memory_forget_irreversible": "esto no se puede deshacer",
+}
+_CAUSE_PLAIN_EN = {
+    "timeout": "time ran out",
+    "provider_down": "it didn't respond",
+    "out_of_catalog": "I don't do that",
+    "model_invalid": "I couldn't use that answer",
+    "app_not_found": "I didn't find it",
+    "mission_failed": "I couldn't finish the mission",
+    "acting": "I'm still on it",
+    "ambiguous_request": "it's not clear what you mean",
+    "memory_forget_irreversible": "this cannot be undone",
+}
+
+
+def _situation_from_facts(facts: dict) -> dict:
+    raw = facts.get("situation")
+    if isinstance(raw, dict):
+        return raw
+    if isinstance(raw, str) and raw.lstrip().startswith("{"):
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError:
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+    return {}
+
+
+def _cause_in_prose(cause: str, language: str) -> str:
+    key = cause.strip()
+    if not key:
+        return ""
+    if language == "en":
+        return _CAUSE_PLAIN_EN.get(key, _CAUSE_PLAIN.get(key, key.replace("_", " ")))
+    return _CAUSE_PLAIN.get(key, key.replace("_", " "))
+
+
+def _compose_situation_payload(situation: dict, language: str) -> dict:
+    """Facts the generator may see: no dotted ops, no snake_case causes."""
+
+    payload: dict[str, object] = {}
+    for key in ("kind", "polarity", "verified", "target", "observed", "steps", "stepCount"):
+        value = situation.get(key)
+        if value not in (None, "", []):
+            payload[key] = value
+    cause = _cause_in_prose(str(situation.get("cause") or ""), language)
+    if cause:
+        payload["cause"] = cause
+    reason = _cause_in_prose(str(situation.get("reason") or ""), language)
+    if reason:
+        payload["reason"] = reason
+    choices = situation.get("choices")
+    if isinstance(choices, list) and choices:
+        if language == "en":
+            filtered = [item for item in choices if item in {"confirm", "cancel"}]
+            payload["choices"] = filtered or ["confirm", "cancel"]
+        elif language == "mixed":
+            payload["choices"] = list(choices)
+        else:
+            filtered = [item for item in choices if item in {"confirmar", "cancelar"}]
+            payload["choices"] = filtered or ["confirmar", "cancelar"]
+    return payload
+
+
+def _strip_think_tags(text: str) -> str:
+    return _THINK_BLOCK.sub("", text).replace("</think>", "").replace("<think>", "").strip()
+
+
+def _glued_proper_name(text: str, situation: dict, user_text: str) -> bool:
+    names: list[str] = []
+    for value in (
+        situation.get("target"),
+        (situation.get("observed") or {}).get("app")
+        if isinstance(situation.get("observed"), dict)
+        else None,
+        (situation.get("observed") or {}).get("title")
+        if isinstance(situation.get("observed"), dict)
+        else None,
+    ):
+        if isinstance(value, str) and len(value) >= 4:
+            names.append(value)
+    names.extend(re.findall(r"\b[A-Z][a-zA-Z]{3,}\b", user_text or ""))
+    folded_tokens = re.findall(r"[a-z0-9]+", text.casefold())
+    for name in names:
+        stem = name.casefold()
+        if any(token.startswith(stem) and len(token) > len(stem) + 1 for token in folded_tokens):
+            return True
+    return False
+
+
+def compose_visible_defect(
+    text: str,
+    intent: str,
+    user_text: str,
+    facts: dict,
+) -> str:
+    """Reject a composed reply that a person would read as a filled hole.
+
+    Shipped entry for goal 06: polarity, no internal codes, no copied Spotify,
+    no invented infinitives, no canned stall.
+    """
+
+    stripped = _strip_think_tags((text or "").strip())
+    if not stripped:
+        return "empty"
+    if visible_reply_is_a_fixed_stall(stripped):
+        return "stall"
+    if visible_reply_invents_a_spanish_infinitive(stripped):
+        return "invented"
+    if _SNAKE_CODE.search(stripped) is not None or _DOTTED_OP.search(stripped) is not None:
+        return "internal_code"
+    if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
+        return "internal_code"
+    situation = _situation_from_facts(facts)
+    polarity = str(situation.get("polarity") or "").strip().lower()
+    kind = str(situation.get("kind") or intent).strip().lower()
+    cause = str(situation.get("cause") or "").strip().lower()
+    operation = str(situation.get("operation") or "").strip().lower()
+    blob = f"{user_text} {json.dumps(situation, ensure_ascii=False)}".casefold()
+    folded = stripped.casefold()
+    if "spotify" in folded and "spotify" not in blob:
+        return "unmentioned_name"
+    if re.search(
+        r"estado observable|observable state|observed state|observed status|"
+        r"\bthe operation\b|\bla operaci[oó]n\b",
+        folded,
+    ):
+        return "internal_code"
+    if re.search(r"(?m)^[a-z]{8,}$", folded):
+        return "invented"
+    if re.search(r"\bproviders?\b", folded) and "provider" not in (user_text or "").casefold():
+        return "internal_code"
+    if _glued_proper_name(stripped, situation, user_text):
+        return "invented"
+    language = _message_response_language(user_text)
+    if language == "en" and re.search(
+        r"\b(?:listo|no pude|eso no lo hago|hola|encontré|agotó)\b",
+        folded,
+    ):
+        return "wrong_language"
+    is_failure = intent == "error" or polarity == "failure"
+    if is_failure:
+        if _SUCCESS_OPENERS.match(stripped) is not None:
+            return "reversed_polarity"
+        if _FAILURE_MARKERS.search(stripped) is None:
+            return "missing_failure"
+    if intent == "welcome" or kind == "welcome":
+        if _SUCCESS_OPENERS.match(stripped) is not None:
+            return "welcome_opener"
+        if re.search(r"bienvenida\b", folded) is not None:
+            return "wrong_gender"
+        if language != "en" and re.search(r"\b(?:everything|ready)\b", folded):
+            return "wrong_language"
+    if intent == "confirmation" or kind == "confirmation":
+        if _SUCCESS_OPENERS.match(stripped) is not None:
+            return "confirmation_asserted"
+        if "?" not in stripped and "¿" not in stripped:
+            return "confirmation_not_a_question"
+        if not re.search(r"confirm", folded) and not re.search(r"cancel", folded):
+            return "missing_confirmation_choice"
+    if cause == "acting" and _SUCCESS_OPENERS.match(stripped) is not None:
+        return "acting_asserted"
+    observed = situation.get("observed")
+    observed_dict = observed if isinstance(observed, dict) else {}
+    mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
+    if (
+        mentions_mute
+        and "muted" not in observed_dict
+        and operation != "audio.mute"
+    ):
+        return "extra_claim"
+    if "muted" in observed_dict:
+        muted = observed_dict.get("muted") is True
+        if muted and re.search(r"reactiv|unmuted|ya no está silenci", folded):
+            return "reversed_mute"
+        if not muted:
+            unmuted_ok = re.search(
+                r"reactiv|unmuted|ya no está silenci|ya no esta silenci",
+                folded,
+            )
+            if re.search(r"silenci|\bmuted\b", folded) and unmuted_ok is None:
+                return "reversed_mute"
+    if (intent == "welcome" or kind == "welcome") and re.search(
+        r"\bhola\b.*\bhola\b", folded
+    ):
+        return "welcome_repeat"
+    return ""
 
 
 def _spanish_modal_is_malformed(value: object) -> bool:
@@ -6780,6 +7009,8 @@ class LlmRuntime:
         # validated again after generation. Repeating them inside the JSON made
         # every CPU composition re-evaluate the same facts up to three times;
         # the forbidden vocabulary could add another 32 duplicate strings.
+        situation = _situation_from_facts(facts)
+        visible_situation = _compose_situation_payload(situation, response_language)
         prompt_facts = {
             key: value
             for key, value in facts.items()
@@ -6790,8 +7021,11 @@ class LlmRuntime:
                 "requiredActions",
                 "requiredFacts",
                 "requiredResponseWords",
+                "situation",
             }
         }
+        if visible_situation:
+            prompt_facts["situation"] = visible_situation
         payload = {
             "messages": [
                 {"role": "system", "content": message_prompt},
@@ -6803,13 +7037,11 @@ class LlmRuntime:
                         "Hecho ya ocurrido que debes expresar sin cambiar actor, "
                         "acción, resultado ni polaridad (no copies jerga interna): "
                         f"{json.dumps(prompt_facts, ensure_ascii=False)}\n"
-                        f"{language_contract}\n"
-                        "Nombra sólo lo que está en ese hecho o en el texto "
-                        "original. Si Spotify no aparece ahí, no lo escribas."
+                        f"{language_contract}"
                     ),
                 },
             ],
-            "temperature": 0.25,
+            "temperature": 0.0,
             "max_tokens": 256,
             # Compose reuses the prefix across unrelated facts. With the cache
             # on, later replies repeated the first Spotify sentence (goal 06
@@ -6830,6 +7062,69 @@ class LlmRuntime:
             for value in (facts.get("requiredResponseWords") or [])
             if str(value).strip()
         ]
+        cause = str(situation.get("cause") or "").strip()
+        kind = str(situation.get("kind") or intent).strip().lower()
+        polarity = str(situation.get("polarity") or "").strip().lower()
+        if cause in _CAUSE_PLAIN:
+            payload["messages"][1]["content"] += (
+                f"\nCausa en prosa, no el código: {_cause_in_prose(cause, response_language)}."
+            )
+        if intent == "welcome" or kind == "welcome":
+            payload["messages"][1]["content"] += (
+                "\nSaluda con Hi." if response_language == "en"
+                else "\nSaluda con Hola. Prohibido Listo y palabras inglesas."
+            )
+        elif intent == "confirmation" or kind == "confirmation":
+            payload["messages"][1]["content"] += (
+                "\nOne question with confirm and cancel. Do not assert."
+                if response_language == "en"
+                else "\nUna pregunta con confirmar y cancelar. No afirmes."
+            )
+        elif cause == "acting":
+            payload["messages"][1]["content"] += (
+                "\nDi que sigues. Prohibido Listo y prohibido afirmar el resultado."
+            )
+        elif response_language == "en" and (
+            intent == "error" or polarity == "failure"
+        ):
+            payload["messages"][1]["content"] += (
+                "\nEnglish only. Start with I couldn't:"
+            )
+        elif response_language == "en" and polarity == "success":
+            payload["messages"][1]["content"] += (
+                "\nEnglish only. Name what was observed and say it is open, "
+                "closed, playing, muted or unmuted. Never Listo, operation, "
+                "or observed. Never start with an imperative."
+            )
+        observed = situation.get("observed")
+        if isinstance(observed, dict) and "muted" in observed:
+            if response_language == "en":
+                payload["messages"][1]["content"] += (
+                    "\nSay the audio is muted."
+                    if observed.get("muted") is True
+                    else "\nSay the audio is unmuted. Do not say muted alone."
+                )
+            elif observed.get("muted") is True:
+                payload["messages"][1]["content"] += (
+                    "\nDi que el audio quedó silenciado."
+                )
+            else:
+                payload["messages"][1]["content"] += (
+                    "\nDi que el audio ya no está silenciado o que se reactivó."
+                )
+        elif re.search(r"silenci|\bmute\b", (user_text or "").casefold()) and (
+            not isinstance(observed, dict) or "muted" not in observed
+        ) and str(situation.get("operation") or "") != "audio.mute":
+            app = observed.get("app") if isinstance(observed, dict) else None
+            if isinstance(app, str) and app.strip():
+                payload["messages"][1]["content"] += (
+                    f"\nSólo di que {app} está abierto. "
+                    "Prohibido silencio, mute y estado observable."
+                )
+            else:
+                payload["messages"][1]["content"] += (
+                    "\nNo menciones silenciar ni mute: no está en lo observado."
+                )
         required_facts = [
             str(value).strip()
             for value in (facts.get("requiredFacts") or [])
@@ -7092,15 +7387,17 @@ class LlmRuntime:
             return ""
 
         def blocked(candidate: str) -> bool:
-            return visible_reply_is_a_fixed_stall(
-                candidate
-            ) or visible_reply_invents_a_spanish_infinitive(candidate)
+            return bool(
+                compose_visible_defect(candidate, intent, user_text, facts)
+            )
 
         def publishable(candidate: str) -> bool:
             return bool(candidate) and preserves_contract(candidate) and not blocked(candidate)
 
         response = self._post(payload)
-        text = (response["choices"][0]["message"].get("content") or "").strip()
+        text = _strip_think_tags(
+            (response["choices"][0]["message"].get("content") or "").strip()
+        )
         if publishable(text):
             return text
         if (
@@ -7114,15 +7411,30 @@ class LlmRuntime:
             return text
 
         retry_payload = dict(payload)
+        defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
+        retry_hint = {
+            "missing_confirmation_choice": (
+                "Pregunta con confirmar/confirm y cancelar/cancel."
+            ),
+            "wrong_language": "Sólo el idioma del pedido.",
+            "extra_claim": "Nombra sólo lo observado.",
+            "reversed_mute": "Respeta si el audio quedó silenciado o no.",
+            "reversed_polarity": "Si falló, no empieces por Listo.",
+            "internal_code": "Sin códigos internos.",
+            "confirmation_asserted": "Pregunta; no afirmes.",
+            "welcome_opener": "Saluda; no Listo.",
+            "invented": "Sin palabras pegadas ni inventadas.",
+            "welcome_repeat": "Un solo Hola.",
+        }.get(defect, "")
         retry_payload["messages"] = [
             {"role": "system", "content": message_prompt},
             {
                 "role": "user",
                 "content": (
-                    "El borrador anterior omitió o cambió un dato obligatorio, "
-                    "o repitió el pedido como una orden. "
-                    "Escribe de nuevo el mensaje usando literalmente este hecho: "
-                    f"{str(facts.get('situation') or '')}\n"
+                    "El borrador anterior no sirve. "
+                    f"Falla: {defect}. {retry_hint} "
+                    "Escribe de nuevo el mensaje con este hecho, sin códigos: "
+                    f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
                     "Acciones literales obligatorias, todas sin excepción: "
                     f"{', '.join(required_actions) or '(ninguna)'}\n"
                     "Palabras literales obligatorias, todas sin excepción: "
@@ -7140,5 +7452,7 @@ class LlmRuntime:
         ]
         retry_payload["temperature"] = 0.0
         retry = self._post(retry_payload)
-        retry_text = (retry["choices"][0]["message"].get("content") or "").strip()
+        retry_text = _strip_think_tags(
+            (retry["choices"][0]["message"].get("content") or "").strip()
+        )
         return retry_text if publishable(retry_text) else ""

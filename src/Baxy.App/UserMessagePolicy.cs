@@ -207,6 +207,13 @@ internal static class UserMessagePolicy
         {
             return "unsafe_language";
         }
+        if (Regex.IsMatch(
+                modelText,
+                @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            return "internal_code";
+        }
         if (draft.Intent is "status" or "error")
         {
             if (AttributesBaxyActionToUser(draft.Source, modelText))

@@ -9,6 +9,7 @@ from baxy_mind.llm import (
     NARRATOR_PROMPT,
     SYSTEM_PROMPT,
     USER_MESSAGE_PROMPT,
+    compose_visible_defect,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
 )
@@ -49,6 +50,159 @@ def test_invented_infinitives_and_stalls_are_still_rejected() -> None:
     assert visible_reply_invents_a_spanish_infinitive("Cambia tetera por Descalzica.")
     assert visible_reply_is_a_fixed_stall("un momento…")
     assert not visible_reply_is_a_fixed_stall("Listo, Spotify está abierto y sonando")
+
+
+def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> None:
+    fail = {"situation": '{"kind":"failure","cause":"timeout","polarity":"failure","target":"Chrome"}'}
+    assert compose_visible_defect(
+        "Listo, Chrome no respondió.", "error", "cierra Chrome", fail
+    ) == "reversed_polarity"
+    assert compose_visible_defect(
+        "No pude: provider_down", "error", "abre Spotify", fail
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "No pude: Spotify no responde.",
+        "error",
+        "cierra Chrome",
+        fail,
+    ) == "unmentioned_name"
+    assert compose_visible_defect(
+        "No pude: se agotó el tiempo.",
+        "error",
+        "cierra Chrome",
+        fail,
+    ) == ""
+    assert compose_visible_defect(
+        "Listo, hola.",
+        "welcome",
+        "hola",
+        {"situation": '{"kind":"welcome","polarity":"success"}'},
+    ) == "welcome_opener"
+    assert compose_visible_defect(
+        "Listo, confirmar.",
+        "confirmation",
+        "borra la nota",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+    ) == "confirmation_asserted"
+    assert compose_visible_defect(
+        "¿Lo borro?",
+        "confirmation",
+        "borra la nota",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+    ) == "missing_confirmation_choice"
+    assert compose_visible_defect(
+        "No pude: Spotify no responde.",
+        "error",
+        "open Spotify",
+        {
+            "situation": (
+                '{"kind":"failure","cause":"provider_down",'
+                '"polarity":"failure","target":"Spotify"}'
+            )
+        },
+    ) == "wrong_language"
+    assert compose_visible_defect(
+        "I couldn't: the provider is down.",
+        "error",
+        "open Spotify",
+        {
+            "situation": (
+                '{"kind":"failure","cause":"provider_down",'
+                '"polarity":"failure","target":"Spotify"}'
+            )
+        },
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "No pude: eso no lo hago.",
+        "error",
+        "order a pizza",
+        {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+    ) == "wrong_language"
+    assert compose_visible_defect(
+        "I couldn't: I don't do that.",
+        "error",
+        "order a pizza",
+        {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+    ) == ""
+    assert compose_visible_defect(
+        "¿Confirmas o cancelas borrar la nota?",
+        "confirmation",
+        "borra la nota",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+    ) == ""
+    assert compose_visible_defect(
+        "Do you confirm?",
+        "confirmation",
+        "delete the note Ideas",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirm","cancel"]}'},
+    ) == ""
+    assert compose_visible_defect(
+        "No la encontré.",
+        "error",
+        "abre Firefox",
+        {"situation": '{"kind":"failure","cause":"app_not_found","polarity":"failure","target":"Firefox"}'},
+    ) == ""
+    assert compose_visible_defect(
+        "Listo, Discord se silenció.",
+        "status",
+        "open Discord y silencia",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"app.open",'
+                '"polarity":"success","observed":{"app":"Discord"}}'
+            )
+        },
+    ) == "extra_claim"
+    assert compose_visible_defect(
+        "Listo, el estado observable es que el audio no está mutado.",
+        "status",
+        "reactiva el audio",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":false}}'
+            )
+        },
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "Listo, el audio ya no está silenciado.",
+        "status",
+        "reactiva el audio",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":false}}'
+            )
+        },
+    ) == ""
+    assert compose_visible_defect(
+        "Spotifylight is playing.",
+        "status",
+        "open Spotify",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"app.open","polarity":"success",'
+                '"observed":{"app":"Spotify","playing":true}}'
+            )
+        },
+    ) == "invented"
+    assert compose_visible_defect(
+        "Listo, Word está abierto.",
+        "status",
+        "abre Word",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"app.open","polarity":"success",'
+                '"observed":{"app":"Word"}}'
+            )
+        },
+    ) == ""
+    assert compose_visible_defect(
+        "No pude: se agotó el tiempo.",
+        "error",
+        "close Chrome",
+        fail,
+    ) == "wrong_language"
 
 
 def test_compose_rejects_invented_words_on_the_shipped_entry(monkeypatch) -> None:

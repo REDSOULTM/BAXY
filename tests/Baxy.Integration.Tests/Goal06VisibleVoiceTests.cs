@@ -109,4 +109,27 @@ public sealed class Goal06VisibleVoiceTests
             Assert.That(FieldBridgeContract.Create(stage).Label, Is.Null, stage);
         }
     }
+
+    [Test]
+    public void PolicyRejectsInternalCodesAndSuccessOpenersOnFailure()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Failure("timeout"),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.Timeout));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "No pude: provider_down",
+                draft),
+            Is.EqualTo("internal_code"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "Listo, Chrome no respondió.",
+                draft),
+            Is.EqualTo("reversed_result"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "No pude: se agotó el tiempo.",
+                draft),
+            Is.Null);
+    }
 }

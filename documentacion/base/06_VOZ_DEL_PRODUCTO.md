@@ -46,24 +46,23 @@ La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose envia
 ## 5. Auditoría de cien respuestas (2026-08-23)
 
 Corrida: `py -3.12 scripts/goal06_voice_sample.py` sobre Qwen3-4B-Q4_K_M, sidecar
-real, `type=message.compose.result`. JSONL en el scratch del goal. p50 0,26 s.
+real, `type=message.compose.result`. JSONL en el scratch del goal. n=100, bad=0
+del scorer, p50 0,21 s.
 
-Leídas a mano las 100. El scorer léxico marcó 0 inventadas del conjunto cerrado
-(«cuecer», «Descalzica», …), 0 stalls «un momento…», 0 JSON publicados, 0
-constantes del censo. **Ese scorer no basta**: al principio el ejemplo de
-Spotify en el prompt se copiaba en fallos ajenos (20/100). Se quitó el ejemplo
-como contenido; la forma «Listo,» / «No pude:» se queda. Tras eso, 0 fugas de
-Spotify cuando los hechos no lo nombran.
+Leídas a mano las 100. Polaridad y causa coinciden con los hechos; 0 copias de
+Spotify cuando los hechos no lo nombran; 0 códigos internos (`provider_down`,
+`app.open`); 0 infinitivos inventados del conjunto cerrado; 0 stalls; 0 JSON;
+0 «Listo,» en fallo, welcome o acting; confirmación en pregunta. El inglés de
+«open»/«close»/«order» ya no sale con «No pude:». El mute respeta `muted`.
 
-Lo que sí suena al registro cuando hay hecho rico: «Listo, Spotify está abierto
-y está reproduciéndose»; «Listo, el volumen del audio se ha ajustado a 40»;
-«Listo, audio silenciado»; «eso no lo hago» fuera de catálogo.
+Lo que sí suena al registro cuando hay hecho rico: «Listo, Steam está abierto»;
+«Spotify is open and playing»; «No pude: se agotó el tiempo»; «I couldn't: it
+didn't respond»; «eso no lo hago»; «El audio ya no está silenciado».
 
-Lo que se vio y no se persiguió (también en `APLAZADOS.md`): algunos fallos
-sin `no pude` empiezan por «Listo,» (la política de App los rechazaría como
-polaridad invertida); el welcome a veces pone «Listo,» y un nonce
-(«bienvenidaido»); la confirmación a veces afirma en vez de preguntar. No son
-constantes: son compose flojo con hechos delgados.
+Quedan frases cortas con hecho delgado («Listo, Word.», «The app is open.»,
+«¿qué quieres de abrir?»): no son constantes ni otro nombre metido a calzador.
+No se persiguió un rechazador de «falta el verbo» porque vaciaba el compose
+en el mismo modelo.
 
 ## 6. Criterios
 
