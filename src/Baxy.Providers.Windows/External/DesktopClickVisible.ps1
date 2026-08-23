@@ -97,8 +97,11 @@ try {
   if($label -match '^(?i:accept|aceptar)$'){$aliases=@('Accept','Aceptar')}
   elseif($label -match '^(?i:ok|okay)$'){$aliases=@('OK','Okay','Aceptar')}
   elseif($label -match '^(?i:validate|valider)$'){$aliases=@('Validate','Valider')}
+  elseif($label -match '^(?i:biblioteca|library)$'){$aliases=@('Biblioteca','Library')}
+  elseif($label -match '^(?i:configuracion|settings)$'){$aliases=@('Configuracion','Settings')}
   $hwnd=[BaxyVisibleClickNative]::GetForegroundWindow()
   if($hwnd -eq [IntPtr]::Zero){Emit $false $false 'active_window_not_found' '' '' $false $false 'uia';exit 2}
+  Start-Sleep -Milliseconds 500
   $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
   $tree=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
   if($tree.Count -eq 0){
@@ -106,10 +109,6 @@ try {
     $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
   }
   $matches=@(Find-NamedControls $root $aliases)
-  if($matches.Count -eq 0){
-    $root=[System.Windows.Automation.AutomationElement]::RootElement
-    $matches=@(Find-NamedControls $root $aliases)
-  }
   if($matches.Count -eq 0){
     $native=@([BaxyVisibleClickNative]::FindVisibleButtons([string[]]$aliases))
     if($native.Count -gt 1){Emit $false $false 'visible_button_ambiguous' '' '' $false $false 'uia';exit 4}

@@ -87,12 +87,24 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         string needle = Fold(label);
         if (needle.Length == 0)
             return null;
+        HashSet<string> needles = new(StringComparer.Ordinal)
+        {
+            needle,
+        };
+        if (needle is "biblioteca")
+            needles.Add("library");
+        if (needle is "library")
+            needles.Add("biblioteca");
+        if (needle is "configuracion")
+            needles.Add("settings");
+        if (needle is "settings")
+            needles.Add("configuracion");
         List<WordHit> hits = [];
         foreach (OcrLine line in recognized.Lines)
         {
             foreach (OcrWord word in line.Words)
             {
-                if (Fold(word.Text) != needle)
+                if (!needles.Contains(Fold(word.Text)))
                     continue;
                 global::Windows.Foundation.Rect box = word.BoundingRect;
                 hits.Add(new WordHit(
@@ -107,7 +119,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return null;
         foreach (OcrLine line in recognized.Lines)
         {
-            if (!Fold(line.Text).Contains(needle, StringComparison.Ordinal))
+            if (!needles.Any(item => Fold(line.Text).Contains(item, StringComparison.Ordinal)))
                 continue;
             global::Windows.Foundation.Rect box = default;
             bool started = false;

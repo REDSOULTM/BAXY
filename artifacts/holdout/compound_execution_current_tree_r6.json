@@ -1,0 +1,1155 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-23T19:20:48.468715+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "ee833f8b90f2f38241549e434c37bcebcee6b8c931cacc8c1ea924fc938fa0f8",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424,
+      "registeredCandidateWasFunctional": true
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 34.932,
+  "cases": [
+    {
+      "case": "r6_readonly_sequencing_tail_es",
+      "planner_path": "real_llm_current_tree_readonly_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "peripheral.list",
+        "audio.status",
+        "system.status"
+      ],
+      "effect_operations": [
+        "peripheral.list",
+        "audio.status",
+        "system.status"
+      ],
+      "decision_seconds": 0.101,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "peripheral.list",
+        "audio.status",
+        "system.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "peripheral.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "devices": [
+              {
+                "deviceId": "printer_65009214b8486ede90f63812",
+                "kind": "printer",
+                "name": "Brother DCP-T720DW Printer",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_00d84ab46e6345e15e7303f9",
+                "kind": "printer",
+                "name": "Fax",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_43d248d4e2bfebb83eec846d",
+                "kind": "printer",
+                "name": "Impresora de imagen de PaperPort",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_f5a027fccacc67f8e2c108eb",
+                "kind": "printer",
+                "name": "Microsoft Print to PDF",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_cafabcc24b0cc4be4ed75be7",
+                "kind": "printer",
+                "name": "Microsoft XPS Document Writer",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_decb4a643bee7f1241e9b761",
+                "kind": "printer",
+                "name": "OneNote (Desktop)",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_f13616df5735dbcb2d6b31ac",
+                "kind": "printer",
+                "name": "PDF24",
+                "status": ""
+              },
+              {
+                "deviceId": "scanner_cc47c0d115b8219f74e6bf4d",
+                "kind": "scanner",
+                "name": "Brother DCP-T720DW LAN",
+                "status": "available"
+              },
+              {
+                "deviceId": "usb_70e5997d163bea7cb9a9336d",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_974ef8fe69c9cc4e3907b704",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_1a93e3bbb485c136e020cf41",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico de velocidad extra",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_6389c0b38c2ad12e0d975b61",
+                "kind": "usb",
+                "name": "USB Microphone",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_a43298d613253f5146001cd5",
+                "kind": "usb",
+                "name": "HyperX Virtual Surround Sound",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_420ede4b98f4bf2b6ceedebe",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_cfc2ab6b0cea0be8404dee03",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico de velocidad extra",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_0315bbd364e8087a10877568",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_940bf4b4d97fba856ea9ec4f",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_a891a681bd14d2039086a965",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_9cccbd492b2f27ab0312465b",
+                "kind": "usb",
+                "name": "G502 X PLUS",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_d090591db4883fcc97ab33b0",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_eb38edfaa1492d32a966f04f",
+                "kind": "usb",
+                "name": "USB PnP Audio Device",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_aea757c91ead6ed5d014b04a",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_ca97f3b059ed70650d596455",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_4046b85cdc9f2f8496a0b9f8",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico de velocidad extra",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_b4c36381a64c54d737caecbf",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_33e71a0ed0df8d2da8ad3eca",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_e0f1d250bd12b5edaa5155d4",
+                "kind": "usb",
+                "name": "Realtek 8832CU Wireless LAN WiFi 6 USB NIC",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_98015d48922ec73a2de66f90",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_32dba0fa428cb123a8a537ba",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_7316ee2d1beff241f9ec9112",
+                "kind": "usb",
+                "name": "Dispositivo USB desconocido (Error de solicitud de descriptor de dispositivo)",
+                "status": "Error"
+              },
+              {
+                "deviceId": "usb_05c740753d9778335b1a2385",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_551b7742e1733ed822e375b2",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              }
+            ]
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "targetId": "default_output",
+            "state": {}
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "system.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {}
+        }
+      ],
+      "seconds": 13.866,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        []
+      ],
+      "orphans": 0
+    },
+    {
+      "case": "r6_two_notes_elided_then_ordinal_es",
+      "planner_path": "real_llm_current_tree_mixed_dependency_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.067,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "129e58d7-981c-4bfa-9e43-bd1d47b2e258",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "a8abcbaa-7667-4c26-8efe-ebd6d909f476",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "a8abcbaa-7667-4c26-8efe-ebd6d909f476",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "129e58d7-981c-4bfa-9e43-bd1d47b2e258",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.204,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "orphans": 0
+    },
+    {
+      "case": "r6_two_notes_participle_en",
+      "planner_path": "real_llm_current_tree_mixed_dependency_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.004,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "e493222b-6b12-47a2-a529-cbc1100984bf",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "20e63da0-d6b3-4666-90e6-eeb41c4dc03b",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "20e63da0-d6b3-4666-90e6-eeb41c4dc03b",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "e493222b-6b12-47a2-a529-cbc1100984bf",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 2.475,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "orphans": 0
+    },
+    {
+      "case": "r6_note_then_coordinated_status_spanglish",
+      "planner_path": "real_llm_current_tree_mixed_dependency_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "system.status",
+        "network.status"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "system.status",
+        "network.status"
+      ],
+      "decision_seconds": 0.023,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "system.status",
+        "network.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "090bd80a-fdf3-4692-abb1-aeb1cedf1cf9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "090bd80a-fdf3-4692-abb1-aeb1cedf1cf9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "system.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {}
+        },
+        {
+          "id": "step_4",
+          "operation": "network.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1
+          }
+        }
+      ],
+      "seconds": 0.985,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        [],
+        []
+      ],
+      "orphans": 0
+    },
+    {
+      "case": "r6_readonly_finish_by_en",
+      "planner_path": "real_llm_current_tree_readonly_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "peripheral.list",
+        "audio.status",
+        "system.status"
+      ],
+      "effect_operations": [
+        "peripheral.list",
+        "audio.status",
+        "system.status"
+      ],
+      "decision_seconds": 0.03,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "peripheral.list",
+        "audio.status",
+        "system.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "peripheral.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "devices": [
+              {
+                "deviceId": "printer_65009214b8486ede90f63812",
+                "kind": "printer",
+                "name": "Brother DCP-T720DW Printer",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_00d84ab46e6345e15e7303f9",
+                "kind": "printer",
+                "name": "Fax",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_43d248d4e2bfebb83eec846d",
+                "kind": "printer",
+                "name": "Impresora de imagen de PaperPort",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_f5a027fccacc67f8e2c108eb",
+                "kind": "printer",
+                "name": "Microsoft Print to PDF",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_cafabcc24b0cc4be4ed75be7",
+                "kind": "printer",
+                "name": "Microsoft XPS Document Writer",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_decb4a643bee7f1241e9b761",
+                "kind": "printer",
+                "name": "OneNote (Desktop)",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_f13616df5735dbcb2d6b31ac",
+                "kind": "printer",
+                "name": "PDF24",
+                "status": ""
+              },
+              {
+                "deviceId": "scanner_cc47c0d115b8219f74e6bf4d",
+                "kind": "scanner",
+                "name": "Brother DCP-T720DW LAN",
+                "status": "available"
+              },
+              {
+                "deviceId": "usb_70e5997d163bea7cb9a9336d",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_974ef8fe69c9cc4e3907b704",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_1a93e3bbb485c136e020cf41",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico de velocidad extra",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_6389c0b38c2ad12e0d975b61",
+                "kind": "usb",
+                "name": "USB Microphone",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_a43298d613253f5146001cd5",
+                "kind": "usb",
+                "name": "HyperX Virtual Surround Sound",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_420ede4b98f4bf2b6ceedebe",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_cfc2ab6b0cea0be8404dee03",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico de velocidad extra",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_0315bbd364e8087a10877568",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_940bf4b4d97fba856ea9ec4f",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_a891a681bd14d2039086a965",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_9cccbd492b2f27ab0312465b",
+                "kind": "usb",
+                "name": "G502 X PLUS",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_d090591db4883fcc97ab33b0",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_eb38edfaa1492d32a966f04f",
+                "kind": "usb",
+                "name": "USB PnP Audio Device",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_aea757c91ead6ed5d014b04a",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_ca97f3b059ed70650d596455",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_4046b85cdc9f2f8496a0b9f8",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico de velocidad extra",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_b4c36381a64c54d737caecbf",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_33e71a0ed0df8d2da8ad3eca",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_e0f1d250bd12b5edaa5155d4",
+                "kind": "usb",
+                "name": "Realtek 8832CU Wireless LAN WiFi 6 USB NIC",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_98015d48922ec73a2de66f90",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_32dba0fa428cb123a8a537ba",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_7316ee2d1beff241f9ec9112",
+                "kind": "usb",
+                "name": "Dispositivo USB desconocido (Error de solicitud de descriptor de dispositivo)",
+                "status": "Error"
+              },
+              {
+                "deviceId": "usb_05c740753d9778335b1a2385",
+                "kind": "usb",
+                "name": "Concentrador USB gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_551b7742e1733ed822e375b2",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              }
+            ]
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "targetId": "default_output",
+            "state": {}
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "system.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {}
+        }
+      ],
+      "seconds": 11.811,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        []
+      ],
+      "orphans": 0
+    },
+    {
+      "case": "r6_interleaved_pairs_spanglish",
+      "planner_path": "real_llm_current_tree_mixed_dependency_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.02,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "37df67a8-efdb-478b-b3c3-c72bad829a31",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "37df67a8-efdb-478b-b3c3-c72bad829a31",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "f9935914-b5d6-4363-90ce-fa85d90e54dc",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "f9935914-b5d6-4363-90ce-fa85d90e54dc",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 1.267,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        [],
+        [
+          2
+        ]
+      ],
+      "orphans": 0
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "environment_blocked": 0,
+    "failed": 0,
+    "total": 6,
+    "verified_steps": 22,
+    "real_llm_plan_cases": 6,
+    "real_llm_plan_cases_passed": 6,
+    "model_grounded_steps": 7,
+    "ambiguous_effects": 0,
+    "status": "passed",
+    "orphan": 0
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

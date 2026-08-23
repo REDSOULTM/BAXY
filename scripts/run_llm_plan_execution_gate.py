@@ -243,9 +243,20 @@ def main() -> None:
         mind_hello = receive(mind, "mind")
         if runtime.gguf.name not in (mind_hello.get("models") or {}).values():
             raise RuntimeError(f"real LLM was not loaded: {mind_hello}")
+        catalog_configure: dict[str, Any] = {
+            "type": "catalog.configure",
+            "id": "catalog",
+            "capabilities": capabilities,
+        }
+        application_catalog = core_hello.get("applicationCatalog")
+        if isinstance(application_catalog, dict):
+            catalog_configure["applicationCatalog"] = application_catalog
+        game_catalog = core_hello.get("gameCatalog")
+        if isinstance(game_catalog, dict):
+            catalog_configure["gameCatalog"] = game_catalog
         ready = call(
             mind,
-            {"type": "catalog.configure", "id": "catalog", "capabilities": capabilities},
+            catalog_configure,
             "mind",
         )
         if ready.get("type") != "catalog.ready" or ready.get("count") != catalog_count:

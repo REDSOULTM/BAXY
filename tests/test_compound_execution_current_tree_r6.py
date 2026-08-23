@@ -23,14 +23,23 @@ def test_current_tree_compound_r6_covers_every_dependent_clause_shape() -> None:
     assert current.isdisjoint(r5_objectives)
 
 
-def test_current_tree_compound_r6_is_sealed_unopened() -> None:
+def test_current_tree_compound_r6_was_opened_exactly_once_under_its_seal() -> None:
     assert campaign.PREREGISTRATION.exists()
-    assert not campaign.OUTPUT.exists()
+    assert campaign.OUTPUT.exists()
     manifest = json.loads(campaign.PREREGISTRATION.read_text(encoding="utf-8"))
     assert manifest["blind_holdout"] is True
     assert manifest["preregistered_before_measurement"] is True
-    assert manifest["measurement_status"] == "unopened"
     assert manifest["supersedes"]["reuse_for_promotion_forbidden"] is True
     assert manifest["population"]["case_contract_sha256"] == (
         campaign.case_contract_sha256()
     )
+    report = json.loads(campaign.OUTPUT.read_text(encoding="utf-8"))
+    summary = report["summary"]
+    assert summary["status"] == "passed"
+    assert summary["total"] == 6
+    assert summary["passed"] == 6
+    assert summary["failed"] == 0
+    assert summary["verified_steps"] == 22
+    assert summary["real_llm_plan_cases_passed"] == 6
+    assert summary["ambiguous_effects"] == 0
+    assert summary["orphan"] == 0
