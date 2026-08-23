@@ -47,19 +47,27 @@ La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose envia
 
 Corrida: `py -3.12 scripts/goal06_voice_sample.py artifacts/development` sobre
 Qwen3-4B-Q4_K_M, sidecar real, `type=message.compose.result`. Evidencia:
-`artifacts/development/goal06_cien_respuestas.jsonl`. n=100, bad=0 del scorer,
-p50 0,22 s.
+`artifacts/development/goal06_cien_respuestas.jsonl` y
+`artifacts/development/goal06_prosa_ab.json`. n=100, bad=0 del scorer, p50 0,22 s.
 
-Leídas a mano las 100. Polaridad y causa coinciden; 0 copias de Spotify ajeno;
-0 códigos internos; 0 infinitivos inventados; 0 stalls; 0 JSON; 0 «Listo,» en
-fallo, welcome o acting. Opens en inglés nombran la app («Word is open»,
-«Calculator is open»). Notas: «La nota Ideas está creada». Español:
-«Word está abierto». El first-pass lleva la forma nombre+estado; no se rechaza
-con vacío si el modelo la omite.
+Leídas a mano las 100 de ese JSONL. Polaridad y causa coinciden; 0 copias de
+Spotify ajeno; 0 códigos; 0 inventadas del conjunto cerrado (incluida «Abrbió»);
+0 stalls; 0 JSON; 0 «Listo,» en fallo, welcome o acting.
 
-Lo que suena al registro: «Spotify está abierto y sonando»; «Steam is open»;
-«No pude: se agotó el tiempo»; «I couldn't: it didn't respond»; «eso no lo hago»;
-«El audio ya no está silenciado».
+| Tipo | Lo que sale |
+|---|---|
+| Welcome | «Hola.» / «Hi.» / «Hi there.» — masculino, una frase, sin apps |
+| Aclaración | «¿Qué quieres abrir?» / «What do you want to open?» / «What do you want to close?» |
+| Misión | «Listo, Abrí Steam y puse el volumen en 40 %.» y «Listo, Abrí Word y creé la nota «Borrador».» — los dos pasos |
+| Género | «Listo, Calculadora está abierta.» / «Listo, Terminal está abierta.» |
+| Mayúsculas | «Listo, el volumen está en 80.» / «The volume is 25.» / «¿Qué quieres cerrar?» |
+| Open EN | «Word is open.» / «Calculator is open.» |
+| Open ES | «Listo, Word está abierto.» |
+| Nota | «Listo, la nota Ideas está creada.» |
+
+Registro cuando el hecho es rico: «Spotify está abierto y sonando»; «Spotify is open and playing»; «No pude: se agotó el tiempo»; «I couldn't: it didn't respond»; «eso no lo hago»; «El audio ya no está silenciado».
+
+Queda «no la encontré» con apps masculinas (Steam/Chrome): es la causa en prosa, no un hueco de otro nombre. Anotado.
 
 ## 6. Criterios
 
@@ -67,5 +75,5 @@ Lo que suena al registro: «Spotify está abierto y sonando»; «Steam is open»
 - [x] Personalidad en el prompt
 - [x] Accesibilidad / narrate por la misma ruta
 - [x] Guarda de infinitivos inventados en compose
-- [x] Cien respuestas leídas a mano
-- [x] Publicado en `origin/main` (`046f034`)
+- [x] Cien respuestas leídas a mano (`artifacts/development/goal06_cien_respuestas.jsonl`)
+- [x] Publicado en `origin/main`

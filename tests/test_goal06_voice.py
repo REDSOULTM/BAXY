@@ -41,7 +41,7 @@ def test_named_state_hint_is_one_sentence_with_name_and_state() -> None:
         "es",
         "abre Word",
     )
-    assert open_es == "Word está abierto."
+    assert open_es == "Listo, Word está abierto."
     assert "Una frase" not in open_es
     assert "Di " not in open_es
     open_en = _named_state_hint(
@@ -63,13 +63,31 @@ def test_named_state_hint_is_one_sentence_with_name_and_state() -> None:
         "es",
         "crea una nota Ideas",
     )
-    assert note == "la nota Ideas está creada."
+    assert note == "Listo, la nota Ideas está creada."
     volume = _named_state_hint(
         {"polarity": "success", "observed": {"level": 80}},
         "es",
         "sube el volumen a 80",
     )
-    assert volume == "el volumen está en 80."
+    assert volume == "Listo, el volumen está en 80."
+    feminine = _named_state_hint(
+        {"polarity": "success", "observed": {"app": "Calculadora"}},
+        "es",
+        "abre Calculadora",
+    )
+    assert feminine == "Listo, Calculadora está abierta."
+    mission = _named_state_hint(
+        {
+            "kind": "status",
+            "cause": "mission_completed",
+            "polarity": "success",
+            "steps": ["Abrí Steam.", "Puse el volumen en 40 %."],
+        },
+        "es",
+        "abre Steam y sube el volumen",
+    )
+    assert "Steam" in mission and "40" in mission
+    assert mission.startswith("Listo,")
     welcome = _named_state_hint(
         {"kind": "welcome", "polarity": "success"},
         "en",
@@ -97,6 +115,9 @@ def test_recovery_compose_does_not_pass_a_spanish_constant() -> None:
 def test_invented_infinitives_and_stalls_are_still_rejected() -> None:
     assert visible_reply_invents_a_spanish_infinitive("No puedo cuecer las lentejas.")
     assert visible_reply_invents_a_spanish_infinitive("Cambia tetera por Descalzica.")
+    assert visible_reply_invents_a_spanish_infinitive(
+        "Listo, Abrbió Word y creó la nota."
+    )
     assert visible_reply_is_a_fixed_stall("un momento…")
     assert not visible_reply_is_a_fixed_stall("Listo, Spotify está abierto y sonando")
 
@@ -257,6 +278,50 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
             )
         },
     ) == "copied_instruction"
+    assert compose_visible_defect(
+        "el volumen está en 80.",
+        "status",
+        "sube el volumen a 80",
+        {
+            "situation": (
+                '{"kind":"operation","polarity":"success","observed":{"level":80}}'
+            )
+        },
+    ) == "lowercase"
+    assert compose_visible_defect(
+        "Calculadora está abierto.",
+        "status",
+        "abre Calculadora",
+        {
+            "situation": (
+                '{"kind":"operation","polarity":"success","observed":{"app":"Calculadora"}}'
+            )
+        },
+    ) == "wrong_gender"
+    assert compose_visible_defect(
+        "Clarify what you mean.",
+        "clarification",
+        "close it",
+        {"situation": '{"kind":"clarification","polarity":"pending"}'},
+    ) == "clarification_not_a_question"
+    mission_facts = {
+        "situation": (
+            '{"kind":"status","cause":"mission_completed","polarity":"success",'
+            '"steps":["Abrí Word.","Creé la nota «Borrador»."]}'
+        )
+    }
+    assert compose_visible_defect(
+        "Listo, la nota «Borrador» fue creada con éxito.",
+        "status",
+        "abre Word y crea una nota",
+        mission_facts,
+    ) == "missing_name"
+    assert compose_visible_defect(
+        "Listo, Abrí Word y creé la nota «Borrador».",
+        "status",
+        "abre Word y crea una nota",
+        mission_facts,
+    ) == ""
     assert compose_visible_defect(
         "No pude: se agotó el tiempo.",
         "error",

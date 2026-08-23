@@ -2532,6 +2532,7 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "volumor",
         "creadel",
         "relojillo",
+        "abrbio",
     }
 )
 _THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
@@ -2671,6 +2672,13 @@ def _compose_situation_payload(situation: dict, language: str) -> dict:
     return payload
 
 
+_FEMININE_APP_NAMES = frozenset({"calculadora", "terminal"})
+
+
+def _app_is_feminine(name: str) -> bool:
+    return name.casefold() in _FEMININE_APP_NAMES
+
+
 def _named_state_hint(situation: dict, language: str, user_text: str) -> str:
     """First-pass shape: name + state in one sentence. Never a published fallback."""
 
@@ -2680,11 +2688,24 @@ def _named_state_hint(situation: dict, language: str, user_text: str) -> str:
     cause = str(situation.get("cause") or "").strip().lower()
     if cause == "acting" or kind in {"welcome", "confirmation", "clarification"}:
         return ""
+    english = language == "en"
+    steps = situation.get("steps")
+    if (
+        cause == "mission_completed"
+        and isinstance(steps, list)
+        and len(steps) >= 2
+    ):
+        bits = [str(step).strip().rstrip(".") for step in steps if str(step).strip()]
+        if len(bits) < 2:
+            return ""
+        if english:
+            return " and ".join(bits) + "."
+        rest = [bit[:1].lower() + bit[1:] if bit else bit for bit in bits[1:]]
+        return "Listo, " + " y ".join([bits[0], *rest]) + "."
     observed = situation.get("observed")
     if not isinstance(observed, dict):
         return ""
     closed = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold()) is not None
-    english = language == "en"
     parts: list[str] = []
     app = observed.get("app")
     title = observed.get("title")
@@ -2696,24 +2717,33 @@ def _named_state_hint(situation: dict, language: str, user_text: str) -> str:
                 shape = f"{app} is open and playing"
             else:
                 shape = f"{app} is open"
-        elif closed:
-            shape = f"{app} está cerrado"
-        elif observed.get("playing") is True:
-            shape = f"{app} está abierto y sonando"
         else:
-            shape = f"{app} está abierto"
+            feminine = _app_is_feminine(app)
+            if closed:
+                state = "cerrada" if feminine else "cerrado"
+            elif observed.get("playing") is True:
+                state = "abierta y sonando" if feminine else "abierto y sonando"
+            else:
+                state = "abierta" if feminine else "abierto"
+            shape = f"Listo, {app} está {state}"
         parts.append(shape + ".")
     if isinstance(title, str) and title.strip():
         if english:
-            parts.append(f"the note {title} is saved.")
+            parts.append(f"The note {title} is saved.")
         else:
-            parts.append(f"la nota {title} está creada.")
+            parts.append(f"Listo, la nota {title} está creada.")
     level = observed.get("level")
     if isinstance(level, int) or (isinstance(level, str) and str(level).strip()):
         if english:
-            parts.append(f"the volume is {level}.")
+            parts.append(f"The volume is {level}.")
         else:
-            parts.append(f"el volumen está en {level}.")
+            parts.append(f"Listo, el volumen está en {level}.")
+    local_time = observed.get("localTime")
+    if isinstance(local_time, str) and local_time.strip():
+        if english:
+            parts.append(f"It is {local_time}.")
+        else:
+            parts.append(f"Listo, son las {local_time}.")
     return "\n".join(parts)
 
 
@@ -2809,6 +2839,13 @@ def compose_visible_defect(
             return "wrong_gender"
         if language != "en" and re.search(r"\b(?:everything|ready)\b", folded):
             return "wrong_language"
+        if re.search(r"abiert|\bis open\b|\bdoor\b|\bdevice\b|\bcall\b", folded):
+            return "extra_claim"
+    if intent == "clarification" or kind == "clarification":
+        if "?" not in stripped and "¿" not in stripped:
+            return "clarification_not_a_question"
+        if re.search(r"[.!][\"']?\s+[A-Z¿]", stripped):
+            return "too_many_sentences"
     if intent == "confirmation" or kind == "confirmation":
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "confirmation_asserted"
@@ -2842,6 +2879,27 @@ def compose_visible_defect(
         r"\bhola\b.*\bhola\b", folded
     ):
         return "welcome_repeat"
+    lead = stripped.lstrip("¿¡\"'")
+    if lead and lead[0].isalpha() and lead[0].islower():
+        return "lowercase"
+    app_name = observed_dict.get("app")
+    if isinstance(app_name, str) and _app_is_feminine(app_name):
+        if re.search(r"está abierto\b", folded) and "abierta" not in folded:
+            return "wrong_gender"
+    if cause == "mission_completed":
+        skip = {
+            "abri", "cree", "puse", "listo", "nota", "the", "and", "volume",
+            "volumen", "puse", "creé", "la", "el", "las", "los", "una", "uno",
+            "con", "exito", "éxito", "success",
+        }
+        for step in situation.get("steps") or []:
+            tokens = [
+                token
+                for token in re.findall(r"[A-Za-zÁÉÍÓÚÜáéíóúüñÑ]{3,}|\d+", str(step))
+                if token.casefold() not in skip
+            ]
+            if tokens and not any(token.casefold() in folded for token in tokens):
+                return "missing_name"
     return ""
 
 
@@ -7135,6 +7193,22 @@ class LlmRuntime:
             payload["messages"][1]["content"] += (
                 "\nDi que sigues. Prohibido Listo y prohibido afirmar el resultado."
             )
+        elif intent == "clarification" or kind == "clarification":
+            folded_user = (user_text or "").casefold()
+            if response_language == "en":
+                if re.search(r"\bopen\b", folded_user):
+                    question = "What do you want to open?"
+                elif re.search(r"\bclose\b", folded_user):
+                    question = "What do you want to close?"
+                else:
+                    question = "What do you mean?"
+            elif re.search(r"abre|ábr", folded_user):
+                question = "¿Qué quieres abrir?"
+            elif re.search(r"cierr", folded_user):
+                question = "¿Qué quieres cerrar?"
+            else:
+                question = "¿Qué quieres decir?"
+            payload["messages"][1]["content"] += f"\n{question}"
         elif response_language == "en" and (
             intent == "error" or polarity == "failure"
         ):
@@ -7485,6 +7559,11 @@ class LlmRuntime:
             "invented": "Sin palabras pegadas ni inventadas.",
             "welcome_repeat": "Un solo Hola.",
             "copied_instruction": "Devuelve el mensaje, no la instrucción.",
+            "lowercase": "Empieza con mayúscula.",
+            "clarification_not_a_question": "Una pregunta.",
+            "too_many_sentences": "Una sola frase.",
+            "wrong_gender": "Concordancia: abierta/cerrada si es femenino.",
+            "missing_name": "Incluye todos los pasos observados.",
         }.get(defect, "")
         retry_payload["messages"] = [
             {"role": "system", "content": message_prompt},
@@ -7511,6 +7590,10 @@ class LlmRuntime:
             },
         ]
         retry_payload["temperature"] = 0.0
+        if named_hint:
+            retry_payload["messages"][1]["content"] = (
+                named_hint + "\nDevuelve sólo esa frase."
+            )
         retry = self._post(retry_payload)
         retry_text = _strip_think_tags(
             (retry["choices"][0]["message"].get("content") or "").strip()
