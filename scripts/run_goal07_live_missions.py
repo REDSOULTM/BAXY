@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -22,39 +23,63 @@ SCRATCH = Path(os.environ.get("GOAL07_SCRATCH") or ".")
 STEAM_OBJECTIVE = "Abre Steam y ve a la biblioteca"
 LIBRARY_OBSERVER = r"""
 $ErrorActionPreference='Stop'
-Add-Type -AssemblyName UIAutomationClient
-Add-Type -AssemblyName UIAutomationTypes
+Add-Type -AssemblyName System.Drawing
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-public static class BaxyFg {
-  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+public static class BaxySteamPostread {
+  public delegate bool EnumProc(IntPtr h, IntPtr l);
+  [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr l);
+  [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
   [DllImport("user32.dll")] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
-  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint procId);
+  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
+  [StructLayout(LayoutKind.Sequential)] public struct RECT { public int L; public int T; public int R; public int B; }
 }
 '@
-$hwnd=[BaxyFg]::GetForegroundWindow()
-$title=New-Object System.Text.StringBuilder 512
-[void][BaxyFg]::GetWindowText($hwnd,$title,512)
-$procId=0; [void][BaxyFg]::GetWindowThreadProcessId($hwnd,[ref]$procId)
-$proc=Get-Process -Id $procId -ErrorAction SilentlyContinue
-$names=@()
-try {
-  $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
-  $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-  foreach($item in $all){
-    try {
-      $name=$item.Current.Name
-      if($name -and $name -match '(?i)biblioteca|library'){ $names += $name }
-    } catch {}
+$ids = New-Object 'System.Collections.Generic.HashSet[int]'
+Get-Process steam, steamwebhelper -ErrorAction SilentlyContinue | ForEach-Object { [void]$ids.Add($_.Id) }
+$script:best = $null
+$cb = [BaxySteamPostread+EnumProc]{
+  param($h, $l)
+  if (-not [BaxySteamPostread]::IsWindowVisible($h)) { return $true }
+  $procId = [uint32]0
+  [void][BaxySteamPostread]::GetWindowThreadProcessId($h, [ref]$procId)
+  if (-not $ids.Contains([int]$procId)) { return $true }
+  $r = New-Object BaxySteamPostread+RECT
+  [void][BaxySteamPostread]::GetWindowRect($h, [ref]$r)
+  $w = $r.R - $r.L; $ht = $r.B - $r.T
+  $area = [int64]$w * [int64]$ht
+  if ($null -eq $script:best -or $area -gt $script:best.area) {
+    $title = New-Object System.Text.StringBuilder 256
+    [void][BaxySteamPostread]::GetWindowText($h, $title, 256)
+    $script:best = [pscustomobject]@{ hwnd=$h; w=$w; h=$ht; area=$area; title=$title.ToString(); left=$r.L; top=$r.T; procId=[int]$procId }
   }
-} catch {}
+  return $true
+}
+[void][BaxySteamPostread]::EnumWindows($cb, [IntPtr]::Zero)
+if ($null -eq $best -or $best.w -lt 400 -or $best.h -lt 300) {
+  [pscustomobject]@{ ok=$false; error='steam_main_window_not_visible'; width=$(if($best){$best.w}else{0}); height=$(if($best){$best.h}else{0}) } | ConvertTo-Json -Compress
+  exit 2
+}
+$bmp = New-Object System.Drawing.Bitmap $best.w, $best.h
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.CopyFromScreen($best.left, $best.top, 0, 0, (New-Object System.Drawing.Size($best.w, $best.h)))
+$path = Join-Path $env:TEMP 'baxy-steam-library-postread.bmp'
+$bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Bmp)
+$g.Dispose(); $bmp.Dispose()
+$ocr = & 'C:\Program Files\Tesseract-OCR\tesseract.exe' $path stdout -l eng --psm 6 2>$null
+$surface = $ocr -match '(?i)biblioteca|library'
 [pscustomobject]@{
-  foregroundTitle=$title.ToString()
-  processName=$(if($proc){$proc.ProcessName}else{''})
-  processPath=$(if($proc){$proc.Path}else{''})
-  libraryNames=@($names | Select-Object -Unique -First 12)
+  ok = [bool]$surface
+  title = $best.title
+  width = $best.w
+  height = $best.h
+  processId = $best.procId
+  screenshot = $path
+  ocr = (($ocr | Out-String).Trim())
+  librarySurface = [bool]$surface
 }|ConvertTo-Json -Compress
 """
 
@@ -115,17 +140,16 @@ def observe_library() -> dict[str, Any]:
         payload = json.loads(completed.stdout.strip().splitlines()[-1])
     except json.JSONDecodeError:
         return {"ok": False, "error": completed.stdout[:1000]}
-    names = [str(name) for name in payload.get("libraryNames") or []]
-    process = str(payload.get("processName") or "").casefold()
-    title = str(payload.get("foregroundTitle") or "")
-    steam_foreground = process.startswith("steam")
-    library_seen = any(
-        "library" in name.casefold() or "biblioteca" in name.casefold()
-        for name in names + [title]
+    width = int(payload.get("width") or 0)
+    height = int(payload.get("height") or 0)
+    ocr = str(payload.get("ocr") or "")
+    library_seen = bool(payload.get("librarySurface")) or bool(
+        re.search(r"biblioteca|library", ocr, re.IGNORECASE)
     )
-    payload["steamForeground"] = steam_foreground
+    large_enough = width >= 400 and height >= 300
+    payload["steamForeground"] = large_enough
     payload["librarySurface"] = library_seen
-    payload["ok"] = steam_foreground and library_seen
+    payload["ok"] = large_enough and library_seen
     return payload
 
 
@@ -156,6 +180,14 @@ def main() -> int:
     write(scratch / "launch_compound_1.log", first)
     write(scratch / "launch_compound_2.log", second)
     observation = observe_library()
+    screenshot = observation.get("screenshot")
+    if isinstance(screenshot, str) and Path(screenshot).is_file():
+        target = scratch / "steam_library_surface.bmp"
+        try:
+            Path(screenshot).replace(target)
+            observation["screenshot"] = str(target)
+        except OSError:
+            pass
     steam_report = {
         "objective": STEAM_OBJECTIVE,
         "mission": steam,

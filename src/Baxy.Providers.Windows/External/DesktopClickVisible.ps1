@@ -20,6 +20,23 @@ public static class BaxyVisibleClickNative {
   [DllImport("user32.dll")] private static extern IntPtr SendMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
   [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
+  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint procId);
+  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+  [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+  public static IntPtr LargestVisible(IntPtr hwnd) {
+    GetWindowThreadProcessId(hwnd, out uint procId);
+    IntPtr best=hwnd; long bestArea=0;
+    EnumWindows((top,unused)=>{
+      if(!IsWindowVisible(top)) return true;
+      GetWindowThreadProcessId(top, out uint owner);
+      if(owner!=procId) return true;
+      RECT r; if(!GetWindowRect(top,out r)) return true;
+      long area=(long)Math.Max(0,r.Right-r.Left)*Math.Max(0,r.Bottom-r.Top);
+      if(area>bestArea){bestArea=area;best=top;}
+      return true;
+    },IntPtr.Zero);
+    return best;
+  }
   public static IntPtr[] FindVisibleButtons(string[] labels) {
     var matches=new List<IntPtr>();
     EnumWindows((top,unused)=>{
@@ -101,6 +118,7 @@ try {
   elseif($label -match '^(?i:configuracion|settings)$'){$aliases=@('Configuracion','Settings')}
   $hwnd=[BaxyVisibleClickNative]::GetForegroundWindow()
   if($hwnd -eq [IntPtr]::Zero){Emit $false $false 'active_window_not_found' '' '' $false $false 'uia';exit 2}
+  $hwnd=[BaxyVisibleClickNative]::LargestVisible($hwnd)
   Start-Sleep -Milliseconds 500
   $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
   $tree=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)

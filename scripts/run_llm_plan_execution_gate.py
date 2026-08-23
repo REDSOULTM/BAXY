@@ -43,11 +43,11 @@ CORE = BUILD_LAYOUT.core_executable(REPO)
 OUTPUT = REPO / "artifacts/planner_recovery/llm_plan_execution_gate.json"
 
 SAFE_FIELDS = {
-    "available", "backupId", "captureId", "connected", "count", "devices",
+    "available", "backupId", "captureId", "cascadeStage", "connected", "count", "devices",
     "deviceId", "enabled", "entries", "exists", "fileId", "files", "hash",
-    "installed", "items", "isTrashed", "jobId", "noteId", "notes",
+    "installed", "items", "isTrashed", "jobId", "name", "noteId", "notes", "observedText",
     "processId", "recipientId", "reminderId", "reminders", "resourceId", "resourceUri",
-    "results", "revision", "routineId", "routines", "sessionId", "sha256",
+    "results", "revision", "routineId", "routines", "selected", "sessionId", "sha256",
     "state", "status", "taskId", "tasks", "totalCount", "version",
     "windowId", "windows",
 }

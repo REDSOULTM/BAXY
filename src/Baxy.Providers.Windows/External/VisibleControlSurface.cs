@@ -12,6 +12,10 @@ internal static partial class VisibleControlSurface
         nint hwnd = GetForegroundWindow();
         if (hwnd == 0)
             return null;
+        _ = GetWindowThreadProcessId(hwnd, out uint processId);
+        nint largest = LargestTopLevelWindow(unchecked((int)processId));
+        if (largest != 0)
+            hwnd = largest;
         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
             return null;
         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
@@ -63,6 +67,46 @@ internal static partial class VisibleControlSurface
         public int Right;
         public int Bottom;
     }
+
+    private static nint LargestTopLevelWindow(int processId)
+    {
+        nint best = 0;
+        long bestArea = 0;
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (!IsWindowVisible(window))
+                return true;
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner != unchecked((uint)processId))
+                return true;
+            if (!GetWindowRect(window, out Rect rect))
+                return true;
+            long area = (long)Math.Max(0, rect.Right - rect.Left)
+                * Math.Max(0, rect.Bottom - rect.Top);
+            if (area > bestArea)
+            {
+                bestArea = area;
+                best = window;
+            }
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return best;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsWindowVisible(nint window);
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();

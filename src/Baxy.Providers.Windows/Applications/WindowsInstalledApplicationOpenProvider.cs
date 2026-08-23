@@ -933,10 +933,18 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     bool identityMatch = identities.Any(identity =>
                         processName == identity
                         || (identity.Length >= 4 && processName.StartsWith(identity, StringComparison.Ordinal)));
-                    bool titleMatch = normalizedDisplayName.Length >= 3
-                        && (title == normalizedDisplayName
-                            || title.Contains(normalizedDisplayName, StringComparison.Ordinal));
+                    bool titleMatch = WindowTitleIdentifiesApplication(
+                        title,
+                        normalizedDisplayName);
                     if (!identityMatch && !titleMatch)
+                    {
+                        continue;
+                    }
+
+                    nint operated = LargestTopLevelWindow(process.Id, includeHidden: false);
+                    if (operated == 0)
+                        operated = window;
+                    if (operated == 0 || !IsWindowVisible(operated))
                     {
                         continue;
                     }
@@ -952,9 +960,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         process.Id,
                         process.StartTime.ToUniversalTime().Ticks,
                         executablePath,
-                        window.ToInt64(),
+                        operated.ToInt64(),
                         Visible: true,
-                        Foreground: GetForegroundWindow() == window));
+                        Foreground: GetForegroundWindow() == operated));
                 }
                 catch (Exception exception) when (exception is InvalidOperationException
                     or System.ComponentModel.Win32Exception
@@ -987,9 +995,32 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return process is not null;
     }
 
+    internal static bool WindowTitleIdentifiesApplication(string windowTitle, string applicationName)
+    {
+        if (string.IsNullOrWhiteSpace(windowTitle)
+            || string.IsNullOrWhiteSpace(applicationName)
+            || applicationName.Length < 3)
+        {
+            return false;
+        }
+
+        if (windowTitle == applicationName)
+            return true;
+        if (!windowTitle.StartsWith(applicationName, StringComparison.Ordinal))
+            return false;
+        if (windowTitle.Length == applicationName.Length)
+            return true;
+        char next = windowTitle[applicationName.Length];
+        return next is ' ' or '-' or ':' or '|' or '(';
+    }
+
     public void RequestForeground(long windowHandle)
     {
         nint handle = checked((nint)windowHandle);
+        _ = GetWindowThreadProcessId(handle, out uint processId);
+        nint largest = LargestTopLevelWindow(unchecked((int)processId), includeHidden: true);
+        if (largest != 0)
+            handle = largest;
         nint foreground = GetForegroundWindow();
         uint currentThread = GetCurrentThreadId();
         uint foregroundThread = foreground == 0
@@ -1046,8 +1077,54 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return identities;
     }
 
+    private static nint LargestTopLevelWindow(int processId, bool includeHidden)
+    {
+        nint best = 0;
+        long bestArea = 0;
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (!includeHidden && !IsWindowVisible(window))
+                return true;
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner != unchecked((uint)processId))
+                return true;
+            if (!GetWindowRect(window, out Rect rect))
+                return true;
+            long area = (long)Math.Max(0, rect.Right - rect.Left)
+                * Math.Max(0, rect.Bottom - rect.Top);
+            if (area > bestArea)
+            {
+                bestArea = area;
+                best = window;
+            }
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return best;
+    }
+
     [GeneratedRegex(@"(?<name>[A-Za-z0-9_-]+)\.exe", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex ExecutableIdentityPattern();
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Rect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetWindowRect(nint window, out Rect rect);
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();

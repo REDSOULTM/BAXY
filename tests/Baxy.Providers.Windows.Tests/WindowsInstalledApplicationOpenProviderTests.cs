@@ -22,6 +22,21 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         new("Visual Studio Code", "VisualStudioCode"),
     ];
 
+    [TestCase("steam", "steam", true)]
+    [TestCase("steam noticias", "steam", true)]
+    [TestCase("list visible steam windows with sizes baxy goal 07", "steam", false)]
+    [TestCase("spotify", "steam", false)]
+    [TestCase("notepad", "notepad", true)]
+    public void WindowTitleDoesNotTreatAnIncidentalMentionAsTheApp(
+        string title, string application, bool expected)
+    {
+        Assert.That(
+            WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
+                title,
+                application),
+            Is.EqualTo(expected));
+    }
+
     [Test]
     public void ExactNameBeatsRelatedStartMenuEntries()
     {
