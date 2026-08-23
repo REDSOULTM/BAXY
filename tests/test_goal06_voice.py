@@ -168,6 +168,24 @@ def test_compose_payload_does_not_contain_published_sentences() -> None:
         {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
     ) == "acting_asserted"
     assert compose_visible_defect(
+        "Hola.",
+        "status",
+        "abre Steam y ve a la biblioteca",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "acting_asserted"
+    assert compose_visible_defect(
+        "Sigo adelante.",
+        "status",
+        "abre Steam y ve a la biblioteca",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == ""
+    assert compose_visible_defect(
+        "Still working.",
+        "status",
+        "open Steam and go to the library",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == ""
+    assert compose_visible_defect(
         "Progreso, sin el resultado.",
         "status",
         "abre Steam y ve a la biblioteca",
@@ -371,7 +389,142 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
                 '"polarity":"success","observed":{"muted":false}}'
             )
         },
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "Muted.",
+        "status",
+        "mute the speakers",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
+    ) == "copied_instruction"
+    assert compose_visible_defect(
+        "Unmuted.",
+        "status",
+        "unmute the audio",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":false}}'
+            )
+        },
+    ) == "copied_instruction"
+    assert compose_visible_defect(
+        "The speakers are muted.",
+        "status",
+        "mute the speakers",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
     ) == ""
+    assert compose_visible_defect(
+        "The audio is unmuted.",
+        "status",
+        "unmute the audio",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":false}}'
+            )
+        },
+    ) == ""
+    assert compose_visible_defect(
+        "Listo, los altavoces están silenciados.",
+        "status",
+        "silencia los altavoces",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
+    ) == ""
+    assert compose_visible_defect(
+        "Listo, el volumen está mutado.",
+        "status",
+        "silencia los altavoces",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
+    ) == "extra_claim"
+    assert compose_visible_defect(
+        "I couldn't: the wait ran out.",
+        "error",
+        "close Chrome",
+        {"situation": '{"kind":"failure","cause":"timeout","polarity":"failure","target":"Chrome"}'},
+    ) == ""
+    assert compose_visible_defect(
+        "I couldn't: wait ended.",
+        "error",
+        "close Chrome",
+        {"situation": '{"kind":"failure","cause":"timeout","polarity":"failure","target":"Chrome"}'},
+    ) == "copied_instruction"
+    assert compose_visible_defect(
+        "I couldn't: the wait ended ended ended.",
+        "error",
+        "close Chrome",
+        {"situation": '{"kind":"failure","cause":"timeout","polarity":"failure","target":"Chrome"}'},
+    ) == "invented"
+    assert compose_visible_defect(
+        "I couldn't: mission unfinished.",
+        "error",
+        "open Word and wipe the disk",
+        {"situation": '{"kind":"failure","cause":"mission_failed","polarity":"failure"}'},
+    ) == "copied_instruction"
+    assert compose_visible_defect(
+        "I couldn't: I don't do that.",
+        "error",
+        "open Word and wipe the disk",
+        {"situation": '{"kind":"failure","cause":"mission_failed","polarity":"failure"}'},
+    ) == ""
+    assert compose_visible_defect(
+        "No pude: no respondo.",
+        "error",
+        "abre Steam y borra el disco",
+        {"situation": '{"kind":"failure","cause":"mission_failed","polarity":"failure"}'},
+    ) == "extra_claim"
+    assert compose_visible_defect(
+        "No pude: eso no lo hago.",
+        "error",
+        "abre Steam y borra el disco",
+        {"situation": '{"kind":"failure","cause":"mission_failed","polarity":"failure"}'},
+    ) == ""
+    assert compose_visible_defect(
+        "La volumen está en 10.",
+        "status",
+        "pon el volumen a 10",
+        {
+            "situation": (
+                '{"kind":"operation","polarity":"success","observed":{"level":10}}'
+            )
+        },
+    ) == "wrong_gender"
+    assert compose_visible_defect(
+        "La nota Gamma está abierta.",
+        "status",
+        "crea la nota Gamma",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"note.create",'
+                '"polarity":"success","observed":{"title":"Gamma"}}'
+            )
+        },
+    ) == "extra_claim"
+    assert compose_visible_defect(
+        "No pude: la terminal ya terminado de esperar.",
+        "error",
+        "abre la terminal",
+        {"situation": '{"kind":"failure","cause":"timeout","polarity":"failure","target":"Terminal"}'},
+    ) == "invented"
     assert compose_visible_defect(
         "Estado observable: El audio ya fue reactivado.",
         "status",

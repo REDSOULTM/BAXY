@@ -191,7 +191,9 @@ USER_MESSAGE_PROMPT = (
     "una plantilla. "
     "Pedido en inglés, polarity=success: una frase declarativa del estado; "
     "nunca Listo ni un imperativo. "
-    "Pedido en inglés, polarity=failure: «I couldn't:» y la causa en inglés. "
+    "Pedido en inglés, polarity=failure: «I couldn't:» y la causa en inglés "
+    "(the wait ran out; it didn't respond; I don't do that; I couldn't find it). "
+    "cause=mission_failed: la razón, no la etiqueta ni el paso hecho. "
     "kind=welcome: Hola o Hi, masculino, sin Listo y sin apps. "
     "kind=confirmation: una pregunta con confirm* y cancel*; no copies las "
     "cuatro; no afirmes. "
@@ -202,6 +204,7 @@ USER_MESSAGE_PROMPT = (
     "si seen.app: nombra esa app y si está abierta o cerrada. "
     "si seen.title: las palabras nota o note y el título. "
     "si seen.level: volumen y el número. "
+    "si seen.muted: audio o altavoces y si están silenciados o no. "
     "Nunca planner, router, tool, catálogo, schema, operación, JSON ni "
     "identificadores. Primera persona si BAXY actuó. Una frase. "
     "Devuelve sólo el mensaje."
@@ -211,11 +214,14 @@ NARRATOR_PROMPT = USER_MESSAGE_PROMPT
 
 CPU_USER_MESSAGE_PROMPT = (
     "Eres BAXY, un compañero, un él. Tuteas. Una frase en el idioma del pedido. "
-    "Hechos de ESTE turno, sin códigos. Español y fallo: «No pude:» en prosa. "
+    "Hechos de ESTE turno, sin códigos. "
+    "Acting: di que sigues; nunca Hola, nunca No pude, nunca Listo, nunca Hi. "
+    "Español y fallo: «No pude:» en prosa. "
     "Español y éxito observado: «Listo,» + lo visto. Inglés y fallo: "
     "I couldn't. Inglés y éxito: estado, sin Listo. Welcome: Hola o Hi, sin "
-    "Listo. Confirmation: pregunta con confirm* y cancel*. Acting: no afirmes. "
-    "out_of_catalog: eso no lo hago. Sin JSON ni _internos."
+    "Listo. Confirmation: pregunta con confirm* y cancel*. "
+    "out_of_catalog: eso no lo hago. Misión fallida: la razón, no la etiqueta. "
+    "muted: audio o altavoces. Sin JSON ni _internos."
 )
 
 
@@ -2614,7 +2620,7 @@ _FAILURE_MARKERS = re.compile(
 # Ungendered fact labels for the JSON the model sees. Spanish wording lives
 # only in USER_MESSAGE_PROMPT, so changing the voice is editing that text.
 _CAUSE_FACT = {
-    "timeout": "wait ended",
+    "timeout": "wait ran out",
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
     "model_invalid": "unusable answer",
@@ -2660,15 +2666,16 @@ def _compose_situation_payload(situation: dict, language: str, user_text: str = 
     for key in ("kind", "polarity", "target", "steps", "stepCount"):
         if skip_steps and key in {"steps", "stepCount"}:
             continue
-        if skip_kind and key == "kind":
+        if skip_kind and key in {"kind", "polarity"}:
             continue
         value = situation.get(key)
         if value not in (None, "", []):
             payload[key] = value
     folded_user = (user_text or "").casefold()
-    if cause_key == "acting":
-        payload["polarity"] = "pending"
-    elif str(situation.get("polarity") or "").strip().lower() == "success":
+    if (
+        cause_key != "acting"
+        and str(situation.get("polarity") or "").strip().lower() == "success"
+    ):
         if re.search(r"\bcierr|\bclose\b", folded_user):
             payload["effect"] = "closed"
         elif re.search(r"\babre|\bopen\b", folded_user):
@@ -2686,9 +2693,12 @@ def _compose_situation_payload(situation: dict, language: str, user_text: str = 
         merged = dict(current) if isinstance(current, dict) else {}
         merged.setdefault("window", True)
         payload["seen"] = merged
-    cause = _cause_in_prose(str(situation.get("cause") or ""), language)
-    if cause:
-        payload["cause"] = cause
+    if cause_key == "acting":
+        pass
+    else:
+        cause = _cause_in_prose(str(situation.get("cause") or ""), language)
+        if cause and cause_key != "mission_failed":
+            payload["cause"] = cause
     reason = _cause_in_prose(str(situation.get("reason") or ""), language)
     if reason:
         payload["reason"] = reason
@@ -2813,7 +2823,7 @@ def compose_visible_defect(
     if re.search(
         r"observable state|observed state|observed status|"
         r"\bthe operation\b|\bla operaci[oó]n\b|\bthe status is\b|"
-        r"\bstatus update\b|"
+        r"\bstatus update\b|\bpolarity\b|"
         r"one english sentence|^una frase\b|\bcontrato\b",
         folded,
     ):
@@ -2821,6 +2831,8 @@ def compose_visible_defect(
     if "estado observable" in folded:
         return "internal_code"
     if cause == "timeout" and "trajo" in folded:
+        return "invented"
+    if re.search(r"\b(\w+)(?:\s+\1){2,}\b", folded):
         return "invented"
     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
         return "copied_instruction"
@@ -2833,7 +2845,8 @@ def compose_visible_defect(
         r"without the result|sin el resultado|progress, without|"
         r"in progress, without|no result claimed|without claiming|"
         r"name mute state|name what is in seen|do not invert|"
-        r"observed\.muted|state muted matching|^progreso\.?$",
+        r"observed\.muted|state muted matching|^progreso\.?$|"
+        r"^muted\.?$|^unmuted\.?$|wait ended|mission unfinished",
         folded,
     ):
         return "copied_instruction"
@@ -2841,7 +2854,11 @@ def compose_visible_defect(
         return "invented"
     if re.search(r"\bproviders?\b", folded) and "provider" not in (user_text or "").casefold():
         return "internal_code"
+    if re.search(r":\s*(?:true|false)\b", folded) is not None:
+        return "internal_code"
     if _glued_proper_name(stripped, situation, user_text):
+        return "invented"
+    if re.search(r"\bya terminado\b", folded) and "ha terminado" not in folded:
         return "invented"
     language = _message_response_language(user_text)
     if language == "en" and re.search(
@@ -2863,6 +2880,10 @@ def compose_visible_defect(
             r"\bopened\b|\babrí\b|\babri\b", folded
         ):
             return "reversed_polarity"
+        if cause in {"mission_failed", "out_of_catalog"} and re.search(
+            r"no respond|didn't respond|did not respond|no respondo", folded
+        ):
+            return "extra_claim"
         if _FAILURE_MARKERS.search(stripped) is None:
             return "missing_failure"
         parts = stripped.split(":", 1)
@@ -2870,7 +2891,7 @@ def compose_visible_defect(
             tail_tokens = re.findall(r"[a-záéíóúñ]{3,}", parts[1].casefold())
             if not tail_tokens or (
                 len(tail_tokens[-1]) <= 3
-                and tail_tokens[-1] not in {"the", "app", "not"}
+                and tail_tokens[-1] not in {"the", "app", "not", "out"}
             ):
                 return "missing_failure"
     elif (
@@ -2908,6 +2929,7 @@ def compose_visible_defect(
             return "too_many_sentences"
     if cause == "acting" and (
         _SUCCESS_OPENERS.match(stripped) is not None
+        or re.match(r"^\s*(?:hola|hi|hello)\b", folded) is not None
         or re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded)
         or _FAILURE_MARKERS.search(stripped) is not None
     ):
@@ -2940,6 +2962,14 @@ def compose_visible_defect(
             folded,
         ):
             return "missing_name"
+        if (
+            polarity == "success"
+            and re.search(r"\bvolumen\b|\bvolume\b", folded)
+            and "level" not in observed_dict
+            and "volumen" not in blob
+            and "volume" not in blob
+        ):
+            return "extra_claim"
     if (intent == "welcome" or kind == "welcome") and re.search(
         r"\bhola\b.*\bhola\b", folded
     ):
@@ -2947,6 +2977,8 @@ def compose_visible_defect(
     lead = stripped.lstrip("¿¡\"'")
     if lead and lead[0].isalpha() and lead[0].islower():
         return "lowercase"
+    if re.search(r"\bla volumen\b", folded):
+        return "wrong_gender"
     app_name = observed_dict.get("app")
     if isinstance(app_name, str) and app_name.strip():
         feminine = _app_is_feminine(app_name)
@@ -2986,10 +3018,21 @@ def compose_visible_defect(
                 r"nota|note|t[íi]tulo|title", folded
             ):
                 return "missing_name"
+            if not (
+                isinstance(app_name, str) and app_name.strip()
+            ) and re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded):
+                return "extra_claim"
         if "level" in observed_dict and not re.search(
             r"volumen|volume|\bnivel\b|\blevel\b", folded
         ):
             return "missing_name"
+        local = observed_dict.get("localTime")
+        if isinstance(local, str) and local.strip():
+            compact = local.strip().casefold()
+            if compact not in folded and compact.lstrip("0") not in folded:
+                return "missing_name"
+        if "?" in stripped or "¿" in stripped:
+            return "extra_claim"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
         if (
             closed_request
@@ -7597,15 +7640,21 @@ class LlmRuntime:
         def publishable(candidate: str) -> bool:
             return bool(candidate) and preserves_contract(candidate) and not blocked(candidate)
 
-        acting_progress = (
-            "One sentence of progress. No Listo. No open. No closed."
-            if response_language == "en"
-            else "Una frase de que sigues. Sin Listo. Sin abierto ni cerrado."
-        )
+        def acting_clip(candidate: str) -> str:
+            if cause != "acting" or publishable(candidate):
+                return candidate
+            head = re.split(r"[.!?¿¡]", candidate or "", maxsplit=1)[0].strip()
+            if not head:
+                return candidate
+            if head[0].islower():
+                head = head[0].upper() + head[1:]
+            if head[-1] not in ".!?":
+                head += "."
+            return head if publishable(head) else candidate
+
         acting_facts = (
             f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
-            f"{language_contract}\n"
-            f"{acting_progress}"
+            f"{language_contract}"
         )
         if cause == "acting":
             message_prompt = CPU_USER_MESSAGE_PROMPT
@@ -7615,6 +7664,7 @@ class LlmRuntime:
         text = _strip_prompt_labels(
             (response["choices"][0]["message"].get("content") or "").strip()
         )
+        text = acting_clip(text)
         if publishable(text):
             return text
         if (
@@ -7634,12 +7684,8 @@ class LlmRuntime:
                 "Pregunta con confirmar/confirm y cancelar/cancel."
             ),
             "wrong_language": "Same language as the request.",
-            "extra_claim": "Name only what is in seen.",
-            "reversed_mute": (
-                "Muted."
-                if isinstance(observed, dict) and observed.get("muted") is True
-                else "Unmuted."
-            ),
+            "extra_claim": "Only facts in seen.",
+            "reversed_mute": "Name audio or speakers and the mute state.",
             "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
             "asserted_failure": "Success. State what was seen.",
             "internal_code": "Sin códigos internos ni jerga de contrato.",
@@ -7647,19 +7693,23 @@ class LlmRuntime:
             "welcome_opener": "Saluda; evita Listo.",
             "invented": "No invented or truncated words.",
             "welcome_repeat": "Un solo Hola.",
-            "copied_instruction": "Devuelve el mensaje, no la instrucción.",
-            "lowercase": "Empieza con mayúscula.",
+            "copied_instruction": "Devuelve el mensaje, no la etiqueta ni la instrucción.",
+            "lowercase": (
+                "Start with a capital letter."
+                if response_language == "en"
+                else "Empieza con mayúscula."
+            ),
             "clarification_not_a_question": "Una pregunta.",
             "too_many_sentences": "Una sola frase.",
             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
-            "missing_name": "Incluye nota/note o el nombre visto.",
+            "missing_name": "Include names and numbers from seen.",
             "missing_state": "abierto/open, no el imperativo.",
             "reversed_result": "effect is closed.",
-            "acting_asserted": "In progress, without claiming the result.",
+            "acting_asserted": "Say you are still on it, first person.",
             "welcome_question": "Greet. No question.",
         }.get(defect, "")
         retry_user = (
-            acting_facts
+            f"{acting_facts}\n{retry_hint}"
             if cause == "acting"
             else (
             f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
@@ -7699,6 +7749,7 @@ class LlmRuntime:
         retry_text = _strip_prompt_labels(
             (retry["choices"][0]["message"].get("content") or "").strip()
         )
+        retry_text = acting_clip(retry_text)
         if publishable(retry_text):
             return retry_text
         third_payload = dict(payload)
@@ -7708,19 +7759,22 @@ class LlmRuntime:
             if cause == "acting" or defect == "internal_code"
             else message_prompt
         )
+        third_user = (
+            f"{json.dumps(visible_situation, ensure_ascii=False)}\n{retry_hint}\nFirst person."
+            if cause == "acting"
+            else (
+                f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+                f"{retry_hint}\n"
+                f"{language_contract} One sentence. No JSON. No codes."
+            )
+        )
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
-            {
-                "role": "user",
-                "content": (
-                    f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
-                    f"{retry_hint}\n"
-                    f"{language_contract} One sentence. No JSON. No codes."
-                ),
-            },
+            {"role": "user", "content": third_user},
         ]
         third = self._post(third_payload)
         third_text = _strip_prompt_labels(
             (third["choices"][0]["message"].get("content") or "").strip()
         )
+        third_text = acting_clip(third_text)
         return third_text if publishable(third_text) else ""
