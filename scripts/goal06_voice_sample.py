@@ -260,7 +260,11 @@ def _score(text: str, intent: str, user_text: str, facts: dict) -> dict[str, obj
 
 
 def main() -> int:
-    out_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.cwd()
+    out_dir = (
+        Path(sys.argv[1])
+        if len(sys.argv) > 1
+        else REPO / "artifacts" / "development"
+    )
     out_dir.mkdir(parents=True, exist_ok=True)
     launch_path = out_dir / "compose_launch.json"
     sample_path = out_dir / "goal06_cien_respuestas.jsonl"

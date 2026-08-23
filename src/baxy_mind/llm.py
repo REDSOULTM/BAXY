@@ -2529,6 +2529,9 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "spotifylight",
         "successfullyinished",
         "riagesystem",
+        "volumor",
+        "creadel",
+        "relojillo",
     }
 )
 _THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
@@ -2668,6 +2671,52 @@ def _compose_situation_payload(situation: dict, language: str) -> dict:
     return payload
 
 
+def _named_state_hint(situation: dict, language: str, user_text: str) -> str:
+    """First-pass shape: name + state in one sentence. Never a published fallback."""
+
+    if str(situation.get("polarity") or "").strip().lower() != "success":
+        return ""
+    kind = str(situation.get("kind") or "").strip().lower()
+    cause = str(situation.get("cause") or "").strip().lower()
+    if cause == "acting" or kind in {"welcome", "confirmation", "clarification"}:
+        return ""
+    observed = situation.get("observed")
+    if not isinstance(observed, dict):
+        return ""
+    closed = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold()) is not None
+    english = language == "en"
+    parts: list[str] = []
+    app = observed.get("app")
+    title = observed.get("title")
+    if isinstance(app, str) and app.strip():
+        if english:
+            if closed:
+                shape = f"{app} is closed"
+            elif observed.get("playing") is True:
+                shape = f"{app} is open and playing"
+            else:
+                shape = f"{app} is open"
+        elif closed:
+            shape = f"{app} está cerrado"
+        elif observed.get("playing") is True:
+            shape = f"{app} está abierto y sonando"
+        else:
+            shape = f"{app} está abierto"
+        parts.append(shape + ".")
+    if isinstance(title, str) and title.strip():
+        if english:
+            parts.append(f"the note {title} is saved.")
+        else:
+            parts.append(f"la nota {title} está creada.")
+    level = observed.get("level")
+    if isinstance(level, int) or (isinstance(level, str) and str(level).strip()):
+        if english:
+            parts.append(f"the volume is {level}.")
+        else:
+            parts.append(f"el volumen está en {level}.")
+    return "\n".join(parts)
+
+
 def _strip_think_tags(text: str) -> str:
     return _THINK_BLOCK.sub("", text).replace("</think>", "").replace("<think>", "").strip()
 
@@ -2728,10 +2777,13 @@ def compose_visible_defect(
         return "unmentioned_name"
     if re.search(
         r"estado observable|observable state|observed state|observed status|"
-        r"\bthe operation\b|\bla operaci[oó]n\b",
+        r"\bthe operation\b|\bla operaci[oó]n\b|\bthe status\b|"
+        r"one english sentence|^una frase\b",
         folded,
     ):
         return "internal_code"
+    if re.match(r"^\s*(?:say|di)\b", folded):
+        return "copied_instruction"
     if re.search(r"(?m)^[a-z]{8,}$", folded):
         return "invented"
     if re.search(r"\bproviders?\b", folded) and "provider" not in (user_text or "").casefold():
@@ -7034,8 +7086,7 @@ class LlmRuntime:
                     "content": (
                         f"Texto original de la persona: {user_text}\n"
                         f"Tipo de respuesta: {intent}\n"
-                        "Hecho ya ocurrido que debes expresar sin cambiar actor, "
-                        "acción, resultado ni polaridad (no copies jerga interna): "
+                        "Hecho ya ocurrido (no copies jerga interna): "
                         f"{json.dumps(prompt_facts, ensure_ascii=False)}\n"
                         f"{language_contract}"
                     ),
@@ -7090,11 +7141,19 @@ class LlmRuntime:
             payload["messages"][1]["content"] += (
                 "\nEnglish only. Start with I couldn't:"
             )
-        elif response_language == "en" and polarity == "success":
+        named_hint = _named_state_hint(situation, response_language, user_text)
+        if named_hint:
+            payload["messages"][1]["content"] += "\n" + named_hint
+        elif (
+            response_language == "en"
+            and polarity == "success"
+            and cause != "acting"
+            and intent not in {"welcome", "confirmation", "clarification"}
+            and kind not in {"welcome", "confirmation", "clarification"}
+        ):
             payload["messages"][1]["content"] += (
-                "\nEnglish only. Name what was observed and say it is open, "
-                "closed, playing, muted or unmuted. Never Listo, operation, "
-                "or observed. Never start with an imperative."
+                "\nEnglish only. Name what was observed. Never Listo, "
+                "operation, or observed. Never start with an imperative."
             )
         observed = situation.get("observed")
         if isinstance(observed, dict) and "muted" in observed:
@@ -7425,6 +7484,7 @@ class LlmRuntime:
             "welcome_opener": "Saluda; no Listo.",
             "invented": "Sin palabras pegadas ni inventadas.",
             "welcome_repeat": "Un solo Hola.",
+            "copied_instruction": "Devuelve el mensaje, no la instrucción.",
         }.get(defect, "")
         retry_payload["messages"] = [
             {"role": "system", "content": message_prompt},

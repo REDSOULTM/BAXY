@@ -45,24 +45,21 @@ La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose envia
 
 ## 5. Auditoría de cien respuestas (2026-08-23)
 
-Corrida: `py -3.12 scripts/goal06_voice_sample.py` sobre Qwen3-4B-Q4_K_M, sidecar
-real, `type=message.compose.result`. JSONL en el scratch del goal. n=100, bad=0
-del scorer, p50 0,21 s.
+Corrida: `py -3.12 scripts/goal06_voice_sample.py artifacts/development` sobre
+Qwen3-4B-Q4_K_M, sidecar real, `type=message.compose.result`. Evidencia:
+`artifacts/development/goal06_cien_respuestas.jsonl`. n=100, bad=0 del scorer,
+p50 0,22 s.
 
-Leídas a mano las 100. Polaridad y causa coinciden con los hechos; 0 copias de
-Spotify cuando los hechos no lo nombran; 0 códigos internos (`provider_down`,
-`app.open`); 0 infinitivos inventados del conjunto cerrado; 0 stalls; 0 JSON;
-0 «Listo,» en fallo, welcome o acting; confirmación en pregunta. El inglés de
-«open»/«close»/«order» ya no sale con «No pude:». El mute respeta `muted`.
+Leídas a mano las 100. Polaridad y causa coinciden; 0 copias de Spotify ajeno;
+0 códigos internos; 0 infinitivos inventados; 0 stalls; 0 JSON; 0 «Listo,» en
+fallo, welcome o acting. Opens en inglés nombran la app («Word is open»,
+«Calculator is open»). Notas: «La nota Ideas está creada». Español:
+«Word está abierto». El first-pass lleva la forma nombre+estado; no se rechaza
+con vacío si el modelo la omite.
 
-Lo que sí suena al registro cuando hay hecho rico: «Listo, Steam está abierto»;
-«Spotify is open and playing»; «No pude: se agotó el tiempo»; «I couldn't: it
-didn't respond»; «eso no lo hago»; «El audio ya no está silenciado».
-
-Quedan frases cortas con hecho delgado («Listo, Word.», «The app is open.»,
-«¿qué quieres de abrir?»): no son constantes ni otro nombre metido a calzador.
-No se persiguió un rechazador de «falta el verbo» porque vaciaba el compose
-en el mismo modelo.
+Lo que suena al registro: «Spotify está abierto y sonando»; «Steam is open»;
+«No pude: se agotó el tiempo»; «I couldn't: it didn't respond»; «eso no lo hago»;
+«El audio ya no está silenciado».
 
 ## 6. Criterios
 

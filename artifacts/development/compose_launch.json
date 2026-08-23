@@ -1,0 +1,55 @@
+{
+  "hello": "hello",
+  "rows": [
+    {
+      "case_id": "es-success-spotify",
+      "user_text": "abre Spotify",
+      "intent": "status",
+      "facts": {
+        "kind": "operation",
+        "operation": "app.open",
+        "polarity": "success",
+        "verified": true,
+        "observed": {
+          "app": "Spotify",
+          "playing": true
+        }
+      },
+      "reply_type": "message.compose.result",
+      "reply_text": "Spotify está abierto y sonando.",
+      "latency_s": 2.113,
+      "score": {
+        "empty": false,
+        "invented": false,
+        "stall": false,
+        "json": false,
+        "sentences": 1,
+        "defect": "",
+        "known_constant": false
+      }
+    },
+    {
+      "case_id": "es-fail-spotify",
+      "user_text": "abre Spotify",
+      "intent": "error",
+      "facts": {
+        "kind": "failure",
+        "cause": "provider_down",
+        "polarity": "failure",
+        "target": "Spotify"
+      },
+      "reply_type": "message.compose.result",
+      "reply_text": "No pude: Spotify no responde.",
+      "latency_s": 0.203,
+      "score": {
+        "empty": false,
+        "invented": false,
+        "stall": false,
+        "json": false,
+        "sentences": 1,
+        "defect": "",
+        "known_constant": false
+      }
+    }
+  ]
+}

@@ -9,6 +9,7 @@ from baxy_mind.llm import (
     NARRATOR_PROMPT,
     SYSTEM_PROMPT,
     USER_MESSAGE_PROMPT,
+    _named_state_hint,
     compose_visible_defect,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
@@ -32,6 +33,54 @@ def test_personality_lives_in_the_editable_prompt() -> None:
     assert "idioma del pedido" in prompt
     assert "fine-tun" not in prompt.casefold()
     assert NARRATOR_PROMPT == USER_MESSAGE_PROMPT
+
+
+def test_named_state_hint_is_one_sentence_with_name_and_state() -> None:
+    open_es = _named_state_hint(
+        {"polarity": "success", "observed": {"app": "Word"}},
+        "es",
+        "abre Word",
+    )
+    assert open_es == "Word está abierto."
+    assert "Una frase" not in open_es
+    assert "Di " not in open_es
+    open_en = _named_state_hint(
+        {"polarity": "success", "observed": {"app": "Word"}},
+        "en",
+        "open Word",
+    )
+    assert open_en == "Word is open."
+    assert "the app" not in open_en.casefold()
+    assert "Say " not in open_en
+    playing = _named_state_hint(
+        {"polarity": "success", "observed": {"app": "Spotify", "playing": True}},
+        "en",
+        "open Spotify",
+    )
+    assert "Spotify is open and playing" in playing
+    note = _named_state_hint(
+        {"polarity": "success", "observed": {"title": "Ideas"}},
+        "es",
+        "crea una nota Ideas",
+    )
+    assert note == "la nota Ideas está creada."
+    volume = _named_state_hint(
+        {"polarity": "success", "observed": {"level": 80}},
+        "es",
+        "sube el volumen a 80",
+    )
+    assert volume == "el volumen está en 80."
+    welcome = _named_state_hint(
+        {"kind": "welcome", "polarity": "success"},
+        "en",
+        "hi",
+    )
+    assert welcome == ""
+    assert _named_state_hint(
+        {"polarity": "failure", "observed": {"app": "Word"}},
+        "es",
+        "abre Word",
+    ) == ""
 
 
 def test_narrate_is_compose_not_a_parallel_prompt() -> None:
@@ -197,6 +246,17 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
             )
         },
     ) == ""
+    assert compose_visible_defect(
+        "Say Word is open.",
+        "status",
+        "open Word",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"app.open","polarity":"success",'
+                '"observed":{"app":"Word"}}'
+            )
+        },
+    ) == "copied_instruction"
     assert compose_visible_defect(
         "No pude: se agotó el tiempo.",
         "error",
