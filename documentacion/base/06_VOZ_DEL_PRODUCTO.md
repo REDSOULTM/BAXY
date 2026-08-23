@@ -72,4 +72,4 @@ constantes: son compose flojo con hechos delgados.
 - [x] Accesibilidad / narrate por la misma ruta
 - [x] Guarda de infinitivos inventados en compose
 - [x] Cien respuestas leídas a mano
-- [ ] Publicado en `origin/main`
+- [x] Publicado en `origin/main` (`046f034`)
