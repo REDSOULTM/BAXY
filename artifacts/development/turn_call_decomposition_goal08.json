@@ -1,0 +1,686 @@
+{
+  "authority": "development diagnostic; the sidecar runs unmodified behind a recording proxy. It decides turns and dispatches no operation.",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-23T20:21:55.777897+00:00",
+  "rows": [
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 8241,
+          "seconds": 1.031,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1558,
+          "seconds": 0.3328,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2885,
+          "seconds": 0.221,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2523,
+          "seconds": 0.1854,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2718,
+          "seconds": 0.1437,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2609,
+          "seconds": 0.1364,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1447,
+          "seconds": 0.1478,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1447,
+          "seconds": 0.6495,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-knowledge",
+      "kind": "conversation",
+      "model_calls": 8,
+      "seconds_in_model_calls": 2.8476,
+      "seconds_total": 2.9663,
+      "text": "Explicame en dos frases que es la fotosintesis."
+    },
+    {
+      "calls": [
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2595,
+          "seconds": 0.247,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2691,
+          "seconds": 0.2317,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2508,
+          "seconds": 0.1347,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2793,
+          "seconds": 0.2575,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1448,
+          "seconds": 0.5146,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1573,
+          "seconds": 0.4476,
+          "structured": true,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-opinion",
+      "kind": "conversation",
+      "model_calls": 6,
+      "seconds_in_model_calls": 1.8331,
+      "seconds_total": 1.8862,
+      "text": "Que te parece el pan recien hecho por la manana?"
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 7799,
+          "seconds": 0.8702,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1541,
+          "seconds": 0.2931,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "single_effect_selector",
+          "max_tokens": 48,
+          "max_tokens_requested": 48,
+          "prompt_bytes": 4758,
+          "seconds": 0.4299,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_compatibility",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 1192,
+          "seconds": 0.2826,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1430,
+          "seconds": 0.1094,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "final_writers",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1842,
+          "seconds": 0.2395,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-unsupported",
+      "kind": "conversation",
+      "model_calls": 6,
+      "seconds_in_model_calls": 2.2247,
+      "seconds_total": 2.2368,
+      "text": "Riega los geranios del balcon."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 7785,
+          "seconds": 0.8122,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1538,
+          "seconds": 0.3326,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2516,
+          "seconds": 0.2405,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2527,
+          "seconds": 0.2348,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2495,
+          "seconds": 0.2281,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2508,
+          "seconds": 0.2298,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1427,
+          "seconds": 0.1125,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1225,
+          "seconds": 0.2904,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-checkin",
+      "kind": "conversation",
+      "model_calls": 8,
+      "seconds_in_model_calls": 2.4809,
+      "seconds_total": 2.4937,
+      "text": "Estoy bastante cansado hoy."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 7801,
+          "seconds": 0.8582,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1554,
+          "seconds": 0.3354,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2532,
+          "seconds": 0.1536,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2543,
+          "seconds": 0.1552,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2511,
+          "seconds": 0.1354,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2524,
+          "seconds": 0.1487,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1443,
+          "seconds": 0.1124,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1426,
+          "seconds": 0.6312,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "en-knowledge",
+      "kind": "conversation",
+      "model_calls": 8,
+      "seconds_in_model_calls": 2.5301,
+      "seconds_total": 2.5684,
+      "text": "Tell me in two sentences what a taskbar is."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 7786,
+          "seconds": 0.7681,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1539,
+          "seconds": 0.2944,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "effect_count_verifier",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 853,
+          "seconds": 0.3906,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1428,
+          "seconds": 0.1042,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "final_writers",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1749,
+          "seconds": 0.2,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "en-unsupported",
+      "kind": "conversation",
+      "model_calls": 5,
+      "seconds_in_model_calls": 1.7573,
+      "seconds_total": 1.7664,
+      "text": "Book an uber to the airport."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 7799,
+          "seconds": 0.9227,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1552,
+          "seconds": 0.2891,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2530,
+          "seconds": 0.1475,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2541,
+          "seconds": 0.2196,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2509,
+          "seconds": 0.2197,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2522,
+          "seconds": 0.2255,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1441,
+          "seconds": 0.1219,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1424,
+          "seconds": 0.7035,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "en-curious",
+      "kind": "conversation",
+      "model_calls": 8,
+      "seconds_in_model_calls": 2.8495,
+      "seconds_total": 3.218,
+      "text": "Tell me something odd about walnut trees."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy",
+          "max_tokens": 160,
+          "max_tokens_requested": 160,
+          "prompt_bytes": 7258,
+          "seconds": 0.7383,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "semantic_effect_guard",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1555,
+          "seconds": 0.3214,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2604,
+          "seconds": 0.1652,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2648,
+          "seconds": 0.1439,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2729,
+          "seconds": 0.1379,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_identity",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 2824,
+          "seconds": 0.1409,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1444,
+          "seconds": 0.121,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "conversation_reply",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1444,
+          "seconds": 0.9073,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "spanglish-mixed",
+      "kind": "conversation",
+      "model_calls": 8,
+      "seconds_in_model_calls": 2.6759,
+      "seconds_total": 2.7248,
+      "text": "Cuentame algo curioso about los rose bushes."
+    }
+  ],
+  "schema": "baxy.turn-call-decomposition.v1",
+  "summary": {
+    "by_call": {
+      "conversation_reply": {
+        "count": 7,
+        "max_seconds": 0.9073,
+        "median_prompt_bytes": 1444,
+        "median_seconds": 0.6312,
+        "median_tool_count": 0,
+        "total_seconds": 4.1441
+      },
+      "effect_count_verifier": {
+        "count": 1,
+        "max_seconds": 0.3906,
+        "median_prompt_bytes": 853,
+        "median_seconds": 0.3906,
+        "median_tool_count": 0,
+        "total_seconds": 0.3906
+      },
+      "final_writers": {
+        "count": 2,
+        "max_seconds": 0.2395,
+        "median_prompt_bytes": 1795.5,
+        "median_seconds": 0.2198,
+        "median_tool_count": 0.0,
+        "total_seconds": 0.4395
+      },
+      "operation_compatibility": {
+        "count": 1,
+        "max_seconds": 0.2826,
+        "median_prompt_bytes": 1192,
+        "median_seconds": 0.2826,
+        "median_tool_count": 0,
+        "total_seconds": 0.2826
+      },
+      "operation_identity": {
+        "count": 24,
+        "max_seconds": 0.2575,
+        "median_prompt_bytes": 2536.5,
+        "median_seconds": 0.1753,
+        "median_tool_count": 0.0,
+        "total_seconds": 4.4837
+      },
+      "response_language": {
+        "count": 7,
+        "max_seconds": 0.1478,
+        "median_prompt_bytes": 1441,
+        "median_seconds": 0.1125,
+        "median_tool_count": 0,
+        "total_seconds": 0.8292
+      },
+      "semantic_effect_guard": {
+        "count": 7,
+        "max_seconds": 0.3354,
+        "median_prompt_bytes": 1552,
+        "median_seconds": 0.3214,
+        "median_tool_count": 0,
+        "total_seconds": 2.1988
+      },
+      "single_effect_selector": {
+        "count": 1,
+        "max_seconds": 0.4299,
+        "median_prompt_bytes": 4758,
+        "median_seconds": 0.4299,
+        "median_tool_count": 0,
+        "total_seconds": 0.4299
+      },
+      "turn_policy": {
+        "count": 7,
+        "max_seconds": 1.031,
+        "median_prompt_bytes": 7799,
+        "median_seconds": 0.8582,
+        "median_tool_count": 0,
+        "total_seconds": 6.0007
+      }
+    },
+    "model_calls_per_turn": {
+      "max": 8,
+      "min": 5
+    },
+    "note": "seconds_total is the sidecar round trip; seconds_in_model_calls is the sum of the completions it issued. Calls that run concurrently make the sum exceed the wall clock, which is itself informative: it says the turn is already overlapping work.",
+    "seconds_in_model_calls_p50": 2.5055,
+    "seconds_total_max": 3.218,
+    "seconds_total_p50": 2.5311,
+    "turns": 8
+  }
+}

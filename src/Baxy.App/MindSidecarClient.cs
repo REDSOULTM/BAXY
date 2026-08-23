@@ -176,6 +176,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Estado no sensible de la tubería de voz (hilo del pump).</summary>
     public event Action<JsonObject>? VoiceEventReceived;
 
+    /// <summary>Señal temprana o hito: prosa formulada, nunca un resultado.</summary>
+    public event Action<string>? TurnSignalReceived;
+
     internal static bool IsDisabled =>
         string.Equals(
             Environment.GetEnvironmentVariable(DisabledEnvironmentVariable),
@@ -1193,6 +1196,16 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 if ((string?)message["type"] == "voice.event")
                 {
                     VoiceEventReceived?.Invoke(message);
+                    continue;
+                }
+
+                if ((string?)message["type"] == "turn.signal")
+                {
+                    if ((string?)message["text"] is { Length: > 0 } signal)
+                    {
+                        TurnSignalReceived?.Invoke(signal);
+                    }
+
                     continue;
                 }
 

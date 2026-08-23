@@ -37,7 +37,7 @@ export interface AgentStatus {
  *  emitted (very brief — the runner emits one within the first thread tick). */
 export interface BootStage {
   stage: string;
-  label: string;
+  label: string | null;
   progress: number | null;
   error: string | null;
 }

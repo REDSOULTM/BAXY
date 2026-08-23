@@ -526,13 +526,16 @@ class JsonLineProcess:
             raise value
         return value
 
-    def request(self, message: dict[str, Any], timeout: float) -> dict[str, Any]:
+    def send(self, message: dict[str, Any]) -> None:
         if self._process.poll() is not None or self._process.stdin is None:
             raise RuntimeError("el proceso JSONL no está disponible")
         self._process.stdin.write(
             json.dumps(message, ensure_ascii=False, separators=(",", ":")) + "\n"
         )
         self._process.stdin.flush()
+
+    def request(self, message: dict[str, Any], timeout: float) -> dict[str, Any]:
+        self.send(message)
         request_id = message.get("id")
         deadline = time.monotonic() + timeout
         while True:
@@ -540,6 +543,8 @@ class JsonLineProcess:
             if remaining <= 0:
                 raise TimeoutError("la solicitud agotó su deadline")
             reply = self.next_message(remaining)
+            if reply.get("type") == "turn.signal":
+                continue
             if reply.get("id") == request_id:
                 return reply
 

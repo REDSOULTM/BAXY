@@ -36,6 +36,13 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 from . import protocol
 from . import effect_intent
 from .corrector import catalog_correction_terms
+from .first_signal import (
+    PATH_MODEL,
+    PATH_RECOGNIZER,
+    formulate_progress,
+    should_emit_early,
+    turn_signal_payload,
+)
 from .effect_intent import (
     ApplicationCatalogIndex,
     CompoundEffectContract,
@@ -5560,6 +5567,28 @@ def _catalog_unavailable_turn_decision(
     return _explicit_unsupported_turn_decision(objective)
 
 
+def _emit_early_turn_signal(
+    *,
+    path: str,
+    objective: str,
+    request_id: object,
+    on_signal: Callable[[dict[str, Any]], None] | None,
+    already_signaled: list[bool],
+    step_count: int = 1,
+) -> None:
+    if already_signaled or on_signal is None:
+        return
+    if not should_emit_early(path, step_count):
+        return
+    on_signal(
+        turn_signal_payload(
+            request_id,
+            formulate_progress(objective),
+        )
+    )
+    already_signaled.append(True)
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -5570,8 +5599,10 @@ def _prepare_turn_result(
     tool_by_name: dict[str, dict],
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    on_signal: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     """Prepare one side-effect-free turn result from the current request."""
+    already_signaled: list[bool] = []
 
     objective = str(message.get("text", ""))
     routing_objective = effect_intent._strip_request_envelope(objective).strip()
@@ -5733,6 +5764,13 @@ def _prepare_turn_result(
         and explicit_conversation_decision.get("conversation_kind")
         in {"unsupported", "knowledge"}
     ):
+        _emit_early_turn_signal(
+            path=PATH_MODEL,
+            objective=objective,
+            request_id=message.get("id"),
+            on_signal=on_signal,
+            already_signaled=already_signaled,
+        )
         withdrawn_closed_refusal = _catalog_answers_the_request(
             routing_objective,
             objective,
@@ -5744,6 +5782,16 @@ def _prepare_turn_result(
         if withdrawn_closed_refusal:
             explicit_conversation_decision = None
     if explicit_intent is not None:
+        _emit_early_turn_signal(
+            path=PATH_RECOGNIZER
+            if len(explicit_intent.operations) <= 1
+            else PATH_MODEL,
+            objective=objective,
+            request_id=message.get("id"),
+            on_signal=on_signal,
+            already_signaled=already_signaled,
+            step_count=len(explicit_intent.operations),
+        )
         shortlist = _shortlist_with_required_effects(
             (),
             explicit_intent.operations,
@@ -5847,6 +5895,17 @@ def _prepare_turn_result(
             [tool.name for tool in shortlist],
         )
     )
+    if (
+        explicit_conversation_decision is None
+        and explicit_intent is None
+    ):
+        _emit_early_turn_signal(
+            path=PATH_MODEL,
+            objective=objective,
+            request_id=message.get("id"),
+            on_signal=on_signal,
+            already_signaled=already_signaled,
+        )
     raw_decision = (
         explicit_conversation_decision
         if explicit_conversation_decision is not None
@@ -7230,6 +7289,7 @@ def _run_sidecar(
                             tool_by_name=tool_by_name,
                             application_names=application_catalog,
                             game_catalog=game_catalog,
+                            on_signal=write_request_message,
                         )
                     except PlannerContractError as error:
                         turn_failure_kinds.append("contract")

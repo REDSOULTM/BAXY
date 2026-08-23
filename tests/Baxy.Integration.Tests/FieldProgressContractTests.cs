@@ -86,6 +86,29 @@ public sealed class FieldProgressContractTests
     }
 
     [Test]
+    public void FormulatedProgressLabelIsVisibleAndDoesNotClaimAResult()
+    {
+        string label = FirstSignal.FormulateProgress(
+            "Explicame en dos frases que es la fotosintesis.");
+        FieldProgressNotice? notice = FieldBridgeContract.ResolveProgress(
+            isReady: true,
+            isBusy: true,
+            hasStartupError: false,
+            statusDescription: "understanding",
+            progressLabel: label);
+
+        Assert.That(notice, Is.Not.Null);
+        Assert.That(notice!.Stage, Is.EqualTo(FieldProgressNotice.StageUnderstanding));
+        Assert.That(notice.Label, Is.EqualTo(label));
+        Assert.That(notice.Label, Does.Not.Match("(?i)^\\s*listo\\b"));
+        Assert.That(notice.Label, Does.Not.Contain("un momento").IgnoreCase);
+
+        JsonObject payload = FieldBridgeContract.CreateProgressPayload(notice);
+        Assert.That((string?)payload["label"], Is.EqualTo(label));
+        Assert.That((string?)payload["error"], Is.Null);
+    }
+
+    [Test]
     public void AWorkingTurnNeverAnnouncesSuccess()
     {
         foreach (string description in new[]

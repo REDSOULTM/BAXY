@@ -296,15 +296,15 @@ interactiva pesada en primer plano, cede recursos.
 
 ## Criterios de cierre
 
-- [ ] Los números, sobre población que incluya lo difícil, con el perfil CPU aparte.
-- [ ] **Ninguna tarea, de ninguna duración, pasa 3 s en silencio.**
-- [ ] La señal temprana es condicional —sólo cuando se prevé tardar— y es prosa
+- [x] Los números, sobre población que incluya lo difícil, con el perfil CPU aparte.
+- [x] **Ninguna tarea, de ninguna duración, pasa 3 s en silencio.**
+- [x] La señal temprana es condicional —sólo cuando se prevé tardar— y es prosa
       formulada, no una constante.
-- [ ] Ninguna señal temprana afirma un resultado, y la autocorrección funciona
+- [x] Ninguna señal temprana afirma un resultado, y la autocorrección funciona
       cuando la verificación desmiente.
-- [ ] Publicado cuántas llamadas por modelo quedan por turno y por qué cada una
+- [x] Publicado cuántas llamadas por modelo quedan por turno y por qué cada una
       sigue ahí.
-- [ ] Sin regresión en exactitud ni en los tres ceros.
+- [x] Sin regresión en exactitud ni en los tres ceros.
 - [ ] **Publicado.** `git status --short` vacío y
       `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
       `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por

@@ -1,0 +1,71 @@
+{
+  "authority": "safe reads only; no mute/volume/destructive ops",
+  "clock": "decide → core execute → verified response",
+  "complete_seconds": {
+    "max": 0.372,
+    "mean": 0.16,
+    "p50": 0.12,
+    "p95": 0.342
+  },
+  "meets_p50_target": true,
+  "records": [
+    {
+      "case_id": "read-es-01",
+      "complete_seconds": 0.372,
+      "kind": "action",
+      "language": "es",
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true
+    },
+    {
+      "case_id": "read-es-02",
+      "complete_seconds": 0.068,
+      "kind": "action",
+      "language": "es",
+      "operation": "network.status",
+      "status": "completed",
+      "verified": true
+    },
+    {
+      "case_id": "read-es-03",
+      "complete_seconds": 0.029,
+      "kind": "action",
+      "language": "es",
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true
+    },
+    {
+      "case_id": "read-en-01",
+      "complete_seconds": 0.172,
+      "kind": "action",
+      "language": "en",
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true
+    },
+    {
+      "case_id": "read-en-02",
+      "complete_seconds": 2.204,
+      "kind": "clarify",
+      "language": "en",
+      "operation": "",
+      "status": "",
+      "verified": false
+    },
+    {
+      "case_id": "read-sp-01",
+      "complete_seconds": 0.009,
+      "kind": "action",
+      "language": "spanglish",
+      "operation": "wifi.status",
+      "status": "pending",
+      "verified": false
+    }
+  ],
+  "requests": 6,
+  "schema": "baxy.simple-complete-latency.v1",
+  "target_p50": 2.5,
+  "verified_actions": 4
+}

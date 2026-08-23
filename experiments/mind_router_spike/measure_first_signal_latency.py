@@ -86,14 +86,20 @@ def _percentile(values: list[float], fraction: float) -> float:
     return round(ordered[lower] * (1 - weight) + ordered[upper] * weight, 3)
 
 
-def measure(runtime: Any, capabilities: list[dict[str, Any]]) -> dict[str, Any]:
-    limits = PROFILE_LIMITS["gpu"]
+def measure(
+    runtime: Any,
+    capabilities: list[dict[str, Any]],
+    *,
+    profile: str = "gpu",
+) -> dict[str, Any]:
+    limits = PROFILE_LIMITS[profile]
+    layers = runtime.gpu_layers if profile == "gpu" else 0
     start = time.perf_counter()
     client = JsonLineProcess(
         [str(runtime.python), "-u", "-X", "utf8", "-m", "baxy_mind"],
         environment=sidecar_environment(
             runtime,
-            gpu_layers=runtime.gpu_layers,
+            gpu_layers=layers,
             llm_http_timeout=limits["llm_http"],
         ),
         cwd=REPO,
@@ -117,18 +123,50 @@ def measure(runtime: Any, capabilities: list[dict[str, Any]]) -> dict[str, Any]:
 
         for case_id, language, text in REQUESTS:
             begin = time.perf_counter()
-            reply = client.request(
-                {
-                    "type": "turn.decide",
-                    "id": f"first-signal-{case_id}",
-                    "text": text,
-                    "history": [],
-                },
-                limits["turn.decide"],
+            request = {
+                "type": "turn.decide",
+                "id": f"first-signal-{case_id}",
+                "text": text,
+                "history": [],
+            }
+            client.send(request)
+            first_visible_at: float | None = None
+            first_kind = None
+            first_text = ""
+            reply: dict[str, Any] = {}
+            deadline = time.monotonic() + limits["turn.decide"]
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("la solicitud agotó su deadline")
+                message = client.next_message(remaining)
+                elapsed = time.perf_counter() - begin
+                if message.get("type") == "turn.signal" and str(
+                    message.get("text") or ""
+                ).strip():
+                    if first_visible_at is None:
+                        first_visible_at = elapsed
+                        first_kind = "early_signal"
+                        first_text = str(message.get("text") or "").strip()
+                    continue
+                if message.get("id") == request["id"]:
+                    reply = message
+                    visible = bool(
+                        str(reply.get("reply") or "").strip()
+                        or str(reply.get("question") or "").strip()
+                        or reply.get("operation")
+                        or reply.get("effectOperations")
+                    )
+                    if visible and first_visible_at is None:
+                        first_visible_at = elapsed
+                        first_kind = "result"
+                    break
+            seconds = first_visible_at if first_visible_at is not None else (
+                time.perf_counter() - begin
             )
-            seconds = time.perf_counter() - begin
             visible = bool(
-                str(reply.get("reply") or "").strip()
+                first_kind == "early_signal"
+                or str(reply.get("reply") or "").strip()
                 or str(reply.get("question") or "").strip()
                 or reply.get("operation")
                 or reply.get("effectOperations")
@@ -139,6 +177,8 @@ def measure(runtime: Any, capabilities: list[dict[str, Any]]) -> dict[str, Any]:
                     "language": language,
                     "kind": reply.get("kind"),
                     "first_signal_seconds": round(seconds, 3),
+                    "first_signal_kind": first_kind,
+                    "early_signal_text": first_text,
                     "has_visible_signal": visible,
                 }
             )
@@ -173,13 +213,19 @@ def main() -> int:
     add_runtime_arguments(parser)
     parser.add_argument("--core", type=Path)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--profile",
+        choices=sorted(PROFILE_LIMITS),
+        default="gpu",
+    )
     args = parser.parse_args()
 
     runtime = resolve_runtime_from_args(args)
     capabilities = current_core_capabilities(discover_core(args.core))
-    result = measure(runtime, capabilities)
+    result = measure(runtime, capabilities, profile=args.profile)
     report = {
         "schema": "baxy.first-signal-latency.v1",
+        "profile": args.profile,
         "clock": (
             "from handing the request to the mind until the first user-visible "
             "content exists for that turn"

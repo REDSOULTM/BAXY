@@ -1,0 +1,81 @@
+{
+  "in_catalog": {
+    "rows": 124,
+    "served": 111,
+    "rate": 0.8952,
+    "retrieval_offered_expected": 122,
+    "raw_decision_chose_expected": 117,
+    "lost_by_cause": {
+      "recogniser": 0,
+      "retrieval": 0,
+      "decision": 4,
+      "veto": 9
+    },
+    "by_path": {
+      "explicit_clarification": {
+        "rows": 2,
+        "offered": 0,
+        "served": 2
+      },
+      "explicit_effects": {
+        "rows": 58,
+        "offered": 58,
+        "served": 58
+      },
+      "model": {
+        "rows": 64,
+        "offered": 64,
+        "served": 51
+      }
+    },
+    "veto_stage_that_lost_it": {
+      "domain_grounding": 6,
+      "total_recovery": 3
+    },
+    "by_decision_path": {
+      "model": 64,
+      "explicit_effects": 58,
+      "explicit_clarification": 2
+    },
+    "by_retrieval_mode": {
+      "semantic": 158,
+      "unrecorded": 2
+    },
+    "model_path": {
+      "rows": 64,
+      "served": 51,
+      "rate": 0.7969
+    }
+  },
+  "out_of_catalog": {
+    "rows": 36,
+    "honest_abstentions": 36,
+    "rate": 1.0,
+    "rows_with_candidates": 36,
+    "max_candidates": 28,
+    "total_candidates": 1008
+  },
+  "latency_seconds": {
+    "all": {
+      "p50": 1.552,
+      "p90": 2.456,
+      "max": 4.606,
+      "over_three_seconds": 8,
+      "rows": 160
+    },
+    "model_path": {
+      "p50": 2.04,
+      "p90": 2.721,
+      "max": 4.606,
+      "over_three_seconds": 8,
+      "rows": 100
+    },
+    "deterministic_path": {
+      "p50": 0.006,
+      "p90": 0.038,
+      "max": 0.579,
+      "over_three_seconds": 0,
+      "rows": 60
+    }
+  }
+}

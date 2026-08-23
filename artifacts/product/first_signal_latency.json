@@ -1,67 +1,84 @@
 {
   "authority": "read-only turn decisions; no operation dispatched",
   "clock": "from handing the request to the mind until the first user-visible content exists for that turn",
-  "cold_start_seconds": 4.154,
+  "cold_start_seconds": 2.296,
   "first_signal_seconds": {
-    "max": 2.957,
-    "mean": 0.794,
-    "p50": 0.071,
-    "p95": 2.668
+    "max": 0.551,
+    "mean": 0.046,
+    "p50": 0.009,
+    "p95": 0.161
   },
   "meets_p50_target": true,
-  "meets_p95_target": false,
+  "meets_p95_target": true,
+  "profile": "gpu",
   "records": [
     {
       "case_id": "act-es-01",
-      "first_signal_seconds": 1.004,
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.551,
       "has_visible_signal": true,
       "kind": "clarify",
       "language": "es"
     },
     {
       "case_id": "act-es-02",
-      "first_signal_seconds": 0.029,
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.023,
       "has_visible_signal": true,
       "kind": "action",
       "language": "es"
     },
     {
       "case_id": "act-es-03",
-      "first_signal_seconds": 0.071,
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.063,
       "has_visible_signal": true,
       "kind": "action",
       "language": "es"
     },
     {
       "case_id": "act-es-04",
-      "first_signal_seconds": 2.596,
-      "has_visible_signal": true,
-      "kind": "clarify",
-      "language": "es"
-    },
-    {
-      "case_id": "read-es-01",
-      "first_signal_seconds": 0.011,
-      "has_visible_signal": true,
-      "kind": "action",
-      "language": "es"
-    },
-    {
-      "case_id": "read-es-02",
+      "early_signal_text": "Sigo con Baja el brillo de la pantalla.",
+      "first_signal_kind": "early_signal",
       "first_signal_seconds": 0.019,
       "has_visible_signal": true,
       "kind": "action",
       "language": "es"
     },
     {
+      "case_id": "read-es-01",
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.01,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
+      "case_id": "read-es-02",
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.015,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
       "case_id": "read-es-03",
-      "first_signal_seconds": 0.008,
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.009,
       "has_visible_signal": true,
       "kind": "action",
       "language": "es"
     },
     {
       "case_id": "act-en-01",
+      "early_signal_text": "",
+      "first_signal_kind": "result",
       "first_signal_seconds": 0.007,
       "has_visible_signal": true,
       "kind": "action",
@@ -69,48 +86,62 @@
     },
     {
       "case_id": "act-en-02",
-      "first_signal_seconds": 0.008,
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.011,
       "has_visible_signal": true,
       "kind": "action",
       "language": "en"
     },
     {
       "case_id": "read-en-01",
-      "first_signal_seconds": 0.003,
+      "early_signal_text": "",
+      "first_signal_kind": "result",
+      "first_signal_seconds": 0.002,
       "has_visible_signal": true,
       "kind": "action",
       "language": "en"
     },
     {
       "case_id": "read-en-02",
-      "first_signal_seconds": 2.307,
+      "early_signal_text": "Still working on What is the current CPU load.",
+      "first_signal_kind": "early_signal",
+      "first_signal_seconds": 0.008,
       "has_visible_signal": true,
-      "kind": "conversation",
+      "kind": "clarify",
       "language": "en"
     },
     {
       "case_id": "chat-es-01",
-      "first_signal_seconds": 1.232,
+      "early_signal_text": "Sigo con Cuentame un chiste corto.",
+      "first_signal_kind": "early_signal",
+      "first_signal_seconds": 0.004,
       "has_visible_signal": true,
       "kind": "conversation",
       "language": "es"
     },
     {
       "case_id": "chat-en-01",
-      "first_signal_seconds": 0.698,
+      "early_signal_text": "Still working on What do you think about pineapple on pizza.",
+      "first_signal_kind": "early_signal",
+      "first_signal_seconds": 0.007,
       "has_visible_signal": true,
       "kind": "conversation",
       "language": "en"
     },
     {
       "case_id": "sp-01",
-      "first_signal_seconds": 1.567,
+      "early_signal_text": "Sigo con Pon el volumen del speaker al treinta.",
+      "first_signal_kind": "early_signal",
+      "first_signal_seconds": 0.028,
       "has_visible_signal": true,
       "kind": "action",
       "language": "spanglish"
     },
     {
       "case_id": "sp-02",
+      "early_signal_text": "",
+      "first_signal_kind": "result",
       "first_signal_seconds": 0.004,
       "has_visible_signal": true,
       "kind": "action",
@@ -118,14 +149,18 @@
     },
     {
       "case_id": "out-es-01",
-      "first_signal_seconds": 2.957,
+      "early_signal_text": "Sigo con Riega las plantas del balcon.",
+      "first_signal_kind": "early_signal",
+      "first_signal_seconds": 0.007,
       "has_visible_signal": true,
       "kind": "conversation",
       "language": "es"
     },
     {
       "case_id": "out-en-01",
-      "first_signal_seconds": 0.98,
+      "early_signal_text": "Still working on Walk the dog around the block.",
+      "first_signal_kind": "early_signal",
+      "first_signal_seconds": 0.008,
       "has_visible_signal": true,
       "kind": "conversation",
       "language": "en"

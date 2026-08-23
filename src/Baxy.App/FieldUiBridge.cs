@@ -637,14 +637,19 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
             or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.HasStartupError)
-            or nameof(MainWindowViewModel.StatusDescription))
+            or nameof(MainWindowViewModel.StatusDescription)
+            or nameof(MainWindowViewModel.ProgressLabel))
         {
             PublishProgress();
             SyncProgressPulse();
         }
     }
 
-    private void OnProgressPulse(object? sender, EventArgs eventArgs) => PublishProgress(forcePulse: true);
+    private void OnProgressPulse(object? sender, EventArgs eventArgs)
+    {
+        _viewModel.TryEmitDueMilestone(DateTimeOffset.UtcNow);
+        PublishProgress(forcePulse: true);
+    }
 
     private void SyncProgressPulse()
     {
@@ -715,7 +720,8 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             _viewModel.IsReady,
             _viewModel.IsBusy,
             _viewModel.HasStartupError,
-            _viewModel.StatusDescription);
+            _viewModel.StatusDescription,
+            _viewModel.ProgressLabel);
 
     private string CurrentConversationState()
     {

@@ -132,7 +132,8 @@ internal static class FieldBridgeContract
         bool isReady,
         bool isBusy,
         bool hasStartupError,
-        string? statusDescription)
+        string? statusDescription,
+        string? progressLabel = null)
     {
         if (hasStartupError)
         {
@@ -157,22 +158,23 @@ internal static class FieldBridgeContract
             if (description.StartsWith(StepPrefix, StringComparison.Ordinal)
                 && TryReadStep(description, out _, out _))
             {
-                return Create(FieldProgressNotice.StageActing);
+                return Create(FieldProgressNotice.StageActing, progressLabel);
             }
 
             if (DescriptionStages.TryGetValue(description, out string? mapped))
             {
-                return Create(mapped);
+                return Create(mapped, progressLabel);
             }
         }
 
         return Create(
             isReady
                 ? FieldProgressNotice.StageWorking
-                : FieldProgressNotice.StageStarting);
+                : FieldProgressNotice.StageStarting,
+            progressLabel);
     }
 
-    internal static FieldProgressNotice Create(string stage) =>
+    internal static FieldProgressNotice Create(string stage, string? label = null) =>
         new(
             stage is FieldProgressNotice.StageStarting
                 or FieldProgressNotice.StageUnderstanding
@@ -183,7 +185,7 @@ internal static class FieldBridgeContract
                 or FieldProgressNotice.StageWorking
                 ? stage
                 : FieldProgressNotice.StageWorking,
-            Label: null);
+            Label: string.IsNullOrWhiteSpace(label) ? null : label.Trim());
 
     private static bool TryReadStep(string description, out int step, out int total)
     {

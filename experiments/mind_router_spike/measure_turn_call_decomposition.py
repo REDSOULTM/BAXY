@@ -81,6 +81,11 @@ _CALL_NAMES: tuple[tuple[str, str], ...] = (
     ("Cuenta solo los efectos atomicos", "effect_count_verifier"),
     ("Clasifica solamente el idioma", "response_language"),
     ("Identify only the language", "response_language"),
+    ("Eres la politica contextual de turnos de BAXY.", "turn_policy"),
+    ("Judge only whether the supplied catalog operation", "operation_identity"),
+    ("Clasifica semanticamente el pedido actual.", "semantic_effect_guard"),
+    ("Eres BAXY, un companero que vive en el PC.", "conversation_reply"),
+    ("Eres el redactor final de BAXY", "final_writers"),
 )
 
 _CALLS: list[dict[str, Any]] = []

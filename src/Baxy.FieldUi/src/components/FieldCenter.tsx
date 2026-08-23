@@ -91,10 +91,10 @@ export function FieldCenter({
     }
     return bootStage.label;
   })();
-  const placeholder = ready
-    ? 'ask, instruct, or paste'
-    : bootMsg
-    ?? (!agent.built
+  const placeholder = bootMsg
+    ?? (ready || (agent.built && agent.healthy)
+      ? 'ask, instruct, or paste'
+      : !agent.built
       ? 'starting agent · loading tools…'
       : !agent.healthy
       ? 'llama-server offline · waiting for connection…'

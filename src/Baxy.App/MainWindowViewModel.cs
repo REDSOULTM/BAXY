@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
@@ -55,6 +56,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
     private string _currentTurnTraceId = "t0";
+    private string? _progressLabel;
+    private DateTimeOffset? _lastBaxyVisibleUtc;
 
     public MainWindowViewModel()
         : this(testTurnResolver: null)
@@ -129,6 +132,64 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         get => _statusDescription;
         private set => SetField(ref _statusDescription, value);
+    }
+
+    public string? ProgressLabel => _progressLabel;
+
+    internal void ApplyInProgressSignal(string text, DateTimeOffset? nowUtc = null)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        _progressLabel = text.Trim();
+        _lastBaxyVisibleUtc = nowUtc ?? DateTimeOffset.UtcNow;
+        OnPropertyChanged(nameof(ProgressLabel));
+    }
+
+    internal bool TryEmitDueMilestone(DateTimeOffset nowUtc)
+    {
+        if (!_turnExecutionActive || !IsBusy)
+        {
+            return false;
+        }
+
+        if (!FirstSignal.ShouldEmitMilestone(_lastBaxyVisibleUtc, nowUtc))
+        {
+            return false;
+        }
+
+        string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
+            ?? string.Empty;
+        int step = 0;
+        int total = 0;
+        if (_pendingMindPlan is { } plan && plan.Steps.Count > 1)
+        {
+            step = Math.Min(plan.NextIndex + 1, plan.Steps.Count);
+            total = plan.Steps.Count;
+        }
+
+        ApplyInProgressSignal(
+            FirstSignal.FormulateProgress(
+                userText,
+                FirstSignal.KindMilestone,
+                step,
+                total),
+            nowUtc);
+        return true;
+    }
+
+    internal void ClearProgressLabel()
+    {
+        if (_progressLabel is null && _lastBaxyVisibleUtc is null)
+        {
+            return;
+        }
+
+        _progressLabel = null;
+        _lastBaxyVisibleUtc = null;
+        OnPropertyChanged(nameof(ProgressLabel));
     }
 
     public bool IsReady
@@ -364,6 +425,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         IsBusy = true;
         StatusText = "Trabajando";
         StatusDescription = "understanding";
+        ClearProgressLabel();
+        _lastBaxyVisibleUtc = DateTimeOffset.UtcNow;
 
         try
         {
@@ -1483,6 +1546,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return true;
     }
 
+    private void OnMindTurnSignal(string text)
+    {
+        _uiContext.Post(
+            _ =>
+            {
+                if (_isDisposed || !_turnExecutionActive)
+                {
+                    return;
+                }
+
+                ApplyInProgressSignal(text);
+            },
+            null);
+    }
+
     private void OnMindTranscript(string transcript)
     {
         _uiContext.Post(
@@ -1624,6 +1702,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             _mindClient.TranscriptReceived -= OnMindTranscript;
             _mindClient.VoiceEventReceived -= OnMindVoiceEvent;
+            _mindClient.TurnSignalReceived -= OnMindTurnSignal;
             await _mindClient.DisposeAsync();
             _mindClient = null;
         }
@@ -1642,6 +1721,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 mind.TranscriptReceived += OnMindTranscript;
                 mind.VoiceEventReceived += OnMindVoiceEvent;
+                mind.TurnSignalReceived += OnMindTurnSignal;
                 _mindClient = mind;
                 _mindStartupState = MindStartupState.Ready;
                 if (!IsBusy)
@@ -2898,6 +2978,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             _mindClient.TranscriptReceived -= OnMindTranscript;
             _mindClient.VoiceEventReceived -= OnMindVoiceEvent;
+            _mindClient.TurnSignalReceived -= OnMindTurnSignal;
             await _mindClient.DisposeAsync();
             _mindClient = null;
         }
@@ -3122,6 +3203,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
+        ClearProgressLabel();
         StatusText = "Lista";
         StatusDescription = _pendingMemoryConfirmation is not null
             ? "Esperando confirmación de memoria"
