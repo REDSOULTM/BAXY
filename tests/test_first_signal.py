@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from baxy_mind.first_signal import (
     KIND_MILESTONE,
+    MILESTONE_DUE_SECONDS,
     PATH_CLOSED_CONVERSATION,
     PATH_MODEL,
     PATH_RECOGNIZER,
@@ -73,6 +74,13 @@ def test_milestone_fires_only_after_a_gap_strictly_over_three_seconds() -> None:
     started = 10.0
     assert should_emit_milestone(started, started + SILENCE_BUDGET_SECONDS) is False
     assert should_emit_milestone(started, started + SILENCE_BUDGET_SECONDS + 0.01) is True
+    assert MILESTONE_DUE_SECONDS == SILENCE_BUDGET_SECONDS + 0.01
+    assert should_emit_milestone(started, started + MILESTONE_DUE_SECONDS) is True
+    pulse_only = 0.0
+    while pulse_only <= SILENCE_BUDGET_SECONDS:
+        pulse_only += 1.0
+    assert pulse_only == 4.0
+    assert MILESTONE_DUE_SECONDS < pulse_only
     assert should_emit_milestone(None, started + 10.0) is False
     spanish = formulate_progress(
         "Abre Steam y ve a la biblioteca",

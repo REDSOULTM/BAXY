@@ -12,6 +12,13 @@ namespace Baxy.Kernel.Policy;
 public static class FirstSignal
 {
     public const double SilenceBudgetSeconds = 3.0;
+    /// <summary>
+    /// First hito after last visible BAXY output. Strictly over the 3 s
+    /// silence bar, short of a 1 s pulse's next tick at 4 s.
+    /// </summary>
+    public const double MilestoneDueSeconds = SilenceBudgetSeconds + 0.01;
+    public static readonly TimeSpan MilestoneDueDelay =
+        TimeSpan.FromSeconds(MilestoneDueSeconds);
     public const double EarlyThresholdSeconds = 1.5;
     public const string PathRecognizer = "explicit_effects";
     public const string PathClosedConversation = "explicit_conversation";

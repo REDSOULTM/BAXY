@@ -12,6 +12,9 @@ import re
 import unicodedata
 
 SILENCE_BUDGET_SECONDS = 3.0
+# First hito after last visible output: strictly over 3 s, before a 1 s
+# pulse would next tick at 4 s.
+MILESTONE_DUE_SECONDS = SILENCE_BUDGET_SECONDS + 0.01
 # Emit before the primary model work: that call alone was measured at ~2.5 s
 # wall on this tree's model path, already next to the silence bar.
 EARLY_SIGNAL_THRESHOLD_SECONDS = 1.5

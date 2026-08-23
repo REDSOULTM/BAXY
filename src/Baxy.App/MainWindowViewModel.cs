@@ -148,6 +148,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         OnPropertyChanged(nameof(ProgressLabel));
     }
 
+    internal void BeginTurnPresentation(string publicUserText, DateTimeOffset startedUtc)
+    {
+        AddMessage("Tú", publicUserText, isUser: true);
+        _turnExecutionActive = true;
+        IsBusy = true;
+        StatusText = "Trabajando";
+        StatusDescription = "understanding";
+        ClearProgressLabel();
+        _lastBaxyVisibleUtc = startedUtc;
+    }
+
     internal bool TryEmitDueMilestone(DateTimeOffset nowUtc)
     {
         if (!_turnExecutionActive || !IsBusy)
@@ -419,14 +430,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceScopes.Turn,
             turnTraceId,
             ShellTraceStages.QueueWaitEnd);
-        AddMessage("Tú", publicUserText, isUser: true);
-
-        _turnExecutionActive = true;
-        IsBusy = true;
-        StatusText = "Trabajando";
-        StatusDescription = "understanding";
-        ClearProgressLabel();
-        _lastBaxyVisibleUtc = DateTimeOffset.UtcNow;
+        BeginTurnPresentation(publicUserText, DateTimeOffset.UtcNow);
 
         try
         {

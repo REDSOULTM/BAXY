@@ -34,7 +34,8 @@ Tres funciones, sin orquestador nuevo:
 
 El sidecar emite `turn.signal` **antes** de `decide_turn` y **antes** de las
 sondas de identidad. El shell lo pone en `FieldProgressNotice.Label`. Un hito
-se formula si pasan más de 3 s sin salida visible de BAXY.
+se formula a los **3,01 s** sin salida visible (`MilestoneDue`), no al
+siguiente pulso de 4 s. El pulso de etapa es 1 s; no sustituye al due.
 
 ## 3. Números
 

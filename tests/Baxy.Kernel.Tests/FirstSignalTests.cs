@@ -66,6 +66,17 @@ public sealed class FirstSignalTests
         Assert.That(
             FirstSignal.ShouldEmitMilestone(null, started.AddSeconds(10)),
             Is.False);
+        Assert.That(
+            FirstSignal.MilestoneDueSeconds,
+            Is.EqualTo(FirstSignal.SilenceBudgetSeconds + 0.01));
+        Assert.That(
+            FirstSignal.ShouldEmitMilestone(
+                started,
+                started.AddSeconds(FirstSignal.MilestoneDueSeconds)),
+            Is.True);
+        Assert.That(
+            FirstSignal.MilestoneDueDelay,
+            Is.LessThan(TimeSpan.FromSeconds(4)));
 
         string spanish = FirstSignal.FormulateProgress(
             "Abre Steam y ve a la biblioteca",

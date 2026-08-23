@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
@@ -57,10 +58,15 @@ internal static class FieldBridgeContract
     private const string StepPrefix = "Ejecutando paso ";
 
     /// <summary>
-    /// Intervalo máximo sin una indicación visible durante una misión.
-    /// Un pulso reutiliza la misma etapa; no afirma un resultado.
+    /// Republish the current stage. Must be ≤ 1 s so a 2 s pulse cannot
+    /// skip from t=2 (still under budget) to t=4 (first check over 3 s).
     /// </summary>
-    internal static readonly TimeSpan ProgressPulse = TimeSpan.FromSeconds(2);
+    internal static readonly TimeSpan ProgressPulse = TimeSpan.FromSeconds(1);
+
+    /// <summary>
+    /// When the next formulated hito is due if nothing visible has appeared.
+    /// </summary>
+    internal static readonly TimeSpan MilestoneDue = FirstSignal.MilestoneDueDelay;
 
     /// <summary>
     /// Descripciones internas que NO deben producir una indicación visible.
@@ -217,6 +223,24 @@ internal static class FieldBridgeContract
         DateTimeOffset? lastPublishedUtc,
         DateTimeOffset nowUtc) =>
         lastPublishedUtc is null || nowUtc - lastPublishedUtc.Value >= ProgressPulse;
+
+    internal static DateTimeOffset FirstHitoDueAt(DateTimeOffset lastVisibleUtc) =>
+        lastVisibleUtc + MilestoneDue;
+
+    /// <summary>
+    /// First 1 s pulse tick whose elapsed time is strictly over the 3 s bar.
+    /// With a 1 s pulse that is 4 s — why the due timer exists.
+    /// </summary>
+    internal static DateTimeOffset FirstPulseAfterSilenceBudget(DateTimeOffset lastVisibleUtc)
+    {
+        TimeSpan elapsed = TimeSpan.Zero;
+        while (elapsed.TotalSeconds <= FirstSignal.SilenceBudgetSeconds)
+        {
+            elapsed += ProgressPulse;
+        }
+
+        return lastVisibleUtc + elapsed;
+    }
 
     internal static JsonObject CreateProgressPayload(
         FieldProgressNotice? notice,

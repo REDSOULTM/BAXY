@@ -62,18 +62,19 @@ public sealed class FieldProgressContractTests
     }
 
     [Test]
-    public void ProgressPulsesAfterTwoSecondsWithoutClaimingAResult()
+    public void ProgressPulsesAfterOneSecondWithoutClaimingAResult()
     {
         DateTimeOffset first = DateTimeOffset.Parse(
             "2026-08-23T12:00:00Z",
             CultureInfo.InvariantCulture,
             DateTimeStyles.AssumeUniversal);
+        Assert.That(FieldBridgeContract.ProgressPulse, Is.EqualTo(TimeSpan.FromSeconds(1)));
         Assert.That(FieldBridgeContract.ShouldPulseProgress(null, first), Is.True);
         Assert.That(
-            FieldBridgeContract.ShouldPulseProgress(first, first.AddSeconds(1)),
+            FieldBridgeContract.ShouldPulseProgress(first, first.AddMilliseconds(999)),
             Is.False);
         Assert.That(
-            FieldBridgeContract.ShouldPulseProgress(first, first.AddSeconds(2)),
+            FieldBridgeContract.ShouldPulseProgress(first, first.AddSeconds(1)),
             Is.True);
 
         JsonObject payload = FieldBridgeContract.CreateProgressPayload(
@@ -83,6 +84,58 @@ public sealed class FieldProgressContractTests
         Assert.That(payload["error"], Is.Null);
         Assert.That((string?)payload["phase"], Is.EqualTo("active"));
         Assert.That((long?)payload["t"], Is.EqualTo(first.ToUnixTimeMilliseconds()));
+    }
+
+    [Test]
+    public void MilestoneDueFiresAtThreePointZeroOneSecondsNotAtTheNextPulse()
+    {
+        DateTimeOffset start = DateTimeOffset.Parse(
+            "2026-08-23T12:00:00Z",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal);
+        DateTimeOffset due = FieldBridgeContract.FirstHitoDueAt(start);
+        DateTimeOffset pulseOnly = FieldBridgeContract.FirstPulseAfterSilenceBudget(start);
+
+        Assert.That(FieldBridgeContract.ProgressPulse.TotalSeconds, Is.LessThanOrEqualTo(1.0));
+        Assert.That((due - start).TotalSeconds, Is.EqualTo(3.01).Within(0.0001));
+        Assert.That(FirstSignal.ShouldEmitMilestone(start, start.AddSeconds(3)), Is.False);
+        Assert.That(FirstSignal.ShouldEmitMilestone(start, due), Is.True);
+        Assert.That((pulseOnly - start).TotalSeconds, Is.EqualTo(4).Within(0.0001));
+        Assert.That(due, Is.LessThan(pulseOnly));
+        Assert.That(
+            (due - start).TotalSeconds,
+            Is.GreaterThan(FirstSignal.SilenceBudgetSeconds));
+    }
+
+    [Test]
+    public async Task TryEmitDueMilestoneOnAWorkingTurnEmitsAtThreePointZeroOneSeconds()
+    {
+        DateTimeOffset start = DateTimeOffset.Parse(
+            "2026-08-23T12:00:00Z",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal);
+        await using var viewModel = new MainWindowViewModel();
+        const string request = "Abre Steam y ve a la biblioteca";
+        viewModel.BeginTurnPresentation(request, start);
+
+        Assert.That(viewModel.ProgressLabel, Is.Null);
+        Assert.That(viewModel.TryEmitDueMilestone(start.AddSeconds(3)), Is.False);
+        Assert.That(viewModel.ProgressLabel, Is.Null);
+
+        Assert.That(
+            viewModel.TryEmitDueMilestone(FieldBridgeContract.FirstHitoDueAt(start)),
+            Is.True);
+        Assert.That(viewModel.ProgressLabel, Is.Not.Null.And.Not.Empty);
+        Assert.That(viewModel.ProgressLabel, Does.Not.Match("(?i)^\\s*listo\\b"));
+        Assert.That(viewModel.ProgressLabel, Does.Not.Contain("un momento").IgnoreCase);
+        Assert.That(viewModel.ProgressLabel, Does.Contain("Sigo"));
+        string first = viewModel.ProgressLabel!;
+
+        Assert.That(
+            viewModel.TryEmitDueMilestone(start.AddSeconds(3.5)),
+            Is.False,
+            "a fresh hito is not due 0.5 s after the last visible label");
+        Assert.That(viewModel.ProgressLabel, Is.EqualTo(first));
     }
 
     [Test]

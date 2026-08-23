@@ -62,6 +62,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
     private bool _progressPublished;
     private DateTimeOffset? _progressPublishedUtc;
     private readonly System.Windows.Threading.DispatcherTimer _progressPulse;
+    private readonly System.Windows.Threading.DispatcherTimer _milestoneDue;
     private bool _disposed;
 
     internal FieldUiBridge(
@@ -84,6 +85,11 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             Interval = FieldBridgeContract.ProgressPulse,
         };
         _progressPulse.Tick += OnProgressPulse;
+        _milestoneDue = new System.Windows.Threading.DispatcherTimer
+        {
+            Interval = FieldBridgeContract.MilestoneDue,
+        };
+        _milestoneDue.Tick += OnMilestoneDue;
     }
 
     private async void OnWebMessageReceived(
@@ -642,6 +648,11 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         {
             PublishProgress();
             SyncProgressPulse();
+            if (eventArgs.PropertyName is nameof(MainWindowViewModel.ProgressLabel)
+                && _viewModel.ProgressLabel is not null)
+            {
+                RestartMilestoneDue();
+            }
         }
     }
 
@@ -651,6 +662,13 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         PublishProgress(forcePulse: true);
     }
 
+    private void OnMilestoneDue(object? sender, EventArgs eventArgs)
+    {
+        _viewModel.TryEmitDueMilestone(DateTimeOffset.UtcNow);
+        PublishProgress();
+        RestartMilestoneDue();
+    }
+
     private void SyncProgressPulse()
     {
         bool busy = _viewModel.IsBusy || !_viewModel.IsReady;
@@ -658,10 +676,24 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         {
             if (!_progressPulse.IsEnabled)
                 _progressPulse.Start();
+            if (!_milestoneDue.IsEnabled)
+                _milestoneDue.Start();
         }
-        else if (_progressPulse.IsEnabled)
+        else
         {
-            _progressPulse.Stop();
+            if (_progressPulse.IsEnabled)
+                _progressPulse.Stop();
+            if (_milestoneDue.IsEnabled)
+                _milestoneDue.Stop();
+        }
+    }
+
+    private void RestartMilestoneDue()
+    {
+        _milestoneDue.Stop();
+        if (_viewModel.IsBusy || !_viewModel.IsReady)
+        {
+            _milestoneDue.Start();
         }
     }
 
@@ -1144,6 +1176,8 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         _disposed = true;
         _progressPulse.Stop();
         _progressPulse.Tick -= OnProgressPulse;
+        _milestoneDue.Stop();
+        _milestoneDue.Tick -= OnMilestoneDue;
         _webView.WebMessageReceived -= OnWebMessageReceived;
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
