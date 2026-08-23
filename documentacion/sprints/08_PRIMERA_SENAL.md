@@ -305,7 +305,7 @@ interactiva pesada en primer plano, cede recursos.
 - [x] Publicado cuántas llamadas por modelo quedan por turno y por qué cada una
       sigue ahí.
 - [x] Sin regresión en exactitud ni en los tres ceros.
-- [ ] **Publicado.** `git status --short` vacío y
+- [x] **Publicado.** `git status --short` vacío y
       `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
       `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por
       verdes que estén los demás criterios.
