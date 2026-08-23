@@ -9,12 +9,13 @@ lo mismo para el goal 03B y quedó como archivo.
 
 ## Antes de salir de este PC — dos cosas que no hace el agente
 
-1. **Publicar el estado.** `main` local va **101 commits por delante de
-   `origin/main`**. Lo que no se empuje, no llega:
+1. **Publicar el estado.** Hecho el 2026-08-23: los 101 commits de los goals
+   01–05 ya están en `origin/main`. Si vuelves a trabajar aquí, lo que no se
+   empuje no llega, así que antes de salir:
 
    ```powershell
    git push origin main
-   git log --oneline -1 origin/main   # tiene que dar 4c9804c
+   git rev-list --count origin/main..main   # tiene que dar 0
    ```
 
 2. **Copiar los ~4,2 GB que git no lleva.** `assets.manifest.json` lo dice
@@ -68,7 +69,7 @@ PASO 2 — CLONAR. Rutas largas primero o el clon muere con "Filename too long":
   la citan literal. Son ~130 MB con un JSONL de 70 MB dentro: tarda.
   Después, desde la raíz:
 
-    git log --oneline -1        # 4c9804c goal 05: postlectura en reminder, routine y memory
+    git log --oneline -1        # el último de origin/main; git ls-remote origin main lo dice
     git status --short          # TIENE que salir vacío
 
   Si git status marca ficheros modificados nada más clonar, es el final de línea:
