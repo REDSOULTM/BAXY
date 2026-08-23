@@ -1058,18 +1058,27 @@ def _curated_domain_is_grounded(
                 r"\b(?:ciudad|city|historia|story|imaginari[oa]|imaginary)\b",
             )
         )
-    if operation in {"input.pointer.control", "input.visible.click"}:
+    if operation == "input.pointer.control":
         # The pointer family was reachable without ever naming a pointer:
-        # "consigue un ride hasta el centro" became input.pointer.control. A
-        # bare noun is not enough either -- "sew the button on my coat" reached
-        # input.visible.click through the word "button". Require a pointing
-        # verb or an actual pointing device; this only removes authority.
+        # "consigue un ride hasta el centro" became input.pointer.control.
         return _has(
             folded,
             r"\b(?:puntero|pointer|cursor|raton|mouse|trackpad|touchpad)\b"
             r"|\b(?:clic|click|clickea|clickear|doble\s+clic|double\s+click|"
             r"arrastra|arrastrar|drag|"
             r"scroll|scrollea|scrollear|rueda)\b",
+        )
+    if operation == "input.visible.click":
+        # Pointing verbs keep the coat-button false friend out. Navigate verbs
+        # ("ve a", "go to") are the second clause of Open App → Click X and
+        # only ground click, never pointer.control.
+        if _visible_click_label(folded, allow_navigate=True) is not None:
+            return True
+        return _has(
+            folded,
+            r"\b(?:puntero|pointer|cursor|raton|mouse|trackpad|touchpad)\b"
+            r"|\b(?:clic|click|clickea|clickear|doble\s+clic|double\s+click|"
+            r"pulsa|presiona|press)\b",
         )
     if operation in {
         "input.key.press",
@@ -6101,7 +6110,7 @@ _COVERAGE_ACTION_HEAD = (
     r"diagnostica|diagnosticar|diagnose|"
     r"completa|completar|complete|reabre|reabrir|reopen|actualiza|"
     r"actualizar|update|describe|describir|redimensiona|redimensionar|"
-    r"resize|enfoca|enfocar|focus|presiona|presionar|press|vacia|vaciar|"
+    r"resize|enfoca|enfocar|focus|presiona|presionar|press|clic|click|vacia|vaciar|"
     r"empty|termina|terminar|terminate|verifica|verificar|verify|"
     r"recuerdame|recuerdamelo|recordame|recordamelo|remind|"
     r"activa|activar|enciende|encender|prende|prender|conectame|deactivate|"
@@ -6934,7 +6943,7 @@ def _is_direct_request(text: str) -> bool:
         r"maximiza|minimiza|restaura|escribe|escribi|escribele|escribile|write|type|"
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
-        r"navega|navegar|navigate|ve|go|"
+        r"navega|navegar|navigate|ve|go|clic|click|"
         r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
         r"pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
@@ -10675,6 +10684,13 @@ def _resolve_explicit_effects_single(
     )
     if desired_open is not None and "app.open" in available:
         return EffectIntent(("app.open",), (desired_open[1],))
+    visible_click = _visible_click_intent(
+        folded,
+        available,
+        allow_navigate=context_open_application,
+    )
+    if visible_click is not None:
+        return visible_click
     strict_request = _strict_catalog_request(
         folded,
         available,
@@ -11240,9 +11256,70 @@ def _dependent_web_navigation_intent(
     )
 
 
+_VISIBLE_CLICK_POINTING = (
+    r"(?:haz\s+clic(?:\s+en)?|click(?:ea|ear)?(?:\s+(?:on|it))?"
+    r"|pulsa(?:lo|la)?|presiona(?:lo|la)?|press(?:\s+it)?)"
+)
+_VISIBLE_CLICK_NAVIGATE = (
+    r"(?:ve\s+a|vete\s+a|go\s+to|navega\s+(?:a|hacia)|navigate\s+to)"
+)
+_VISIBLE_CLICK_CONTROL_NOUN = (
+    r"(?:boton|button|control|enlace|link|pestana|tab|seccion|section)"
+)
+_VISIBLE_CLICK_WEB_DESTINATION = re.compile(
+    r"wikipedia|https?://|www\.|\.com\b|\.org\b|\.net\b|\.io\b",
+    re.IGNORECASE,
+)
+
+
+def _visible_click_label(
+    text: str,
+    *,
+    allow_navigate: bool = False,
+) -> str | None:
+    """Extract the unique visible-control label, or nothing.
+
+    Navigate heads (``ve a`` / ``go to``) are click only after an app is
+    already open. Bare web destinations stay with the browser family.
+    """
+
+    head = _VISIBLE_CLICK_POINTING
+    if allow_navigate:
+        head = rf"(?:{head}|{_VISIBLE_CLICK_NAVIGATE})"
+    request = _match(
+        text,
+        (
+            rf"^[¿?¡!\s]*{_REQUEST_PREFIX}{head}\s+"
+            r"(?:(?:el|la|los|las|the)\s+)?"
+            rf"(?:{_VISIBLE_CLICK_CONTROL_NOUN}\s+)?"
+            r"(?P<label>[^,;.!?]{1,80}?)"
+            rf"(?:\s+{_VISIBLE_CLICK_CONTROL_NOUN})?"
+            r"[\s?!.]*$"
+        ),
+    )
+    if request is None or _is_negated_match(text, request):
+        return None
+    label = request.group("label").strip(" \t\"'`")
+    label = re.sub(
+        r"^(?:el|la|los|las|the)\s+",
+        "",
+        label,
+        flags=re.IGNORECASE,
+    ).strip()
+    if (
+        not label
+        or len(label.split()) > 6
+        or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
+    ):
+        return None
+    return label[:80]
+
+
 def _visible_click_intent(
     text: str,
     available_operations: frozenset[str],
+    *,
+    allow_navigate: bool = False,
 ) -> EffectIntent | None:
     """Resolve find-and-activate as one grounded visible-control effect."""
 
@@ -11259,9 +11336,12 @@ def _visible_click_intent(
             r"click(?:\s+it)?|press(?:\s+it)?)[\s?!.]*$"
         ),
     )
-    if request is None or _is_negated_match(text, request):
+    if request is not None and not _is_negated_match(text, request):
+        evidence = request.group(0).strip(" ,;:-")[:240]
+        return EffectIntent(("input.visible.click",), (evidence,))
+    if _visible_click_label(text, allow_navigate=allow_navigate) is None:
         return None
-    evidence = request.group(0).strip(" ,;:-")[:240]
+    evidence = text.strip(" ,;:-")[:240]
     return EffectIntent(("input.visible.click",), (evidence,))
 
 

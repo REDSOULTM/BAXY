@@ -1,0 +1,68 @@
+{
+  "authority": "temporary_private_note_namespace_and_read_only_machine_status_only",
+  "blind_holdout": true,
+  "effects": {
+    "applications_opened": 0,
+    "external_messages": 0,
+    "persistent_user_files": 0,
+    "temporary_notes_cleaned_by_gate": true
+  },
+  "measurement_status": "unopened",
+  "method": {
+    "maximum_ambiguous_effects": 0,
+    "maximum_orphan_steps": 0,
+    "minimum_exact_case_accuracy": 0.9,
+    "required_real_llm_cases": 6
+  },
+  "planned_output": "artifacts\\holdout\\compound_execution_current_tree_r6.json",
+  "population": {
+    "case_contract_sha256": "1ad6ecd219fa9f7d6565b5153fe76c1b54ebee2928e24b1c74ffbd1fe4a881df",
+    "cases": 6,
+    "dependent_clause_shapes": [
+      "sequencing_head",
+      "elided_verb",
+      "bare_ordinal",
+      "participle_note_body",
+      "coordinated_status_nominals",
+      "enclitic_read"
+    ],
+    "exact_prior_objective_overlap": 0,
+    "languages": [
+      "en",
+      "es",
+      "spanglish"
+    ],
+    "steps": 22
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.compound-execution-current-tree-r6.preregistration.v1",
+  "sources": {
+    "builder": "experiments\\mind_router_spike\\build_compound_execution_current_tree_r6.py",
+    "builder_dependencies_sha256": {
+      "experiments\\mind_router_spike\\build_compound_execution_current_tree_r4.py": "116bba71605de99b1c8fa4098dbbd1ec50cdb8d702e5e7699f9563e2b472c428",
+      "experiments\\mind_router_spike\\build_compound_execution_current_tree_r5.py": "4490b5a19e4879c24e663b3bcde3feeb1908b5b451bacd8554c8d55461090821",
+      "scripts\\build_compound_execution_holdout_r1.py": "ba8de4e06fd792941ff115f5f815c5f64c70a9a64640e721ed4ad96fd2ad75a7",
+      "scripts\\build_compound_execution_holdout_r2.py": "b9db754a7bd1ae6e152dcf1dbd1d00948aad2d30f4966a873af5b05532df9c21",
+      "scripts\\build_compound_execution_holdout_r3.py": "dd82ba7f3c8e622aecddb202a56b6f917212c3ddebbd4d3fe6959112e130e19b"
+    },
+    "builder_sha256": "ef050e64364ff23f071b58ab5daa17bc615bd0fc5efde0a7793fadd70b854d71",
+    "core_sha256": "eb0646f31f2da51f9a1b26914cf34bcc8d88aa7bb0082f377a18206694af52ca",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\run_compound_execution_current_tree_r6.py": "11e08606f9ad065c74bddcef25ebb3fbb7b97062e7271a51ea67cd18d715e99d",
+      "scripts\\run_llm_plan_execution_gate.py": "bc8a47db41ca8e32ac1c23b836896632e054419398fdca73d902bcc6e581be94"
+    },
+    "policy_sha256": {
+      "src\\baxy_mind\\__main__.py": "6f10273da611988619dcf74686b6e9703a406cc2b57dfdbc91712f1b4ab665df",
+      "src\\baxy_mind\\catalog_operation_aliases.py": "bc2bb6563ab82e06defef592c056e8eb647366bcd2aa9df94600a470fb337105",
+      "src\\baxy_mind\\data\\catalog_operation_aliases.v1.json": "e8fc3ca7bb94224b24f653eb267d4426165554e78947e261fddbaf046b17a5a4",
+      "src\\baxy_mind\\effect_intent.py": "2f567ea9795dca47b0893530c09049ea59ff7fde2ae824b33284e878abe4ce79",
+      "src\\baxy_mind\\planner.py": "84841e197bbf3f4eb2c872b8d986610cf73b9b754f3cec4e6bf3912ef79de30a"
+    },
+    "runtime_manifest_sha256": "ee833f8b90f2f38241549e434c37bcebcee6b8c931cacc8c1ea924fc938fa0f8"
+  },
+  "supersedes": {
+    "campaign": "current-tree compound R5",
+    "result": "opened once and passed 6/6 cases and 25/25 steps",
+    "reuse_for_promotion_forbidden": true
+  }
+}

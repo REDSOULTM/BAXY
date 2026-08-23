@@ -57,6 +57,12 @@ internal static class FieldBridgeContract
     private const string StepPrefix = "Ejecutando paso ";
 
     /// <summary>
+    /// Intervalo máximo sin una indicación visible durante una misión.
+    /// Un pulso reutiliza la misma etapa; no afirma un resultado.
+    /// </summary>
+    internal static readonly TimeSpan ProgressPulse = TimeSpan.FromSeconds(2);
+
+    /// <summary>
     /// Descripciones internas que NO deben producir una indicación visible.
     /// Son estados listos, de voz o de diagnóstico que ya tienen su propio
     /// canal de estado.
@@ -205,8 +211,19 @@ internal static class FieldBridgeContract
     /// que ya conoce <c>boot_stage</c> lo muestra como estado; uno que no lo
     /// conoce lo ignora sin cambiar su estado.
     /// </summary>
-    internal static JsonObject CreateProgressPayload(FieldProgressNotice? notice) =>
-        notice is null
+    internal static bool ShouldPulseProgress(
+        DateTimeOffset? lastPublishedUtc,
+        DateTimeOffset nowUtc) =>
+        lastPublishedUtc is null || nowUtc - lastPublishedUtc.Value >= ProgressPulse;
+
+    internal static JsonObject CreateProgressPayload(
+        FieldProgressNotice? notice,
+        DateTimeOffset? atUtc = null)
+    {
+        JsonNode? pulse = atUtc is null
+            ? null
+            : JsonValue.Create(atUtc.Value.ToUnixTimeMilliseconds());
+        return notice is null
             ? new JsonObject
             {
                 ["type"] = ProgressPayloadType,
@@ -215,6 +232,7 @@ internal static class FieldBridgeContract
                 ["label"] = null,
                 ["progress"] = null,
                 ["error"] = null,
+                ["t"] = pulse,
                 ["v"] = TurnProgressRevision,
             }
             : new JsonObject
@@ -225,8 +243,10 @@ internal static class FieldBridgeContract
                 ["label"] = notice.Label,
                 ["progress"] = null,
                 ["error"] = null,
+                ["t"] = pulse,
                 ["v"] = TurnProgressRevision,
             };
+    }
 
     /// <summary>
     /// Marca el envelope con la revisión mínima de lector que puede

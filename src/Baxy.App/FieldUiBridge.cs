@@ -60,6 +60,8 @@ internal sealed class FieldUiBridge : IAsyncDisposable
     private long _turnSequence;
     private FieldProgressNotice? _publishedProgress;
     private bool _progressPublished;
+    private DateTimeOffset? _progressPublishedUtc;
+    private readonly System.Windows.Threading.DispatcherTimer _progressPulse;
     private bool _disposed;
 
     internal FieldUiBridge(
@@ -77,6 +79,11 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         _webView.WebMessageReceived += OnWebMessageReceived;
         _viewModel.MessageAdded += OnMessageAdded;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        _progressPulse = new System.Windows.Threading.DispatcherTimer
+        {
+            Interval = FieldBridgeContract.ProgressPulse,
+        };
+        _progressPulse.Tick += OnProgressPulse;
     }
 
     private async void OnWebMessageReceived(
@@ -633,6 +640,23 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             or nameof(MainWindowViewModel.StatusDescription))
         {
             PublishProgress();
+            SyncProgressPulse();
+        }
+    }
+
+    private void OnProgressPulse(object? sender, EventArgs eventArgs) => PublishProgress(forcePulse: true);
+
+    private void SyncProgressPulse()
+    {
+        bool busy = _viewModel.IsBusy || !_viewModel.IsReady;
+        if (busy)
+        {
+            if (!_progressPulse.IsEnabled)
+                _progressPulse.Start();
+        }
+        else if (_progressPulse.IsEnabled)
+        {
+            _progressPulse.Stop();
         }
     }
 
@@ -644,10 +668,11 @@ internal sealed class FieldUiBridge : IAsyncDisposable
     /// así que un lector antiguo lo muestra y uno que no lo conozca lo ignora
     /// sin reinterpretar nada.
     /// </summary>
-    private void PublishProgress()
+    private void PublishProgress(bool forcePulse = false)
     {
         FieldProgressNotice? notice = CurrentProgress();
-        if (_progressPublished
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        bool sameStage = _progressPublished
             && string.Equals(
                 notice?.Stage,
                 _publishedProgress?.Stage,
@@ -655,7 +680,9 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             && string.Equals(
                 notice?.Label,
                 _publishedProgress?.Label,
-                StringComparison.Ordinal))
+                StringComparison.Ordinal);
+        if (sameStage
+            && !(forcePulse && FieldBridgeContract.ShouldPulseProgress(_progressPublishedUtc, now)))
         {
             return;
         }
@@ -664,12 +691,13 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         // lector. Si el envío se pierde por una carrera de navegación o cierre,
         // el siguiente cambio de estado vuelve a intentarlo en vez de quedar
         // silenciado por la deduplicación.
-        if (!PostEvent(FieldBridgeContract.CreateProgressPayload(notice)))
+        if (!PostEvent(FieldBridgeContract.CreateProgressPayload(notice, now)))
         {
             return;
         }
 
         _publishedProgress = notice;
+        _progressPublishedUtc = now;
         _progressPublished = true;
         if (notice is not null)
         {
@@ -1108,6 +1136,8 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         }
 
         _disposed = true;
+        _progressPulse.Stop();
+        _progressPulse.Tick -= OnProgressPulse;
         _webView.WebMessageReceived -= OnWebMessageReceived;
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;

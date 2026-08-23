@@ -1168,6 +1168,107 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task VisibleClickAcceptsASelectedControlPostread()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
+            "\"error\":\"\",\"name\":\"Library\",\"controlIdentity\":\"1.2.3\"," +
+            "\"absentOrDisabled\":false,\"selected\":true,\"surfaceChanged\":false," +
+            "\"cascadeStage\":\"uia\",\"authority\":\"windows_uia_invoke_postread\"}");
+        var adapter = new WindowsVisibleControlAdapter(runner, script);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Library"}"""),
+            CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True);
+        Assert.That(receipt.Result?.GetProperty("selected").GetBoolean(), Is.True);
+    }
+
+    [Test]
+    public async Task VisibleClickCascadeSkipsOcrAndVisionWhenUiaFindsTheControl()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
+            "\"error\":\"\",\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\"," +
+            "\"absentOrDisabled\":true,\"selected\":false,\"surfaceChanged\":false}");
+        var ocr = new CountingLocator("ocr", hit: true);
+        var vision = new CountingLocator("vision", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"aceptar"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(ocr.Calls, Is.Zero);
+            Assert.That(vision.Calls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickCascadeUsesOcrWhenUiaExposesNothing()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false," +
+            "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
+            "\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
+        var ocr = new CountingLocator("ocr", hit: true);
+        var vision = new CountingLocator("vision", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Library"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
+            Assert.That(ocr.Calls, Is.EqualTo(1));
+            Assert.That(vision.Calls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickCascadeUsesVisionOnlyAfterUiaAndOcrMiss()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false," +
+            "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
+            "\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
+        var ocr = new CountingLocator("ocr", hit: false);
+        var vision = new CountingLocator("vision", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Library"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("vision"));
+            Assert.That(ocr.Calls, Is.EqualTo(1));
+            Assert.That(vision.Calls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public async Task NamedSandboxFilesAppendDiffAndMoveWithHashPostreads()
     {
         using TemporaryDirectory temporary = new();
@@ -2549,6 +2650,47 @@ public sealed class ExternalAdaptersTests
                 authority = "windows_task_scheduler_postread",
             });
             return ValueTask.FromResult(new ExternalProcessResult(0, output, string.Empty));
+        }
+    }
+
+    private sealed class CountingLocator : IVisibleControlLocator
+    {
+        private readonly bool _hit;
+
+        internal CountingLocator(string stage, bool hit)
+        {
+            Stage = stage;
+            _hit = hit;
+        }
+
+        internal int Calls { get; private set; }
+
+        public string Stage { get; }
+
+        public ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
+            string operation,
+            string label,
+            CancellationToken cancellationToken)
+        {
+            Calls++;
+            if (!_hit)
+                return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+            JsonElement result = JsonSerializer.SerializeToElement(new
+            {
+                version = 1,
+                ok = true,
+                effectObserved = true,
+                error = "",
+                name = label,
+                controlIdentity = Stage + ".1",
+                absentOrDisabled = false,
+                selected = false,
+                surfaceChanged = true,
+                cascadeStage = Stage,
+                authority = Stage + "_locate_click_postread",
+            });
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(
+                new ExternalCapabilityReceipt(operation, true, true, result, null));
         }
     }
 

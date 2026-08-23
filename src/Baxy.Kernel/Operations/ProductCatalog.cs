@@ -652,7 +652,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "input.visible.click.windows.uia.invoke.postread.v1",
             ToolExposure.Public,
-            "Invoca un único botón visible por etiqueta mediante UI Automation y exige que desaparezca o quede deshabilitado."),
+            "Invoca un único control visible por etiqueta en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, desaparecido o superficie cambiada."),
         Descriptor(
             "media.control",
             Schema(

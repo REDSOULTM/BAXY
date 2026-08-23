@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Nodes;
 using Baxy.App;
 using Baxy.Kernel.Policy;
@@ -58,6 +59,30 @@ public sealed class FieldProgressContractTests
         Assert.That(
             FieldBridgeContract.Create(FieldProgressNotice.StageUnderstanding).Label,
             Is.Null);
+    }
+
+    [Test]
+    public void ProgressPulsesAfterTwoSecondsWithoutClaimingAResult()
+    {
+        DateTimeOffset first = DateTimeOffset.Parse(
+            "2026-08-23T12:00:00Z",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal);
+        Assert.That(FieldBridgeContract.ShouldPulseProgress(null, first), Is.True);
+        Assert.That(
+            FieldBridgeContract.ShouldPulseProgress(first, first.AddSeconds(1)),
+            Is.False);
+        Assert.That(
+            FieldBridgeContract.ShouldPulseProgress(first, first.AddSeconds(2)),
+            Is.True);
+
+        JsonObject payload = FieldBridgeContract.CreateProgressPayload(
+            FieldBridgeContract.Create(FieldProgressNotice.StageActing),
+            first);
+        Assert.That((string?)payload["stage"], Is.EqualTo(FieldProgressNotice.StageActing));
+        Assert.That(payload["error"], Is.Null);
+        Assert.That((string?)payload["phase"], Is.EqualTo("active"));
+        Assert.That((long?)payload["t"], Is.EqualTo(first.ToUnixTimeMilliseconds()));
     }
 
     [Test]

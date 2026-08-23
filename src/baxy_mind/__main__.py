@@ -4181,6 +4181,10 @@ def _explicit_arguments_from_evidence(
         app_id = resolve_application_catalog_app_id(evidence, application_names)
         return {"appId": app_id} if app_id is not None else None
 
+    if operation == "input.visible.click":
+        label = effect_intent._visible_click_label(folded, allow_navigate=True)
+        return {"label": label} if label is not None else None
+
     if operation == "app.installed":
         name = resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
