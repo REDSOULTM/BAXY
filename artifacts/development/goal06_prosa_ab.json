@@ -4,7 +4,7 @@
   "candidate": "Qwen3-4B-Q4_K_M",
   "n": 100,
   "bad": 0,
-  "p50_latency_s": 0.28,
+  "p50_latency_s": 0.255,
   "lighter_on_disk": false,
   "why_not_lighter": "No hay un GGUF más ligero del mismo modelo en disco. Q2 de Gemma 4 inventaba «fysico»/«lumínar» (FunctionGemma, 2026-06). Se conserva Q4_K_M y la guarda de infinitivos inventados."
 }

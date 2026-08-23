@@ -180,11 +180,23 @@ def test_compose_payload_does_not_contain_published_sentences() -> None:
         {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
     ) == ""
     assert compose_visible_defect(
+        "Digo que sí.",
+        "status",
+        "abre Steam y ve a la biblioteca",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "acting_asserted"
+    assert compose_visible_defect(
         "Still working.",
         "status",
         "open Steam and go to the library",
         {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
     ) == ""
+    assert compose_visible_defect(
+        "I'm here.",
+        "status",
+        "open Steam and go to the library",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "acting_asserted"
     assert compose_visible_defect(
         "Progreso, sin el resultado.",
         "status",
@@ -509,6 +521,56 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         },
     ) == "wrong_gender"
     assert compose_visible_defect(
+        "No pude: el tiempo tiempo se agotó el tiempo.",
+        "error",
+        "abre Calculadora",
+        {
+            "situation": (
+                '{"kind":"failure","cause":"timeout","polarity":"failure",'
+                '"target":"Calculadora"}'
+            )
+        },
+    ) == "invented"
+    assert compose_visible_defect(
+        "La hora localTime es 22:10.",
+        "status",
+        "qué hora es ahora",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"system.time",'
+                '"polarity":"success","observed":{"localTime":"22:10"}}'
+            )
+        },
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "El estado es: 22:10.",
+        "status",
+        "qué hora es ahora",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"system.time",'
+                '"polarity":"success","observed":{"localTime":"22:10"}}'
+            )
+        },
+    ) == ""
+    assert compose_visible_defect(
+        "Sigo, el estado es que Steam está abierto.",
+        "status",
+        "abre Steam y ve a la biblioteca",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "internal_code"
+    assert compose_visible_defect(
+        'Gamma, el título es "Gamma".',
+        "status",
+        "crea la nota Gamma",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"note.create",'
+                '"polarity":"success","observed":{"title":"Gamma"}}'
+            )
+        },
+    ) == "copied_instruction"
+    assert compose_visible_defect(
         "La nota Gamma está abierta.",
         "status",
         "crea la nota Gamma",
@@ -519,6 +581,24 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
             )
         },
     ) == "extra_claim"
+    assert compose_visible_defect(
+        "La ventanaien la ventana.",
+        "status",
+        "cierra la ventana",
+        {"situation": '{"kind":"operation","operation":"app.close","polarity":"success"}'},
+    ) == "invented"
+    assert compose_visible_defect(
+        "La ventana activa.",
+        "status",
+        "cierra la ventana activa",
+        {"situation": '{"kind":"operation","operation":"app.close","polarity":"success"}'},
+    ) == "missing_state"
+    assert compose_visible_defect(
+        "La ventana está cerrada.",
+        "status",
+        "cierra la ventana",
+        {"situation": '{"kind":"operation","operation":"app.close","polarity":"success"}'},
+    ) == ""
     assert compose_visible_defect(
         "No pude: la terminal ya terminado de esperar.",
         "error",

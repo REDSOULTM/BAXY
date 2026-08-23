@@ -2683,6 +2683,8 @@ def _compose_situation_payload(situation: dict, language: str, user_text: str = 
     seen = situation.get("observed")
     if isinstance(seen, dict) and seen:
         payload["seen"] = dict(seen)
+        if "localTime" in payload["seen"]:
+            payload["seen"]["time"] = payload["seen"].pop("localTime")
     if (
         str(situation.get("polarity") or "").strip().lower() == "success"
         and cause_key != "acting"
@@ -2739,12 +2741,8 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     if isinstance(observed, dict):
         if isinstance(observed.get("app"), str) and observed["app"].strip():
             bits.append("Name observed.app. State open, closed or playing from the facts.")
-        if isinstance(observed.get("title"), str) and observed["title"].strip():
-            bits.append("Name the note title.")
         if "level" in observed:
             bits.append("Name the volume number.")
-        if isinstance(observed.get("localTime"), str) and observed["localTime"].strip():
-            bits.append("Name the local time.")
         if "muted" in observed:
             bits.append("Name mute state.")
     if language == "en" and bits:
@@ -2758,8 +2756,14 @@ def _strip_think_tags(text: str) -> str:
 
 def _strip_prompt_labels(text: str) -> str:
     cleaned = _strip_think_tags(text)
+    cleaned = re.sub(
+        r"^(?:el )?estado observable(?: es)?:\s*",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    ).strip()
     return re.sub(
-        r"^(?:el )?estado observable:\s*",
+        r"^(?:el )?estado es:?\s*|^the state is:?\s*",
         "",
         cleaned,
         flags=re.IGNORECASE,
@@ -2828,11 +2832,13 @@ def compose_visible_defect(
         folded,
     ):
         return "internal_code"
-    if "estado observable" in folded:
+    if "estado observable" in folded or re.search(
+        r"\bel estado es\b|\bthe state is\b", folded
+    ):
         return "internal_code"
     if cause == "timeout" and "trajo" in folded:
         return "invented"
-    if re.search(r"\b(\w+)(?:\s+\1){2,}\b", folded):
+    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", folded):
         return "invented"
     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
         return "copied_instruction"
@@ -2852,9 +2858,13 @@ def compose_visible_defect(
         return "copied_instruction"
     if re.search(r"(?m)^[a-z]{8,}$", folded):
         return "invented"
+    if re.search(r"ventana[a-záéíóúñ]{2,}|window[a-z]{2,}", folded):
+        return "invented"
     if re.search(r"\bproviders?\b", folded) and "provider" not in (user_text or "").casefold():
         return "internal_code"
     if re.search(r":\s*(?:true|false)\b", folded) is not None:
+        return "internal_code"
+    if re.search(r"localTime|stepCount", stripped):
         return "internal_code"
     if _glued_proper_name(stripped, situation, user_text):
         return "invented"
@@ -2927,13 +2937,19 @@ def compose_visible_defect(
             return "missing_confirmation_choice"
         if stripped.count("¿") > 1 or stripped.count("?") > 1:
             return "too_many_sentences"
-    if cause == "acting" and (
-        _SUCCESS_OPENERS.match(stripped) is not None
-        or re.match(r"^\s*(?:hola|hi|hello)\b", folded) is not None
-        or re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded)
-        or _FAILURE_MARKERS.search(stripped) is not None
-    ):
-        return "acting_asserted"
+    if cause == "acting":
+        if (
+            _SUCCESS_OPENERS.match(stripped) is not None
+            or re.match(r"^\s*(?:hola|hi|hello)\b", folded) is not None
+            or re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded)
+            or _FAILURE_MARKERS.search(stripped) is not None
+        ):
+            return "acting_asserted"
+        if language == "en":
+            if not re.search(r"\bstill\b|\bworking\b", folded):
+                return "acting_asserted"
+        elif not re.search(r"\bsigo\b", folded):
+            return "acting_asserted"
     observed = situation.get("observed")
     observed_dict = observed if isinstance(observed, dict) else {}
     mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
@@ -3022,6 +3038,12 @@ def compose_visible_defect(
                 isinstance(app_name, str) and app_name.strip()
             ) and re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded):
                 return "extra_claim"
+            if re.match(
+                rf"^{re.escape(title.strip())},\s*(?:el |the )?t[íi]tulo es",
+                stripped,
+                re.IGNORECASE,
+            ):
+                return "copied_instruction"
         if "level" in observed_dict and not re.search(
             r"volumen|volume|\bnivel\b|\blevel\b", folded
         ):
@@ -3037,10 +3059,11 @@ def compose_visible_defect(
         if (
             closed_request
             and not (isinstance(app_name, str) and app_name.strip())
-            and "ventana" not in folded
-            and "window" not in folded
         ):
-            return "missing_name"
+            if "ventana" not in folded and "window" not in folded:
+                return "missing_name"
+            if not re.search(r"cerrad|closed", folded):
+                return "missing_state"
     if cause == "mission_completed":
         skip = {
             "abri", "cree", "puse", "listo", "nota", "the", "and", "volume",
@@ -7652,6 +7675,94 @@ class LlmRuntime:
                 head += "."
             return head if publishable(head) else candidate
 
+        def title_clip(candidate: str) -> str:
+            observed = situation.get("observed")
+            title = (
+                observed.get("title")
+                if isinstance(observed, dict)
+                else None
+            )
+            if not isinstance(title, str) or not title.strip():
+                return candidate
+            match = re.match(
+                rf"^{re.escape(title.strip())},\s*(.+)$",
+                (candidate or "").strip(),
+                re.IGNORECASE,
+            )
+            if match is None:
+                return candidate
+            rest = match.group(1).strip()
+            if rest and rest[0].islower():
+                rest = rest[0].upper() + rest[1:]
+            return rest if publishable(rest) else candidate
+
+        def time_clip(candidate: str) -> str:
+            observed = situation.get("observed")
+            local = (
+                observed.get("localTime")
+                if isinstance(observed, dict)
+                else None
+            )
+            if not isinstance(local, str) or not local.strip():
+                return candidate
+            blob = candidate or ""
+            token = local.strip()
+            alt = token.lstrip("0") or token
+            if token not in blob and alt not in blob:
+                return candidate
+            if "?" not in blob and "¿" not in blob:
+                return candidate
+            kept = [
+                part.strip()
+                for part in re.split(r"(?<=[.!?])\s+", blob)
+                if part.strip() and "?" not in part and "¿" not in part
+            ]
+            if not kept:
+                found = token if token in blob else alt
+                kept = [found + "."]
+            out = " ".join(kept).strip()
+            if out and out[0].islower():
+                out = out[0].upper() + out[1:]
+            return out if publishable(out) else candidate
+
+        def drop_request_verb(candidate: str) -> str:
+            if not _starts_with_request_imperative(candidate):
+                return candidate
+            rest = re.sub(r"^\s*\S+\s+", "", (candidate or "").strip(), count=1)
+            if rest and rest[0].islower():
+                rest = rest[0].upper() + rest[1:]
+            return rest if publishable(rest) else candidate
+
+        def close_clip(candidate: str) -> str:
+            if publishable(candidate):
+                return candidate
+            folded_user = (user_text or "").casefold()
+            if not re.search(r"\bcierr|\bclose\b", folded_user):
+                return candidate
+            observed = situation.get("observed")
+            if isinstance(observed, dict) and observed.get("app"):
+                return candidate
+            raw = re.sub(
+                r"\bventana[a-záéíóúñ]{2,}\b",
+                "ventana",
+                (candidate or "").strip(),
+                flags=re.IGNORECASE,
+            )
+            if not re.search(r"\bventana\b", raw.casefold()):
+                return candidate
+            if re.search(r"cerrad", raw.casefold()):
+                return raw if publishable(raw) else candidate
+            trial = re.sub(
+                r"\bventana\b.*$",
+                "ventana está cerrada.",
+                raw,
+                count=1,
+                flags=re.IGNORECASE,
+            )
+            if trial and trial[0].islower():
+                trial = trial[0].upper() + trial[1:]
+            return trial if publishable(trial) else candidate
+
         acting_facts = (
             f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
             f"{language_contract}"
@@ -7664,7 +7775,7 @@ class LlmRuntime:
         text = _strip_prompt_labels(
             (response["choices"][0]["message"].get("content") or "").strip()
         )
-        text = acting_clip(text)
+        text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(text)))))
         if publishable(text):
             return text
         if (
@@ -7705,7 +7816,11 @@ class LlmRuntime:
             "missing_name": "Include names and numbers from seen.",
             "missing_state": "abierto/open, no el imperativo.",
             "reversed_result": "effect is closed.",
-            "acting_asserted": "Say you are still on it, first person.",
+            "acting_asserted": (
+                "Still working."
+                if response_language == "en"
+                else "Sigo."
+            ),
             "welcome_question": "Greet. No question.",
         }.get(defect, "")
         retry_user = (
@@ -7749,7 +7864,7 @@ class LlmRuntime:
         retry_text = _strip_prompt_labels(
             (retry["choices"][0]["message"].get("content") or "").strip()
         )
-        retry_text = acting_clip(retry_text)
+        retry_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(retry_text)))))
         if publishable(retry_text):
             return retry_text
         third_payload = dict(payload)
@@ -7776,5 +7891,5 @@ class LlmRuntime:
         third_text = _strip_prompt_labels(
             (third["choices"][0]["message"].get("content") or "").strip()
         )
-        third_text = acting_clip(third_text)
+        third_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(third_text)))))
         return third_text if publishable(third_text) else ""

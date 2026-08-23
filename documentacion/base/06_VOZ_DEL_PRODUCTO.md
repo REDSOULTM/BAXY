@@ -48,23 +48,22 @@ La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose envia
 Corrida: `py -3.12 scripts/goal06_voice_sample.py artifacts/development` sobre
 Qwen3-4B-Q4_K_M, sidecar real, `type=message.compose.result`. Evidencia:
 `artifacts/development/goal06_cien_respuestas.jsonl` y
-`artifacts/development/goal06_prosa_ab.json`. n=100, scorer bad=0, p50 0,28 s.
+`artifacts/development/goal06_prosa_ab.json`. n=100, scorer bad=0, p50 0,26 s.
 
 Compose no recibe ni reintenta la frase publicada. Tercer intento si hace falta,
 aún sobre hechos JSON. Causas sin género. `effect=closed` sólo en éxitos.
 Acting no ve el prompt con «estado observable»; el fallo de misión no recibe
 los pasos hechos.
 
-Leídas a mano las 100. Cero vacíos. Cero palabras inventadas. Cero «Muted.» /
-«Unmuted.» / «wait ended» / «mission unfinished». Timeout/close/mute/open-en-
-Terminal: «No pude: el tiempo se agotó.» / «The window is closed.» / «Los
-altavoces ahora están silenciados.» / «The audio is muted.» / «Terminal is
-open.» / «Steam está cerrado.» Acting: «Digo que sí.» / «I'm here.» Mission-
-fail: «No pude: la solicitud está fuera de lo que yo hago.» / «I couldn't: I
-don't do that.» Notas: «Listo, el título es "Ideas".» / «Gamma, el título es
-"Gamma".»
+Leídas a mano las 100. Cero vacíos. Cero palabras inventadas. Acting: «Sigo.» /
+«Still working.» (no «Digo que sí.» ni «I'm here.»). Timeout: «No pude: el
+tiempo esperado se agotó.» (no «tiempo tiempo»). Reloj: «22:10.» (no «El estado
+es»). Nota: «Nota Gamma creada.» (no el volcado del título). Mute: «Los
+altavoces ahora están silenciados.» / «The audio is muted.» Mission-fail: «No
+pude: la solicitud está fuera de lo que yo hago.» / «I couldn't: I don't do
+that.» Close: «La ventana está cerrada.» / «The window is closed.»
 
-Quedan acting fino, horas sueltas y un tuteo perdido. Anotado.
+Quedan acting fino («Sigo.»), horas sueltas y un tuteo perdido. Anotado.
 
 ## 6. Criterios
 
