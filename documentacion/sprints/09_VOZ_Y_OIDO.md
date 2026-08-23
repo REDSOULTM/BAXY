@@ -177,6 +177,13 @@ resultado quepa en rutas + rangos + conclusión.
 decisiones en ficheros a medida que avanzas, y haz commit después de cada paso medido.
 Plantilla: `docs/AI_HANDOFF_TEMPLATE.md`.
 
+**Y lo commiteado se empuja, en el mismo momento.** `git push origin main` detrás de
+cada commit —no al final del goal—. El dueño trabaja en varias máquinas y lo que no
+está en `origin` no existe para las demás: este repositorio llegó a acumular **101
+commits sin publicar**, cinco goals de trabajo que vivían en un solo disco. Si el push
+lo rechaza porque otra máquina empujó antes, `git pull --rebase origin main`, resuelves
+y vuelves a empujar; no lo dejes pendiente.
+
 **Verificas ejecutando, no navegando.** BAXY es un producto de escritorio y aquí no hay
 herramientas de navegador. Un cambio de interfaz se comprueba con `py main.py` y con
 sus pruebas, y dices qué no pudiste verificar.
@@ -337,6 +344,10 @@ cambio sea una tarde.
 - [ ] Publicado qué heredaste, de dónde, qué cambiaste — y qué descartaste porque el
       estado del arte lo dejó atrás.
 - [ ] Consumo en reposo medido, con la escucha permanente encendida.
+- [ ] **Publicado.** `git status --short` vacío y
+      `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
+      `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por
+      verdes que estén los demás criterios.
 
 ## Cuando lo cumplas
 

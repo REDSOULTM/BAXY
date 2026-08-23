@@ -39,7 +39,8 @@ contexto y razonamiento. El estado se deja escrito en el repositorio a
 medida que avanzas. Tras cada paso medido: cifra en
 `documentacion/base/03C_ALCANCE.md` (créalo al primer número), una línea en
 `documentacion/APLAZADOS.md` por lo que no persigues, `git add` y `git commit`
-que diga qué midió y cuánto dio.
+que diga qué midió y cuánto dio, y `git push origin main` detrás —el dueño trabaja
+en varias máquinas y lo que no está en `origin` no existe para las demás—.
 
 ---
 
@@ -301,6 +302,10 @@ No se cierra con skip, xfail, umbral relajado, fallback, ni redefiniendo
 - [ ] `documentacion/base/03C_ALCANCE.md` con las cifras, y
       `documentacion/base/03B_COMPRENSION_TECHO.md` §12 actualizado para
       que no mienta.
+- [ ] **Publicado.** `git status --short` vacío y
+      `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
+      `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por
+      verdes que estén los demás criterios.
 
 ## Cuándo puedes cerrar sin el alcance en ≤5
 

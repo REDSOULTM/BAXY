@@ -289,6 +289,10 @@ usar. Si tu cambio sube el acierto y empeora eso, no ha mejorado el producto.
 - [ ] Publicado **qué heredaste de la biblioteca y qué del estado del arte**, con
       la fuente. Y lo que probaste y no funcionó, con su mecanismo.
 - [ ] Las filas de `03_COSTURAS.md` que toques, rellenas.
+- [ ] **Publicado.** `git status --short` vacío y
+      `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
+      `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por
+      verdes que estén los demás criterios.
 
 ## Cuándo puedes cerrar sin el 90 %
 

@@ -177,6 +177,13 @@ resultado quepa en rutas + rangos + conclusión.
 decisiones en ficheros a medida que avanzas, y haz commit después de cada paso medido.
 Plantilla: `docs/AI_HANDOFF_TEMPLATE.md`.
 
+**Y lo commiteado se empuja, en el mismo momento.** `git push origin main` detrás de
+cada commit —no al final del goal—. El dueño trabaja en varias máquinas y lo que no
+está en `origin` no existe para las demás: este repositorio llegó a acumular **101
+commits sin publicar**, cinco goals de trabajo que vivían en un solo disco. Si el push
+lo rechaza porque otra máquina empujó antes, `git pull --rebase origin main`, resuelves
+y vuelves a empujar; no lo dejes pendiente.
+
 **Verificas ejecutando, no navegando.** BAXY es un producto de escritorio y aquí no hay
 herramientas de navegador. Un cambio de interfaz se comprueba con `py main.py` y con
 sus pruebas, y dices qué no pudiste verificar.
@@ -274,6 +281,10 @@ señal**. Eso conecta con el goal 08, pero aquí ya se nota.
 - [ ] La cascada UIA → OCR → visión funciona sin una sola app codificada a mano.
 - [ ] Ninguna misión pasa más de 3 s sin salida visible.
 - [ ] Los tres ceros intactos durante toda la misión.
+- [ ] **Publicado.** `git status --short` vacío y
+      `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
+      `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por
+      verdes que estén los demás criterios.
 
 ## Cuando lo cumplas
 

@@ -171,6 +171,12 @@ empezar: lee lo justo para dar el paso siguiente.
 uno se ha medido inalcanzable y se ha publicado la evidencia. No cuando se acaban
 las ideas de mejora.
 
+**Y publica.** `git push origin main` detrás de cada commit, y el goal no se da por
+cerrado hasta que `git rev-list --count origin/main..main` da **0**. Es un criterio
+de cierre en los once. El dueño trabaja en varias máquinas: lo que no está en
+`origin` no existe para las demás, y este repositorio ya llegó a acumular 101
+commits sin publicar —cinco goals de trabajo en un solo disco—.
+
 ## Por qué están escritos así
 
 Un agente de código moderno es proactivo y persistente por defecto: reanuda tras un
