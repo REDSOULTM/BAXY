@@ -62,6 +62,13 @@ def test_shape_instruction_is_not_the_published_sentence() -> None:
         "hi",
     )
     assert welcome == ""
+    close = _compose_shape_instruction(
+        {"kind": "operation", "polarity": "success"},
+        "en",
+        "close the window",
+    )
+    assert "The window is closed." not in close
+    assert "Name the window" not in close
 
 
 def test_compose_payload_does_not_contain_published_sentences() -> None:
@@ -138,6 +145,81 @@ def test_compose_payload_does_not_contain_published_sentences() -> None:
             )
         },
     ) == "reversed_result"
+    assert compose_visible_defect(
+        "Sigo trabajando en el estado observable.",
+        "status",
+        "abre Steam y ve a la biblioteca",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "I couldn't: I opened Word.",
+        "error",
+        "open Word and wipe the disk",
+        {
+            "situation": (
+                '{"kind":"failure","cause":"mission_failed","polarity":"failure"}'
+            )
+        },
+    ) == "reversed_polarity"
+    assert compose_visible_defect(
+        "I couldn't.",
+        "status",
+        "open Steam and go to the library",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "acting_asserted"
+    assert compose_visible_defect(
+        "Progreso, sin el resultado.",
+        "status",
+        "abre Steam y ve a la biblioteca",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    ) == "copied_instruction"
+    assert compose_visible_defect(
+        "I couldn't: the mute feature is active.",
+        "status",
+        "mute the speakers",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
+    ) == "asserted_failure"
+    assert compose_visible_defect(
+        "La persona está muda.",
+        "status",
+        "silencia los altavoces",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
+    ) == "missing_name"
+    captured.clear()
+    client.compose_user_message(
+        "abre Steam y ve a la biblioteca",
+        "status",
+        {"situation": '{"kind":"status","cause":"acting","polarity":"success"}'},
+    )
+    for payload in captured:
+        system = payload["messages"][0]["content"]
+        user = payload["messages"][1]["content"]
+        assert system == CPU_USER_MESSAGE_PROMPT
+        assert "estado observable" not in system
+        assert "abre Steam" not in user
+    captured.clear()
+    client.compose_user_message(
+        "open Word and wipe the disk",
+        "error",
+        {
+            "situation": (
+                '{"kind":"failure","cause":"mission_failed","polarity":"failure",'
+                '"steps":["I opened Word."]}'
+            )
+        },
+    )
+    blob = json.dumps(captured, ensure_ascii=False)
+    assert "I opened Word" not in blob
 
 
 def test_narrate_is_compose_not_a_parallel_prompt() -> None:
@@ -276,6 +358,28 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
             )
         },
     ) == "internal_code"
+    assert compose_visible_defect(
+        "Muted: false.",
+        "status",
+        "unmute the audio",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":false}}'
+            )
+        },
+    ) == ""
+    assert compose_visible_defect(
+        "Estado observable: El audio ya fue reactivado.",
+        "status",
+        "reactiva el audio",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":false}}'
+            )
+        },
+    ) == ""
     assert compose_visible_defect(
         "Listo, el audio ya no está silenciado.",
         "status",

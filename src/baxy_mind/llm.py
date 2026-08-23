@@ -195,7 +195,8 @@ USER_MESSAGE_PROMPT = (
     "kind=welcome: Hola o Hi, masculino, sin Listo y sin apps. "
     "kind=confirmation: una pregunta con confirm* y cancel*; no copies las "
     "cuatro; no afirmes. "
-    "cause=acting: di que sigues, sin afirmar el resultado. "
+    "cause=acting: di que sigues, sin copiar «estado observable» y sin "
+    "afirmar el resultado. "
     "kind=clarification: una pregunta corta, de tú, sobre lo que falta. "
     "Si situation trae items, una frase y la lista numerada. "
     "si seen.app: nombra esa app y si está abierta o cerrada. "
@@ -2650,21 +2651,38 @@ def _compose_situation_payload(situation: dict, language: str, user_text: str = 
 
     _ = language
     payload: dict[str, object] = {}
+    cause_key = str(situation.get("cause") or "").strip().lower()
+    skip_steps = cause_key == "mission_failed"
+    skip_kind = cause_key == "acting"
     for key in ("kind", "polarity", "target", "steps", "stepCount"):
+        if skip_steps and key in {"steps", "stepCount"}:
+            continue
+        if skip_kind and key == "kind":
+            continue
         value = situation.get(key)
         if value not in (None, "", []):
             payload[key] = value
-    if str(situation.get("cause") or "").strip().lower() == "acting":
+    folded_user = (user_text or "").casefold()
+    if cause_key == "acting":
         payload["polarity"] = "pending"
     elif str(situation.get("polarity") or "").strip().lower() == "success":
-        folded_user = (user_text or "").casefold()
         if re.search(r"\bcierr|\bclose\b", folded_user):
             payload["effect"] = "closed"
         elif re.search(r"\babre|\bopen\b", folded_user):
             payload["effect"] = "open"
     seen = situation.get("observed")
-    if seen not in (None, "", []):
-        payload["seen"] = seen
+    if isinstance(seen, dict) and seen:
+        payload["seen"] = dict(seen)
+    if (
+        str(situation.get("polarity") or "").strip().lower() == "success"
+        and cause_key != "acting"
+        and re.search(r"\bcierr|\bclose\b", folded_user)
+        and not (isinstance(seen, dict) and seen.get("app"))
+    ):
+        current = payload.get("seen")
+        merged = dict(current) if isinstance(current, dict) else {}
+        merged.setdefault("window", True)
+        payload["seen"] = merged
     cause = _cause_in_prose(str(situation.get("cause") or ""), language)
     if cause:
         payload["cause"] = cause
@@ -2701,11 +2719,6 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     if cause == "acting" or kind in {"welcome", "confirmation", "clarification"}:
         return ""
     bits: list[str] = []
-    if re.search(r"\bcierr|\bclose\b", (user_text or "").casefold()) and not (
-        isinstance(situation.get("observed"), dict)
-        and situation["observed"].get("app")
-    ):
-        bits.append("Name the window. State closed.")
     steps = situation.get("steps")
     if cause == "mission_completed" and isinstance(steps, list) and len(steps) >= 2:
         bits.append("Mention every step once.")
@@ -2720,14 +2733,24 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         if isinstance(observed.get("localTime"), str) and observed["localTime"].strip():
             bits.append("Name the local time.")
         if "muted" in observed:
-            bits.append("State muted matching observed.muted.")
+            bits.append("Name mute state.")
     if language == "en" and bits:
-        bits.append("English only. No Listo.")
+        bits.append("English only.")
     return " ".join(bits)
 
 
 def _strip_think_tags(text: str) -> str:
     return _THINK_BLOCK.sub("", text).replace("</think>", "").replace("<think>", "").strip()
+
+
+def _strip_prompt_labels(text: str) -> str:
+    cleaned = _strip_think_tags(text)
+    return re.sub(
+        r"^(?:el )?estado observable:\s*",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    ).strip()
 
 
 def _glued_proper_name(text: str, situation: dict, user_text: str) -> bool:
@@ -2764,7 +2787,7 @@ def compose_visible_defect(
     no invented infinitives, no canned stall.
     """
 
-    stripped = _strip_think_tags((text or "").strip())
+    stripped = _strip_prompt_labels((text or "").strip())
     if not stripped:
         return "empty"
     if visible_reply_is_a_fixed_stall(stripped):
@@ -2786,12 +2809,13 @@ def compose_visible_defect(
         return "unmentioned_name"
     if re.search(
         r"observable state|observed state|observed status|"
-        r"\bthe operation\b|\bla operaci[oó]n\b|\bthe status\b|"
+        r"\bthe operation\b|\bla operaci[oó]n\b|\bthe status is\b|"
+        r"\bstatus update\b|"
         r"one english sentence|^una frase\b|\bcontrato\b",
         folded,
     ):
         return "internal_code"
-    if "estado observable" in folded and cause != "acting":
+    if "estado observable" in folded:
         return "internal_code"
     if cause == "timeout" and "trajo" in folded:
         return "invented"
@@ -2801,7 +2825,12 @@ def compose_visible_defect(
         r"observed\.app|name every observed|menciona cada|título o paso|"
         r"nombre la nota|must appear|debe aparecer|the seen app|"
         r"note title must|observed app|progress only|progress continues|"
-        r"no listo|no open|no closed|name the window|state closed",
+        r"no listo|no open|no closed|name the window|state closed|"
+        r"one sentence of progress|una frase de que sigues|still in progress|"
+        r"without the result|sin el resultado|progress, without|"
+        r"in progress, without|no result claimed|without claiming|"
+        r"name mute state|name what is in seen|do not invert|"
+        r"observed\.muted|state muted matching|^progreso\.?$",
         folded,
     ):
         return "copied_instruction"
@@ -2817,13 +2846,19 @@ def compose_visible_defect(
         folded,
     ):
         return "wrong_language"
-    if language == "es" and re.search(r"\bstill\b|\bworking\b", folded):
+    if language == "es" and re.search(
+        r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", folded
+    ):
         return "wrong_language"
     is_failure = intent == "error" or polarity == "failure"
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
         if re.search(r"abiert|\bis open\b", folded):
+            return "reversed_polarity"
+        if cause == "mission_failed" and re.search(
+            r"\bopened\b|\babrí\b|\babri\b", folded
+        ):
             return "reversed_polarity"
         if _FAILURE_MARKERS.search(stripped) is None:
             return "missing_failure"
@@ -2835,6 +2870,12 @@ def compose_visible_defect(
                 and tail_tokens[-1] not in {"the", "app", "not"}
             ):
                 return "missing_failure"
+    elif (
+        cause != "acting"
+        and kind not in {"welcome", "confirmation", "clarification"}
+        and _FAILURE_MARKERS.search(stripped) is not None
+    ):
+        return "asserted_failure"
     if intent == "welcome" or kind == "welcome":
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "welcome_opener"
@@ -2849,6 +2890,8 @@ def compose_visible_defect(
     if intent == "clarification" or kind == "clarification":
         if "?" not in stripped and "¿" not in stripped:
             return "clarification_not_a_question"
+        if stripped.count("¿") > 1 or stripped.count("?") > 1:
+            return "too_many_sentences"
     if re.search(r"[.!][\"']?\s+[A-Z¿]", stripped):
         return "too_many_sentences"
     if intent == "confirmation" or kind == "confirmation":
@@ -2858,9 +2901,12 @@ def compose_visible_defect(
             return "confirmation_not_a_question"
         if not re.search(r"confirm", folded) and not re.search(r"cancel", folded):
             return "missing_confirmation_choice"
+        if stripped.count("¿") > 1 or stripped.count("?") > 1:
+            return "too_many_sentences"
     if cause == "acting" and (
         _SUCCESS_OPENERS.match(stripped) is not None
         or re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded)
+        or _FAILURE_MARKERS.search(stripped) is not None
     ):
         return "acting_asserted"
     observed = situation.get("observed")
@@ -2874,15 +2920,23 @@ def compose_visible_defect(
         return "extra_claim"
     if "muted" in observed_dict:
         muted = observed_dict.get("muted") is True
-        if muted and re.search(r"reactiv|unmuted|ya no está silenci", folded):
+        unmuted_ok = re.search(
+            r"reactiv|unmuted|ya no está silenci|ya no esta silenci|"
+            r"no está silenci|no esta silenci|\bfalse\b|not muted|"
+            r"isn't muted|is not muted",
+            folded,
+        )
+        if muted and unmuted_ok is not None:
             return "reversed_mute"
         if not muted:
-            unmuted_ok = re.search(
-                r"reactiv|unmuted|ya no está silenci|ya no esta silenci",
-                folded,
-            )
             if re.search(r"silenci|\bmuted\b", folded) and unmuted_ok is None:
                 return "reversed_mute"
+        if not re.search(
+            r"silenci|\bmuted\b|\bunmuted\b|\bmute\b|audio|speaker|altavoc|"
+            r"volumen|volume",
+            folded,
+        ):
+            return "missing_name"
     if (intent == "welcome" or kind == "welcome") and re.search(
         r"\bhola\b.*\bhola\b", folded
     ):
@@ -2895,7 +2949,9 @@ def compose_visible_defect(
         feminine = _app_is_feminine(app_name)
         if feminine and re.search(r"está abierto\b", folded) and "abierta" not in folded:
             return "wrong_gender"
-        if not feminine and re.search(r"está abierta\b|está cerrada\b", folded):
+        if not feminine and re.search(
+            r"está abiertas\b|está cerradas\b", folded
+        ):
             return "wrong_gender"
         if feminine and re.search(r"está cerrado\b", folded) and "cerrada" not in folded:
             return "wrong_gender"
@@ -2927,7 +2983,9 @@ def compose_visible_defect(
                 r"nota|note|t[íi]tulo|title", folded
             ):
                 return "missing_name"
-        if "level" in observed_dict and not re.search(r"volumen|volume", folded):
+        if "level" in observed_dict and not re.search(
+            r"volumen|volume|\bnivel\b|\blevel\b", folded
+        ):
             return "missing_name"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
         if (
@@ -7235,10 +7293,6 @@ class LlmRuntime:
             payload["messages"][1]["content"] += (
                 "\nOne question with confirm and cancel. Do not assert."
             )
-        elif cause == "acting":
-            payload["messages"][1]["content"] += (
-                "\nStill in progress. No Listo. No open. No closed."
-            )
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
                 "\nAsk one short question that disambiguates. Do not guess."
@@ -7260,8 +7314,7 @@ class LlmRuntime:
             and kind not in {"welcome", "confirmation", "clarification"}
         ):
             payload["messages"][1]["content"] += (
-                "\nEnglish only. Name what was observed. Never Listo, "
-                "operation, or observed. Never start with an imperative."
+                "\nEnglish only. Name what is in seen."
             )
         observed = situation.get("observed")
         if (
@@ -7541,14 +7594,22 @@ class LlmRuntime:
         def publishable(candidate: str) -> bool:
             return bool(candidate) and preserves_contract(candidate) and not blocked(candidate)
 
+        acting_progress = (
+            "One sentence of progress. No Listo. No open. No closed."
+            if response_language == "en"
+            else "Una frase de que sigues. Sin Listo. Sin abierto ni cerrado."
+        )
+        acting_facts = (
+            f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+            f"{language_contract}\n"
+            f"{acting_progress}"
+        )
         if cause == "acting":
-            payload["messages"][1]["content"] = (
-                f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
-                f"{language_contract}\n"
-                "Progress only. One sentence. No Listo. No open. No closed."
-            )
+            message_prompt = CPU_USER_MESSAGE_PROMPT
+            payload["messages"][0]["content"] = message_prompt
+            payload["messages"][1]["content"] = acting_facts
         response = self._post(payload)
-        text = _strip_think_tags(
+        text = _strip_prompt_labels(
             (response["choices"][0]["message"].get("content") or "").strip()
         )
         if publishable(text):
@@ -7571,11 +7632,16 @@ class LlmRuntime:
             ),
             "wrong_language": "Same language as the request.",
             "extra_claim": "Name only what is in seen.",
-            "reversed_mute": "Match muted in seen.",
-            "reversed_polarity": "Si falló, no empieces por Listo.",
+            "reversed_mute": (
+                "Muted."
+                if isinstance(observed, dict) and observed.get("muted") is True
+                else "Unmuted."
+            ),
+            "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
+            "asserted_failure": "Success. State what was seen.",
             "internal_code": "Sin códigos internos ni jerga de contrato.",
             "confirmation_asserted": "Pregunta; no afirmes.",
-            "welcome_opener": "Saluda; no Listo.",
+            "welcome_opener": "Saluda; evita Listo.",
             "invented": "No invented verbs. If the wait ended, say that plainly.",
             "welcome_repeat": "Un solo Hola.",
             "copied_instruction": "Devuelve el mensaje, no la instrucción.",
@@ -7583,20 +7649,22 @@ class LlmRuntime:
             "clarification_not_a_question": "Una pregunta.",
             "too_many_sentences": "Una sola frase.",
             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
-            "missing_name": "Use the name in seen.",
-            "missing_state": "Use abierto or open, not abre.",
+            "missing_name": "Incluye nota/note o el nombre visto.",
+            "missing_state": "abierto/open, no el imperativo.",
             "reversed_result": "effect is closed.",
-            "acting_asserted": "In progress. No open. No Listo.",
+            "acting_asserted": "In progress, without claiming the result.",
             "welcome_question": "Greet. No question.",
         }.get(defect, "")
         retry_user = (
-            f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
-            f"{language_contract}\n"
-            "Progress only. One sentence. No Listo. No open. No closed."
+            acting_facts
             if cause == "acting"
             else (
+            f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+            f"{language_contract}\n{retry_hint}"
+            if defect == "reversed_mute"
+            else (
             "El borrador anterior no sirve. "
-            f"Falla: {defect}. {retry_hint} "
+            f"{retry_hint} "
             "Escribe de nuevo el mensaje con este hecho, sin códigos: "
             f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
             "Acciones literales obligatorias, todas sin excepción: "
@@ -7612,33 +7680,44 @@ class LlmRuntime:
             "con un imperativo. "
             "Devuelve sólo el mensaje corregido."
             )
+            )
+        )
+        retry_system = (
+            CPU_USER_MESSAGE_PROMPT
+            if cause == "acting" or defect == "internal_code"
+            else message_prompt
         )
         retry_payload["messages"] = [
-            {"role": "system", "content": message_prompt},
+            {"role": "system", "content": retry_system},
             {"role": "user", "content": retry_user},
         ]
         retry_payload["temperature"] = 0.0
         retry = self._post(retry_payload)
-        retry_text = _strip_think_tags(
+        retry_text = _strip_prompt_labels(
             (retry["choices"][0]["message"].get("content") or "").strip()
         )
         if publishable(retry_text):
             return retry_text
         third_payload = dict(payload)
         third_payload["temperature"] = 0.0
+        third_system = (
+            CPU_USER_MESSAGE_PROMPT
+            if cause == "acting" or defect == "internal_code"
+            else message_prompt
+        )
         third_payload["messages"] = [
-            {"role": "system", "content": message_prompt},
+            {"role": "system", "content": third_system},
             {
                 "role": "user",
                 "content": (
                     f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
-                    f"{shape} {retry_hint}\n"
+                    f"{retry_hint}\n"
                     f"{language_contract} One sentence. No JSON. No codes."
                 ),
             },
         ]
         third = self._post(third_payload)
-        third_text = _strip_think_tags(
+        third_text = _strip_prompt_labels(
             (third["choices"][0]["message"].get("content") or "").strip()
         )
         return third_text if publishable(third_text) else ""

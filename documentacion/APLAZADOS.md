@@ -46,10 +46,16 @@ goal.
 - **Field UI en inglés de consola** (`ask, instruct, or paste`, `starting up…`, labels `sessions`/`memory`) — chrome de depuración, no la voz de BAXY. El censo no cuenta TSX. Lo dispararía usar Field UI como la ventana que lee una persona. *Goal 06.*
 - **Progreso de turno sin prosa** — `FieldBridgeContract` publica etapa sin `label`. Si compose no llega a tiempo no se disfraza con «un momento…»; queda el spinner. Goal 08 mide la primera señal. *Goal 06.*
 - **No hay GGUF Q3/Q2 de Qwen3-4B en disco** — no se descargó otro 2 GB para un A/B de cuantización del mismo modelo. Q4_K_M se conserva; reabrir cuando exista el candidato. *Goal 06.*
-- **`NoteDisambiguation` todavía arma el menú de opciones en español** (`Encontré N notas llamadas…`) — es lista de elección, no confirmación de efecto; no coincidía con el censo de prosa. Sustituirlo pide los mismos hechos JSON. *Goal 06.*
+- **`NoteDisambiguation` menú «Encontré…»** — **cerrado en compose**: son hechos JSON (`note_choice`); el censo de prosa queda en 0. *Goal 06.*
 - **Excepciones internas pasadas a inglés** (`The local request id is already in use.`) — no son voz; el censo las contaba por «petición». *Goal 06.*
-- **Acting copia «estado observable»** — el prompt usa esa locución y el modelo la pega en «Sigo trabajando en el estado observable.» No afirma el resultado. *Goal 06.*
-- **Horas sueltas** — «9:05.» / «22:10.» sin «son las». El número está; no se exigió más porque vaciaba. *Goal 06.*
+- **Acting copia «estado observable»** — **cerrado en compose**: acting usa el prompt CPU y tira la locución; la muestra dice «Sigo adelante.» / «Still working on the issue.» *Goal 06.*
+- **Horas sueltas** — «The local time is 09:05.» / «La hora actual es las 22:10.» El número está; no se exigió más prosa. *Goal 06.*
+- **Mute truncado** — «Los altavoces están silo.» El nombre está; el participio se cortó. Rechazarlo vaciaba. *Goal 06.*
+- **Nota que se dice abierta** — «La nota Gamma está abierta.» Confunde nota con ventana. *Goal 06.*
+- **Unmute en inglés telegráfico** — «Unmuted.» / «Muted.» Nombran el estado; no son una frase de compañero. *Goal 06.*
+- **Aclaración que adivina** — «open it» pregunta por volume. Compose no trae ítems; el modelo rellena. *Goal 06.*
+- **Fallo de misión con causa ajena** — «No pude: no respondo.» cuando la razón es fuera de catálogo. No afirma el paso hecho. *Goal 06.*
+- **Tartamudeo de timeout inglés** — «the wait ended ended ended.» La causa está. *Goal 06.*
 - **Confirmación que afirma** — **cerrado en compose**: tiene que ser pregunta con confirm* o cancel*; el afirmado con Listo se tira. *Goal 06.*
 - **49 de 158 operaciones siguen sin ninguna regla de dominio curada** — la puerta devuelve `None` para ellas y sólo `filesystem.` tiene un suelo genérico. Lo dispararía una propuesta del modelo sobre una de esas familias ante una petición fuera de catálogo, como el `window.active` que «prende las luces del living» recuperó. *Goal 03.*
 - **`_post_native_tool_selection` quedó sin usar por defecto** — el contrato de tool-call forzado se midió y se rechazó (+3 decisiones crudas, −8 abstenciones honestas), y ahora sólo lo enciende `BAXY_MIND_NATIVE_TOOL_POLICY=1`. Borrarlo entero toca `decide_turn` en varias ramas y merece su propio cambio; no bloquea porque ninguna ruta de producto lo alcanza. *Goal 03.*
