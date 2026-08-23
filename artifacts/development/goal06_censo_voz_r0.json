@@ -1,0 +1,1277 @@
+[
+ [
+  "src/Baxy.App/CoreProcessClient.cs",
+  196,
+  "El ID de petición local ya está en uso."
+ ],
+ [
+  "src/Baxy.App/CoreProcessClient.cs",
+  204,
+  "La petición supera el límite del protocolo local."
+ ],
+ [
+  "src/Baxy.App/CoreProcessClient.cs",
+  219,
+  "El motor local terminó antes de recibir la petición."
+ ],
+ [
+  "src/Baxy.App/CoreProcessClient.cs",
+  336,
+  "La respuesta del core no coincide con la misión solicitada."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  59,
+  "Estoy preparando todo para empezar."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  61,
+  "Estoy preparando los pasos que hacen falta."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  63,
+  "Estoy realizando la acción que pediste."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  65,
+  "Sigo trabajando en tu petición."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  67,
+  "Estoy esperando tu respuesta."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  69,
+  "No pude terminar de prepararme; puedes intentarlo otra vez."
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  90,
+  "Falta activar el modelo de wake; puedes usar el micrófono"
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  99,
+  "Entendiendo tu petición"
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  101,
+  "Ejecutando la petición"
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  106,
+  "Esperando reanudar una misión"
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  113,
+  "Esperando recuperar una petición"
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  116,
+  "Puedes reintentar sin cerrar BAXY"
+ ],
+ [
+  "src/Baxy.App/FieldBridgeContract.cs",
+  173,
+  "Estoy en el paso {0} de {1}."
+ ],
+ [
+  "src/Baxy.App/MainWindow.xaml.cs",
+  118,
+  "No pude abrir BAXY Field. Revisa el runtime local de WebView2."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  261,
+  "Hola. Estoy lista para ayudarte con este equipo."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  366,
+  "Entendiendo tu petición"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  395,
+  "No pude interpretar la aclaración con suficiente seguridad. No ejecuté ninguna acción."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  470,
+  "No pude aislar el dato sensible de forma segura. No lo guardé ni lo envié para ejecución."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  485,
+  "Entendí ese dato como contexto, pero no lo guardaré sin una petición explícita. Si quieres conservarlo, dime exactamente qué debo recordar."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  491,
+  "Entendí que es solo contexto de esta sesión. No lo guardé ni ejecuté una acción de memoria."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  497,
+  "No guardaré autorizaciones generales ni ampliaré mis permisos. Cada acción seguirá limitada y sujeta a sus propias reglas de seguridad."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  503,
+  "No interpreté ese mensaje como una petición independiente de memoria y no guardé, borré ni inventé información."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  554,
+  "No pude interpretar esa petición con suficiente seguridad. No ejecuté ninguna acción."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  555,
+  "La inteligencia local no está disponible todavía. No ejecuté ninguna acción."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  570,
+  "Necesité más tiempo del esperado. No repetí ninguna acción; puedes intentarlo de nuevo."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  597,
+  "No pude completar la petición de forma segura; no afirmaré que terminó."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  649,
+  "Para reconciliar esta acción responde únicamente «confirmar / confirm». Esa respuesta no reenvió nada y el resultado anterior sigue incierto."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  650,
+  "Para esta acción de memoria responde únicamente «confirmar / confirm» o «cancelar / cancel». No ejecuté nada."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  659,
+  "No puedo afirmar que la acción no ocurrió ni retirar su identidad: pudo haber comenzado antes de perderse la respuesta. Responde «confirmar / confirm» para reconciliar exactamente el mismo intento."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  669,
+  "No pude retirar de forma segura la petición pendiente. No la ejecuté y seguiré bloqueando otras acciones hasta comprobar su estado."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  678,
+  "Cancelé la acción de memoria. No la ejecuté."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  895,
+  "No pude interpretar esa petición con suficiente seguridad. No ejecuté ninguna acción."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  953,
+  "No pude cerrar el registro protegido de recuperación. Lo conservaré sin iniciar otra acción."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1026,
+  "Primero debo reconciliar el ajuste de audio pendiente. Responde «continuar / continue / retry» o repite la misma petición de volumen o silencio; no iniciaré otra acción mientras su resultado siga incierto."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1174,
+  " No iniciaré otra acción mientras este resultado siga pendiente."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1285,
+  "voz · Hablando (puedes interrumpir)"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1377,
+  "Falta activar el modelo de wake; puedes usar el micrófono"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1405,
+  "Falta activar el modelo de wake; puedes usar el micrófono"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1473,
+  "Hola. Estoy lista para ayudarte con este equipo."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1563,
+  "No pude usar esa transcripción de voz. ¿Puedes repetirlo?"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1782,
+  "Un momento, estoy preparando esa respuesta."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1805,
+  "No pude terminar esa respuesta. Volveré a preparar el servicio automáticamente."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1818,
+  "Entendiendo tu petición"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1925,
+  "No pude construir un plan completo y seguro. No ejecuté una versión parcial de tu petición."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1953,
+  "No pude verificar el plan completo y no ejecuté ninguna acción. Puedes reformular la petición o intentarlo de nuevo."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1987,
+  "petición explícita para no equivocarme con tus datos. Por "
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  1988,
+  "ejemplo: «recuerda que …», «qué sabes de …» u «olvida …»."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2072,
+  "Ejecutando la petición"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2089,
+  "No pude verificar los resultados necesarios para el siguiente paso. La misión quedó detenida sin ejecutar ese efecto."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2122,
+  "No pude obtener los datos exactos para el siguiente paso. La misión quedó detenida sin ejecutar ese efecto."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2154,
+  "No pude vincular de forma segura el resultado anterior con el siguiente paso. La misión quedó detenida sin ejecutar ese efecto."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2188,
+  "El paso {execution.NextIndex + 1} quedó pendiente sin efecto observado. Puedes decir «continuar» para reintentarlo o «cancelar» para detener el resto del plan."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2240,
+  "No pude continuar de forma segura. Detuve los pasos restantes sin repetir acciones."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2262,
+  "No pude completar el paso {execution.NextIndex + 1}; detuve los pasos restantes sin repetir acciones."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2315,
+  "No puedo dar este paso por cancelado como si no hubiera empezado. Detuve los pasos nuevos y conservé su evidencia de recuperación. Responde «confirmar / confirm» para comprobar exactamente el mismo intento."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2325,
+  "Cancelé el paso {execution.NextIndex + 1} y detuve el resto de la misión. Los {execution.CompletedMessages.Count} pasos anteriores permanecen completados."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2370,
+  "La acción confirmada quedó inconclusa y puede haber ocurrido. Conservaré su identidad y no la repetiré a ciegas."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2371,
+  "La acción confirmada quedó pendiente sin efecto observado. Puedes decir «continuar» para reintentar exactamente la misma invocación."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2380,
+  "La acción confirmada no se completó y está verificado que no hubo efecto; detuve el resto de la misión."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2395,
+  "Detuve los pasos restantes, pero conservaré la evidencia de recuperación hasta comprobar el efecto inconcluso sin duplicarlo."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2408,
+  "Cancelé los pasos restantes de la misión."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2543,
+  "No pude formular una respuesta segura para esta petición. Puedes reformularla."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2634,
+  "Conservé la identidad de recuperación. Cuando haya espacio, repetiré esta petición sin cambiarla ni duplicarla."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2670,
+  "La acción terminó, pero no pude cerrar su registro de recuperación. Si la repites, la reconciliaré sin duplicarla."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2891,
+  "Puedes reintentar sin cerrar BAXY"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  2925,
+  "Perdí la conexión con las funciones del equipo. Detuve las acciones pendientes; puedes reintentarlo."
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  3102,
+  "Esperando reanudar una misión"
+ ],
+ [
+  "src/Baxy.App/MainWindowViewModel.cs",
+  3112,
+  "Esperando recuperar una petición"
+ ],
+ [
+  "src/Baxy.App/MemoryOperationResponseProjection.cs",
+  467,
+  "Encontré memoria local, pero no pude mostrar una vista segura."
+ ],
+ [
+  "src/Baxy.App/MindSidecarClient.cs",
+  654,
+  "No pude construir un plan completo y seguro."
+ ],
+ [
+  "src/Baxy.App/MissionNarration.cs",
+  17,
+  "Una misión completada debe contener al menos un resultado."
+ ],
+ [
+  "src/Baxy.App/MissionNarration.cs",
+  27,
+  "Completé y verifiqué los {completedMessages.Count} pasos de la misión.\\n"
+ ],
+ [
+  "src/Baxy.App/MissionNarration.cs",
+  43,
+  "No pude completar toda la misión. "
+ ],
+ [
+  "src/Baxy.App/MissionNarration.cs",
+  55,
+  "Hay una misión multipaso cuyo paso actual ya había comenzado y puede haber producido un efecto. Conservé su evidencia de recuperación. Di «confirmar / confirm» para comprobar exactamente el mismo intento; «cancelar / cancel» detiene los pasos nuevos, pero no borra la evidencia incierta."
+ ],
+ [
+  "src/Baxy.App/MissionNarration.cs",
+  60,
+  "Hay una misión multipaso con un efecto anterior que puede haber ocurrido. Conservé su evidencia de recuperación y no repetiré ni continuaré la misión hasta comprobarlo con el estado real."
+ ],
+ [
+  "src/Baxy.App/MissionNarration.cs",
+  63,
+  "Hay una misión multipaso pendiente de una sesión anterior. Di «continuar» para reanudarla desde el último paso guardado o «cancelar» para detener sus pasos restantes."
+ ],
+ [
+  "src/Baxy.App/ModelMessageComposer.cs",
+  77,
+  "No pude presentar esa respuesta sin perder información verificada. "
+ ],
+ [
+  "src/Baxy.App/ModelMessageComposer.cs",
+  78,
+  "No repetiré ninguna acción a ciegas."
+ ],
+ [
+  "src/Baxy.App/NoteDisambiguation.cs",
+  599,
+  "Quedó pendiente comprobar la petición para {action} «{Title}». "
+ ],
+ [
+  "src/Baxy.App/OperationResponseProjection.cs",
+  45,
+  "No pude realizar esa petición de forma segura."
+ ],
+ [
+  "src/Baxy.App/OperationResponseProjection.cs",
+  46,
+  "La petición sigue pendiente de una comprobación segura."
+ ],
+ [
+  "src/Baxy.App/OperationResponseProjection.cs",
+  47,
+  "No pude completar la petición."
+ ],
+ [
+  "src/Baxy.App/OperationResponseProjection.cs",
+  48,
+  "La misión terminó, pero no recibí un resumen natural."
+ ],
+ [
+  "src/Baxy.App/OperationResponseProjection.cs",
+  49,
+  "No pude convertir el resultado en una respuesta clara."
+ ],
+ [
+  "src/Baxy.App/PreparedOperation.cs",
+  34,
+  "El ID de misión local no es válido."
+ ],
+ [
+  "src/Baxy.App/PreparedOperation.cs",
+  83,
+  "El ID de misión local no es válido."
+ ],
+ [
+  "src/Baxy.App/PreparedOperation.cs",
+  320,
+  "La petición pendiente ya no pertenece a la cola durable."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  17,
+  "No borraré nada todavía. Indica exactamente qué recuerdo quieres eliminar."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  22,
+  "No guardaré nada todavía. Indica exactamente qué dato quieres conservar y por cuánto tiempo."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  30,
+  "Necesito una petición de memoria más concreta. No guardé, borré ni consulté información."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  37,
+  "Esta acción pudo haber comenzado antes de perderse la respuesta. Responde únicamente «confirmar / confirm» para reconciliar exactamente el mismo intento; no iniciaré otra acción mientras el resultado siga incierto."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  43,
+  "Esta acción eliminaría memoria local y no se puede deshacer. Responde únicamente «confirmar / confirm» o «cancelar / cancel»."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  49,
+  "Esta acción de memoria requiere confirmación. Responde únicamente «confirmar / confirm» o «cancelar / cancel»."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  61,
+  "No pude corroborar de nuevo el resultado anterior. Puede existir un archivo en Documentos/BAXY, pero no afirmaré que siga presente e íntegro; solicita una nueva exportación."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  67,
+  "La petición sobre la memoria local sigue pendiente de una comprobación segura. No afirmaré que terminó."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  76,
+  "No pude completar la petición sobre la memoria local de forma segura."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  78,
+  "No recibí una respuesta segura para la petición sobre la memoria local."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  93,
+  "una petición de memoria privada"
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  95,
+  "Quedó pendiente comprobar {category}. Responde «continuar / continue / retry» para reenviar exactamente la misma petición; no iniciaré otra acción mientras su resultado siga incierto."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  106,
+  "Quedó pendiente confirmar el volumen solicitado ({requestedLevel} %). Responde «continuar / continue / retry» o repite esa misma petición para reconciliarla; no iniciaré otra acción mientras siga incierto."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  114,
+  "Quedó pendiente confirmar el intento de {requestedState} el audio. Responde «continuar / continue / retry» o repite esa misma petición para reconciliarlo; no iniciaré otra acción mientras siga incierto."
+ ],
+ [
+  "src/Baxy.App/PrivateOperationNarration.cs",
+  117,
+  "Quedó pendiente confirmar un ajuste de audio. Responde «continuar / continue / retry» o repite la misma petición para reconciliarlo; no iniciaré otra acción mientras siga incierto."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  36,
+  "Ese identificador ya pertenece a otra acción."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  41,
+  "No reconozco esa petición."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  42,
+  "Esa petición no está permitida."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  49,
+  "La petición necesita confirmación antes de continuar."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  56,
+  "Listo, cerré la ventana."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  59,
+  "BAXY está listo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  60,
+  "Listo, verifiqué el estado de silencio del micrófono predeterminado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  61,
+  "Listo, ajusté y verifiqué el volumen de salida."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  64,
+  "Listo, controlé y verifiqué la página actual."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  67,
+  "Listo, copié la selección del control enfocado y verifiqué el cambio real del portapapeles."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  68,
+  "Listo, pegué el contenido del portapapeles en el control enfocado y Windows aceptó todos los eventos."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  69,
+  "Listo, abrí y verifiqué la carpeta."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  70,
+  "Listo, abrí y verifiqué el archivo más reciente."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  71,
+  "Listo, resolví el juego y verifiqué su estado de instalación en Steam."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  72,
+  "Listo, Windows aceptó la tecla en la ventana activa."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  73,
+  "Listo, activé y verifiqué el teclado español en la ventana activa."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  74,
+  "Listo, abrí y verifiqué el teclado en pantalla de Windows."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  76,
+  "Listo, controlé y verifiqué el puntero."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  77,
+  "Listo, seleccioné todo en el control activo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  78,
+  "Listo, Windows aceptó todo el texto en el control activo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  79,
+  "Listo, cambié y verifiqué la reproducción."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  83,
+  "Listo, envié el mensaje y verifiqué el recibo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  88,
+  "Listo, guardé la rutina de frase exacta."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  106,
+  "Listo, ajusté y verifiqué el brillo de la pantalla."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  110,
+  "Listo, resolví y conecté el perfil Wi-Fi guardado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  114,
+  "Listo, forcé el cierre del proceso y verifiqué que ya no está ejecutándose."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  141,
+  "No pude cerrar y verificar esa ventana."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  145,
+  "No pude resolver, autorizar o verificar la instalación de ese juego en Steam."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  149,
+  "No pude verificar el estado final del micrófono predeterminado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  151,
+  "No pude verificar el ajuste relativo del volumen de salida."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  153,
+  "No pude verificar una selección copiada, el foco estable y el cambio real del portapapeles."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  155,
+  "No pude verificar un portapapeles con contenido, el foco estable y la aceptación completa de Ctrl+V."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  161,
+  "No pude verificar el ajuste relativo del brillo de la pantalla."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  163,
+  "No pude resolver de forma única y conectar ese perfil Wi-Fi guardado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  170,
+  "No pude verificar el estado final de Bluetooth."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  176,
+  "No hay ninguna reproducción visible para Windows en este momento."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  179,
+  "No pude verificar qué se está reproduciendo ahora."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  186,
+  "No hay ninguna reproducción visible para Windows en este momento."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  187,
+  "No pude verificar la nueva posición de la reproducción."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  191,
+  "No pude verificar la configuración DNS activa."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  194,
+  "No pude completar el diagnóstico de ping."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  197,
+  "No pude verificar los puertos locales en escucha."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  205,
+  "No pude enumerar los periféricos conectados."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  207,
+  "No pude verificar los fallos recientes en el registro de aplicaciones de Windows."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  209,
+  "No pude leer dos veces un valor coherente del brillo de la pantalla."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  212,
+  "No pude verificar el usuario efectivo de Windows."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  216,
+  "No pude verificar la lista actual de procesos."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  219,
+  "No pude forzar y verificar el cierre completo de ese proceso."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  222,
+  "No pude verificar la hora local del equipo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  225,
+  "No pude verificar qué aplicación está activa."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  230,
+  "No pude verificar si esa aplicación tiene una ventana visible."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  240,
+  "No pude completar {NarrationSubject(operation)}."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  245,
+  "la petición sobre la aplicación"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  246,
+  "la petición de audio"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  247,
+  "la petición de copia de seguridad"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  248,
+  "la petición de Bluetooth"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  249,
+  "la petición del navegador"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  250,
+  "la petición del calendario"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  252,
+  "la petición del portapapeles"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  253,
+  "la petición de correo"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  254,
+  "la petición sobre tus archivos"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  255,
+  "la petición sobre el juego"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  257,
+  "la petición multimedia"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  258,
+  "la petición sobre la memoria local"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  259,
+  "la petición de mensajería"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  261,
+  "la petición sobre las notas"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  262,
+  "la petición sobre las notificaciones"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  264,
+  "la petición sobre el documento"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  265,
+  "la petición de instalación"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  266,
+  "la petición sobre el periférico"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  267,
+  "la petición sobre el recordatorio"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  268,
+  "la petición sobre la rutina"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  269,
+  "la petición de reproducción"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  270,
+  "la petición del sistema"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  271,
+  "la petición sobre las tareas"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  274,
+  "la petición de Wi-Fi"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  275,
+  "la petición sobre la ventana"
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  358,
+  "No pude leer la página actual."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  377,
+  "No pude enumerar las pestañas del navegador."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  392,
+  "Listo, está sonando «{title.GetString()}»."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  393,
+  "Listo, la reproducción quedó iniciada y verificada."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  463,
+  "No hay ninguna reproducción identificable en este momento."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  482,
+  "Listo, cambié y verifiqué la posición de la reproducción."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  486,
+  "Listo, adelanté {delta} segundos y verifiqué la posición."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  487,
+  "Listo, retrocedí {Math.Abs(delta)} segundos y verifiqué la posición."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  553,
+  "Listo, Bluetooth está encendido y verificado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  554,
+  "Listo, Bluetooth está apagado y verificado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  615,
+  "Listo, enfoqué {result.DisplayName}."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  616,
+  "Listo, abrí {result.DisplayName}."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  627,
+  "No pude resolver el catálogo local durante la reconciliación; Bloc de notas puede haber quedado abierto."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  629,
+  "La apertura pudo haber comenzado, pero no pude corroborar la identidad, ventana visible y foco; Bloc de notas puede haber quedado abierto."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  633,
+  "La apertura pudo haber comenzado, pero no pude conservar su recibo durable; Bloc de notas puede haber quedado abierto."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  637,
+  "La apertura pudo haber comenzado, pero no pude confirmar el recibo durable; Bloc de notas puede haber quedado abierto."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  638,
+  "La apertura comenzó, pero no pude corroborar su estado final."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  652,
+  "No pude inventariar las instancias existentes sin riesgo de abrir un duplicado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  653,
+  "No pude abrir la aplicación de forma segura."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  661,
+  "No pude corroborar la identidad, ventana visible y foco de la aplicación."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  662,
+  "No pude completar la apertura de la aplicación."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  681,
+  "Listo, silencié el audio del sistema."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  682,
+  "Listo, el audio del sistema ya estaba silenciado."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  684,
+  "Listo, reactivé el audio del sistema."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  685,
+  "Listo, el audio del sistema ya estaba activo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  700,
+  "Listo, el volumen del sistema quedó en {volume} %."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  701,
+  "Listo, el volumen del sistema ya estaba en {volume} %."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  731,
+  " Debo reconciliar este mismo intento antes de aceptar otra acción; repite la misma petición."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  742,
+  "La salida predeterminada cambió durante el ajuste; el audio pudo haber cambiado y no repetí la acción sobre el dispositivo nuevo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  744,
+  "El audio pudo haber cambiado, pero el historial durable alcanzó su capacidad y no pude conservar una verificación confiable."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  748,
+  "El audio pudo haber cambiado, pero no pude confirmar su recibo durable."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  749,
+  "El audio pudo haber cambiado, pero no pude corroborar su estado final."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  767,
+  "La salida predeterminada cambió durante el ajuste; no repetí la acción sobre el dispositivo nuevo."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  768,
+  "No pude aplicar el ajuste de audio."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  770,
+  "El audio pudo haber cambiado, pero no pude corroborar su estado final."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  777,
+  "No pude corroborar el estado final del audio."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  787,
+  "El control de audio está ocupado; no pude leer un estado coherente."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  793,
+  "No pude corroborar el estado actual del audio."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  851,
+  "No pude guardar el cambio de forma segura."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  852,
+  "No pude verificar el estado final de la tarea."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  853,
+  "No pude completar la petición sobre esa tarea."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  893,
+  "No pude guardar el cambio de forma segura."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  895,
+  "No pude verificar que la nota quedara en la papelera."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  897,
+  "No pude verificar la restauración de la nota."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  898,
+  "No pude completar la petición sobre las notas."
+ ],
+ [
+  "src/Baxy.Core/Operations/ProductOperationNarrator.cs",
+  935,
+  "No pude obtener ninguna medición verificable del estado del equipo."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  27,
+  " No pude medir el uso de {string.Join("
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  62,
+  "No pude obtener una identificación verificable de la GPU."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  65,
+  "No pude medir el uso de {string.Join("
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  115,
+  " No pude medir: {unavailable}."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  178,
+  "No pude obtener una lectura verificable de la CPU."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  179,
+  "No pude obtener una lectura verificable de la memoria."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  180,
+  "No pude obtener una lectura verificable del disco del sistema."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  181,
+  "No pude obtener una lectura verificable de la batería."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  182,
+  "No pude obtener una versión verificable de Windows."
+ ],
+ [
+  "src/Baxy.Core/Operations/SystemStatusNarration.cs",
+  183,
+  "No pude obtener ninguna medición verificable del estado del equipo."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs",
+  13,
+  "Completé y verifiqué la petición sobre la memoria local."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs",
+  15,
+  "No pude completar la petición sobre la memoria local."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs",
+  35,
+  "Completé y verifiqué la petición solicitada."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs",
+  36,
+  "No pude completar la petición solicitada."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs",
+  46,
+  "La petición necesita confirmación antes de continuar."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs",
+  47,
+  "No pude completar la petición solicitada."
+ ],
+ [
+  "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+  48,
+  "Comprueba que el núcleo local está listo y enumera sus operaciones."
+ ],
+ [
+  "src/Baxy.Kernel/Policy/HonestyCorrection.cs",
+  15,
+  "Estoy entendiendo tu petición."
+ ],
+ [
+  "src/baxy_mind/asr_fusion.py",
+  155,
+  "sin omitir ninguno, revisa en este orden: "
+ ],
+ [
+  "src/baxy_mind/turn_evidence.py",
+  1516,
+  "el encoder semántico no estuvo listo para el corpus"
+ ],
+ [
+  "src/baxy_mind/voice.py",
+  337,
+  "Audio listo para ASR con la autoridad que abrió el turno."
+ ],
+ [
+  "src/baxy_mind/__main__.py",
+  1045,
+  "el LLM no estuvo listo para el catálogo"
+ ],
+ [
+  "src/baxy_mind/__main__.py",
+  1206,
+  "la acción pendiente de grounding no existe en el catálogo"
+ ],
+ [
+  "src/baxy_mind/__main__.py",
+  1524,
+  "¿Cómo está la red neuronal?"
+ ],
+ [
+  "src/baxy_mind/__main__.py",
+  6497,
+  "No pude completar el análisis de tu petición."
+ ],
+ [
+  "src/baxy_mind/__main__.py",
+  6946,
+  "el catálogo planificable no está listo"
+ ]
+]
