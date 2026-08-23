@@ -37,7 +37,7 @@ public sealed class FieldProgressContractTests
 
         Assert.That(notice, Is.Not.Null);
         Assert.That(notice!.Stage, Is.EqualTo(FieldProgressNotice.StageStarting));
-        Assert.That(notice.Label, Does.StartWith("Estoy"));
+        Assert.That(notice.Label, Is.Null);
     }
 
     [Test]
@@ -47,14 +47,17 @@ public sealed class FieldProgressContractTests
             isReady: true,
             isBusy: true,
             hasStartupError: false,
-            statusDescription: "Entendiendo tu petición");
+            statusDescription: "understanding");
 
         Assert.That(notice, Is.Not.Null);
         Assert.That(notice!.Stage, Is.EqualTo(FieldProgressNotice.StageUnderstanding));
-        Assert.That(notice.Label, Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
+        Assert.That(notice.Label, Is.Null);
+        Assert.That(
+            HonestyCorrection.NonAssertingInProgress,
+            Is.EqualTo(FieldProgressNotice.StageUnderstanding));
         Assert.That(
             FieldBridgeContract.Create(FieldProgressNotice.StageUnderstanding).Label,
-            Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
+            Is.Null);
     }
 
     [Test]
@@ -62,9 +65,9 @@ public sealed class FieldProgressContractTests
     {
         foreach (string description in new[]
         {
-            "Entendiendo tu petición",
+            "understanding",
             "Preparando los pasos",
-            "Ejecutando la petición",
+            "acting",
             "Ejecutando paso 2 de 3",
         })
         {
@@ -75,30 +78,19 @@ public sealed class FieldProgressContractTests
                 statusDescription: description);
 
             Assert.That(notice, Is.Not.Null, description);
-            Assert.That(
-                notice!.Label.ToLowerInvariant(),
-                Does.Not.Contain("list").And.Not.Contain("hecho")
-                    .And.Not.Contain("termin").And.Not.Contain("complet")
-                    .And.Not.Contain("éxito"),
-                description);
+            Assert.That(notice!.Label, Is.Null, description);
         }
     }
 
     [Test]
-    public void EveryPublishableStageHasNaturalHumanText()
+    public void EveryPublishableStageIsNonVerbal()
     {
         foreach (string stage in FieldBridgeContract.ProgressStages)
         {
             FieldProgressNotice notice = FieldBridgeContract.Create(stage);
 
             Assert.That(notice.Stage, Is.EqualTo(stage));
-            Assert.That(notice.Label, Is.Not.Empty);
-            Assert.That(notice.Label, Does.EndWith("."));
-            Assert.That(
-                notice.Label,
-                Does.Not.Contain("{").And.Not.Contain("\"")
-                    .And.Not.Contain("_").And.Not.Contain("null"),
-                stage);
+            Assert.That(notice.Label, Is.Null, stage);
         }
     }
 
@@ -129,7 +121,7 @@ public sealed class FieldProgressContractTests
 
         Assert.That(notice, Is.Not.Null);
         Assert.That(notice!.Stage, Is.EqualTo(FieldProgressNotice.StageUnavailable));
-        Assert.That(notice.Label, Does.Contain("intentarlo"));
+        Assert.That(notice.Label, Is.Null);
     }
 
     [Test]

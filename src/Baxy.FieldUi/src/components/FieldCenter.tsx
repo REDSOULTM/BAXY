@@ -85,6 +85,7 @@ export function FieldCenter({
   // chat prompt.
   const bootMsg = (() => {
     if (!bootStage || bootStage.stage === 'ready') return null;
+    if (!bootStage.label) return null;
     if (bootStage.progress !== null) {
       return `${bootStage.label} · ${bootStage.progress.toFixed(0)}%`;
     }

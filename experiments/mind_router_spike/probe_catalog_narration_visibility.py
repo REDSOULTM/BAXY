@@ -47,37 +47,37 @@ APP_POLICY_SOURCE = REPO / "src/Baxy.App/UserMessagePolicy.cs"
 MIND_SOURCE = REPO / "src/baxy_mind/llm.py"
 
 FAMILY_SUBJECTS = {
-    "app": "la petición sobre la aplicación",
-    "audio": "la petición de audio",
-    "backup": "la petición de copia de seguridad",
-    "bluetooth": "la petición de Bluetooth",
-    "browser": "la petición del navegador",
-    "calendar": "la petición del calendario",
-    "capture": "la captura solicitada",
-    "clipboard": "la petición del portapapeles",
-    "email": "la petición de correo",
-    "filesystem": "la petición sobre tus archivos",
-    "game": "la petición sobre el juego",
-    "input": "la interacción solicitada",
-    "media": "la petición multimedia",
-    "memory": "la petición sobre la memoria local",
-    "message": "la petición de mensajería",
-    "network": "la consulta de red",
-    "note": "la petición sobre las notas",
-    "notification": "la petición sobre las notificaciones",
-    "ocr": "la lectura de texto solicitada",
-    "office": "la petición sobre el documento",
-    "package": "la petición de instalación",
-    "peripheral": "la petición sobre el periférico",
-    "reminder": "la petición sobre el recordatorio",
-    "routine": "la petición sobre la rutina",
-    "streaming": "la petición de reproducción",
-    "system": "la petición del sistema",
-    "task": "la petición sobre las tareas",
-    "vision": "la descripción visual solicitada",
-    "web": "la búsqueda web",
-    "wifi": "la petición de Wi-Fi",
-    "window": "la petición sobre la ventana",
+    "app": "app",
+    "audio": "audio",
+    "backup": "backup",
+    "bluetooth": "bluetooth",
+    "browser": "browser",
+    "calendar": "calendar",
+    "capture": "capture",
+    "clipboard": "clipboard",
+    "email": "email",
+    "filesystem": "filesystem",
+    "game": "game",
+    "input": "input",
+    "media": "media",
+    "memory": "memory",
+    "message": "message",
+    "network": "network",
+    "note": "note",
+    "notification": "notification",
+    "ocr": "ocr",
+    "office": "office",
+    "package": "package",
+    "peripheral": "peripheral",
+    "reminder": "reminder",
+    "routine": "routine",
+    "streaming": "streaming",
+    "system": "system",
+    "task": "task",
+    "vision": "vision",
+    "web": "web",
+    "wifi": "wifi",
+    "window": "window",
 }
 FORBIDDEN_TERMS = (
     "planner",
@@ -132,8 +132,16 @@ def build_cases(capabilities: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "family": family,
                 "intent": "status",
                 "subject": subject,
-                "source": f"Completé y verifiqué {subject}.",
-                "required_action": "verifiqué",
+                "source": json.dumps(
+                    {
+                        "kind": "operation",
+                        "operation": f"{family}.probe",
+                        "polarity": "success",
+                        "verified": True,
+                    },
+                    ensure_ascii=False,
+                ),
+                "required_action": "",
                 "budget_seconds": 5.0,
             }
         )
@@ -143,7 +151,15 @@ def build_cases(capabilities: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "family": family,
                 "intent": "error",
                 "subject": subject,
-                "source": f"No pude completar {subject}.",
+                "source": json.dumps(
+                    {
+                        "kind": "operation",
+                        "operation": f"{family}.probe",
+                        "polarity": "failure",
+                        "verified": False,
+                    },
+                    ensure_ascii=False,
+                ),
                 "required_action": "",
                 "budget_seconds": 10.0,
             }
@@ -159,12 +175,7 @@ def validate(case: dict[str, Any], reply: dict[str, Any]) -> list[str]:
         return ["empty_response"]
     folded = fold(text)
     errors: list[str] = []
-    if fold(str(case["subject"])) not in folded:
-        errors.append("missing_family_subject")
-    required_action = str(case["required_action"])
-    if required_action and fold(required_action) not in folded:
-        errors.append("missing_baxy_action")
-    if case["intent"] == "error" and "no pude" not in folded:
+    if case["intent"] == "error" and "no pude" not in folded and "could not" not in folded and "couldn't" not in folded:
         errors.append("missing_failure_polarity")
     for value in (*FORBIDDEN_TERMS, *GENERIC_FOLLOWUPS):
         if fold(value) in folded:

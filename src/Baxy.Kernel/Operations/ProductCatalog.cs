@@ -45,7 +45,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "app.status.catalog.ready.v1",
             ToolExposure.Internal,
-            "Comprueba que el núcleo local está listo y enumera sus operaciones."),
+            "Checks that the local core is available and lists its operations."),
         Descriptor(
             "audio.microphone.mute",
             Schema([Boolean("state")], ["state"]),

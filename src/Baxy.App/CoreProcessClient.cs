@@ -193,7 +193,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
         var pending = new PendingResponse(request.MissionId, request.InvocationId);
         if (!_pending.TryAdd(request.RequestId, pending))
         {
-            throw new InvalidOperationException("El ID de petición local ya está en uso.");
+            throw new InvalidOperationException("The local request id is already in use.");
         }
 
         try
@@ -201,7 +201,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
             byte[] utf8Line = ProtocolJson.SerializeToUtf8Bytes(request);
             if (utf8Line.Length > MaximumProtocolLineLength)
             {
-                throw new InvalidOperationException("La petición supera el límite del protocolo local.");
+                throw new InvalidOperationException("The request exceeds the local protocol limit.");
             }
 
             var process = _process;
@@ -216,7 +216,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
             {
                 if (process.HasExited)
                 {
-                    throw new IOException("El motor local terminó antes de recibir la petición.");
+                    throw new IOException("The local engine exited before receiving the request.");
                 }
 
                 if (string.Equals(operation.OperationName, "app.open", StringComparison.Ordinal))
@@ -333,7 +333,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                     || !string.Equals(response.InvocationId, pending.InvocationId, StringComparison.Ordinal))
                 {
                     throw new InvalidDataException(
-                        "La respuesta del core no coincide con la misión solicitada.");
+                        "The core response does not match the requested mission.");
                 }
 
                 pending.Completion.TrySetResult(response);

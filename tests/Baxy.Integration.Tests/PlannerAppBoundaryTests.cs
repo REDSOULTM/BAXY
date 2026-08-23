@@ -342,26 +342,28 @@ public sealed class PlannerAppBoundaryTests
 
         string source = MissionNarration.CreateCompletionMessage(outcomes);
         IReadOnlyList<string> requiredFacts =
-            UserMessagePolicy.RequiredFactualFragments(source);
+            UserMessagePolicy.RequiredLiteralFacts(source);
         UserMessageDraft draft = UserMessagePolicy.Create(
             source,
             UserMessageEvent.Status);
 
         Assert.Multiple(() =>
         {
-            Assert.That(source, Does.StartWith("Completé y verifiqué los 8 pasos"));
+            Assert.That(UserMessagePolicy.IsStructuredFacts(source), Is.True);
+            Assert.That(source, Does.Contain("mission_completed"));
+            Assert.That(source, Does.Contain("\"stepCount\":8"));
             Assert.That(requiredFacts, Has.Count.EqualTo(8));
             Assert.That(requiredFacts[0], Does.Contain("14:25"));
             Assert.That(requiredFacts[^1], Does.Contain("Resumen final"));
-            Assert.That(UserMessagePolicy.IsSafe(source, draft), Is.True);
+            Assert.That(UserMessagePolicy.IsSafe(source), Is.True);
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(source, draft),
+                Is.EqualTo("structured_facts_not_prose"));
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
-                    string.Join('\n', source.Split('\n').Skip(2)),
+                    "Listo, completé la misión.",
                     draft),
-                Is.AnyOf(
-                    "missing_baxy_action",
-                    "missing_structured_fact",
-                    "missing_literal_fact"));
+                Is.EqualTo("missing_literal_fact"));
         });
     }
 
@@ -376,34 +378,29 @@ public sealed class PlannerAppBoundaryTests
         ];
         string source = MissionNarration.CreateFailureMessage(
             outcomes,
-            "No pude completar el paso 4; detuve los pasos restantes sin repetir acciones.");
+            "step_failed");
         UserMessageDraft draft = UserMessagePolicy.Create(
             source,
             UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
-        string falseSuccess = source
-            .Replace(
-                "No pude completar toda la misión.",
-                "Completé toda la misión.",
-                StringComparison.Ordinal)
-            .Replace(
-                "No pude completar el paso 4",
-                "Completé el paso 4",
-                StringComparison.Ordinal);
 
         Assert.Multiple(() =>
         {
-            Assert.That(source, Does.Contain("• Paso 1: Abrí Bloc de notas."));
-            Assert.That(source, Does.Contain("• Paso 3: Puse el volumen en 35 %."));
-            Assert.That(UserMessagePolicy.RequiredFactualFragments(source), Has.Count.EqualTo(3));
-            Assert.That(UserMessagePolicy.IsSafe(source, draft), Is.True);
+            Assert.That(UserMessagePolicy.IsStructuredFacts(source), Is.True);
+            Assert.That(source, Does.Contain("mission_failed"));
+            Assert.That(source, Does.Contain("Bloc de notas"));
+            Assert.That(source, Does.Contain("35 %"));
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(source), Has.Count.EqualTo(4));
+            Assert.That(UserMessagePolicy.IsSafe(source), Is.True);
             Assert.That(
-                UserMessagePolicy.ModelResponseRejectionReason(falseSuccess, draft),
-                Is.EqualTo("reversed_result"));
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "Listo, completé toda la misión.",
+                    draft),
+                Is.AnyOf("reversed_result", "missing_literal_fact"));
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
                     "No pude completar el paso 4.",
                     draft),
-                Is.AnyOf("missing_baxy_action", "missing_structured_fact"));
+                Is.EqualTo("missing_literal_fact"));
         });
     }
 
@@ -2194,12 +2191,17 @@ public sealed class PlannerAppBoundaryTests
                 Is.True);
             Assert.That(
                 recoveryPrompt,
-                Does.Contain("comprobar exactamente el mismo intento"));
+                Does.Contain("mission_recovery_uncertain_step"));
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
                     recoveryPrompt,
                     recoveryDraft),
-                Is.Null);
+                Is.EqualTo("structured_facts_not_prose"));
+            Assert.That(
+                UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "Di confirmar / confirm o cancelar / cancel.",
+                    recoveryDraft),
+                Is.Not.Null);
         });
     }
 

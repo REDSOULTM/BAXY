@@ -20,6 +20,18 @@ internal static class ModelMessageComposer
             forbiddenResponseTerms.Add(term);
         }
         facts["forbiddenResponseTerms"] = forbiddenResponseTerms;
+        if (UserMessagePolicy.IsStructuredFacts(draft.Source)
+            && draft.Intent == "confirmation")
+        {
+            var requiredWords = new JsonArray();
+            foreach (string word in UserMessagePolicy.RequiredConfirmationWords(draft.Source))
+            {
+                requiredWords.Add(word);
+            }
+
+            facts["requiredResponseWords"] = requiredWords;
+        }
+
         if (draft.Intent is "status" or "error")
         {
             facts["mustNotAskFollowUp"] = true;
@@ -74,8 +86,7 @@ internal static class ModelMessageComposer
 
     internal static UserMessageDraft CreateRecoveryDraft() =>
         UserMessagePolicy.Create(
-            "No pude presentar esa respuesta sin perder información verificada. "
-                + "No repetiré ninguna acción a ciegas.",
+            TurnVisibleFacts.Failure("composition_lost_verified_facts"),
             UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
 
     internal static async Task<ModelMessageCompositionOutcome> ComposeAsync(

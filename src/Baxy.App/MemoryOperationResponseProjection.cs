@@ -464,7 +464,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
         string header = shown switch
         {
-            0 => "Encontré memoria local, pero no pude mostrar una vista segura.",
+            0 => TurnVisibleFacts.Failure("memory_view_unsafe"),
             1 => "Encontré esta memoria local:",
             _ => $"Encontré estas {shown} memorias locales:",
         };

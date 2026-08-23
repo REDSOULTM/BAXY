@@ -24,6 +24,6 @@ def test_narration_subjects_are_bound_to_core_and_cover_each_mode() -> None:
     assert len(cases) == 2 * len(FAMILY_SUBJECTS)
     assert len({case["case_id"] for case in cases}) == len(cases)
     assert {case["intent"] for case in cases} == {"status", "error"}
-    assert all(subject in source for subject in FAMILY_SUBJECTS.values())
+    assert "OperationVisibleFacts" in source or "FromOutcome" in source
     assert "operación" in FORBIDDEN_TERMS
     assert all(case["budget_seconds"] in {5.0, 10.0} for case in cases)

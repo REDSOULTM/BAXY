@@ -7,10 +7,12 @@ namespace Baxy.Kernel.Mission;
 
 internal static class PrivateOperationBoundary
 {
-    internal const string PublicSuccessMessage =
-        DefaultOperationResponseNarrator.PrivateSuccessMessage;
-    internal const string PublicFailureMessage =
-        DefaultOperationResponseNarrator.PrivateFailureMessage;
+    internal static readonly string PublicSuccessMessage =
+        OperationVisibleFacts.FromOutcome("memory.export", OperationOutcome.Success());
+    internal static readonly string PublicFailureMessage =
+        OperationVisibleFacts.FromOutcome(
+            "memory.export",
+            OperationOutcome.Failure("memory_operation_failed"));
     private const int MaximumCiphertextBytes = (256 * 1024) + 64;
     private const int MaximumCiphertextCharacters = ((MaximumCiphertextBytes + 2) / 3) * 4;
     private static readonly HashSet<string> AllowedFailureCodes = new(StringComparer.Ordinal)

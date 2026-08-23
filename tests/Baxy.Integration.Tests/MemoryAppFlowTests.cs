@@ -103,9 +103,15 @@ public sealed class MemoryAppFlowTests
         Assert.Multiple(() =>
         {
             Assert.That(UserMessagePolicy.IsSafe(message), Is.True);
+            Assert.That(UserMessagePolicy.IsStructuredFacts(message), Is.True);
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(message, draft),
-                Is.Null);
+                Is.EqualTo("structured_facts_not_prose"));
+            Assert.That(
+                UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "No pude completar la petición sobre la memoria local.",
+                    draft),
+                Is.Not.Null);
         });
     }
 
@@ -218,10 +224,10 @@ public sealed class MemoryAppFlowTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(prompt, Does.Contain("Documentos/BAXY"));
-            Assert.That(prompt, Does.Contain("redirigida o sincronizada"));
-            Assert.That(prompt, Does.Contain("Windows"));
-            Assert.That(prompt, Does.Contain("«confirmar / confirm»"));
+            Assert.That(prompt, Does.Contain("Documents/BAXY"));
+            Assert.That(prompt, Does.Contain("mayRedirectOrSync"));
+            Assert.That(prompt, Does.Contain("memory_export_privacy"));
+            Assert.That(prompt, Does.Contain("confirmar"));
             Assert.That(prompt, Does.Not.Contain(Canary));
         });
     }
@@ -254,8 +260,7 @@ public sealed class MemoryAppFlowTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(message, Does.Contain("no afirmaré"));
-            Assert.That(message, Does.Contain("nueva exportación"));
+            Assert.That(message, Does.Contain("memory_export_unverified_replay"));
             Assert.That(message, Does.Not.Contain(path));
             Assert.That(message, Does.Not.Contain(digest));
             Assert.That(message, Does.Not.Contain(Canary));
@@ -287,11 +292,9 @@ public sealed class MemoryAppFlowTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(message, Does.Contain("memoria local está deshabilitada"));
-            Assert.That(message, Does.Contain("Habilítala primero"));
+            Assert.That(message, Does.Contain("memory_disabled"));
             Assert.That(draft.Source, Is.EqualTo(message));
             Assert.That(draft.Source, Does.Not.Contain("500"));
-            Assert.That(draft.Source, Does.Not.Contain("memory_disabled"));
         });
     }
 
@@ -495,7 +498,7 @@ public sealed class MemoryAppFlowTests
             Assert.Multiple(() =>
             {
                 Assert.That(enable.OperationName, Is.EqualTo("memory.enable"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("confirmar / confirm"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("confirmar"));
             });
 
             await SubmitAsync(viewModel, "sí y guarda");
@@ -504,7 +507,7 @@ public sealed class MemoryAppFlowTests
             {
                 Assert.That(stillPending.MissionId, Is.EqualTo(enable.MissionId));
                 Assert.That(stillPending.InvocationId, Is.EqualTo(enable.InvocationId));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("únicamente"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_confirm_or_cancel"));
             });
 
             await SubmitAsync(viewModel, "confirmar");
@@ -533,7 +536,7 @@ public sealed class MemoryAppFlowTests
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("dato sensible"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_sensitive_save"));
                 Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("sk-12345"));
                 Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain("sk-12345"));
                 Assert.That(
@@ -552,7 +555,7 @@ public sealed class MemoryAppFlowTests
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("No la ejecuté"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_cancelled"));
             });
 
             await SubmitAsync(viewModel, "borra mi color favorito");
@@ -657,9 +660,7 @@ public sealed class MemoryAppFlowTests
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
                 Assert.That(viewModel.StatusDescription, Is.EqualTo("BAXY disponible"));
-                Assert.That(message, Does.Contain("Puede existir un archivo en Documentos/BAXY"));
-                Assert.That(message, Does.Contain("no afirmaré"));
-                Assert.That(message, Does.Contain("nueva exportación"));
+                Assert.That(message, Does.Contain("memory_export_unverified_replay"));
                 Assert.That(message, Does.Not.Contain("No la ejecuté"));
                 Assert.That(message, Does.Not.Contain("verifiqué"));
                 Assert.That(message, Does.Not.Contain(absentPrivatePath));
@@ -703,7 +704,7 @@ public sealed class MemoryAppFlowTests
                     Is.EqualTo("Esperando comprobar la memoria"));
                 Assert.That(recovered.MissionId, Is.EqualTo(persistent.MissionId));
                 Assert.That(recovered.InvocationId, Is.EqualTo(persistent.InvocationId));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("continuar / continue / retry"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("continuar"));
                 Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain(Canary));
                 Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain(Canary));
             });
@@ -714,7 +715,7 @@ public sealed class MemoryAppFlowTests
                 Assert.That(new DurableRetryStore(outbox).Load(), Has.Count.EqualTo(1));
                 Assert.That(
                     LastAssistantMessage(viewModel),
-                    Does.Contain("Quedó pendiente comprobar"));
+                    Does.Contain("memory_recovery_pending"));
             });
 
             await SubmitAsync(viewModel, "continuar");
@@ -723,10 +724,7 @@ public sealed class MemoryAppFlowTests
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
                 Assert.That(
                     LastAssistantMessage(viewModel),
-                    Does.Contain("La memoria local está deshabilitada"));
-                Assert.That(
-                    LastAssistantMessage(viewModel),
-                    Does.Contain("Habilítala primero"));
+                    Does.Contain("memory_disabled"));
             });
         }
         finally
@@ -769,12 +767,9 @@ public sealed class MemoryAppFlowTests
             await SubmitAsync(viewModel, "continuar");
             Assert.Multiple(() =>
             {
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("pudo haber comenzado"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("reconciliar"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("confirmar / confirm"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("cancelar"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("descartarlo"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("No ejecuté"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_reconcile_same_attempt"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("confirmar"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("memory_cancelled"));
             });
 
             await SubmitAsync(viewModel, "cancelar");
@@ -784,10 +779,8 @@ public sealed class MemoryAppFlowTests
             {
                 Assert.That(preserved.MissionId, Is.EqualTo(uncertain.MissionId));
                 Assert.That(preserved.InvocationId, Is.EqualTo(uncertain.InvocationId));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("pudo haber comenzado"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("reconciliar"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("No la ejecuté"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("Cancelé"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("cannot_withdraw_uncertain"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("memory_cancelled"));
                 Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain(Canary));
                 Assert.That(
                     viewModel.Messages.All(message =>

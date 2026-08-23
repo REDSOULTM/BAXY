@@ -17,7 +17,7 @@ public sealed class HonestyCorrectionAppTests
         const string correction = "No pude completar la petición solicitada.";
 
         HonestyCorrectionTrace trace = HonestyCorrection.Correct(
-            notice.Label,
+            HonestyCorrection.NonAssertingInProgress,
             denial,
             correction);
         var response = new OperationResponse(
@@ -41,8 +41,8 @@ public sealed class HonestyCorrectionAppTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(notice.Label, Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
-            Assert.That(trace.Claim, Is.EqualTo(notice.Label));
+            Assert.That(notice.Label, Is.Null);
+            Assert.That(trace.Claim, Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
             Assert.That(trace.Verification, Is.EqualTo(denial));
             Assert.That(projection.Message, Is.EqualTo(correction));
             Assert.That(projection.Message, Does.Not.Contain("Listo"));

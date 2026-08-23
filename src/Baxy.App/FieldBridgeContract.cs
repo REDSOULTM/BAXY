@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
-using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
@@ -9,7 +8,7 @@ namespace Baxy.App;
 /// estado del router ni un éxito anticipado: sólo dice qué está ocurriendo
 /// ahora mismo para una persona que espera.
 /// </summary>
-internal sealed record FieldProgressNotice(string Stage, string Label)
+internal sealed record FieldProgressNotice(string Stage, string? Label)
 {
     internal const string StageStarting = "starting";
     internal const string StageUnderstanding = "understanding";
@@ -55,19 +54,6 @@ internal static class FieldBridgeContract
     internal const string MinimumReaderProperty = "minReader";
     internal const string ProgressPayloadType = "boot_stage";
 
-    private const string StartingLabel =
-        "Estoy preparando todo para empezar.";
-    private const string PreparingStepsLabel =
-        "Estoy preparando los pasos que hacen falta.";
-    private const string ActingLabel =
-        "Estoy realizando la acción que pediste.";
-    private const string WorkingLabel =
-        "Sigo trabajando en tu petición.";
-    private const string AwaitingReplyLabel =
-        "Estoy esperando tu respuesta.";
-    private const string UnavailableLabel =
-        "No pude terminar de prepararme; puedes intentarlo otra vez.";
-
     private const string StepPrefix = "Ejecutando paso ";
 
     /// <summary>
@@ -87,7 +73,8 @@ internal static class FieldBridgeContract
             "Interrupción detectada",
             "La voz se degradó; el motor sigue disponible",
             "Esperando «Baxy»",
-            "Falta activar el modelo de wake; puedes usar el micrófono",
+            "wake_inactive",
+            "speaking",
         };
 
     private static readonly Dictionary<string, string> DescriptionStages =
@@ -96,24 +83,24 @@ internal static class FieldBridgeContract
             ["Preparando BAXY"] = FieldProgressNotice.StageStarting,
             ["Comprobando BAXY"] = FieldProgressNotice.StageStarting,
             ["Terminando de iniciar"] = FieldProgressNotice.StageStarting,
-            ["Entendiendo tu petición"] = FieldProgressNotice.StageUnderstanding,
+            ["understanding"] = FieldProgressNotice.StageUnderstanding,
             ["Preparando los pasos"] = FieldProgressNotice.StagePreparingSteps,
-            ["Ejecutando la petición"] = FieldProgressNotice.StageActing,
+            ["acting"] = FieldProgressNotice.StageActing,
             ["Esperando confirmación de memoria"] =
                 FieldProgressNotice.StageAwaitingReply,
             ["Esperando comprobar el audio"] =
                 FieldProgressNotice.StageAwaitingReply,
-            ["Esperando reanudar una misión"] =
+            ["awaiting_mission_resume"] =
                 FieldProgressNotice.StageAwaitingReply,
             ["Esperando tu aclaración"] = FieldProgressNotice.StageAwaitingReply,
             ["Esperando comprobar la memoria"] =
                 FieldProgressNotice.StageAwaitingReply,
             ["Esperando una comprobación segura"] =
                 FieldProgressNotice.StageAwaitingReply,
-            ["Esperando recuperar una petición"] =
+            ["awaiting_request_recovery"] =
                 FieldProgressNotice.StageAwaitingReply,
             ["Esperando tu elección"] = FieldProgressNotice.StageAwaitingReply,
-            ["Puedes reintentar sin cerrar BAXY"] =
+            ["retry_without_close"] =
                 FieldProgressNotice.StageUnavailable,
             ["Conexión interrumpida"] = FieldProgressNotice.StageUnavailable,
         };
@@ -143,9 +130,7 @@ internal static class FieldBridgeContract
     {
         if (hasStartupError)
         {
-            return new FieldProgressNotice(
-                FieldProgressNotice.StageUnavailable,
-                UnavailableLabel);
+            return Create(FieldProgressNotice.StageUnavailable);
         }
 
         if (isReady && !isBusy)
@@ -164,15 +149,9 @@ internal static class FieldBridgeContract
             }
 
             if (description.StartsWith(StepPrefix, StringComparison.Ordinal)
-                && TryReadStep(description, out int step, out int total))
+                && TryReadStep(description, out _, out _))
             {
-                return new FieldProgressNotice(
-                    FieldProgressNotice.StageActing,
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Estoy en el paso {0} de {1}.",
-                        step,
-                        total));
+                return Create(FieldProgressNotice.StageActing);
             }
 
             if (DescriptionStages.TryGetValue(description, out string? mapped))
@@ -187,22 +166,18 @@ internal static class FieldBridgeContract
                 : FieldProgressNotice.StageStarting);
     }
 
-    internal static FieldProgressNotice Create(string stage) => stage switch
-    {
-        FieldProgressNotice.StageStarting =>
-            new FieldProgressNotice(stage, StartingLabel),
-        FieldProgressNotice.StageUnderstanding =>
-            new FieldProgressNotice(stage, HonestyCorrection.NonAssertingInProgress),
-        FieldProgressNotice.StagePreparingSteps =>
-            new FieldProgressNotice(stage, PreparingStepsLabel),
-        FieldProgressNotice.StageActing =>
-            new FieldProgressNotice(stage, ActingLabel),
-        FieldProgressNotice.StageAwaitingReply =>
-            new FieldProgressNotice(stage, AwaitingReplyLabel),
-        FieldProgressNotice.StageUnavailable =>
-            new FieldProgressNotice(stage, UnavailableLabel),
-        _ => new FieldProgressNotice(FieldProgressNotice.StageWorking, WorkingLabel),
-    };
+    internal static FieldProgressNotice Create(string stage) =>
+        new(
+            stage is FieldProgressNotice.StageStarting
+                or FieldProgressNotice.StageUnderstanding
+                or FieldProgressNotice.StagePreparingSteps
+                or FieldProgressNotice.StageActing
+                or FieldProgressNotice.StageAwaitingReply
+                or FieldProgressNotice.StageUnavailable
+                or FieldProgressNotice.StageWorking
+                ? stage
+                : FieldProgressNotice.StageWorking,
+            Label: null);
 
     private static bool TryReadStep(string description, out int step, out int total)
     {

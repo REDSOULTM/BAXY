@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Baxy.App;
@@ -161,6 +162,12 @@ internal static class UserMessagePolicy
 
     internal static IReadOnlyList<string> ForbiddenResponseTerms => ForbiddenTerms;
 
+    internal static bool IsStructuredFacts(string source)
+    {
+        ReadOnlySpan<char> trimmed = source.AsSpan().Trim();
+        return trimmed.Length >= 2 && trimmed[0] == '{' && trimmed[^1] == '}';
+    }
+
     public static UserMessageDraft Create(
         string source,
         UserMessageEvent messageEvent)
@@ -191,6 +198,10 @@ internal static class UserMessagePolicy
         if (string.IsNullOrWhiteSpace(modelText))
         {
             return "no_response";
+        }
+        if (IsStructuredFacts(modelText))
+        {
+            return "structured_facts_not_prose";
         }
         if (!IsSafe(modelText))
         {
@@ -305,8 +316,18 @@ internal static class UserMessagePolicy
         return text.Trim();
     }
 
-    private static bool LooksLikeFailure(string normalized) =>
-        normalized.Contains("no pude", StringComparison.Ordinal)
+    private static bool LooksLikeFailure(string sourceOrResult)
+    {
+        if (IsStructuredFacts(sourceOrResult)
+            && TryReadJson(sourceOrResult, out JsonElement root)
+            && root.TryGetProperty("polarity", out JsonElement polarity)
+            && polarity.ValueKind == JsonValueKind.String)
+        {
+            return string.Equals(polarity.GetString(), "failure", StringComparison.Ordinal);
+        }
+
+        string normalized = FoldForPolicy(sourceOrResult);
+        return normalized.Contains("no pude", StringComparison.Ordinal)
         || normalized.Contains("no puedo", StringComparison.Ordinal)
         || normalized.Contains("no complete", StringComparison.Ordinal)
         || normalized.Contains("no logre", StringComparison.Ordinal)
@@ -322,6 +343,7 @@ internal static class UserMessagePolicy
         || normalized.Contains("wasn't able", StringComparison.Ordinal)
         || normalized.Contains("was not able", StringComparison.Ordinal)
         || normalized.Contains("failed", StringComparison.Ordinal);
+    }
 
     private static bool AttributesBaxyActionToUser(string source, string result)
     {
@@ -344,6 +366,11 @@ internal static class UserMessagePolicy
 
     public static IReadOnlyList<string> RequiredBaxyActions(string source)
     {
+        if (IsStructuredFacts(source))
+        {
+            return [];
+        }
+
         MatchCollection matches = Regex.Matches(
             source,
             @"\b(?:abrí|enfoqué|cerré|ejecuté|inicié|hice|puse|ajusté|controlé|copié|pegué|resolví|activé|desactivé|seleccioné|cambié|envié|guardé|conecté|forcé|adelanté|retrocedí|silencié|reactivé|presioné|escribí|creé|eliminé|verifiqué)\b",
@@ -357,6 +384,18 @@ internal static class UserMessagePolicy
 
     public static IReadOnlyList<string> RequiredConfirmationWords(string source)
     {
+        if (IsStructuredFacts(source)
+            && TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("choices", out JsonElement choices)
+            && choices.ValueKind == JsonValueKind.Array)
+        {
+            return choices.EnumerateArray()
+                .Select(static item => item.GetString())
+                .Where(static item => !string.IsNullOrWhiteSpace(item))
+                .Select(static item => item!)
+                .ToArray();
+        }
+
         var words = new List<string>();
         AddPair("confirmar", "confirm");
         AddPair("cancelar", "cancel");
@@ -394,6 +433,11 @@ internal static class UserMessagePolicy
     public static IReadOnlyList<string> RequiredLiteralFacts(string source)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(source);
+        if (IsStructuredFacts(source))
+        {
+            return RequiredStructuredLiterals(source);
+        }
+
         var facts = new List<string>();
         const RegexOptions options =
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
@@ -500,6 +544,11 @@ internal static class UserMessagePolicy
 
     private static bool PreservesBaxyFirstPerson(string source, string result)
     {
+        if (IsStructuredFacts(source))
+        {
+            return true;
+        }
+
         string sourceFolded = FoldForPolicy(source);
         string resultFolded = FoldForPolicy(result);
         foreach ((string sourcePattern, string resultPattern) in FirstPersonActionPatterns)
@@ -540,18 +589,67 @@ internal static class UserMessagePolicy
 
     private static bool ReversesSuccessfulResult(string source, string result)
     {
-        string sourceFolded = FoldForPolicy(source);
+        if (LooksLikeFailure(source))
+        {
+            return false;
+        }
+
         string resultFolded = FoldForPolicy(result);
-        return !LooksLikeFailure(sourceFolded)
-            && (resultFolded.Contains("no pude", StringComparison.Ordinal)
-                || resultFolded.Contains("no puedo", StringComparison.Ordinal)
-                || resultFolded.Contains("no se pudo", StringComparison.Ordinal));
+        return resultFolded.Contains("no pude", StringComparison.Ordinal)
+            || resultFolded.Contains("no puedo", StringComparison.Ordinal)
+            || resultFolded.Contains("no se pudo", StringComparison.Ordinal);
     }
 
     private static bool ReversesFailedResult(string source, string result)
     {
-        return LooksLikeFailure(FoldForPolicy(source))
-            && !LooksLikeFailure(FoldForPolicy(result));
+        return LooksLikeFailure(source) && !LooksLikeFailure(result);
+    }
+
+    private static string[] RequiredStructuredLiterals(string source)
+    {
+        if (!TryReadJson(source, out JsonElement root))
+        {
+            return [];
+        }
+
+        var facts = new List<string>();
+        if (root.TryGetProperty("steps", out JsonElement steps)
+            && steps.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement step in steps.EnumerateArray())
+            {
+                if (step.GetString() is { Length: > 0 } text)
+                {
+                    facts.Add(text);
+                }
+            }
+        }
+
+        foreach (string key in new[] { "reason", "title" })
+        {
+            if (root.TryGetProperty(key, out JsonElement value)
+                && value.GetString() is { Length: > 0 } text)
+            {
+                facts.Add(text);
+            }
+        }
+
+        return facts.Take(20).ToArray();
+    }
+
+    private static bool TryReadJson(string source, out JsonElement root)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(source);
+            root = document.RootElement.Clone();
+            return root.ValueKind == JsonValueKind.Object;
+        }
+        catch (JsonException)
+        {
+            root = default;
+            return false;
+        }
     }
 
     private static string FoldForPolicy(string value)

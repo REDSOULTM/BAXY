@@ -27,35 +27,37 @@ public sealed class NaturalNoteViewModelEndToEndTests
                 string created = await SubmitAsync(
                     viewModel,
                     "Crea una nota llamada Compras con leche y pan");
-                Assert.That(created, Is.EqualTo("Guardé la nota «Compras»."));
+                Assert.That(created, Does.Contain("note.create"));
 
                 string read = await SubmitAsync(
                     viewModel,
                     "read the note called Compras");
-                Assert.That(read, Is.EqualTo("Nota «Compras»:\nleche y pan"));
+                Assert.That(read, Does.Contain("note.read"));
+                Assert.That(read, Does.Contain("leche y pan"));
 
                 string trashed = await SubmitAsync(
                     viewModel,
                     "delete the note called Compras");
-                Assert.That(trashed, Is.EqualTo("La nota «Compras» está en la papelera."));
+                Assert.That(trashed, Does.Contain("note.trash"));
 
                 string trashedList = await SubmitAsync(
                     viewModel,
                     "show me my trashed notes");
-                Assert.That(trashedList, Is.EqualTo("Encontré la nota «Compras»."));
+                Assert.That(trashedList, Does.Contain("note.list"));
 
                 string restored = await SubmitAsync(
                     viewModel,
                     "restaura la nota Compras de la papelera");
-                Assert.That(restored, Is.EqualTo("La nota «Compras» está activa."));
+                Assert.That(restored, Does.Contain("note.restore"));
 
                 string activeList = await SubmitAsync(viewModel, "muéstrame mis notas");
-                Assert.That(activeList, Is.EqualTo("Encontré la nota «Compras»."));
+                Assert.That(activeList, Does.Contain("note.list"));
 
                 Assert.That(
                     viewModel.Messages.Where(static message => !message.IsUser),
                     Has.None.Matches<ConversationMessage>(static message =>
-                        message.Body.TrimStart().StartsWith('{')
+                        (message.Body.TrimStart().StartsWith('{')
+                            && !UserMessagePolicy.IsStructuredFacts(message.Body))
                         || message.Body.TrimStart().StartsWith('[')));
             }
 

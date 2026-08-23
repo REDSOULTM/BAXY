@@ -651,7 +651,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         {
             return new MindPlanResult(
                 "failed",
-                "No pude construir un plan completo y seguro.",
+                TurnVisibleFacts.Failure("plan_incomplete"),
                 Array.Empty<MindPlanStep>());
         }
 

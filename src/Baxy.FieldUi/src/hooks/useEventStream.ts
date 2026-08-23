@@ -287,7 +287,7 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
             label = `prewarm · empty result${dt}`;
           }
         } else {
-          label = ev.stage;
+          label = null;
         }
       }
       return {

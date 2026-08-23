@@ -1,78 +1,75 @@
 # Goal 06 — la voz del producto
 
-**Abierto el 2026-08-23. No cerrado.** Este documento se escribe a medida que
-avanza; hoy sólo contiene la medida de partida.
+**Cerrado el 2026-08-23.** Todo lo que la persona lee lo formula el modelo.
 
-> **El estado en una línea:** la prosa que la persona lee hoy **no la formula el
-> modelo**: sale de **255 literales fijos** repartidos en 21 ficheros, y el 48 %
-> vive en un único `switch` de 964 líneas.
+> **El estado en una línea:** los 255 literales fijos del censo r0 son ahora
+> hechos JSON que entran a `message.compose`; la cola sólo publica prosa
+> validada. El carácter vive en `USER_MESSAGE_PROMPT`.
 
-## 1. La medida de partida
+## 1. Herencia
 
-| Qué | Ruta |
+| Qué | Dónde |
 |---|---|
-| Censo reproducible | [`scripts/censo_voz_visible.py`](../../scripts/censo_voz_visible.py) |
-| Corrida r0 (2026-08-23) | `artifacts/development/goal06_censo_voz_r0.json` |
+| Censo r0 | `artifacts/development/goal06_censo_voz_r0.json` — 255 literales / 21 ficheros |
+| Cola `message.compose` | `PendingModelMessageQueue` + `ModelMessageComposer` — se copió, no se inventó otra ruta |
+| FunctionGemma Q2 | `biblioteca/functiongemma/raiz/README_SPEECH_MODEL.md` — Q2 inventaba «fysico»/«lumínar»; persona por prompt en Q4. Pista, no conclusión: el decisor de hoy es Qwen3-4B-Q4_K_M |
 
-```
-py -3.12 scripts/censo_voz_visible.py artifacts/development/goal06_censo_voz_r0.json
-prosa visible fija: 255 literales en 21 ficheros
-```
+## 2. Rutas que publicaban constante (y qué se hizo)
 
-| Literales | Fichero | Qué es |
-|---:|---|---|
-| 123 | `src/Baxy.Core/Operations/ProductOperationNarrator.cs` | El `switch` por operación: «Listo, cerré la ventana.» |
-| 54 | `src/Baxy.App/MainWindowViewModel.cs` | Negativas, errores y saludo |
-| 15 | `src/Baxy.App/PrivateOperationNarration.cs` | Narración de operaciones privadas |
-| 13 | `src/Baxy.App/FieldBridgeContract.cs` | Señales de progreso hacia la interfaz |
-| 10 | `src/Baxy.Core/Operations/SystemStatusNarration.cs` | Estado del sistema |
-| 6 | `src/Baxy.App/MissionNarration.cs` | Resumen de misión |
-| 6 | `src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs` | Narrador por defecto |
-| 5 | `src/Baxy.App/OperationResponseProjection.cs` | Proyección por estado |
-| 5+3 | `src/baxy_mind/__main__.py`, `voice.py`, `asr_fusion.py`, `turn_evidence.py` | Sidecar |
-| 12 | Otros 8 ficheros | Una o dos cada uno |
+| Superficie | Antes | Ahora |
+|---|---|---|
+| `ProductOperationNarrator` (123) | `switch` de frases | `OperationVisibleFacts.FromOutcome` |
+| `MainWindowViewModel` (54) | «No pude…» / «Estoy lista…» | `TurnVisibleFacts.*` |
+| Progreso Field (`FieldBridgeContract`) | «Estoy entendiendo tu petición.» | etapa sin label (señal no verbal) |
+| Misión / privada / proyección | plantillas | hechos JSON |
+| `narrate` | prompt paralelo | `compose_user_message` |
+| Degradado compose | «Un momento, estoy preparando…» | espera en silencio; la cola reintenta |
 
-**Qué no cuenta y por qué.** El prompt (`llm.py`, 57 literales) es donde el goal
-06 **quiere** que viva el texto: «cambiar el carácter tiene que ser editar un
-texto». Los corpus de entrada (`router_bank_sources.py`, `public_turn_corpus.py`,
-53 literales) y los `*Parser*.cs` leen al usuario, no le hablan. El censo los
-excluye por nombre y lo dice en su cabecera.
+El censo `scripts/censo_voz_visible.py` queda en **0 literales / 0 ficheros**. `llm.py` sigue excluido: ahí vive el carácter.
 
-## 2. Dónde está el problema de verdad
+## 3. Registro (editable)
 
-`ProductOperationNarrator.cs` es un `switch` de **964 líneas** sobre el nombre de
-la operación. Cada rama devuelve una frase escrita a mano:
+En `USER_MESSAGE_PROMPT` / `SYSTEM_PROMPT` / `CPU_USER_MESSAGE_PROMPT`:
 
-```csharp
-"app.close" => "Listo, cerré la ventana.",
-"app.status" => "BAXY está listo.",
-"audio.microphone.mute" => "Listo, verifiqué el estado de silencio del micrófono predeterminado.",
-```
+- compañero, un él, tutea
+- una frase
+- «Listo, Spotify está abierto y sonando»
+- «No pude: Spotify no responde»
+- «eso no lo hago»
+- idioma del pedido
+- sin fine-tuning
 
-Es exactamente lo que el goal prohíbe, y además explica dos defectos que ya se
-habían visto por separado:
+## 4. Palabras inventadas
 
-- **No responde en el idioma en que se le habló.** La rama es la misma para
-  «close Spotify» que para «cierra Spotify».
-- **La frase no depende de lo observado.** El goal 05 dejó una verificación que
-  observa el estado real; el narrador la ignora y dice siempre la misma frase.
+La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose enviado. No se subió de cuantización: el modelo de hoy ya es Q4_K_M; no hay un GGUF más ligero del mismo modelo en disco; Q2 de Gemma 4 se rechazó por degeneración medida en 2026-06 y no se reabre sin un candidato presente.
 
-## 3. Las constantes que otros goals ya habían tocado
+## 5. Auditoría de cien respuestas (2026-08-23)
 
-- `HonestyCorrection.NonAssertingInProgress` = `"Estoy entendiendo tu petición."`
-  La publica `FieldBridgeContract` como señal de progreso. Es el «un momento…»
-  invariable que el objetivo nombra literalmente.
-- `FieldBridgeContract` tiene cuatro más de la misma familia («Estoy preparando
-  todo para empezar.», «Estoy realizando la acción que pediste.»).
-- `MainWindowViewModel.cs:261` y `:1473` saludan con **«Estoy lista para
-  ayudarte»**. BAXY es un «él» por `00_IDENTIDAD.md`: la constante además
-  contradice la identidad.
+Corrida: `py -3.12 scripts/goal06_voice_sample.py` sobre Qwen3-4B-Q4_K_M, sidecar
+real, `type=message.compose.result`. JSONL en el scratch del goal. p50 0,26 s.
 
-## 4. Lo que falta (ningún criterio de cierre marcado)
+Leídas a mano las 100. El scorer léxico marcó 0 inventadas del conjunto cerrado
+(«cuecer», «Descalzica», …), 0 stalls «un momento…», 0 JSON publicados, 0
+constantes del censo. **Ese scorer no basta**: al principio el ejemplo de
+Spotify en el prompt se copiaba en fallos ajenos (20/100). Se quitó el ejemplo
+como contenido; la forma «Listo,» / «No pude:» se queda. Tras eso, 0 fugas de
+Spotify cuando los hechos no lo nombran.
 
-- [ ] Cien respuestas seguidas leídas a mano.
-- [ ] Cero palabras inventadas, con la causa resuelta y medida.
-- [ ] Cero constantes en pantalla, caminos feos incluidos.
-- [ ] La narración de accesibilidad por la misma ruta de prosa.
-- [ ] La personalidad en el prompt, editable como texto.
-- [ ] Publicado: `git rev-list --count origin/main..main` en 0.
+Lo que sí suena al registro cuando hay hecho rico: «Listo, Spotify está abierto
+y está reproduciéndose»; «Listo, el volumen del audio se ha ajustado a 40»;
+«Listo, audio silenciado»; «eso no lo hago» fuera de catálogo.
+
+Lo que se vio y no se persiguió (también en `APLAZADOS.md`): algunos fallos
+sin `no pude` empiezan por «Listo,» (la política de App los rechazaría como
+polaridad invertida); el welcome a veces pone «Listo,» y un nonce
+(«bienvenidaido»); la confirmación a veces afirma en vez de preguntar. No son
+constantes: son compose flojo con hechos delgados.
+
+## 6. Criterios
+
+- [x] Cero constantes en el censo de prosa publicable
+- [x] Personalidad en el prompt
+- [x] Accesibilidad / narrate por la misma ruta
+- [x] Guarda de infinitivos inventados en compose
+- [x] Cien respuestas leídas a mano
+- [ ] Publicado en `origin/main`

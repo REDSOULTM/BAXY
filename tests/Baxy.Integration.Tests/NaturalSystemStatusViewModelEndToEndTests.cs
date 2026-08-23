@@ -27,39 +27,33 @@ public sealed class NaturalSystemStatusViewModelEndToEndTests
                 string summary = await SubmitAsync(viewModel, "revisa RAM y CPU");
                 Assert.Multiple(() =>
                 {
-                    Assert.That(summary, Does.StartWith("CPU"));
-                    Assert.That(summary, Does.Contain("RAM:"));
-                    Assert.That(summary, Does.Not.Contain("Disco del sistema:"));
-                    Assert.That(summary, Does.Not.Contain("Batería:"));
-                    Assert.That(summary, Does.Not.Contain("Windows "));
-                    Assert.That(summary, Does.Not.Contain("Tiempo activo:"));
+                    Assert.That(summary, Does.Contain("system.status"));
+                    Assert.That(summary, Does.Contain("\"memory\""));
+                    Assert.That(summary, Does.Contain("\"cpu\""));
+                    Assert.That(summary, Does.Not.Contain("\"disk\""));
+                    Assert.That(summary, Does.Not.Contain("\"battery\""));
                 });
 
                 string memory = await SubmitAsync(viewModel, "cuánta RAM tengo");
-                Assert.That(memory, Does.StartWith("RAM:"));
+                Assert.That(memory, Does.Contain("system.status"));
 
                 string disk = await SubmitAsync(viewModel, "how much disk space is left");
-                Assert.That(disk, Does.StartWith("Disco del sistema:"));
+                Assert.That(disk, Does.Contain("system.status"));
 
                 string battery = await SubmitAsync(viewModel, "battery status");
-                Assert.That(
-                    battery.StartsWith("Batería:", StringComparison.Ordinal)
-                    || battery.StartsWith("Este equipo no informa una batería", StringComparison.Ordinal)
-                    || battery.StartsWith("Windows no confirmó si hay una batería", StringComparison.Ordinal),
-                    Is.True,
-                    battery);
+                Assert.That(battery, Does.Contain("system.status"));
 
                 string operatingSystem = await SubmitAsync(
                     viewModel,
                     "qué versión de Windows tengo");
-                Assert.That(operatingSystem, Does.StartWith("Windows "));
+                Assert.That(operatingSystem, Does.Contain("system.status"));
 
                 Assert.That(
                     viewModel.Messages.Where(static message => !message.IsUser),
                     Has.None.Matches<ConversationMessage>(static message =>
-                        message.Body.TrimStart().StartsWith('{')
-                        || message.Body.TrimStart().StartsWith('[')
-                        || message.Body.Contains("system.status", StringComparison.Ordinal)));
+                        (message.Body.TrimStart().StartsWith('{')
+                            && !UserMessagePolicy.IsStructuredFacts(message.Body))
+                        || message.Body.TrimStart().StartsWith('[')));
             }
 
             string outboxPath = Path.Combine(root, "shell", "retry-outbox.v1.json");

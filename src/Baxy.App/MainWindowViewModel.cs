@@ -258,7 +258,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             StatusDescription = "BAXY disponible";
             AddMessage(
                 "BAXY",
-                "Hola. Estoy lista para ayudarte con este equipo.",
+                TurnVisibleFacts.Welcome(),
                 isUser: false,
                 messageEvent: UserMessageEvent.Welcome);
             if (_pendingMindPlan is not null)
@@ -363,7 +363,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _turnExecutionActive = true;
         IsBusy = true;
         StatusText = "Trabajando";
-        StatusDescription = "Entendiendo tu petición";
+        StatusDescription = "understanding";
 
         try
         {
@@ -392,7 +392,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     AddMessage(
                         "BAXY",
-                        "No pude interpretar la aclaración con suficiente seguridad. No ejecuté ninguna acción.",
+                        TurnVisibleFacts.Failure("ambiguous_clarification"),
                         isUser: false,
                         messageEvent: UserMessageEvent.Error(
                             UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -467,7 +467,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 case MemoryParseOutcome.ConfirmSensitiveSave:
                     AddMessage(
                         "BAXY",
-                        "No pude aislar el dato sensible de forma segura. No lo guardé ni lo envié para ejecución.",
+                        TurnVisibleFacts.Failure("sensitive_data_unparsed"),
                         isUser: false,
                         messageEvent: UserMessageEvent.Error(
                             UserMessageDiagnosticCodes.MissingData));
@@ -482,25 +482,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 case MemoryParseOutcome.AskToSave:
                     AddMessage(
                         "BAXY",
-                        "Entendí ese dato como contexto, pero no lo guardaré sin una petición explícita. Si quieres conservarlo, dime exactamente qué debo recordar.",
+                        TurnVisibleFacts.Clarification("context_not_saved"),
                         isUser: false);
                     return;
                 case MemoryParseOutcome.SessionContextOnly:
                     AddMessage(
                         "BAXY",
-                        "Entendí que es solo contexto de esta sesión. No lo guardé ni ejecuté una acción de memoria.",
+                        TurnVisibleFacts.Status("session_context_only"),
                         isUser: false);
                     return;
                 case MemoryParseOutcome.RejectAuthorizationPersistence:
                     AddMessage(
                         "BAXY",
-                        "No guardaré autorizaciones generales ni ampliaré mis permisos. Cada acción seguirá limitada y sujeta a sus propias reglas de seguridad.",
+                        TurnVisibleFacts.Status("no_permission_escalation"),
                         isUser: false);
                     return;
                 case MemoryParseOutcome.NoRoute when memory.MustNotClaimStandaloneRoute:
                     AddMessage(
                         "BAXY",
-                        "No interpreté ese mensaje como una petición independiente de memoria y no guardé, borré ni inventé información.",
+                        TurnVisibleFacts.Status("not_a_memory_request"),
                         isUser: false);
                     return;
                 case MemoryParseOutcome.NoRoute:
@@ -551,8 +551,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             AddMessage(
                 "BAXY",
                 MindSidecarClient.IsConfigured
-                    ? "No pude interpretar esa petición con suficiente seguridad. No ejecuté ninguna acción."
-                    : "La inteligencia local no está disponible todavía. No ejecuté ninguna acción.",
+                    ? TurnVisibleFacts.Failure("ambiguous_request")
+                    : TurnVisibleFacts.Failure("mind_unavailable"),
                 isUser: false,
                 messageEvent: MindSidecarClient.IsConfigured
                     ? UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted)
@@ -567,7 +567,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 "timeout");
             AddMessage(
                 "BAXY",
-                "Necesité más tiempo del esperado. No repetí ninguna acción; puedes intentarlo de nuevo.",
+                TurnVisibleFacts.Failure("timeout"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.Timeout));
         }
@@ -594,7 +594,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 "unavailable");
             AddMessage(
                 "BAXY",
-                "No pude completar la petición de forma segura; no afirmaré que terminó.",
+                TurnVisibleFacts.Failure("unsafe_completion"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(
                     UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -646,8 +646,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 AddMessage(
                     "BAXY",
                     _pendingMemoryConfirmationRequiresReconciliation
-                        ? "Para reconciliar esta acción responde únicamente «confirmar / confirm». Esa respuesta no reenvió nada y el resultado anterior sigue incierto."
-                        : "Para esta acción de memoria responde únicamente «confirmar / confirm» o «cancelar / cancel». No ejecuté nada.",
+                        ? TurnVisibleFacts.Confirmation(
+                            "memory_reconcile_only",
+                            TurnVisibleFacts.ConfirmCancel)
+                        : TurnVisibleFacts.Confirmation(
+                            "memory_confirm_or_cancel",
+                            TurnVisibleFacts.ConfirmCancel),
                     isUser: false,
                     messageEvent: UserMessageEvent.Confirmation);
                 return;
@@ -656,7 +660,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     AddMessage(
                         "BAXY",
-                        "No puedo afirmar que la acción no ocurrió ni retirar su identidad: pudo haber comenzado antes de perderse la respuesta. Responde «confirmar / confirm» para reconciliar exactamente el mismo intento.",
+                        TurnVisibleFacts.Confirmation(
+                            "cannot_withdraw_uncertain",
+                            TurnVisibleFacts.ConfirmCancel),
                         isUser: false,
                         messageEvent: UserMessageEvent.Confirmation);
                     return;
@@ -666,7 +672,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     AddMessage(
                         "BAXY",
-                        "No pude retirar de forma segura la petición pendiente. No la ejecuté y seguiré bloqueando otras acciones hasta comprobar su estado.",
+                        TurnVisibleFacts.Failure("cannot_withdraw_pending"),
                         isUser: false,
                         messageEvent: UserMessageEvent.Error(
                             UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -675,7 +681,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 ClearPendingPublicAfterMemory(pending.Prepared);
                 ClearVolatileMemoryConfirmation();
-                AddMessage("BAXY", "Cancelé la acción de memoria. No la ejecuté.", isUser: false);
+                AddMessage("BAXY", TurnVisibleFacts.Status("memory_cancelled"), isUser: false);
                 ContinueMemoryRecovery(registry);
                 return;
             case ConfirmationReplyKind.Confirm:
@@ -892,7 +898,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "No pude interpretar esa petición con suficiente seguridad. No ejecuté ninguna acción.",
+                TurnVisibleFacts.Failure("ambiguous_request"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(
                     UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -950,7 +956,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "No pude cerrar el registro protegido de recuperación. Lo conservaré sin iniciar otra acción.",
+                TurnVisibleFacts.Failure("recovery_journal_unclosed"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(
                     UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -1023,7 +1029,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "Primero debo reconciliar el ajuste de audio pendiente. Responde «continuar / continue / retry» o repite la misma petición de volumen o silencio; no iniciaré otra acción mientras su resultado siga incierto.",
+                TurnVisibleFacts.Confirmation(
+                    "pending_audio_reconcile",
+                    TurnVisibleFacts.ContinueRetry),
                 isUser: false,
                 messageEvent: UserMessageEvent.Confirmation);
             return;
@@ -1170,8 +1178,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                pending.CreateRecoveryPrompt()
-                    + " No iniciaré otra acción mientras este resultado siga pendiente.",
+                pending.CreateRecoveryPrompt(),
                 isUser: false,
                 messageEvent: UserMessageEvent.Confirmation);
             return;
@@ -1282,7 +1289,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ? "voz · Escucha directa"
             : IsWakeListening
                 ? IsVoiceSpeaking
-                    ? "voz · Hablando (puedes interrumpir)"
+                    ? "voz · speaking"
                     : "voz · Activa (di «Baxy»)"
                 : "voz · Activar wake word";
 
@@ -1374,7 +1381,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // The direct microphone can still work when only the optional
             // acoustic wake model has not been installed/calibrated.
             IsWakeListening = false;
-            StatusDescription = "Falta activar el modelo de wake; puedes usar el micrófono";
+            StatusDescription = "wake_inactive";
         }
     }
 
@@ -1402,7 +1409,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (!started)
             {
                 IsWakeListening = false;
-                StatusDescription = "Falta activar el modelo de wake; puedes usar el micrófono";
+                StatusDescription = "wake_inactive";
                 return false;
             }
 
@@ -1470,7 +1477,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         Messages.Clear();
         AddMessage(
             "BAXY",
-            "Hola. Estoy lista para ayudarte con este equipo.",
+            TurnVisibleFacts.Welcome(),
             isUser: false,
             messageEvent: UserMessageEvent.Welcome);
         return true;
@@ -1560,7 +1567,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "No pude usar esa transcripción de voz. ¿Puedes repetirlo?",
+                TurnVisibleFacts.Clarification("voice_transcript_unusable"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(
                     UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -1777,11 +1784,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (_mindStartupState == MindStartupState.Starting
                 && _mindInitializationTask is { } initialization)
             {
-                AddMessage(
-                    "BAXY",
-                    "Un momento, estoy preparando esa respuesta.",
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Status);
                 try
                 {
                     await initialization.WaitAsync(
@@ -1802,7 +1804,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 AddMessage(
                     "BAXY",
-                    "No pude terminar esa respuesta. Volveré a preparar el servicio automáticamente.",
+                    TurnVisibleFacts.Failure("compose_unavailable"),
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.LocalService));
@@ -1815,7 +1817,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
         }
 
-        StatusDescription = "Entendiendo tu petición";
+        StatusDescription = "understanding";
         IReadOnlyList<(string Role, string Content)> decisionHistory =
             pendingClarificationObjective is null
                 ? BuildMindHistory()
@@ -1922,7 +1924,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 AddMessage(
                     "BAXY",
-                    "No pude construir un plan completo y seguro. No ejecuté una versión parcial de tu petición.",
+                    TurnVisibleFacts.Failure("plan_incomplete"),
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -1950,7 +1952,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     AddMessage(
                         "BAXY",
-                        "No pude verificar el plan completo y no ejecuté ninguna acción. Puedes reformular la petición o intentarlo de nuevo.",
+                        TurnVisibleFacts.Failure("plan_unverified"),
                         isUser: false,
                         messageEvent: UserMessageEvent.Error(
                             UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -1983,9 +1985,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "Entendí que quieres usar la memoria privada, pero necesito la " +
-                "petición explícita para no equivocarme con tus datos. Por " +
-                "ejemplo: «recuerda que …», «qué sabes de …» u «olvida …».",
+                TurnVisibleFacts.Clarification("memory_needs_explicit_request"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Clarification);
             return true;
@@ -2069,7 +2069,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             MindPlanStep step = execution.CurrentStep;
             StatusDescription = execution.Steps.Count == 1
-                ? "Ejecutando la petición"
+                ? "acting"
                 : $"Ejecutando paso {execution.NextIndex + 1} de {execution.Steps.Count}";
             JsonObject? arguments = step.Arguments?.DeepClone() as JsonObject;
             JsonObject? identityArguments = null;
@@ -2086,7 +2086,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     FinishMindPlanWithFailure(
                         execution,
-                        "No pude verificar los resultados necesarios para el siguiente paso. La misión quedó detenida sin ejecutar ese efecto.");
+                        TurnVisibleFacts.Failure("step_unverified"));
                     return;
                 }
 
@@ -2119,7 +2119,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     FinishMindPlanWithFailure(
                         execution,
-                        "No pude obtener los datos exactos para el siguiente paso. La misión quedó detenida sin ejecutar ese efecto.");
+                        TurnVisibleFacts.Failure("step_data_missing"));
                     return;
                 }
 
@@ -2151,7 +2151,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 FinishMindPlanWithFailure(
                     execution,
-                    "No pude vincular de forma segura el resultado anterior con el siguiente paso. La misión quedó detenida sin ejecutar ese efecto.");
+                    TurnVisibleFacts.Failure("step_unlinkable"));
                 return;
             }
 
@@ -2184,8 +2184,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 AddMessage(
                     "BAXY",
                     response.EffectMayHaveOccurred
-                        ? $"El paso {execution.NextIndex + 1} quedó inconcluso y el efecto puede haber ocurrido. No continuaré ni lo repetiré a ciegas."
-                        : $"El paso {execution.NextIndex + 1} quedó pendiente sin efecto observado. Puedes decir «continuar» para reintentarlo o «cancelar» para detener el resto del plan.",
+                        ? TurnVisibleFacts.Failure(
+                            "step_uncertain",
+                            new JsonObject { ["step"] = execution.NextIndex + 1 })
+                        : TurnVisibleFacts.Confirmation(
+                            "step_pending_retry",
+                            TurnVisibleFacts.ContinueCancel,
+                            new JsonObject { ["step"] = execution.NextIndex + 1 }),
                     isUser: false,
                     messageEvent: response.EffectMayHaveOccurred
                         ? UserMessageEvent.Error(
@@ -2237,7 +2242,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     {
                         FinishMindPlanWithFailure(
                             execution,
-                            "No pude continuar de forma segura. Detuve los pasos restantes sin repetir acciones.");
+                            TurnVisibleFacts.Failure("continue_unsafe"));
                         return;
                     }
                     var replanned = new PendingMindPlanExecution(
@@ -2259,7 +2264,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             FinishMindPlanWithFailure(
                 execution,
-                $"No pude completar el paso {execution.NextIndex + 1}; detuve los pasos restantes sin repetir acciones.");
+                TurnVisibleFacts.Failure(
+                    "step_failed",
+                    new JsonObject { ["step"] = execution.NextIndex + 1 }));
             return;
         }
 
@@ -2280,8 +2287,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         AddMessage(
             "BAXY",
             confirmation.ReconciliationRequired
-                ? $"El paso {execution.NextIndex + 1} ya había comenzado antes de una interrupción y el efecto puede haber ocurrido. Conservé la misma identidad. Responde «confirmar / confirm» para reconciliarlo; no continuaré ni lo repetiré a ciegas."
-                : $"El paso {execution.NextIndex + 1} requiere tu confirmación. Responde únicamente «confirmar / confirm» o «cancelar / cancel». Aún no ejecuté ese efecto.",
+                ? TurnVisibleFacts.Confirmation(
+                    "step_interrupted_uncertain",
+                    TurnVisibleFacts.ConfirmCancel,
+                    new JsonObject { ["step"] = execution.NextIndex + 1 })
+                : TurnVisibleFacts.Confirmation(
+                    "step_needs_confirmation",
+                    TurnVisibleFacts.ConfirmCancel,
+                    new JsonObject { ["step"] = execution.NextIndex + 1 }),
             isUser: false,
             messageEvent: UserMessageEvent.Confirmation);
     }
@@ -2301,8 +2314,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     AddMessage(
                         "BAXY",
                         confirmation.ReconciliationRequired
-                            ? "Este paso necesita comprobar un intento que ya había comenzado. Responde «confirmar / confirm»; no ejecutaré nada distinto ni borraré su evidencia de recuperación."
-                            : "Para este paso responde únicamente «confirmar / confirm» o «cancelar / cancel». No ejecuté nada nuevo.",
+                            ? TurnVisibleFacts.Confirmation(
+                                "step_started_needs_check",
+                                TurnVisibleFacts.ConfirmCancel)
+                            : TurnVisibleFacts.Confirmation(
+                                "step_confirm_or_cancel",
+                                TurnVisibleFacts.ConfirmCancel),
                         isUser: false,
                         messageEvent: UserMessageEvent.Confirmation);
                     return;
@@ -2312,7 +2329,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         PersistMindPlan(execution);
                         AddMessage(
                             "BAXY",
-                            "No puedo dar este paso por cancelado como si no hubiera empezado. Detuve los pasos nuevos y conservé su evidencia de recuperación. Responde «confirmar / confirm» para comprobar exactamente el mismo intento.",
+                            TurnVisibleFacts.Confirmation(
+                                "cannot_cancel_started_step",
+                                TurnVisibleFacts.ConfirmCancel),
                             isUser: false,
                             messageEvent: UserMessageEvent.Confirmation);
                         return;
@@ -2322,7 +2341,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ClearMindPlan();
                     AddMessage(
                         "BAXY",
-                        $"Cancelé el paso {execution.NextIndex + 1} y detuve el resto de la misión. Los {execution.CompletedMessages.Count} pasos anteriores permanecen completados.",
+                        TurnVisibleFacts.Status(
+                            "mission_cancelled_partial",
+                            new JsonObject
+                            {
+                                ["step"] = execution.NextIndex + 1,
+                                ["completed"] = execution.CompletedMessages.Count,
+                            }),
                         isUser: false);
                     return;
                 case ConfirmationReplyKind.Confirm:
@@ -2367,8 +2392,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         AddMessage(
                             "BAXY",
                             response.EffectMayHaveOccurred
-                                ? "La acción confirmada quedó inconclusa y puede haber ocurrido. Conservaré su identidad y no la repetiré a ciegas."
-                                : "La acción confirmada quedó pendiente sin efecto observado. Puedes decir «continuar» para reintentar exactamente la misma invocación.",
+                                ? TurnVisibleFacts.Status("confirmed_uncertain")
+                                : TurnVisibleFacts.Confirmation(
+                                    "confirmed_pending",
+                                    TurnVisibleFacts.ContinueCancel),
                             isUser: false);
                         return;
                     }
@@ -2377,7 +2404,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     execution.PendingOperation = null;
                     FinishMindPlanWithFailure(
                         execution,
-                        "La acción confirmada no se completó y está verificado que no hubo efecto; detuve el resto de la misión.");
+                        TurnVisibleFacts.Failure("confirmed_no_effect"));
                     return;
                 default:
                     throw new InvalidDataException("La respuesta de confirmación no es válida.");
@@ -2392,7 +2419,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 PersistMindPlan(execution);
                 AddMessage(
                     "BAXY",
-                    "Detuve los pasos restantes, pero conservaré la evidencia de recuperación hasta comprobar el efecto inconcluso sin duplicarlo.",
+                    TurnVisibleFacts.Status("stopped_keeping_evidence"),
                     isUser: false);
             }
             else
@@ -2405,7 +2432,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ClearMindPlan();
                 AddMessage(
                     "BAXY",
-                    "Cancelé los pasos restantes de la misión.",
+                    TurnVisibleFacts.Status("remaining_steps_cancelled"),
                     isUser: false);
             }
 
@@ -2432,7 +2459,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             AddMessage(
                 "BAXY",
                 MindPlanBoundary.CanRefreshConfirmationChallenge(execution)
-                    ? "No borraré la evidencia de recuperación porque el paso ya había comenzado. Responde «confirmar / confirm» para solicitar una nueva comprobación del mismo intento."
+                    ? TurnVisibleFacts.Confirmation(
+                        "keep_recovery_evidence",
+                        TurnVisibleFacts.ConfirmCancel)
                     : "No repetiré este paso porque el efecto anterior puede haber ocurrido. Debe reconciliarse con el estado real antes de continuar.",
                 isUser: false);
             return;
@@ -2540,7 +2569,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // bounded LLM message composer instead of restarting semantic work.
         AddMessage(
             "BAXY",
-            "No pude formular una respuesta segura para esta petición. Puedes reformularla.",
+            TurnVisibleFacts.Failure("unsafe_reply"),
             isUser: false,
             messageEvent: UserMessageEvent.Error(
                 UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -2631,7 +2660,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 AddMessage(
                     "BAXY",
-                    "Conservé la identidad de recuperación. Cuando haya espacio, repetiré esta petición sin cambiarla ni duplicarla.",
+                    TurnVisibleFacts.Status("recovery_identity_kept"),
                     isUser: false);
             }
 
@@ -2667,7 +2696,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "La acción terminó, pero no pude cerrar su registro de recuperación. Si la repites, la reconciliaré sin duplicarla.",
+                TurnVisibleFacts.Failure("recovery_journal_incomplete"),
                 isUser: false,
                 messageEvent: UserMessageEvent.Error(
                     UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -2888,7 +2917,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         IsReady = false;
         HasStartupError = true;
         StatusText = "No disponible";
-        StatusDescription = "Puedes reintentar sin cerrar BAXY";
+        StatusDescription = "retry_without_close";
         AddMessage(
             "BAXY",
             "BAXY no pudo iniciar correctamente. Pulsa reintentar para recuperarlo.",
@@ -2922,7 +2951,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 owner.StatusDescription = "Conexión interrumpida";
                 owner.AddMessage(
                     "BAXY",
-                    "Perdí la conexión con las funciones del equipo. Detuve las acciones pendientes; puedes reintentarlo.",
+                    TurnVisibleFacts.Failure("core_disconnected"),
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.LocalService));
@@ -3099,7 +3128,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             : _pendingAudioOperation is not null
             ? "Esperando comprobar el audio"
             : _pendingMindPlan is not null
-                ? "Esperando reanudar una misión"
+                ? "awaiting_mission_resume"
             : _pendingMindClarificationObjective is not null
                 ? "Esperando tu aclaración"
             : _pendingMemoryOperation is not null
@@ -3109,7 +3138,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ? "Esperando una comprobación segura"
             : _pendingNoteInteraction.Current
                 is PendingNoteInteraction.ReconcilingTitle
-                ? "Esperando recuperar una petición"
+                ? "awaiting_request_recovery"
             : _pendingNoteInteraction.Current
                 is PendingNoteInteraction.AwaitingChoice
                 ? "Esperando tu elección"

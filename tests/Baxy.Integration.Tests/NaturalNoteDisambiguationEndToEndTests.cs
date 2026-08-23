@@ -26,13 +26,15 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             AssertPromptIsPrivate(readPrompt, 2);
             int milkChoice = FindChoice(readPrompt, "leche");
             string read = await SubmitAsync(viewModel, $"choose la {milkChoice}");
-            Assert.That(read, Is.EqualTo("Nota «Compras»:\nleche"));
+            Assert.That(read, Does.Contain("note.read"));
+            Assert.That(read, Does.Contain("leche"));
 
             string trashPrompt = await SubmitAsync(viewModel, "delete the note called Compras");
             AssertPromptIsPrivate(trashPrompt, 2);
             int panChoice = FindChoice(trashPrompt, "pan");
             string trashed = await SubmitAsync(viewModel, panChoice.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            Assert.That(trashed, Is.EqualTo("La nota «Compras» está en la papelera."));
+            Assert.That(trashed, Does.Contain("note.trash"));
+            Assert.That(trashed, Does.Contain("success"));
 
             var store = new LocalNoteStore(Path.Combine(root, "notes-store"));
             NoteRecord milk = store.List(NoteListScope.All).Single(static note => note.Content == "leche");
@@ -51,7 +53,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             AssertPromptIsPrivate(restorePrompt, 2);
             int restorePanChoice = FindChoice(restorePrompt, "pan");
             string restored = await SubmitAsync(viewModel, $"the {Ordinal(restorePanChoice)} one");
-            Assert.That(restored, Is.EqualTo("La nota «Compras» está activa."));
+            Assert.That(restored, Does.Contain("note.restore"));
+            Assert.That(restored, Does.Contain("success"));
 
             NoteRecord[] final = store.List(NoteListScope.All).ToArray();
             Assert.Multiple(() =>
@@ -64,7 +67,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
                     viewModel.Messages.Where(static message => !message.IsUser),
                     Has.None.Matches<ConversationMessage>(static message =>
                         UuidPattern().IsMatch(message.Body)
-                        || message.Body.TrimStart().StartsWith('{')
+                        || (message.Body.TrimStart().StartsWith('{')
+                            && !UserMessagePolicy.IsStructuredFacts(message.Body))
                         || message.Body.TrimStart().StartsWith('[')));
             });
 
@@ -89,7 +93,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
 
             _ = await SubmitAsync(viewModel, "borra la nota Ideas");
             string replacement = await SubmitAsync(viewModel, "anota nueva tarea");
-            Assert.That(replacement, Is.EqualTo("Guardé la nota «nueva tarea»."));
+            Assert.That(replacement, Does.Contain("note.create"));
+            Assert.That(replacement, Does.Contain("nueva tarea"));
 
             string bareNumber = await SubmitAsync(viewModel, "1");
             Assert.That(bareNumber, Is.EqualTo(NaturalNoteRequestParser.Guidance));
@@ -128,7 +133,7 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             string stale = await SubmitAsync(
                 viewModel,
                 northChoice.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            Assert.That(stale, Does.Contain("La lista de notas cambió"));
+            Assert.That(stale, Does.Contain("note_selection_stale"));
 
             NoteRecord[] after = store.List(NoteListScope.All).ToArray();
             Assert.Multiple(() =>
@@ -161,7 +166,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             var store = new LocalNoteStore(Path.Combine(root, "notes-store"));
             Assert.Multiple(() =>
             {
-                Assert.That(read, Is.EqualTo("Nota «CAFÉ»:\nmayúsculas"));
+                Assert.That(read, Does.Contain("note.read"));
+                Assert.That(read, Does.Contain("mayúsculas"));
                 Assert.That(store.List(NoteListScope.All), Has.Length.EqualTo(2));
                 Assert.That(store.List(NoteListScope.All), Has.All.Matches<NoteRecord>(static note => note.Revision == 1));
             });
@@ -210,7 +216,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             });
 
             string result = await SubmitAsync(viewModel, "continue");
-            Assert.That(result, Is.EqualTo("La nota «Archivo» está en la papelera."));
+            Assert.That(result, Does.Contain("note.trash"));
+            Assert.That(result, Does.Contain("success"));
 
             NoteRecord selectedAfter = store.Read(selected.Id, includeTrashed: true);
             NoteRecord firstAfter = store.Read(first.Id);
@@ -246,8 +253,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             ConversationMessage recovery = restartedViewModel.Messages.Last();
             Assert.Multiple(() =>
             {
-                Assert.That(recovery.Body, Does.Contain("petición para enviar a la papelera"));
-                Assert.That(recovery.Body, Does.Contain("No reinterpretaré ninguna opción"));
+                Assert.That(recovery.Body, Does.Contain("note_recovery_pending"));
+                Assert.That(recovery.Body, Does.Contain("enviar a la papelera"));
                 Assert.That(UuidPattern().IsMatch(recovery.Body), Is.False);
             });
 
@@ -257,7 +264,8 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
             string result = await SubmitAsync(
                 restartedViewModel,
                 betaChoice.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            Assert.That(result, Is.EqualTo("La nota «Clave» está en la papelera."));
+            Assert.That(result, Does.Contain("note.trash"));
+            Assert.That(result, Does.Contain("success"));
 
             var store = new LocalNoteStore(Path.Combine(root, "notes-store"));
             Assert.Multiple(() =>

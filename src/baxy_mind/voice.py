@@ -334,7 +334,7 @@ class WakePhraseMatcher:
 
 @dataclass(frozen=True)
 class _DecodeRequest:
-    """Audio listo para ASR con la autoridad que abrió el turno."""
+    """Audio ready for ASR with the authority that opened the turn."""
 
     audio: np.ndarray
     reference: np.ndarray

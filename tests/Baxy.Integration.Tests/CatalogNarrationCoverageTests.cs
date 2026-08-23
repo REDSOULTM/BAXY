@@ -64,76 +64,63 @@ public sealed class CatalogNarrationCoverageTests
     }
 
     [Test]
-    public void EveryPublicNarrationSurvivesTheFullAppAcceptancePolicy()
+    public void StructuredFactsAreNotPublishableAndASentencePreservesPolarity()
     {
-        string[] rejectedSuccess = ProductCatalog.ToolDescriptors
-            .Select(static descriptor => new
-            {
+        string[] leakedJson = [];
+        var rejectedRewrite = new List<string>();
+        foreach (var descriptor in ProductCatalog.ToolDescriptors)
+        {
+            string successFacts = OperationOutcomeNarration.For(
                 descriptor.Name,
-                Message = OperationOutcomeNarration.For(
-                    descriptor.Name,
-                    OperationOutcome.Success()),
-            })
-            .Select(static item => DescribeRejection(
-                item.Name,
-                item.Message,
-                UserMessageEvent.Status))
-            .Where(static rejection => rejection is not null)
-            .Select(static rejection => rejection!)
-            .ToArray();
-        string[] rejectedFailure = ProductCatalog.ToolDescriptors
-            .Select(static descriptor => new
-            {
+                OperationOutcome.Success());
+            string failureFacts = OperationOutcomeNarration.For(
                 descriptor.Name,
-                Message = OperationOutcomeNarration.For(
-                    descriptor.Name,
-                    OperationOutcome.Failure("narration_coverage_probe")),
-            })
-            .Select(static item => DescribeRejection(
-                item.Name,
-                item.Message,
-                UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted)))
-            .Where(static rejection => rejection is not null)
-            .Select(static rejection => rejection!)
-            .ToArray();
-        string[] rejectedStatus = ProductCatalog.ToolDescriptors
-            .Select(static descriptor => new
+                OperationOutcome.Failure("narration_coverage_probe"));
+            UserMessageDraft successDraft = UserMessagePolicy.Create(
+                successFacts,
+                UserMessageEvent.Status);
+            UserMessageDraft failureDraft = UserMessagePolicy.Create(
+                failureFacts,
+                UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+            if (UserMessagePolicy.ModelResponseRejectionReason(successFacts, successDraft)
+                != "structured_facts_not_prose")
             {
-                descriptor.Name,
-                Message = ProductOperationNarrator.Instance.NarrateStatus(
-                    descriptor.Name,
-                    OperationStatuses.Failed,
-                    "narration_coverage_probe"),
-            })
-            .Select(static item => DescribeRejection(
-                item.Name,
-                item.Message,
-                UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted)))
-            .Where(static rejection => rejection is not null)
-            .Select(static rejection => rejection!)
-            .ToArray();
+                leakedJson = [.. leakedJson, descriptor.Name + " success"];
+            }
+
+            if (UserMessagePolicy.ModelResponseRejectionReason(failureFacts, failureDraft)
+                != "structured_facts_not_prose")
+            {
+                leakedJson = [.. leakedJson, descriptor.Name + " failure"];
+            }
+
+            if (UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "Listo, quedó hecho y verificado.",
+                    successDraft) is null)
+            {
+                rejectedRewrite.Add(descriptor.Name + " success rewrite");
+            }
+
+            if (UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "No pude completar lo que pediste.",
+                    failureDraft) is null)
+            {
+                rejectedRewrite.Add(descriptor.Name + " failure rewrite");
+            }
+        }
 
         Assert.Multiple(() =>
         {
+            Assert.That(leakedJson, Is.Empty, string.Join(Environment.NewLine, leakedJson));
             Assert.That(
-                rejectedSuccess,
+                rejectedRewrite,
                 Is.Empty,
-                string.Join(Environment.NewLine, rejectedSuccess));
-            Assert.That(
-                rejectedFailure,
-                Is.Empty,
-                string.Join(Environment.NewLine, rejectedFailure));
-            Assert.That(
-                rejectedStatus,
-                Is.Empty,
-                string.Join(Environment.NewLine, rejectedStatus));
+                string.Join(Environment.NewLine, rejectedRewrite));
         });
     }
 
     [Test]
-    public void EveryFamilyFloorMakesItsPersonFacingSubjectMandatory()
+    public void FamilyFactsKeepPolarityWithoutASpanishSubjectFloor()
     {
         string[] failures = ProductCatalog.ToolDescriptors
             .Select(static descriptor => descriptor.Name.Split('.')[0])
@@ -147,7 +134,8 @@ public sealed class CatalogNarrationCoverageTests
                         $"{family}.narration.coverage",
                         OperationOutcome.Success()),
                     Event = UserMessageEvent.Status,
-                    SubjectlessCandidate = "Lo completé y lo verifiqué.",
+                    Reversed = "No pude completarla.",
+                    Honest = "Listo, quedó hecho.",
                 },
                 new
                 {
@@ -157,42 +145,34 @@ public sealed class CatalogNarrationCoverageTests
                         OperationOutcome.Failure("narration_coverage_probe")),
                     Event = UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.ActionNotCompleted),
-                    SubjectlessCandidate = "No pude completarla.",
+                    Reversed = "Listo, quedó hecho.",
+                    Honest = "No pude completarla.",
                 },
             })
             .Select(static item =>
             {
-                IReadOnlyList<string> facts =
-                    UserMessagePolicy.RequiredLiteralFacts(item.Message);
                 UserMessageDraft draft = UserMessagePolicy.Create(
                     item.Message,
                     item.Event);
-                string? rejection = UserMessagePolicy.ModelResponseRejectionReason(
-                    item.SubjectlessCandidate,
+                bool structured = UserMessagePolicy.IsStructuredFacts(item.Message);
+                string? reversed = UserMessagePolicy.ModelResponseRejectionReason(
+                    item.Reversed,
                     draft);
-                return facts.Count == 1
-                    && rejection == "missing_literal_fact"
+                string? honest = UserMessagePolicy.ModelResponseRejectionReason(
+                    item.Honest,
+                    draft);
+                return structured
+                    && reversed == "reversed_result"
+                    && honest is null
                         ? null
                         : $"{item.Family}: source={item.Message}; "
-                            + $"facts={string.Join(" | ", facts)}; "
-                            + $"subjectlessRejection={rejection ?? "accepted"}";
+                            + $"structured={structured}; reversed={reversed}; "
+                            + $"honest={honest ?? "accepted"}";
             })
             .Where(static failure => failure is not null)
             .Select(static failure => failure!)
             .ToArray();
 
         Assert.That(failures, Is.Empty, string.Join(Environment.NewLine, failures));
-    }
-
-    private static string? DescribeRejection(
-        string operation,
-        string message,
-        UserMessageEvent messageEvent)
-    {
-        UserMessageDraft draft = UserMessagePolicy.Create(message, messageEvent);
-        string? rejection = UserMessagePolicy.ModelResponseRejectionReason(message, draft);
-        return rejection is null
-            ? null
-            : $"{operation}: {rejection}: {message}";
     }
 }

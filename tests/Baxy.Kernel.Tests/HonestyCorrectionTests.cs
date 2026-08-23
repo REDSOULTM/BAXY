@@ -27,7 +27,7 @@ public sealed class HonestyCorrectionTests
             Assert.That(
                 trace.Claim,
                 Is.EqualTo(HonestyCorrection.NonAssertingInProgress));
-            Assert.That(trace.Claim, Does.StartWith("Estoy"));
+            Assert.That(trace.Claim, Is.EqualTo("understanding"));
             Assert.That(trace.Claim, Does.Not.Contain("Listo"));
             Assert.That(trace.Claim, Does.Not.Contain("completé"));
             Assert.That(trace.Verification, Is.EqualTo(denial));

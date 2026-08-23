@@ -540,7 +540,7 @@ public sealed class NaturalNoteRequestParserTests
             response,
             "note.list");
 
-        Assert.That(projection.Message, Is.EqualTo("Encontré 2 notas: «Compras», «Ideas»."));
+        Assert.That(projection.Message, Is.EqualTo("Encontré 2 notas."));
     }
 
     [Test]
@@ -562,6 +562,6 @@ public sealed class NaturalNoteRequestParserTests
 
         OperationResponseProjection projection = OperationResponseProjection.Create(response, "note.list");
 
-        Assert.That(projection.Message, Is.EqualTo("Mostré 2 de 9 notas: «Compras», «Ideas»."));
+        Assert.That(projection.Message, Is.EqualTo("Mostré 2 de 9 notas."));
     }
 }

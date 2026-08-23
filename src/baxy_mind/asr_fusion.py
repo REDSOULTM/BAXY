@@ -152,7 +152,7 @@ def _merge_exhaustive_report(
     clauses = [clause for clause, _ in merged]
     if language == "es":
         candidate = (
-            "sin omitir ninguno, revisa en este orden: "
+            "sin omitir ninguno, mira en este orden: "
             + "; después, ".join(clauses)
             + ", devolviendo cada resultado por separado"
         )

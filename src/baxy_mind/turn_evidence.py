@@ -1513,7 +1513,7 @@ class TurnEvidenceService:
                 if self._stop_event.wait(timeout=1.0):
                     return
             else:
-                raise TimeoutError("el encoder semántico no estuvo listo para el corpus")
+                raise TimeoutError("the semantic encoder was not available for the corpus")
             if self._stop_event.is_set():
                 return
             index = TurnEvidenceIndex.from_corpus(

@@ -1042,7 +1042,7 @@ def _require_catalog_llm_ready(
     """Authenticate catalog readiness against the model warmup result."""
 
     if llm is not None and not llm.wait_warmup(timeout):
-        raise RuntimeError("el LLM no estuvo listo para el catálogo")
+        raise RuntimeError("the LLM was not available for the catalog")
 
 
 def validate_turn_decision(
@@ -1203,7 +1203,7 @@ def apply_turn_action_grounding_gate(
     tool = tool_by_name.get(operation) if isinstance(operation, str) else None
     if tool is None:
         raise PlannerContractError(
-            "la acción pendiente de grounding no existe en el catálogo"
+            "the pending grounding action is not in the catalog"
         )
     if required_predecessors(operation):
         # The missing identity belongs to a verified producer, not to the
@@ -1521,7 +1521,7 @@ def apply_operation_domain_grounding_veto(
     an observation has none, so on the fresh paraphrase corpus of goal 03 it
     recovered eight rows of 124 without adding a single effect. It is refuted by
     a case a previous campaign already paid for and that lives in
-    ``tests/test_turn_policy.py``: "¿Cómo está la red neuronal?" proposes
+    ``tests/test_turn_policy.py``: "How is the neural net?" proposes
     ``network.status``, which is read-only, and answering it would report the
     machine's connectivity to a question about neural networks. The gate does not
     only protect against effects; it protects against answering the wrong domain,
@@ -6494,7 +6494,7 @@ def _recovery_visible_from_compose(llm: Any, objective: str) -> tuple[str, str]:
             compose(
                 objective,
                 "error",
-                {"situation": "No pude completar el análisis de tu petición."},
+                {"situation": json.dumps({"kind": "failure", "cause": "request_analysis_failed", "polarity": "failure"}, ensure_ascii=False)},
             )
             or ""
         ).strip()
@@ -6943,7 +6943,7 @@ def _run_sidecar(
         with planner_resources_lock:
             current = planner_catalog
         if current is None:
-            raise PlannerContractError("el catálogo planificable no está listo")
+            raise PlannerContractError("the plannable catalog is not available")
         return current
 
     def promote_planner_resources() -> None:

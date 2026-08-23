@@ -9,10 +9,10 @@ namespace Baxy.Kernel.Policy;
 public static class HonestyCorrection
 {
     /// <summary>
-    /// Señal de progreso que la App publica mientras entiende. No afirma un
-    /// resultado. Es el <c>Claim</c> de la traza cuando la verificación niega.
+    /// Etapa journalada mientras entiende. No afirma un resultado y no es
+    /// prosa visible: la frase la formula el modelo por la cola de compose.
     /// </summary>
-    public const string NonAssertingInProgress = "Estoy entendiendo tu petición.";
+    public const string NonAssertingInProgress = "understanding";
 
     public static HonestyCorrectionTrace Correct(
         string inProgressSignal,

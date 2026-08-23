@@ -115,7 +115,7 @@ public partial class MainWindow : Window
                 "boot",
                 ShellTraceStages.StartupFailed);
             _ = await ShowFieldFailureWhileOpenAsync(
-                "No pude abrir BAXY Field. Revisa el runtime local de WebView2.",
+                "BAXY Field failed to open. Check the local WebView2 runtime.",
                 exception.Message);
         }
     }

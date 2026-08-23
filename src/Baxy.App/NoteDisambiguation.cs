@@ -596,8 +596,13 @@ internal sealed record PendingTitleNote(PreparedOperation Prepared, string Title
             "note.restore" => "restaurar",
             _ => "procesar",
         };
-        return $"Quedó pendiente comprobar la petición para {action} «{Title}». "
-            + "No reinterpretaré ninguna opción tras el reinicio. "
-            + "Responde «continuar / continue» para recuperar su resultado seguro.";
+        return TurnVisibleFacts.Confirmation(
+            "note_recovery_pending",
+            TurnVisibleFacts.ContinueRetry,
+            extra: new System.Text.Json.Nodes.JsonObject
+            {
+                ["action"] = action,
+                ["title"] = Title,
+            });
     }
 }

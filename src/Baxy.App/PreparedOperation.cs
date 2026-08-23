@@ -31,7 +31,7 @@ internal sealed class PreparedOperation
 
         if (!ContractValidator.IsCanonicalIdentifier(missionId))
         {
-            throw new ArgumentException("El ID de misión local no es válido.", nameof(missionId));
+            throw new ArgumentException("The local mission id is not valid.", nameof(missionId));
         }
 
         if (!ContractValidator.IsCanonicalIdentifier(invocationId))
@@ -80,7 +80,7 @@ internal sealed class PreparedOperation
         EnsurePlaintextOperationAllowed(operationName);
         if (!ContractValidator.IsCanonicalIdentifier(missionId))
         {
-            throw new ArgumentException("El ID de misión local no es válido.", nameof(missionId));
+            throw new ArgumentException("The local mission id is not valid.", nameof(missionId));
         }
 
         JsonElement ownedArguments = JsonSerializer.SerializeToElement(arguments);
@@ -317,7 +317,7 @@ internal sealed class RetryableOperationRegistry
         if (!_operations.TryGetValue(current.IdentityKey, out PreparedOperation? registered)
             || !ReferenceEquals(current, registered))
         {
-            throw new InvalidOperationException("La petición pendiente ya no pertenece a la cola durable.");
+            throw new InvalidOperationException("The pending request is no longer in the durable queue.");
         }
 
         PreparedOperation candidate = preserveMission

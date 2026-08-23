@@ -1,0 +1,112 @@
+using System.Text.Json.Nodes;
+using Baxy.App;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
+using NUnit.Framework;
+
+namespace Baxy.Integration.Tests;
+
+[TestFixture]
+public sealed class Goal06VisibleVoiceTests
+{
+    [Test]
+    public void NarrationEmitsStructuredFactsNotSpanishProse()
+    {
+        string success = ProductOperationNarrator.Instance.Narrate(
+            "app.open",
+            OperationOutcome.Success());
+        string failure = ProductOperationNarrator.Instance.Narrate(
+            "app.open",
+            OperationOutcome.Failure("app_not_found"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserMessagePolicy.IsStructuredFacts(success), Is.True);
+            Assert.That(UserMessagePolicy.IsStructuredFacts(failure), Is.True);
+            Assert.That(success, Does.Contain("\"polarity\":\"success\""));
+            Assert.That(failure, Does.Contain("\"polarity\":\"failure\""));
+            Assert.That(success, Does.Not.Contain("Listo"));
+            Assert.That(failure, Does.Not.Contain("No pude"));
+        });
+    }
+
+    [Test]
+    public async Task ComposerPublishesInjectedProseForVerifiedSuccessAndUglyPaths()
+    {
+        var cases = new (string User, string Intent, string Source, string Authored)[]
+        {
+            (
+                "abre Spotify",
+                "status",
+                OperationVisibleFacts.FromOutcome("app.open", OperationOutcome.Success()),
+                "Listo, Spotify está abierto y sonando."),
+            (
+                "abre Spotify",
+                "error",
+                TurnVisibleFacts.Failure("provider_down"),
+                "No pude: Spotify no responde."),
+            (
+                "haz algo raro",
+                "error",
+                TurnVisibleFacts.Failure("out_of_catalog"),
+                "No pude: eso no lo hago."),
+            (
+                "hello",
+                "welcome",
+                TurnVisibleFacts.Welcome(),
+                "Hola, estoy listo."),
+        };
+
+        foreach ((string user, string intent, string source, string authored) in cases)
+        {
+            UserMessageEvent messageEvent = intent switch
+            {
+                "welcome" => UserMessageEvent.Welcome,
+                "error" => UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService),
+                _ => UserMessageEvent.Status,
+            };
+            UserMessageDraft draft = UserMessagePolicy.Create(source, messageEvent);
+            JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+            ModelMessageCompositionOutcome outcome = await ModelMessageComposer.ComposeAsync(
+                draft,
+                user,
+                facts,
+                (_, _, _, _, _) => Task.FromResult<MindComposedMessage?>(
+                    new MindComposedMessage(authored)),
+                cpuFallback: false,
+                allowRecovery: true,
+                CancellationToken.None);
+
+            Assert.That(outcome.Text, Is.EqualTo(authored), user);
+            Assert.That(outcome.Text, Is.Not.EqualTo(source), user);
+            Assert.That(
+                outcome.Text,
+                Does.Not.Contain("un momento").IgnoreCase,
+                user);
+            Assert.That(
+                UserMessagePolicy.IsStructuredFacts(outcome.Text!),
+                Is.False,
+                user);
+        }
+    }
+
+    [Test]
+    public void RecoveryDraftIsFactsNeverShownAsTheVisibleReply()
+    {
+        UserMessageDraft recovery = ModelMessageComposer.CreateRecoveryDraft();
+        Assert.That(UserMessagePolicy.IsStructuredFacts(recovery.Source), Is.True);
+        Assert.That(recovery.Source, Does.Not.Contain("No pude presentar"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(recovery.Source, recovery),
+            Is.EqualTo("structured_facts_not_prose"));
+    }
+
+    [Test]
+    public void ProgressStagesCarryNoVisibleProse()
+    {
+        foreach (string stage in FieldBridgeContract.ProgressStages)
+        {
+            Assert.That(FieldBridgeContract.Create(stage).Label, Is.Null, stage);
+        }
+    }
+}

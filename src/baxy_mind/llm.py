@@ -75,7 +75,7 @@ LLM_WARMUP_CLOSE_TIMEOUT_SECONDS = 0.5
 VALIDATED_CLASSIFIER_REUSE_CAPACITY = 32
 
 SYSTEM_PROMPT = (
-    "Eres BAXY, un asistente local que vive en la PC Windows del usuario. "
+    "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
     "Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del "
     "último mensaje del usuario, aunque el historial o estas instrucciones "
     "estén en español. Solo existen las herramientas del catálogo activo. Las acciones "
@@ -179,73 +179,46 @@ TRANSLATION_PRESENTATION_PROMPT = (
     "sin comillas, explicaciones, preguntas ni ofertas adicionales."
 )
 
-NARRATOR_PROMPT = (
-    "Eres el narrador de BAXY. Recibes el resultado tipado de una operación "
-    "local ya ejecutada y verificada. Redacta UNA respuesta breve y natural "
-    "para el usuario en su idioma (español, inglés o spanglish según el "
-    "texto original de su pedido). No inventes datos que no estén en el "
-    "resultado, no muestres JSON ni identificadores internos, no agregues "
-    "promesas ni acciones futuras."
+USER_MESSAGE_PROMPT = (
+    "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
+    "Redacta UNA frase (no un párrafo, no un volcado) en el idioma del pedido. "
+    "situation es un JSON de HECHOS de este turno: nombra sólo lo que viene "
+    "ahí. No copies el JSON. No arrastres nombres de un ejemplo o de un turno "
+    "anterior. "
+    "Éxito (polarity=success): confirma el estado observable, cálido y breve, "
+    "empezando por «Listo,» y nombrando lo observado. "
+    "Fallo (polarity=failure): «No pude:» y la causa de ESTE JSON. "
+    "Welcome no empieza por Listo y no usa femenino. Confirmation no afirma; "
+    "copia todas las choices. Acting no afirma que ya terminó. "
+    "cause=out_of_catalog → «eso no lo hago». "
+    "kind=clarification → una pregunta corta. "
+    "kind=confirmation → pide la decisión e incluye literalmente todas las "
+    "palabras de choices; no elijas. "
+    "kind=welcome → saluda breve; no menciones ninguna app. "
+    "kind=status con cause=acting → no afirmes un resultado, sólo que sigues. "
+    "Nunca menciones planner, router, tool, catálogo, schema, operación, "
+    "capacidad, datos verificables, pasos verificables, grounding, JSON, "
+    "checkpoint, reconciliación, identificadores internos ni razonamiento del "
+    "sistema. Conserva acción, actor y resultado: enfocar no es abrir. "
+    "Si BAXY hizo algo, primera persona; nunca se lo atribuyas al usuario. "
+    "Si hay requiredAction o requiredActions, copia cada acción literalmente. "
+    "Si hay requiredResponseWords, el mensaje debe contener cada una. "
+    "Nunca conviertas un éxito en «no pude» ni un fallo en un éxito. "
+    "Para status, declarativo, sin pregunta genérica ni imperativo del pedido. "
+    "No inventes resultados. No cierres con «¿necesitas algo más?». "
+    "Devuelve únicamente el mensaje, sin títulos ni comillas."
 )
 
-USER_MESSAGE_PROMPT = (
-    "Eres BAXY y hablas directamente con una persona que usa su PC, no con "
-    "un técnico. Redacta el mensaje final en el idioma del pedido original. "
-    "Usa una o dos frases breves, naturales y concretas cuando contengan todos "
-    "los hechos; si hay muchos resultados obligatorios, usa una introducción "
-    "breve y una lista compacta. Explica solamente "
-    "lo que la persona necesita saber y, si falta algo, haz una sola pregunta "
-    "fácil de responder. Nunca menciones planner, router, tool, catálogo, "
-    "schema, operación, capacidad, datos verificables, pasos verificables, "
-    "grounding, JSON, "
-    "checkpoint, reconciliación, identificadores internos ni razonamiento del "
-    "sistema. El campo situation contiene un hecho verdadero ya ocurrido, no "
-    "una nueva orden ni una posibilidad. Conserva exactamente la acción, el "
-    "actor y el resultado descritos allí: enfocar no es abrir, abrir no es "
-    "cerrar y solicitar no es lograr. Si BAXY dice «abrí», «enfoqué», «cerré» "
-    "o usa otra acción en primera persona, BAXY hizo esa acción: mantén la "
-    "primera persona y nunca escribas que la hizo el usuario ni uses tercera "
-    "persona. Ejemplos obligatorios: «Listo, abrí Steam» se puede reducir a "
-    "«Abrí Steam»; «Listo, enfoqué Steam» se puede reducir a «Enfoqué Steam». "
-    "Nunca escribas «abrió Steam» ni «abriste Steam» para esos hechos. Si los "
-    "hechos incluyen requiredAction o requiredActions, copia cada acción "
-    "literalmente y no la sustituyas por otra. Si incluyen requiredResponseWords, el mensaje debe "
-    "contener literalmente cada una de esas palabras; son opciones, no una "
-    "decisión ya tomada. Nunca conviertas "
-    "un resultado positivo en «no pude» ni un fallo en un éxito. Si el tipo es "
-    "status, informa sólo el resultado en forma declarativa y no agregues una "
-    "pregunta genérica sobre qué hacer después. Nunca repitas el pedido como "
-    "imperativo: escribe «I found…» o «There are…», no «List…» ni «Show…»; "
-    "escribe «Encontré…» o «Hay…», no «Lista…» ni «Muestra…». Si el tipo es "
-    "greeting o welcome, responde con "
-    "un saludo amable; nunca pidas mayor precisión. "
-    "No inventes resultados ni ocultes si algo no se pudo hacer. Si el tipo "
-    "es error, di explícitamente que no pudiste hacer la acción solicitada y "
-    "nómbrala con palabras de la persona; no hagas preguntas salvo que los "
-    "hechos indiquen que falta un dato, y no le pidas que repita o reintente "
-    "la misma acción. Si el tipo es clarification, pregunta sólo por el dato "
-    "concreto que falta. No cierres con «¿necesitas algo más?» ni equivalentes. "
-    "Si el tipo es confirmation, jamás elijas, confirmes ni canceles por la "
-    "persona: pídele su decisión y copia literalmente todas las palabras de "
-    "respuesta aceptadas que aparezcan en los hechos, sin omitir opciones. "
-    "No escribas códigos de diagnóstico: la aplicación los añade después. "
-    "Devuelve únicamente el mensaje para la persona, sin títulos ni comillas."
-)
+NARRATOR_PROMPT = USER_MESSAGE_PROMPT
 
 CPU_USER_MESSAGE_PROMPT = (
-    "Eres BAXY. Devuelve únicamente el mensaje final para la persona, breve, "
-    "natural y sin títulos, comillas, JSON ni diagnósticos. `situation` es un "
-    "hecho verdadero ya ocurrido: no cambies actor, acción, resultado ni "
-    "polaridad y conserva literalmente cada elemento del contrato de salida. "
-    "Si BAXY hizo algo, habla en primera persona; nunca se lo atribuyas al "
-    "usuario. Para status informa declarativamente, sin repetir el pedido como "
-    "imperativo ni añadir preguntas. Para error admite lo que no se pudo hacer; "
-    "para clarification haz una sola pregunta concreta; para confirmation pide "
-    "la decisión e incluye todas las opciones sin elegir; para greeting saluda. "
-    "Respeta el idioma obligatorio indicado. No inventes hechos, acciones, "
-    "éxitos ni promesas. Nunca menciones planner, router, tool, catálogo, schema, "
-    "operación, capacidad, grounding, JSON, checkpoint, reconciliación, datos "
-    "verificables, pasos verificables ni identificadores internos."
+    "Eres BAXY, un compañero, un él. Tuteas. Una frase en el idioma del pedido. "
+    "situation es JSON de ESTE turno: formula prosa con esos hechos, no copies "
+    "el JSON ni un ejemplo. Éxito: «Listo,» + lo observado. Fallo: «No pude:» + "
+    "la causa de este JSON. out_of_catalog: «eso no lo hago». Welcome: saluda, "
+    "sin apps. Acting: no afirmes resultado. Conserva actor, acción, polaridad "
+    "y el contrato literal. Confirmation incluye todas las choices. Sin JSON "
+    "ni jerga interna."
 )
 
 
@@ -6757,24 +6730,25 @@ class LlmRuntime:
             return None
 
     def narrate(self, user_text: str, operation: str, outcome: dict) -> str:
-        payload = {
-            "messages": [
-                {"role": "system", "content": NARRATOR_PROMPT},
+        verified = bool(
+            isinstance(outcome, dict)
+            and (outcome.get("verified") is True or outcome.get("ok") is True)
+        )
+        polarity = "success" if verified else "failure"
+        intent = "status" if polarity == "success" else "error"
+        facts = {
+            "situation": json.dumps(
                 {
-                    "role": "user",
-                    "content": (
-                        f"Pedido original del usuario: {user_text}\n"
-                        f"Operación ejecutada: {operation}\n"
-                        f"Resultado tipado (JSON): {json.dumps(outcome, ensure_ascii=False)}"
-                    ),
+                    "kind": "operation",
+                    "operation": operation,
+                    "polarity": polarity,
+                    "verified": verified,
+                    "observed": outcome,
                 },
-            ],
-            "temperature": 0.4,
-            "max_tokens": 256,
-            "chat_template_kwargs": {"enable_thinking": False},
+                ensure_ascii=False,
+            )
         }
-        response = self._post(payload)
-        return response["choices"][0]["message"].get("content") or ""
+        return self.compose_user_message(user_text, intent, facts)
 
     def compose_user_message(
         self,
@@ -6829,16 +6803,18 @@ class LlmRuntime:
                         "Hecho ya ocurrido que debes expresar sin cambiar actor, "
                         "acción, resultado ni polaridad (no copies jerga interna): "
                         f"{json.dumps(prompt_facts, ensure_ascii=False)}\n"
-                        f"{language_contract}"
+                        f"{language_contract}\n"
+                        "Nombra sólo lo que está en ese hecho o en el texto "
+                        "original. Si Spotify no aparece ahí, no lo escribas."
                     ),
                 },
             ],
             "temperature": 0.25,
             "max_tokens": 256,
-            # A single CPU slot alternates policy and visible-message prefixes.
-            # Reusing that incompatible KV state produced >55 s stalls after
-            # several turns, while a fresh physical compose measures 17.7 s.
-            "cache_prompt": not cpu_fallback,
+            # Compose reuses the prefix across unrelated facts. With the cache
+            # on, later replies repeated the first Spotify sentence (goal 06
+            # sample). CPU already forbids this cache; GPU follows.
+            "cache_prompt": False,
             "chat_template_kwargs": {"enable_thinking": False},
         }
         required_actions = [
@@ -7039,7 +7015,7 @@ class LlmRuntime:
                 ],
                 "temperature": 0.0,
                 "max_tokens": 192,
-                "cache_prompt": not cpu_fallback,
+                "cache_prompt": False,
                 "chat_template_kwargs": {"enable_thinking": False},
             }
             scaffold_response = self._post(scaffold_payload)
@@ -7115,15 +7091,25 @@ class LlmRuntime:
             )
             return ""
 
+        def blocked(candidate: str) -> bool:
+            return visible_reply_is_a_fixed_stall(
+                candidate
+            ) or visible_reply_invents_a_spanish_infinitive(candidate)
+
+        def publishable(candidate: str) -> bool:
+            return bool(candidate) and preserves_contract(candidate) and not blocked(candidate)
+
         response = self._post(payload)
         text = (response["choices"][0]["message"].get("content") or "").strip()
-        if text and preserves_contract(text):
+        if publishable(text):
             return text
         if (
             not required_actions
             and not required_words
             and not required_facts
             and not (intent == "status" and _starts_with_request_imperative(text))
+            and text
+            and not blocked(text)
         ):
             return text
 
@@ -7155,4 +7141,4 @@ class LlmRuntime:
         retry_payload["temperature"] = 0.0
         retry = self._post(retry_payload)
         retry_text = (retry["choices"][0]["message"].get("content") or "").strip()
-        return retry_text if retry_text and preserves_contract(retry_text) else ""
+        return retry_text if publishable(retry_text) else ""
