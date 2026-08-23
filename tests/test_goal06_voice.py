@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import inspect
+import json
 
 from baxy_mind import llm as llm_mod
 from baxy_mind.llm import (
@@ -9,7 +10,7 @@ from baxy_mind.llm import (
     NARRATOR_PROMPT,
     SYSTEM_PROMPT,
     USER_MESSAGE_PROMPT,
-    _named_state_hint,
+    _compose_shape_instruction,
     compose_visible_defect,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
@@ -35,70 +36,80 @@ def test_personality_lives_in_the_editable_prompt() -> None:
     assert NARRATOR_PROMPT == USER_MESSAGE_PROMPT
 
 
-def test_named_state_hint_is_one_sentence_with_name_and_state() -> None:
-    open_es = _named_state_hint(
+def test_shape_instruction_is_not_the_published_sentence() -> None:
+    open_es = _compose_shape_instruction(
         {"polarity": "success", "observed": {"app": "Word"}},
         "es",
         "abre Word",
     )
-    assert open_es == "Listo, Word está abierto."
-    assert "Una frase" not in open_es
-    assert "Di " not in open_es
-    open_en = _named_state_hint(
+    assert "Listo, Word está abierto" not in open_es
+    assert "observed.app" in open_es
+    open_en = _compose_shape_instruction(
         {"polarity": "success", "observed": {"app": "Word"}},
         "en",
         "open Word",
     )
-    assert open_en == "Word is open."
-    assert "the app" not in open_en.casefold()
-    assert "Say " not in open_en
-    playing = _named_state_hint(
-        {"polarity": "success", "observed": {"app": "Spotify", "playing": True}},
-        "en",
-        "open Spotify",
-    )
-    assert "Spotify is open and playing" in playing
-    note = _named_state_hint(
+    assert "Word is open" not in open_en
+    note = _compose_shape_instruction(
         {"polarity": "success", "observed": {"title": "Ideas"}},
         "es",
         "crea una nota Ideas",
     )
-    assert note == "Listo, la nota Ideas está creada."
-    volume = _named_state_hint(
-        {"polarity": "success", "observed": {"level": 80}},
-        "es",
-        "sube el volumen a 80",
-    )
-    assert volume == "Listo, el volumen está en 80."
-    feminine = _named_state_hint(
-        {"polarity": "success", "observed": {"app": "Calculadora"}},
-        "es",
-        "abre Calculadora",
-    )
-    assert feminine == "Listo, Calculadora está abierta."
-    mission = _named_state_hint(
-        {
-            "kind": "status",
-            "cause": "mission_completed",
-            "polarity": "success",
-            "steps": ["Abrí Steam.", "Puse el volumen en 40 %."],
-        },
-        "es",
-        "abre Steam y sube el volumen",
-    )
-    assert "Steam" in mission and "40" in mission
-    assert mission.startswith("Listo,")
-    welcome = _named_state_hint(
+    assert "la nota Ideas está creada" not in note
+    welcome = _compose_shape_instruction(
         {"kind": "welcome", "polarity": "success"},
         "en",
         "hi",
     )
     assert welcome == ""
-    assert _named_state_hint(
-        {"polarity": "failure", "observed": {"app": "Word"}},
-        "es",
+
+
+def test_compose_payload_does_not_contain_published_sentences() -> None:
+    captured: list[dict] = []
+
+    class FakeClient(llm_mod.LlmRuntime):
+        def __init__(self) -> None:  # noqa: D107
+            pass
+
+        def _post(self, payload):  # noqa: ANN001
+            captured.append(payload)
+            return {"choices": [{"message": {"content": "Listo, Word está abierto."}}]}
+
+    client = FakeClient()
+    client.compose_user_message(
         "abre Word",
-    ) == ""
+        "status",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"app.open","polarity":"success",'
+                '"verified":true,"observed":{"app":"Word"}}'
+            )
+        },
+    )
+    blob = json.dumps(captured, ensure_ascii=False)
+    assert "Listo, Word está abierto" not in blob
+    captured.clear()
+    client.compose_user_message(
+        "ábrela",
+        "clarification",
+        {"situation": '{"kind":"clarification","cause":"ambiguous_request","polarity":"pending"}'},
+    )
+    blob = json.dumps(captured, ensure_ascii=False)
+    assert "¿Qué quieres abrir?" not in blob
+    assert "What do you want to open?" not in blob
+    captured.clear()
+    client.compose_user_message(
+        "abre Steam",
+        "error",
+        {
+            "situation": (
+                '{"kind":"failure","cause":"app_not_found","polarity":"failure",'
+                '"target":"Steam"}'
+            )
+        },
+    )
+    blob = json.dumps(captured, ensure_ascii=False)
+    assert "no la encontré" not in blob.casefold()
 
 
 def test_narrate_is_compose_not_a_parallel_prompt() -> None:
@@ -117,6 +128,9 @@ def test_invented_infinitives_and_stalls_are_still_rejected() -> None:
     assert visible_reply_invents_a_spanish_infinitive("Cambia tetera por Descalzica.")
     assert visible_reply_invents_a_spanish_infinitive(
         "Listo, Abrbió Word y creó la nota."
+    )
+    assert visible_reply_invents_a_spanish_infinitive(
+        "The window washas been closed."
     )
     assert visible_reply_is_a_fixed_stall("un momento…")
     assert not visible_reply_is_a_fixed_stall("Listo, Spotify está abierto y sonando")

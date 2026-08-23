@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -107,43 +106,36 @@ internal sealed class PendingNoteChoice
     {
         int pageNumber = (PageOffset / PageSize) + 1;
         int pageCount = (Candidates.Count + PageSize - 1) / PageSize;
-        var message = new StringBuilder();
-        message.Append(CultureInfo.InvariantCulture, $"Encontré {Candidates.Count} notas llamadas «{Title}». No hice cambios.");
-        message.AppendLine();
-        message.AppendLine();
-        message.Append(ActionDescription(OperationName));
-        message.Append(CultureInfo.InvariantCulture, $" (página {pageNumber} de {pageCount}):");
-
+        var items = new JsonArray();
         for (int index = PageOffset; index < LastVisibleNumber; index++)
         {
             NoteChoiceCandidate candidate = Candidates[index];
-            string state = candidate.IsTrashed ? "En la papelera" : "Activa";
-            string preview = candidate.ContentPreview.Length == 0
-                ? "sin contenido"
-                : $"«{candidate.ContentPreview}»";
-            message.AppendLine();
-            message.Append(
-                CultureInfo.InvariantCulture,
-                $"{index + 1}. {state} · actualizada {candidate.UpdatedAtUtc:yyyy-MM-dd HH:mm} UTC · {preview}");
+            items.Add(new JsonObject
+            {
+                ["n"] = index + 1,
+                ["trashed"] = candidate.IsTrashed,
+                ["updated"] = candidate.UpdatedAtUtc.ToString(
+                    "yyyy-MM-dd HH:mm",
+                    CultureInfo.InvariantCulture),
+                ["preview"] = candidate.ContentPreview,
+            });
         }
 
-        message.AppendLine();
-        message.AppendLine();
-        message.Append(
-            CultureInfo.InvariantCulture,
-            $"Responde con un número del {FirstVisibleNumber} al {LastVisibleNumber}");
-        if (LastVisibleNumber < Candidates.Count)
-        {
-            message.Append(", o escribe «siguiente / next»");
-        }
-
-        if (PageOffset > 0)
-        {
-            message.Append(", «anterior / previous»");
-        }
-
-        message.Append(" o «cancelar / cancel».");
-        return message.ToString();
+        return TurnVisibleFacts.Clarification(
+            "note_choice",
+            new JsonObject
+            {
+                ["count"] = Candidates.Count,
+                ["title"] = Title,
+                ["page"] = pageNumber,
+                ["pageCount"] = pageCount,
+                ["first"] = FirstVisibleNumber,
+                ["last"] = LastVisibleNumber,
+                ["hasNext"] = LastVisibleNumber < Candidates.Count,
+                ["hasPrevious"] = PageOffset > 0,
+                ["items"] = items,
+                ["action"] = OperationName,
+            });
     }
 
     public bool MoveNext()
@@ -319,14 +311,6 @@ internal sealed class PendingNoteChoice
 
     private static bool IsChoiceOperation(string operationName) =>
         operationName is "note.read" or "note.trash" or "note.restore";
-
-    private static string ActionDescription(string operationName) => operationName switch
-    {
-        "note.read" => "Elige cuál quieres leer",
-        "note.trash" => "Elige cuál quieres enviar a la papelera",
-        "note.restore" => "Elige cuál quieres restaurar",
-        _ => throw new InvalidOperationException("La operación no admite desambiguación."),
-    };
 }
 
 internal enum NoteChoiceReplyKind

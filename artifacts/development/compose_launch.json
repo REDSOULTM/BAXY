@@ -16,8 +16,8 @@
         }
       },
       "reply_type": "message.compose.result",
-      "reply_text": "Spotify está abierto y sonando.",
-      "latency_s": 2.235,
+      "reply_text": "Spotify está abierto.",
+      "latency_s": 2.105,
       "score": {
         "empty": false,
         "invented": false,
@@ -39,8 +39,8 @@
         "target": "Spotify"
       },
       "reply_type": "message.compose.result",
-      "reply_text": "No pude: Spotify no responde.",
-      "latency_s": 0.213,
+      "reply_text": "No pude: el dispositivo no responde.",
+      "latency_s": 0.234,
       "score": {
         "empty": false,
         "invented": false,

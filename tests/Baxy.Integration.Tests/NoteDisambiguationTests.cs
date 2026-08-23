@@ -75,22 +75,23 @@ public sealed partial class NoteDisambiguationTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(firstPage, Does.Contain("1. Activa"));
-            Assert.That(firstPage, Does.Contain("5. Activa"));
-            Assert.That(firstPage, Does.Not.Contain("6. Activa"));
-            Assert.That(firstPage, Does.Contain("siguiente / next"));
+            Assert.That(firstPage.TrimStart(), Does.StartWith("{"));
+            Assert.That(firstPage, Does.Contain("\"n\":1"));
+            Assert.That(firstPage, Does.Contain("\"n\":5"));
+            Assert.That(firstPage, Does.Not.Contain("\"n\":6"));
+            Assert.That(firstPage, Does.Contain("\"hasNext\":true"));
+            Assert.That(firstPage, Does.Not.Contain("Encontré"));
             Assert.That(ids.All(id => !firstPage.Contains(id.ToString("D"), StringComparison.Ordinal)), Is.True);
-            Assert.That(firstPage.TrimStart(), Does.Not.StartWith("{"));
-            Assert.That(firstPage.TrimStart(), Does.Not.StartWith("["));
         });
 
         Assert.That(choice.MoveNext(), Is.True);
         string secondPage = choice.CreatePrompt();
         Assert.Multiple(() =>
         {
-            Assert.That(secondPage, Does.Contain("6. En la papelera"));
-            Assert.That(secondPage, Does.Contain("7. Activa"));
-            Assert.That(secondPage, Does.Contain("anterior / previous"));
+            Assert.That(secondPage, Does.Contain("\"n\":6"));
+            Assert.That(secondPage, Does.Contain("\"n\":7"));
+            Assert.That(secondPage, Does.Contain("\"trashed\":true"));
+            Assert.That(secondPage, Does.Contain("\"hasPrevious\":true"));
             Assert.That(choice.TrySelect(1, out _), Is.False);
             Assert.That(choice.TrySelect(6, out NoteChoiceCandidate? selected), Is.True);
             Assert.That(selected?.NoteId, Is.EqualTo(ids[5]));
@@ -118,7 +119,7 @@ public sealed partial class NoteDisambiguationTests
             Assert.That(choice.LastVisibleNumber, Is.EqualTo(512));
             Assert.That(choice.TrySelect(512, out NoteChoiceCandidate? selected), Is.True);
             Assert.That(selected?.NoteId, Is.EqualTo(ids[511]));
-            Assert.That(lastPage, Does.Contain("512. En la papelera"));
+            Assert.That(lastPage, Does.Contain("\"n\":512"));
             Assert.That(UuidLikeText().IsMatch(lastPage), Is.False);
         });
     }

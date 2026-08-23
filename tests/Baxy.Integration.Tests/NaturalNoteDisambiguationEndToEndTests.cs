@@ -322,21 +322,26 @@ public sealed partial class NaturalNoteDisambiguationEndToEndTests
 
     private static int FindChoice(string prompt, string preview)
     {
-        string line = prompt.Split('\n')
-            .Single(candidate => candidate.Contains($"«{preview}»", StringComparison.Ordinal));
-        int separator = line.IndexOf('.', StringComparison.Ordinal);
-        return int.Parse(line.AsSpan(0, separator), System.Globalization.CultureInfo.InvariantCulture);
+        using JsonDocument document = JsonDocument.Parse(prompt);
+        foreach (JsonElement item in document.RootElement.GetProperty("items").EnumerateArray())
+        {
+            if (string.Equals(item.GetProperty("preview").GetString(), preview, StringComparison.Ordinal))
+            {
+                return item.GetProperty("n").GetInt32();
+            }
+        }
+
+        throw new InvalidOperationException($"No choice listed preview {preview}.");
     }
 
     private static void AssertPromptIsPrivate(string prompt, int expectedCount)
     {
         Assert.Multiple(() =>
         {
-            Assert.That(prompt, Does.Contain($"Encontré {expectedCount} notas"));
-            Assert.That(prompt, Does.Contain("No hice cambios"));
+            Assert.That(prompt.TrimStart(), Does.StartWith("{"));
+            Assert.That(prompt, Does.Contain($"\"count\":{expectedCount}"));
+            Assert.That(prompt, Does.Not.Contain("Encontré"));
             Assert.That(UuidPattern().IsMatch(prompt), Is.False);
-            Assert.That(prompt.TrimStart(), Does.Not.StartWith("{"));
-            Assert.That(prompt.TrimStart(), Does.Not.StartWith("["));
         });
     }
 

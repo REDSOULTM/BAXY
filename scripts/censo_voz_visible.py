@@ -26,7 +26,8 @@ import sys
 FRASE = re.compile(r'"((?:[^"\\]|\\.){12,400}?)"')
 PALABRAS_ES = re.compile(
     u'(?i)\\b(no pude|no puedo|listo|estoy|momento|revisa|puedes|qué|cómo|'
-    u'acción|petición|misión|hola|intentarlo|reformular|conserv|detuve)\\b')
+    u'acción|petición|misión|hola|intentarlo|reformular|conserv|detuve|'
+    u'encontré)\\b')
 REGEXISH = re.compile(r'[\^\$\|\[\]]')
 
 FICHEROS_DE_ENTRADA = ('llm.py', 'router_bank_sources.py', 'public_turn_corpus.py')

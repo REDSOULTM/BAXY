@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Contracts;
 
 namespace Baxy.App;
@@ -175,7 +176,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         {
             0 when operationName == "memory.session.clear" =>
                 "No había memoria temporal de esta sesión para eliminar.",
-            0 => "No encontré memorias que eliminaran esa selección exacta.",
+            0 => TurnVisibleFacts.Failure("memory_forget_empty"),
             1 => "Eliminé una memoria local.",
             _ => $"Eliminé {deleted} memorias locales.",
         };
@@ -443,36 +444,37 @@ internal sealed record MemoryOperationResponseProjection(string Message)
     {
         if (projected.TotalCount == 0)
         {
-            return "No encontré memorias visibles para esa consulta.";
+            return TurnVisibleFacts.Failure("memory_none");
         }
 
-        var builder = new StringBuilder();
+        var records = new JsonArray();
         int shown = 0;
         foreach (ProjectedRecord record in projected.Records.Take(MaximumProjectedRecords))
         {
             string label = TruncateText(record.Label, 160, "…");
             string value = TruncateText(record.Value, 512, "…");
-            string line = $"\n• {label}: {value}";
-            if (builder.Length + line.Length + 96 > MaximumMessageLength)
+            records.Add(new JsonObject
+            {
+                ["label"] = label,
+                ["value"] = value,
+            });
+            shown++;
+            if (shown >= MaximumProjectedRecords)
             {
                 break;
             }
-
-            _ = builder.Append(line);
-            shown++;
         }
 
-        string header = shown switch
+        string cause = shown == 0 ? "memory_view_unsafe" : "memory_records";
+        JsonObject extra = new()
         {
-            0 => TurnVisibleFacts.Failure("memory_view_unsafe"),
-            1 => "Encontré esta memoria local:",
-            _ => $"Encontré estas {shown} memorias locales:",
+            ["shown"] = shown,
+            ["total"] = projected.TotalCount,
+            ["records"] = records,
         };
-        string suffix = projected.TotalCount > shown
-            ? $"\nMostré {shown} de {projected.TotalCount} memorias visibles."
-            : string.Empty;
-        string message = string.Concat(header, builder.ToString(), suffix);
-        return TruncateText(message, MaximumMessageLength, "… [vista truncada]");
+        return shown == 0
+            ? TurnVisibleFacts.Failure(cause, extra)
+            : TurnVisibleFacts.Status(cause, extra);
     }
 
     private static bool HasExactProperties(JsonElement element, string[] expected)

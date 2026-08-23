@@ -186,8 +186,9 @@ USER_MESSAGE_PROMPT = (
     "Pedido en español, polarity=success y kind no es welcome ni confirmation "
     "ni acting: «Listo,» + el estado observable. "
     "Pedido en español, polarity=failure: «No pude:» y la causa en prosa "
-    "(se agotó el tiempo; no responde; eso no lo hago; no la encontré; "
-    "no pude usar esa respuesta). "
+    "(se agotó el tiempo; no responde; eso no lo hago; no pude encontrarlo; "
+    "no pude usar esa respuesta). Concuerda el género con el nombre, no copies "
+    "una plantilla. "
     "Pedido en inglés, polarity=success: una frase declarativa del estado; "
     "nunca Listo ni un imperativo. "
     "Pedido en inglés, polarity=failure: «I couldn't:» y la causa en inglés. "
@@ -195,7 +196,8 @@ USER_MESSAGE_PROMPT = (
     "kind=confirmation: una pregunta con confirm* y cancel*; no copies las "
     "cuatro; no afirmes. "
     "cause=acting: di que sigues, sin afirmar el resultado. "
-    "kind=clarification: una pregunta corta, de tú. "
+    "kind=clarification: una pregunta corta, de tú, sobre lo que falta. "
+    "Si situation trae items, una frase y la lista numerada. "
     "Nunca planner, router, tool, catálogo, schema, operación, JSON ni "
     "identificadores. Primera persona si BAXY actuó. Una frase. "
     "Devuelve sólo el mensaje."
@@ -2533,6 +2535,7 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "creadel",
         "relojillo",
         "abrbio",
+        "washas",
     }
 )
 _THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
@@ -2594,32 +2597,27 @@ _SUCCESS_OPENERS = re.compile(
 _FAILURE_MARKERS = re.compile(
     r"(?:no pude|no puedo|couldn't|could not|can't|cannot|"
     r"eso no lo hago|i don't do that|i do not do that|"
-    r"no la encontré|no responde|se agotó|"
+    r"no la encontré|no lo encontré|no pude encontr|"
+    r"no responde|se agotó|"
     r"didn't find|did not find|didn't respond|did not respond|"
-    r"time ran out)",
+    r"time ran out|not found)",
     re.IGNORECASE,
 )
-_CAUSE_PLAIN = {
-    "timeout": "se agotó el tiempo",
-    "provider_down": "no responde",
-    "out_of_catalog": "eso no lo hago",
-    "model_invalid": "no pude usar esa respuesta",
-    "app_not_found": "no la encontré",
-    "mission_failed": "no pude completar la misión",
-    "acting": "sigo en ello",
-    "ambiguous_request": "no queda claro qué pediste",
-    "memory_forget_irreversible": "esto no se puede deshacer",
-}
-_CAUSE_PLAIN_EN = {
+# Ungendered fact labels for the JSON the model sees. Spanish wording lives
+# only in USER_MESSAGE_PROMPT, so changing the voice is editing that text.
+_CAUSE_FACT = {
     "timeout": "time ran out",
-    "provider_down": "it didn't respond",
-    "out_of_catalog": "I don't do that",
-    "model_invalid": "I couldn't use that answer",
-    "app_not_found": "I didn't find it",
-    "mission_failed": "I couldn't finish the mission",
-    "acting": "I'm still on it",
-    "ambiguous_request": "it's not clear what you mean",
-    "memory_forget_irreversible": "this cannot be undone",
+    "provider_down": "no response",
+    "out_of_catalog": "outside what I do",
+    "model_invalid": "unusable answer",
+    "app_not_found": "not found",
+    "mission_failed": "mission unfinished",
+    "acting": "still working",
+    "ambiguous_request": "unclear request",
+    "memory_forget_irreversible": "cannot be undone",
+    "memory_none": "no matching memories",
+    "note_choice": "choose a note",
+    "memory_records": "listed memories",
 }
 
 
@@ -2640,9 +2638,7 @@ def _cause_in_prose(cause: str, language: str) -> str:
     key = cause.strip()
     if not key:
         return ""
-    if language == "en":
-        return _CAUSE_PLAIN_EN.get(key, _CAUSE_PLAIN.get(key, key.replace("_", " ")))
-    return _CAUSE_PLAIN.get(key, key.replace("_", " "))
+    return _CAUSE_FACT.get(key, key.replace("_", " "))
 
 
 def _compose_situation_payload(situation: dict, language: str) -> dict:
@@ -2679,72 +2675,35 @@ def _app_is_feminine(name: str) -> bool:
     return name.casefold() in _FEMININE_APP_NAMES
 
 
-def _named_state_hint(situation: dict, language: str, user_text: str) -> str:
-    """First-pass shape: name + state in one sentence. Never a published fallback."""
+def _compose_shape_instruction(situation: dict, language: str, user_text: str) -> str:
+    """Describe what to name. Never the sentence the person should read."""
 
+    _ = user_text
     if str(situation.get("polarity") or "").strip().lower() != "success":
         return ""
     kind = str(situation.get("kind") or "").strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()
     if cause == "acting" or kind in {"welcome", "confirmation", "clarification"}:
         return ""
-    english = language == "en"
+    bits: list[str] = []
     steps = situation.get("steps")
-    if (
-        cause == "mission_completed"
-        and isinstance(steps, list)
-        and len(steps) >= 2
-    ):
-        bits = [str(step).strip().rstrip(".") for step in steps if str(step).strip()]
-        if len(bits) < 2:
-            return ""
-        if english:
-            return " and ".join(bits) + "."
-        rest = [bit[:1].lower() + bit[1:] if bit else bit for bit in bits[1:]]
-        return "Listo, " + " y ".join([bits[0], *rest]) + "."
+    if cause == "mission_completed" and isinstance(steps, list) and len(steps) >= 2:
+        bits.append("Mention every step once.")
     observed = situation.get("observed")
-    if not isinstance(observed, dict):
-        return ""
-    closed = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold()) is not None
-    parts: list[str] = []
-    app = observed.get("app")
-    title = observed.get("title")
-    if isinstance(app, str) and app.strip():
-        if english:
-            if closed:
-                shape = f"{app} is closed"
-            elif observed.get("playing") is True:
-                shape = f"{app} is open and playing"
-            else:
-                shape = f"{app} is open"
-        else:
-            feminine = _app_is_feminine(app)
-            if closed:
-                state = "cerrada" if feminine else "cerrado"
-            elif observed.get("playing") is True:
-                state = "abierta y sonando" if feminine else "abierto y sonando"
-            else:
-                state = "abierta" if feminine else "abierto"
-            shape = f"Listo, {app} está {state}"
-        parts.append(shape + ".")
-    if isinstance(title, str) and title.strip():
-        if english:
-            parts.append(f"The note {title} is saved.")
-        else:
-            parts.append(f"Listo, la nota {title} está creada.")
-    level = observed.get("level")
-    if isinstance(level, int) or (isinstance(level, str) and str(level).strip()):
-        if english:
-            parts.append(f"The volume is {level}.")
-        else:
-            parts.append(f"Listo, el volumen está en {level}.")
-    local_time = observed.get("localTime")
-    if isinstance(local_time, str) and local_time.strip():
-        if english:
-            parts.append(f"It is {local_time}.")
-        else:
-            parts.append(f"Listo, son las {local_time}.")
-    return "\n".join(parts)
+    if isinstance(observed, dict):
+        if isinstance(observed.get("app"), str) and observed["app"].strip():
+            bits.append("Name observed.app. State open, closed or playing from the facts.")
+        if isinstance(observed.get("title"), str) and observed["title"].strip():
+            bits.append("Name the note title.")
+        if "level" in observed:
+            bits.append("Name the volume number.")
+        if isinstance(observed.get("localTime"), str) and observed["localTime"].strip():
+            bits.append("Name the local time.")
+        if "muted" in observed:
+            bits.append("State muted matching observed.muted.")
+    if language == "en" and bits:
+        bits.append("English only. No Listo.")
+    return " ".join(bits)
 
 
 def _strip_think_tags(text: str) -> str:
@@ -2808,10 +2767,12 @@ def compose_visible_defect(
     if re.search(
         r"estado observable|observable state|observed state|observed status|"
         r"\bthe operation\b|\bla operaci[oó]n\b|\bthe status\b|"
-        r"one english sentence|^una frase\b",
+        r"one english sentence|^una frase\b|\bcontrato\b|\bobservado\b",
         folded,
     ):
         return "internal_code"
+    if cause == "timeout" and "trajo" in folded:
+        return "invented"
     if re.match(r"^\s*(?:say|di)\b", folded):
         return "copied_instruction"
     if re.search(r"(?m)^[a-z]{8,}$", folded):
@@ -7174,50 +7135,31 @@ class LlmRuntime:
         cause = str(situation.get("cause") or "").strip()
         kind = str(situation.get("kind") or intent).strip().lower()
         polarity = str(situation.get("polarity") or "").strip().lower()
-        if cause in _CAUSE_PLAIN:
-            payload["messages"][1]["content"] += (
-                f"\nCausa en prosa, no el código: {_cause_in_prose(cause, response_language)}."
-            )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
-                "\nSaluda con Hi." if response_language == "en"
-                else "\nSaluda con Hola. Prohibido Listo y palabras inglesas."
+                "\nGreet briefly, masculine, no apps."
             )
         elif intent == "confirmation" or kind == "confirmation":
             payload["messages"][1]["content"] += (
                 "\nOne question with confirm and cancel. Do not assert."
-                if response_language == "en"
-                else "\nUna pregunta con confirmar y cancelar. No afirmes."
             )
         elif cause == "acting":
             payload["messages"][1]["content"] += (
-                "\nDi que sigues. Prohibido Listo y prohibido afirmar el resultado."
+                "\nSay you are still on it. Do not claim the result."
             )
         elif intent == "clarification" or kind == "clarification":
-            folded_user = (user_text or "").casefold()
-            if response_language == "en":
-                if re.search(r"\bopen\b", folded_user):
-                    question = "What do you want to open?"
-                elif re.search(r"\bclose\b", folded_user):
-                    question = "What do you want to close?"
-                else:
-                    question = "What do you mean?"
-            elif re.search(r"abre|ábr", folded_user):
-                question = "¿Qué quieres abrir?"
-            elif re.search(r"cierr", folded_user):
-                question = "¿Qué quieres cerrar?"
-            else:
-                question = "¿Qué quieres decir?"
-            payload["messages"][1]["content"] += f"\n{question}"
+            payload["messages"][1]["content"] += (
+                "\nAsk one short question that disambiguates. Do not guess."
+            )
         elif response_language == "en" and (
             intent == "error" or polarity == "failure"
         ):
             payload["messages"][1]["content"] += (
                 "\nEnglish only. Start with I couldn't:"
             )
-        named_hint = _named_state_hint(situation, response_language, user_text)
-        if named_hint:
-            payload["messages"][1]["content"] += "\n" + named_hint
+        shape = _compose_shape_instruction(situation, response_language, user_text)
+        if shape:
+            payload["messages"][1]["content"] += "\n" + shape
         elif (
             response_language == "en"
             and polarity == "success"
@@ -7230,34 +7172,14 @@ class LlmRuntime:
                 "operation, or observed. Never start with an imperative."
             )
         observed = situation.get("observed")
-        if isinstance(observed, dict) and "muted" in observed:
-            if response_language == "en":
-                payload["messages"][1]["content"] += (
-                    "\nSay the audio is muted."
-                    if observed.get("muted") is True
-                    else "\nSay the audio is unmuted. Do not say muted alone."
-                )
-            elif observed.get("muted") is True:
-                payload["messages"][1]["content"] += (
-                    "\nDi que el audio quedó silenciado."
-                )
-            else:
-                payload["messages"][1]["content"] += (
-                    "\nDi que el audio ya no está silenciado o que se reactivó."
-                )
-        elif re.search(r"silenci|\bmute\b", (user_text or "").casefold()) and (
-            not isinstance(observed, dict) or "muted" not in observed
-        ) and str(situation.get("operation") or "") != "audio.mute":
-            app = observed.get("app") if isinstance(observed, dict) else None
-            if isinstance(app, str) and app.strip():
-                payload["messages"][1]["content"] += (
-                    f"\nSólo di que {app} está abierto. "
-                    "Prohibido silencio, mute y estado observable."
-                )
-            else:
-                payload["messages"][1]["content"] += (
-                    "\nNo menciones silenciar ni mute: no está en lo observado."
-                )
+        if (
+            re.search(r"silenci|\bmute\b", (user_text or "").casefold())
+            and (not isinstance(observed, dict) or "muted" not in observed)
+            and str(situation.get("operation") or "") != "audio.mute"
+        ):
+            payload["messages"][1]["content"] += (
+                "\nDo not mention mute: it is not in observed."
+            )
         required_facts = [
             str(value).strip()
             for value in (facts.get("requiredFacts") or [])
@@ -7590,10 +7512,6 @@ class LlmRuntime:
             },
         ]
         retry_payload["temperature"] = 0.0
-        if named_hint:
-            retry_payload["messages"][1]["content"] = (
-                named_hint + "\nDevuelve sólo esa frase."
-            )
         retry = self._post(retry_payload)
         retry_text = _strip_think_tags(
             (retry["choices"][0]["message"].get("content") or "").strip()
