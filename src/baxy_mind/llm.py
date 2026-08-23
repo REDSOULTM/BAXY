@@ -2541,6 +2541,9 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "abrbio",
         "washas",
         "tiempoempo",
+        "silo",
+        "silen",
+        "silenci",
     }
 )
 _THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
@@ -7642,7 +7645,7 @@ class LlmRuntime:
             "internal_code": "Sin códigos internos ni jerga de contrato.",
             "confirmation_asserted": "Pregunta; no afirmes.",
             "welcome_opener": "Saluda; evita Listo.",
-            "invented": "No invented verbs. If the wait ended, say that plainly.",
+            "invented": "No invented or truncated words.",
             "welcome_repeat": "Un solo Hola.",
             "copied_instruction": "Devuelve el mensaje, no la instrucción.",
             "lowercase": "Empieza con mayúscula.",

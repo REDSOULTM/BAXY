@@ -16,8 +16,8 @@
         }
       },
       "reply_type": "message.compose.result",
-      "reply_text": "Spotify está abierto y está reproduciéndose.",
-      "latency_s": 2.829,
+      "reply_text": "Listo, Spotify está abierto y está reproduciéndose.",
+      "latency_s": 2.747,
       "score": {
         "empty": false,
         "invented": false,
@@ -40,7 +40,7 @@
       },
       "reply_type": "message.compose.result",
       "reply_text": "No pude: Spotify no responde.",
-      "latency_s": 0.339,
+      "latency_s": 0.214,
       "score": {
         "empty": false,
         "invented": false,

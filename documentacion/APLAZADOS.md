@@ -50,7 +50,8 @@ goal.
 - **Excepciones internas pasadas a inglés** (`The local request id is already in use.`) — no son voz; el censo las contaba por «petición». *Goal 06.*
 - **Acting copia «estado observable»** — **cerrado en compose**: acting usa el prompt CPU y tira la locución; la muestra dice «Sigo adelante.» / «Still working on the issue.» *Goal 06.*
 - **Horas sueltas** — «The local time is 09:05.» / «La hora actual es las 22:10.» El número está; no se exigió más prosa. *Goal 06.*
-- **Mute truncado** — «Los altavoces están silo.» El nombre está; el participio se cortó. Rechazarlo vaciaba. *Goal 06.*
+- **Mute truncado «silo»** — **cerrado en compose**: token inventado; la muestra dice «Listo, el volumen está mutado.» *Goal 06.*
+- **Mute que nombra volumen** — «Listo, el volumen está mutado.» cuando seen sólo trae muted. *Goal 06.*
 - **Nota que se dice abierta** — «La nota Gamma está abierta.» Confunde nota con ventana. *Goal 06.*
 - **Unmute en inglés telegráfico** — «Unmuted.» / «Muted.» Nombran el estado; no son una frase de compañero. *Goal 06.*
 - **Aclaración que adivina** — «open it» pregunta por volume. Compose no trae ítems; el modelo rellena. *Goal 06.*

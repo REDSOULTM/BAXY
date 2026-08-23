@@ -48,23 +48,24 @@ La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose envia
 Corrida: `py -3.12 scripts/goal06_voice_sample.py artifacts/development` sobre
 Qwen3-4B-Q4_K_M, sidecar real, `type=message.compose.result`. Evidencia:
 `artifacts/development/goal06_cien_respuestas.jsonl` y
-`artifacts/development/goal06_prosa_ab.json`. n=100, scorer bad=0, p50 0,24 s.
+`artifacts/development/goal06_prosa_ab.json`. n=100, scorer bad=0, p50 0,22 s.
 
 Compose no recibe ni reintenta la frase publicada. Tercer intento si hace falta,
 aún sobre hechos JSON. Causas sin género. `effect=closed` sólo en éxitos.
 Acting no ve el prompt con «estado observable»; el fallo de misión no recibe
 los pasos hechos.
 
-Leídas a mano las 100. Cero vacíos. Cero «estado observable». Cero «I opened
-Word» en mission-fail. Timeout/close/mute/open-en-Terminal hablan: «No pude: el
-tiempo para esperar se agotó.» / «The window is closed.» / «Los altavoces están
-silo.» / «Terminal is open.» / «Steam está cerrado.» Inglés de open nombra la
-app. Acting: «Sigo adelante.» / «Still working on the issue.» (no afirma el
-resultado). Mission-fail-en: «I couldn't: mission unfinished.» Notas: «Nota:
-Ideas» / «Listo, el título es "Alfa" y hay una nota.»
+Leídas a mano las 100. Cero vacíos. Cero palabras inventadas. Cero «estado
+observable». Cero «I opened Word» en mission-fail. Timeout/close/mute/open-en-
+Terminal hablan: «No pude: el tiempo para esperar se agotó.» / «The window is
+closed.» / «Listo, el volumen está mutado.» / «Terminal is open.» / «Steam está
+cerrado.» Inglés de open nombra la app. Acting: «Sigo adelante.» / «Still
+working on the issue.» (no afirma el resultado). Mission-fail-en: «I couldn't:
+mission unfinished.» Notas: «Nota: Ideas» / «Listo, el título es "Alfa" y hay
+una nota.»
 
-Quedan truncaciones («silo»), notas dichas «abiertas», unmute telegráfico
-(«Unmuted.») y horas sueltas. Anotado.
+Quedan notas dichas «abiertas», unmute telegráfico («Unmuted.») y horas
+sueltas. Anotado.
 
 ## 6. Criterios
 

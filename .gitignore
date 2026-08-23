@@ -22,6 +22,9 @@ gui/ui_field/node_modules/
 # Transcripts de sesiones de desarrollo
 ContextoFable.md
 
+# Harness scratch; never part of the product tree
+/scratch/
+
 # Trazas crudas de corridas que nadie citó. El marcador (.json) de cada corrida
 # SÍ se versiona; la traza (.telemetry.jsonl / .turn-audit.jsonl) pesa ~900 KB
 # por corrida y sólo entra al repositorio cuando un documento la usa para

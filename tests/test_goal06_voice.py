@@ -242,6 +242,9 @@ def test_invented_infinitives_and_stalls_are_still_rejected() -> None:
     assert visible_reply_invents_a_spanish_infinitive(
         "The window washas been closed."
     )
+    assert visible_reply_invents_a_spanish_infinitive(
+        "Los altavoces están silo."
+    )
     assert visible_reply_is_a_fixed_stall("un momento…")
     assert not visible_reply_is_a_fixed_stall("Listo, Spotify está abierto y sonando")
 
@@ -391,6 +394,17 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
             )
         },
     ) == ""
+    assert compose_visible_defect(
+        "Los altavoces están silo.",
+        "status",
+        "silencia los altavoces",
+        {
+            "situation": (
+                '{"kind":"operation","operation":"audio.mute",'
+                '"polarity":"success","observed":{"muted":true}}'
+            )
+        },
+    ) == "invented"
     assert compose_visible_defect(
         "Spotifylight is playing.",
         "status",
