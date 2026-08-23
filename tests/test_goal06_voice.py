@@ -110,6 +110,34 @@ def test_compose_payload_does_not_contain_published_sentences() -> None:
     )
     blob = json.dumps(captured, ensure_ascii=False)
     assert "no la encontré" not in blob.casefold()
+    assert "Listo, Word está abierto" not in blob
+    assert compose_visible_defect(
+        "The app is open.",
+        "status",
+        "open Discord",
+        {
+            "situation": (
+                '{"kind":"operation","polarity":"success",'
+                '"observed":{"app":"Discord"}}'
+            )
+        },
+    ) == "missing_name"
+    assert compose_visible_defect(
+        "Hola, ¿cómo te va?",
+        "welcome",
+        "",
+        {"situation": '{"kind":"welcome","polarity":"success"}'},
+    ) == "welcome_question"
+    assert compose_visible_defect(
+        "Listo, Steam está abierto.",
+        "status",
+        "cierra Steam",
+        {
+            "situation": (
+                '{"kind":"operation","polarity":"success","observed":{"app":"Steam"}}'
+            )
+        },
+    ) == "reversed_result"
 
 
 def test_narrate_is_compose_not_a_parallel_prompt() -> None:

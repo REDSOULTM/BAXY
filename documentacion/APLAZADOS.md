@@ -48,8 +48,8 @@ goal.
 - **No hay GGUF Q3/Q2 de Qwen3-4B en disco** — no se descargó otro 2 GB para un A/B de cuantización del mismo modelo. Q4_K_M se conserva; reabrir cuando exista el candidato. *Goal 06.*
 - **`NoteDisambiguation` todavía arma el menú de opciones en español** (`Encontré N notas llamadas…`) — es lista de elección, no confirmación de efecto; no coincidía con el censo de prosa. Sustituirlo pide los mismos hechos JSON. *Goal 06.*
 - **Excepciones internas pasadas a inglés** (`The local request id is already in use.`) — no son voz; el censo las contaba por «petición». *Goal 06.*
-- **Compose con hechos delgados** — **cerrado el factory de frases**: el sidecar ya no inyecta ni reintenta «Listo, Word está abierto.» ni «¿Qué quieres abrir?». Quedan notas en un solo nombre («Ideas») y «The app is open» sin nombrar la app. *Goal 06.*
-- **Ocho vacíos en la muestra de 100** — acting, mute ES, dos timeout y dos close: el modelo no pasó la guarda dos veces y el producto calla. No se rellenan. *Goal 06.*
+- **Acting copia «estado observable»** — el prompt usa esa locución y el modelo la pega en «Sigo trabajando en el estado observable.» No afirma el resultado. *Goal 06.*
+- **Horas sueltas** — «9:05.» / «22:10.» sin «son las». El número está; no se exigió más porque vaciaba. *Goal 06.*
 - **Confirmación que afirma** — **cerrado en compose**: tiene que ser pregunta con confirm* o cancel*; el afirmado con Listo se tira. *Goal 06.*
 - **49 de 158 operaciones siguen sin ninguna regla de dominio curada** — la puerta devuelve `None` para ellas y sólo `filesystem.` tiene un suelo genérico. Lo dispararía una propuesta del modelo sobre una de esas familias ante una petición fuera de catálogo, como el `window.active` que «prende las luces del living» recuperó. *Goal 03.*
 - **`_post_native_tool_selection` quedó sin usar por defecto** — el contrato de tool-call forzado se midió y se rechazó (+3 decisiones crudas, −8 abstenciones honestas), y ahora sólo lo enciende `BAXY_MIND_NATIVE_TOOL_POLICY=1`. Borrarlo entero toca `decide_turn` en varias ramas y merece su propio cambio; no bloquea porque ninguna ruta de producto lo alcanza. *Goal 03.*

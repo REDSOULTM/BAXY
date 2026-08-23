@@ -48,23 +48,19 @@ La guarda `visible_reply_invents_a_spanish_infinitive` sigue en el compose envia
 Corrida: `py -3.12 scripts/goal06_voice_sample.py artifacts/development` sobre
 Qwen3-4B-Q4_K_M, sidecar real, `type=message.compose.result`. Evidencia:
 `artifacts/development/goal06_cien_respuestas.jsonl` y
-`artifacts/development/goal06_prosa_ab.json`. n=100, scorer bad=8 (vacío: el
-compose falló dos veces y no publica constante), p50 0,22 s.
+`artifacts/development/goal06_prosa_ab.json`. n=100, scorer bad=0, p50 0,22 s.
 
-El first-pass **no** inyecta la frase publicada. El reintento pide otra formulación
-sobre los hechos JSON, no «devuelve esta frase». Las aclaraciones no copian
-«¿Qué quieres abrir?». Las causas en JSON son etiquetas sin género (`not found`),
-no «no la encontré».
+Compose no recibe ni reintenta la frase publicada. Tercer intento si hace falta,
+aún sobre hechos JSON. Causas sin género. `effect=closed` sólo en éxitos.
 
-Leídas a mano las 92 publicadas. Varían: «Steam está abierto.» / «Listo, Discord
-está abierto.» / «La aplicación Word está abierta.» / «The Notepad app is open.»
-Timeouts: «el tiempo se agotó», no una sola plantilla. Aclaraciones: «¿Qué quiere
-decir "ábrela"?» / «What does "close it" refer to?». Misión: «Listo, Steam está
-abierto y el volumen está en 40 %.».
+Leídas a mano las 100. Cero vacíos. Timeout/close/mute/open-en-Terminal hablan:
+«No pude: la espera terminó.» / «The window is closed.» / «Listo, los altavoces
+están silenciados.» / «Terminal is open.» / «Steam cerrado.» Inglés de open
+nombra la app. Acting: «Sigo trabajando en el estado observable.» (copia el
+prompt; no afirma el resultado). Notas: «Nota: Ideas.» / «Listo, el título es
+"Alfa".».
 
-8 vacíos (acting, mute ES, timeout VLC/Word, close Steam/EN, open-en Terminal):
-fail-flat, sin relleno. Notas a veces salen sólo el título («Ideas», «Beta»);
-«The app is open» no nombra Discord/Calculadora. Anotado.
+Queda jerga de acting («estado observable») y horas sueltas («9:05.»). Anotado.
 
 ## 6. Criterios
 

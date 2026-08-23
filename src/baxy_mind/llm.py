@@ -198,6 +198,9 @@ USER_MESSAGE_PROMPT = (
     "cause=acting: di que sigues, sin afirmar el resultado. "
     "kind=clarification: una pregunta corta, de tú, sobre lo que falta. "
     "Si situation trae items, una frase y la lista numerada. "
+    "si seen.app: nombra esa app y si está abierta o cerrada. "
+    "si seen.title: las palabras nota o note y el título. "
+    "si seen.level: volumen y el número. "
     "Nunca planner, router, tool, catálogo, schema, operación, JSON ni "
     "identificadores. Primera persona si BAXY actuó. Una frase. "
     "Devuelve sólo el mensaje."
@@ -311,7 +314,7 @@ def _starts_with_request_imperative(text: str) -> bool:
         re.search(
             r"^\s*(?:(?:list|show|tell|open|create|set|mute|close|delete|send)\b|"
             r"(?:lista|muestra)\s+(?:el|la|los|las|un|una)\b|"
-            r"(?:dime|abre|crea|pon|silencia|cierra|elimina|envia)\b)",
+            r"(?:dime|abre|crea|pon|silencia|cierra|elimina|envia|guarda)\b)",
             folded,
         )
         is not None
@@ -2536,6 +2539,7 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "relojillo",
         "abrbio",
         "washas",
+        "tiempoempo",
     }
 )
 _THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
@@ -2606,7 +2610,7 @@ _FAILURE_MARKERS = re.compile(
 # Ungendered fact labels for the JSON the model sees. Spanish wording lives
 # only in USER_MESSAGE_PROMPT, so changing the voice is editing that text.
 _CAUSE_FACT = {
-    "timeout": "time ran out",
+    "timeout": "wait ended",
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
     "model_invalid": "unusable answer",
@@ -2641,14 +2645,26 @@ def _cause_in_prose(cause: str, language: str) -> str:
     return _CAUSE_FACT.get(key, key.replace("_", " "))
 
 
-def _compose_situation_payload(situation: dict, language: str) -> dict:
+def _compose_situation_payload(situation: dict, language: str, user_text: str = "") -> dict:
     """Facts the generator may see: no dotted ops, no snake_case causes."""
 
+    _ = language
     payload: dict[str, object] = {}
-    for key in ("kind", "polarity", "verified", "target", "observed", "steps", "stepCount"):
+    for key in ("kind", "polarity", "target", "steps", "stepCount"):
         value = situation.get(key)
         if value not in (None, "", []):
             payload[key] = value
+    if str(situation.get("cause") or "").strip().lower() == "acting":
+        payload["polarity"] = "pending"
+    elif str(situation.get("polarity") or "").strip().lower() == "success":
+        folded_user = (user_text or "").casefold()
+        if re.search(r"\bcierr|\bclose\b", folded_user):
+            payload["effect"] = "closed"
+        elif re.search(r"\babre|\bopen\b", folded_user):
+            payload["effect"] = "open"
+    seen = situation.get("observed")
+    if seen not in (None, "", []):
+        payload["seen"] = seen
     cause = _cause_in_prose(str(situation.get("cause") or ""), language)
     if cause:
         payload["cause"] = cause
@@ -2678,7 +2694,6 @@ def _app_is_feminine(name: str) -> bool:
 def _compose_shape_instruction(situation: dict, language: str, user_text: str) -> str:
     """Describe what to name. Never the sentence the person should read."""
 
-    _ = user_text
     if str(situation.get("polarity") or "").strip().lower() != "success":
         return ""
     kind = str(situation.get("kind") or "").strip().lower()
@@ -2686,6 +2701,11 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     if cause == "acting" or kind in {"welcome", "confirmation", "clarification"}:
         return ""
     bits: list[str] = []
+    if re.search(r"\bcierr|\bclose\b", (user_text or "").casefold()) and not (
+        isinstance(situation.get("observed"), dict)
+        and situation["observed"].get("app")
+    ):
+        bits.append("Name the window. State closed.")
     steps = situation.get("steps")
     if cause == "mission_completed" and isinstance(steps, list) and len(steps) >= 2:
         bits.append("Mention every step once.")
@@ -2765,15 +2785,25 @@ def compose_visible_defect(
     if "spotify" in folded and "spotify" not in blob:
         return "unmentioned_name"
     if re.search(
-        r"estado observable|observable state|observed state|observed status|"
+        r"observable state|observed state|observed status|"
         r"\bthe operation\b|\bla operaci[oó]n\b|\bthe status\b|"
-        r"one english sentence|^una frase\b|\bcontrato\b|\bobservado\b",
+        r"one english sentence|^una frase\b|\bcontrato\b",
         folded,
     ):
         return "internal_code"
+    if "estado observable" in folded and cause != "acting":
+        return "internal_code"
     if cause == "timeout" and "trajo" in folded:
         return "invented"
-    if re.match(r"^\s*(?:say|di)\b", folded):
+    if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
+        return "copied_instruction"
+    if re.search(
+        r"observed\.app|name every observed|menciona cada|título o paso|"
+        r"nombre la nota|must appear|debe aparecer|the seen app|"
+        r"note title must|observed app|progress only|progress continues|"
+        r"no listo|no open|no closed|name the window|state closed",
+        folded,
+    ):
         return "copied_instruction"
     if re.search(r"(?m)^[a-z]{8,}$", folded):
         return "invented"
@@ -2787,12 +2817,24 @@ def compose_visible_defect(
         folded,
     ):
         return "wrong_language"
+    if language == "es" and re.search(r"\bstill\b|\bworking\b", folded):
+        return "wrong_language"
     is_failure = intent == "error" or polarity == "failure"
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
+        if re.search(r"abiert|\bis open\b", folded):
+            return "reversed_polarity"
         if _FAILURE_MARKERS.search(stripped) is None:
             return "missing_failure"
+        parts = stripped.split(":", 1)
+        if len(parts) == 2:
+            tail_tokens = re.findall(r"[a-záéíóúñ]{3,}", parts[1].casefold())
+            if not tail_tokens or (
+                len(tail_tokens[-1]) <= 3
+                and tail_tokens[-1] not in {"the", "app", "not"}
+            ):
+                return "missing_failure"
     if intent == "welcome" or kind == "welcome":
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "welcome_opener"
@@ -2802,11 +2844,13 @@ def compose_visible_defect(
             return "wrong_language"
         if re.search(r"abiert|\bis open\b|\bdoor\b|\bdevice\b|\bcall\b", folded):
             return "extra_claim"
+        if "?" in stripped or "¿" in stripped:
+            return "welcome_question"
     if intent == "clarification" or kind == "clarification":
         if "?" not in stripped and "¿" not in stripped:
             return "clarification_not_a_question"
-        if re.search(r"[.!][\"']?\s+[A-Z¿]", stripped):
-            return "too_many_sentences"
+    if re.search(r"[.!][\"']?\s+[A-Z¿]", stripped):
+        return "too_many_sentences"
     if intent == "confirmation" or kind == "confirmation":
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "confirmation_asserted"
@@ -2814,7 +2858,10 @@ def compose_visible_defect(
             return "confirmation_not_a_question"
         if not re.search(r"confirm", folded) and not re.search(r"cancel", folded):
             return "missing_confirmation_choice"
-    if cause == "acting" and _SUCCESS_OPENERS.match(stripped) is not None:
+    if cause == "acting" and (
+        _SUCCESS_OPENERS.match(stripped) is not None
+        or re.search(r"abiert|\bis open\b|cerrad|\bis closed\b", folded)
+    ):
         return "acting_asserted"
     observed = situation.get("observed")
     observed_dict = observed if isinstance(observed, dict) else {}
@@ -2844,9 +2891,52 @@ def compose_visible_defect(
     if lead and lead[0].isalpha() and lead[0].islower():
         return "lowercase"
     app_name = observed_dict.get("app")
-    if isinstance(app_name, str) and _app_is_feminine(app_name):
-        if re.search(r"está abierto\b", folded) and "abierta" not in folded:
+    if isinstance(app_name, str) and app_name.strip():
+        feminine = _app_is_feminine(app_name)
+        if feminine and re.search(r"está abierto\b", folded) and "abierta" not in folded:
             return "wrong_gender"
+        if not feminine and re.search(r"está abierta\b|está cerrada\b", folded):
+            return "wrong_gender"
+        if feminine and re.search(r"está cerrado\b", folded) and "cerrada" not in folded:
+            return "wrong_gender"
+    if (
+        polarity == "success"
+        and cause != "acting"
+        and kind in {"operation", "status"}
+    ):
+        aliases = {
+            "calculadora": ("calculator", "calculadora"),
+            "notepad": ("notepad", "bloc"),
+            "terminal": ("terminal",),
+        }
+        if isinstance(app_name, str) and app_name.strip():
+            names = {app_name.casefold(), *aliases.get(app_name.casefold(), ())}
+            if not any(name in folded for name in names):
+                return "missing_name"
+            closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
+            if closed_request and re.search(r"abiert|\bis open\b", folded):
+                return "reversed_result"
+            if not closed_request and not re.search(
+                r"abiert|open|running|cerrad|closed|playing|reproduc|ejecuci",
+                folded,
+            ):
+                return "missing_state"
+        title = observed_dict.get("title")
+        if isinstance(title, str) and title.strip():
+            if title.casefold() not in folded or not re.search(
+                r"nota|note|t[íi]tulo|title", folded
+            ):
+                return "missing_name"
+        if "level" in observed_dict and not re.search(r"volumen|volume", folded):
+            return "missing_name"
+        closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
+        if (
+            closed_request
+            and not (isinstance(app_name, str) and app_name.strip())
+            and "ventana" not in folded
+            and "window" not in folded
+        ):
+            return "missing_name"
     if cause == "mission_completed":
         skip = {
             "abri", "cree", "puse", "listo", "nota", "the", "and", "volume",
@@ -7081,7 +7171,9 @@ class LlmRuntime:
         # every CPU composition re-evaluate the same facts up to three times;
         # the forbidden vocabulary could add another 32 duplicate strings.
         situation = _situation_from_facts(facts)
-        visible_situation = _compose_situation_payload(situation, response_language)
+        visible_situation = _compose_situation_payload(
+            situation, response_language, user_text
+        )
         prompt_facts = {
             key: value
             for key, value in facts.items()
@@ -7145,7 +7237,7 @@ class LlmRuntime:
             )
         elif cause == "acting":
             payload["messages"][1]["content"] += (
-                "\nSay you are still on it. Do not claim the result."
+                "\nStill in progress. No Listo. No open. No closed."
             )
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
@@ -7449,6 +7541,12 @@ class LlmRuntime:
         def publishable(candidate: str) -> bool:
             return bool(candidate) and preserves_contract(candidate) and not blocked(candidate)
 
+        if cause == "acting":
+            payload["messages"][1]["content"] = (
+                f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+                f"{language_contract}\n"
+                "Progress only. One sentence. No Listo. No open. No closed."
+            )
         response = self._post(payload)
         text = _strip_think_tags(
             (response["choices"][0]["message"].get("content") or "").strip()
@@ -7471,49 +7569,76 @@ class LlmRuntime:
             "missing_confirmation_choice": (
                 "Pregunta con confirmar/confirm y cancelar/cancel."
             ),
-            "wrong_language": "Sólo el idioma del pedido.",
-            "extra_claim": "Nombra sólo lo observado.",
-            "reversed_mute": "Respeta si el audio quedó silenciado o no.",
+            "wrong_language": "Same language as the request.",
+            "extra_claim": "Name only what is in seen.",
+            "reversed_mute": "Match muted in seen.",
             "reversed_polarity": "Si falló, no empieces por Listo.",
-            "internal_code": "Sin códigos internos.",
+            "internal_code": "Sin códigos internos ni jerga de contrato.",
             "confirmation_asserted": "Pregunta; no afirmes.",
             "welcome_opener": "Saluda; no Listo.",
-            "invented": "Sin palabras pegadas ni inventadas.",
+            "invented": "No invented verbs. If the wait ended, say that plainly.",
             "welcome_repeat": "Un solo Hola.",
             "copied_instruction": "Devuelve el mensaje, no la instrucción.",
             "lowercase": "Empieza con mayúscula.",
             "clarification_not_a_question": "Una pregunta.",
             "too_many_sentences": "Una sola frase.",
-            "wrong_gender": "Concordancia: abierta/cerrada si es femenino.",
-            "missing_name": "Incluye todos los pasos observados.",
+            "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
+            "missing_name": "Use the name in seen.",
+            "missing_state": "Use abierto or open, not abre.",
+            "reversed_result": "effect is closed.",
+            "acting_asserted": "In progress. No open. No Listo.",
+            "welcome_question": "Greet. No question.",
         }.get(defect, "")
+        retry_user = (
+            f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+            f"{language_contract}\n"
+            "Progress only. One sentence. No Listo. No open. No closed."
+            if cause == "acting"
+            else (
+            "El borrador anterior no sirve. "
+            f"Falla: {defect}. {retry_hint} "
+            "Escribe de nuevo el mensaje con este hecho, sin códigos: "
+            f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+            "Acciones literales obligatorias, todas sin excepción: "
+            f"{', '.join(required_actions) or '(ninguna)'}\n"
+            "Palabras literales obligatorias, todas sin excepción: "
+            f"{', '.join(required_words) or '(ninguna)'}\n"
+            "Hechos literales obligatorios, todos sin excepción: "
+            f"{', '.join(required_facts) or '(ninguno)'}. "
+            "No incluyas ninguno de estos terminos en la respuesta: "
+            f"{', '.join(forbidden_terms) or '(ninguno)'}. "
+            f"{language_contract} Si el tipo es status, empieza con un "
+            "resultado declarativo; nunca copies el pedido ni empieces "
+            "con un imperativo. "
+            "Devuelve sólo el mensaje corregido."
+            )
+        )
         retry_payload["messages"] = [
             {"role": "system", "content": message_prompt},
-            {
-                "role": "user",
-                "content": (
-                    "El borrador anterior no sirve. "
-                    f"Falla: {defect}. {retry_hint} "
-                    "Escribe de nuevo el mensaje con este hecho, sin códigos: "
-                    f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
-                    "Acciones literales obligatorias, todas sin excepción: "
-                    f"{', '.join(required_actions) or '(ninguna)'}\n"
-                    "Palabras literales obligatorias, todas sin excepción: "
-                    f"{', '.join(required_words) or '(ninguna)'}\n"
-                    "Hechos literales obligatorios, todos sin excepción: "
-                    f"{', '.join(required_facts) or '(ninguno)'}. "
-                    "No incluyas ninguno de estos terminos en la respuesta: "
-                    f"{', '.join(forbidden_terms) or '(ninguno)'}. "
-                    f"{language_contract} Si el tipo es status, empieza con un "
-                    "resultado declarativo; nunca copies el pedido ni empieces "
-                    "con un imperativo. "
-                    "Devuelve sólo el mensaje corregido."
-                ),
-            },
+            {"role": "user", "content": retry_user},
         ]
         retry_payload["temperature"] = 0.0
         retry = self._post(retry_payload)
         retry_text = _strip_think_tags(
             (retry["choices"][0]["message"].get("content") or "").strip()
         )
-        return retry_text if publishable(retry_text) else ""
+        if publishable(retry_text):
+            return retry_text
+        third_payload = dict(payload)
+        third_payload["temperature"] = 0.0
+        third_payload["messages"] = [
+            {"role": "system", "content": message_prompt},
+            {
+                "role": "user",
+                "content": (
+                    f"{json.dumps(visible_situation, ensure_ascii=False)}\n"
+                    f"{shape} {retry_hint}\n"
+                    f"{language_contract} One sentence. No JSON. No codes."
+                ),
+            },
+        ]
+        third = self._post(third_payload)
+        third_text = _strip_think_tags(
+            (third["choices"][0]["message"].get("content") or "").strip()
+        )
+        return third_text if publishable(third_text) else ""
