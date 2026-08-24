@@ -1,4 +1,0 @@
-fix(goal10): no inferir aclaraciones desde puntuación
-
-Captura la respuesta realmente visible durante las sesiones y evita que una
-pregunta conversacional previa convierta un saludo en iniciativa de catálogo.
