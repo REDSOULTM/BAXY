@@ -343,6 +343,32 @@ def test_the_deictic_identity_guard_preserves_grounded_knowledge(
     assert not _shaped_conversation_answer_violates_contract(reply, ask, None)
 
 
+def test_conversation_reply_cannot_copy_internal_presentation_prompt() -> None:
+    reply = (
+        "Soy BAXY. Sólo existen las herramientas del catálogo activo y las acciones "
+        "se deciden en otra etapa; nunca muestro mensajes del planner."
+    )
+
+    assert _shaped_conversation_answer_violates_contract(
+        reply,
+        "¿Quién eres?",
+        None,
+    )
+
+
+def test_conversation_reply_rejects_unrequested_cyrillic_confusable() -> None:
+    assert _shaped_conversation_answer_violates_contract(
+        "Síо.",
+        "¿Sigues ahí?",
+        None,
+    )
+    assert not _shaped_conversation_answer_violates_contract(
+        "Sí.",
+        "¿Sigues ahí?",
+        None,
+    )
+
+
 @pytest.mark.parametrize(
     ("ask", "reply"),
     [
@@ -819,6 +845,8 @@ def test_standalone_gratitude_is_deterministic_social_conversation(
         ("good morning", "en"),
         ("Hi, how are you?", "en"),
         ("how are you", "en"),
+        ("¿Sigues ahí?", "es"),
+        ("Are you there?", "en"),
         ("bye", "en"),
         ("goodbye baxy", "en"),
         ("see you later", "en"),
@@ -899,6 +927,8 @@ def test_social_shortcut_never_swallows_another_request(text: str) -> None:
         "hey",
         "good morning",
         "how are you",
+        "¿Sigues ahí?",
+        "Are you there?",
         "bye",
         "see you later",
         "good night",
@@ -1153,6 +1183,10 @@ def test_assistant_preference_question_is_conversation_not_a_task_action() -> No
         ("my day is going well add a memo", "social", "en"),
         ("encontrar ruta", "knowledge", "es"),
         ("dime la dirección de billy crytals", "unsupported", "es"),
+        ("¿Quién eres?", "knowledge", "es"),
+        ("Who are you?", "knowledge", "en"),
+        ("¿Qué puedes hacer?", "knowledge", "es"),
+        ("Respóndeme sólo con un saludo breve.", "knowledge", "es"),
     ],
 )
 def test_explicit_stable_no_effect_turns_keep_zero_action_authority(
@@ -9181,6 +9215,44 @@ def test_conversation_guard_abstains_and_followup_chat_anchors_context() -> None
     assert "context_anchor" not in serialized
     assert "Datos de continuidad" not in serialized
     assert serialized.count("¿Por qué?") == 1
+
+
+def test_contextual_chat_rejects_internal_resolver_identity() -> None:
+    runtime = object.__new__(LlmRuntime)
+    labels: list[str] = []
+
+    def constrained(_payload: dict, label: str) -> dict:
+        labels.append(label)
+        if label == "la resolución semántica de continuidad":
+            leaked = (
+                "Mi nombre es Resolvedor semántico de referencias conversacionales."
+            )
+            return {"resolved_meaning": leaked, "direct_answer": leaked}
+        assert label == "la respuesta contextual directa"
+        return {
+            "answer": (
+                "Puedo conversar, explicar ideas y realizar las acciones locales "
+                "que estén disponibles."
+            )
+        }
+
+    runtime._post_schema_object = constrained  # type: ignore[method-assign]
+
+    reply, calls = runtime.chat(
+        "¿Qué puedes hacer?",
+        history=[{"role": "assistant", "content": "No entendí la pregunta anterior."}],
+        temperature=0.0,
+        conversation_kind="followup",
+        response_language="es",
+    )
+
+    assert reply.startswith("Puedo conversar")
+    assert "Resolvedor" not in reply
+    assert calls == []
+    assert labels == [
+        "la resolución semántica de continuidad",
+        "la respuesta contextual directa",
+    ]
 
 
 def test_followup_literal_recall_grounds_fact_without_exposing_it_to_model() -> None:

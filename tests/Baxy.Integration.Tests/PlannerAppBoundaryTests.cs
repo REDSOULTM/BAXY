@@ -2306,6 +2306,20 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public void VisibleMessageRejectsUnbalancedSpanishPunctuation()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Failure("model_invalid"),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "¿No pude: no pude usar esa respuesta.",
+                draft),
+            Is.EqualTo("unbalanced_punctuation"));
+    }
+
+    [Test]
     public void DurablePlanStateIsEncryptedValidatedAndResumable()
     {
         string root = Path.Combine(Path.GetTempPath(), $"baxy-plan-{Guid.NewGuid():N}");

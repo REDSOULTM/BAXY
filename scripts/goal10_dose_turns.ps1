@@ -112,10 +112,10 @@ function Find-Stage(
 
 $app = Get-RepoAppProcess
 if ($null -eq $app) { throw 'BAXY no está en marcha.' }
-$field = Wait-Until -TimeoutSeconds $StartupTimeoutSeconds -Failure (
+[void](Wait-Until -TimeoutSeconds $StartupTimeoutSeconds -Failure (
     'La ventana no expuso su entrada de texto.') -Condition {
         Get-InputField -Process $app
-    }
+    })
 
 $results = [Collections.Generic.List[object]]::new()
 $index = 0
@@ -124,11 +124,36 @@ foreach ($text in $Turns) {
     $beforeRows = Read-Trace
     $baseline = if ($beforeRows.Count) { [long]($beforeRows | Select-Object -Last 1).seq } else { 0 }
     $started = Get-Date
+    $field = Wait-Until -TimeoutSeconds 30 -Failure 'Se perdió el campo de texto.' -Condition {
+        Get-InputField -Process $app
+    }
+    $bridgeAttempts = 1
     Send-Text -Field $field -Text $text
-    $submit = Wait-Until -TimeoutSeconds $TurnTimeoutSeconds -Failure (
-        "Turno $index no cruzó el bridge: $text") -Condition {
+    try {
+        $submit = Wait-Until -TimeoutSeconds 3 -Failure 'bridge_retry' -Condition {
             Find-Stage -Rows (Read-Trace) -Stage 'submit.received' -AfterSequence $baseline
         }
+    } catch {
+        $submit = Find-Stage -Rows (Read-Trace) -Stage 'submit.received' -AfterSequence $baseline
+    }
+    if ($null -eq $submit) {
+        # WebView2 can replace the textarea after rendering a response while the
+        # old UIA element still reports enabled. submit.received is written at
+        # the bridge boundary, before work starts, so its absence makes one
+        # reacquire-and-resend safe without duplicating an accepted turn.
+        $field = Wait-Until -TimeoutSeconds 30 -Failure 'Se perdió el campo de texto.' -Condition {
+            Get-InputField -Process $app
+        }
+        $submit = Find-Stage -Rows (Read-Trace) -Stage 'submit.received' -AfterSequence $baseline
+        if ($null -eq $submit) {
+            $bridgeAttempts = 2
+            Send-Text -Field $field -Text $text
+            $submit = Wait-Until -TimeoutSeconds $TurnTimeoutSeconds -Failure (
+                "Turno $index no cruzó el bridge: $text") -Condition {
+                    Find-Stage -Rows (Read-Trace) -Stage 'submit.received' -AfterSequence $baseline
+                }
+        }
+    }
     $turnId = [string]$submit.id
     $final = Wait-Until -TimeoutSeconds $TurnTimeoutSeconds -Failure (
         "Turno $index sin response.final: $text") -Condition {
@@ -148,14 +173,9 @@ foreach ($text in $Turns) {
         finalMs = [double]$final.ms
         submitMs = [double]$submit.ms
         elapsedS = [Math]::Round(((Get-Date) - $started).TotalSeconds, 3)
+        bridgeAttempts = $bridgeAttempts
         error = if ($errorStage) { [string]$errorStage.detail } else { $null }
     })
-    $field = Get-InputField -Process $app
-    if ($null -eq $field) {
-        $field = Wait-Until -TimeoutSeconds 30 -Failure 'Se perdió el campo de texto.' -Condition {
-            Get-InputField -Process $app
-        }
-    }
 }
 
 $payload = [ordered]@{

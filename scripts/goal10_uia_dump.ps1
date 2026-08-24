@@ -24,7 +24,10 @@ $tcond = New-Object Windows.Automation.PropertyCondition(
     [Windows.Automation.ControlType]::Text)
 $texts = $root.FindAll([Windows.Automation.TreeScope]::Descendants, $tcond)
 ("textos={0}" -f $texts.Count)
-for ($i = 0; $i -lt [Math]::Min(30, $texts.Count); $i++) {
+# Telemetry occupies the beginning of the accessibility tree; the conversation
+# is appended near the end. Keep the signal bounded but show the latest text.
+$firstText = [Math]::Max(0, $texts.Count - 50)
+for ($i = $firstText; $i -lt $texts.Count; $i++) {
     $t = $texts.Item($i).Current.Name
-    if (-not [string]::IsNullOrWhiteSpace($t)) { ("  T: {0}" -f $t) }
+    if (-not [string]::IsNullOrWhiteSpace($t)) { ("  T[{0}]: {1}" -f $i, $t) }
 }

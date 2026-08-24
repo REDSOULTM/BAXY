@@ -2330,6 +2330,7 @@ def _explicit_response_language(objective: str) -> str:
             "do",
             "anything",
             "ask",
+            "are",
             "find",
             "for",
             "funny",
@@ -2374,9 +2375,11 @@ def _explicit_response_language(objective: str) -> str:
             "until",
             "used",
             "what",
+            "who",
             "why",
             "would",
             "work",
+            "you",
             "yesterday",
             "hot",
         }
@@ -2446,7 +2449,7 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
             "compliment": (r"(?:sos un capo|eres un capo|sos genial|eres genial)"),
             "wellbeing": (
                 r"(?:como estas|como andas|como va|que tal todo|que tal|"
-                r"todo bien)"
+                r"todo bien|sigues ahi|estas ahi)"
             ),
         },
     ),
@@ -2472,7 +2475,7 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
             ),
             "wellbeing": (
                 r"(?:how are you doing|how are you|how is it going|"
-                r"hows it going|whats up)"
+                r"hows it going|whats up|are you there|still there)"
             ),
         },
     ),
@@ -2714,6 +2717,26 @@ def _assistant_capability_aspiration(objective: str) -> bool:
                 r"(?:baxy|el\s+asistente|mi\s+asistente|este\s+asistente)\s+"
                 r"deberia\s+(?:poder|ser\s+capaz\s+de)"
                 r")\b"
+            ),
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _assistant_identity_or_capability_question(objective: str) -> bool:
+    """Recognize questions about BAXY himself, never the signed-in user."""
+
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    return (
+        re.fullmatch(
+            (
+                r"[¿?¡!\s]*(?:quien\s+eres|who\s+are\s+you|"
+                r"what\s+(?:can|can\s*t|cannot)\s+you\s+do|"
+                r"que\s+(?:puedes|no\s+puedes)\s+hacer|"
+                r"cuales\s+son\s+tus\s+capacidades)"
+                r"(?:\s+baxy)?[\s?!.]*"
             ),
             folded,
             re.IGNORECASE,
@@ -3157,19 +3180,7 @@ def _explicit_stable_no_effect_turn_decision(
         )
         is not None
     )
-    capability_question = (
-        re.fullmatch(
-            (
-                r"[¿?¡!\s]*(?:what\s+(?:can|can\s*t|cannot)\s+you\s+do|"
-                r"que\s+(?:puedes|no\s+puedes)\s+hacer|"
-                r"cuales\s+son\s+tus\s+capacidades)"
-                r"(?:\s+baxy)?[\s?!.]*"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
+    capability_question = _assistant_identity_or_capability_question(objective)
     # Both detectors below judge a *hypothesis*, and both are anchored to the
     # front of the request. A frame that denies an instruction -- "No assignment
     # for the computer, just answer me: what would happen if ..." -- sits in
@@ -5694,6 +5705,8 @@ def _prepare_turn_result(
     stable_no_effect_is_closed = (
         explicit_non_action
         or literal_recall_decision is not None
+        or content_drafting
+        or _assistant_identity_or_capability_question(objective)
         or (
             stable_no_effect_decision is not None
             and (
@@ -5767,6 +5780,7 @@ def _prepare_turn_result(
     if (
         explicit_conversation_decision is not None
         and non_target_language is None
+        and not stable_no_effect_is_closed
         and explicit_conversation_decision.get("conversation_kind")
         in {"unsupported", "knowledge"}
     ):

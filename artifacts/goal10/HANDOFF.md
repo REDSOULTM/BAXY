@@ -301,3 +301,42 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `scripts/test_source_quality.ps1` pasó completo en modo Fast: PowerShell, Ruff,
   compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings /
   0 errors**.
+
+## Continuación — conversación separada del catálogo y sonda UIA fiable
+
+- La primera dosis multitur no cuenta: encontró tres defectos visibles. «¿Quién
+  eres?» agotó el presupuesto y mostró «No pude: entender la solicitud»; «¿Qué
+  puedes hacer?» inventó que su nombre era «Resolvedor semántico de referencias
+  conversacionales»; y «Respóndeme sólo con un saludo breve» se enrutó a
+  `task.resolve.exact`. La recuperación de esa lectura reaparecía después como
+  una pregunta sobre metadatos de una rutina. Se canceló por el camino público y
+  `planner-state.v1.bin` quedó ausente antes de repetir.
+- Causa: las preguntas sobre BAXY y el trabajo cuyo único resultado es texto no
+  estaban cerradas frente a una retirada posterior por catálogo. Ahora son una
+  decisión de conversación que sólo quita autoridad; no propone prosa ni concede
+  operaciones. Incluye identidad/capacidades, saludo solicitado, redacción,
+  traducción y resumen. «¿Sigues ahí?» / `Are you there?` son actos sociales.
+- La respuesta contextual también copiaba literalmente instrucciones internas.
+  El veto visible rechaza vocabulario de planner/catálogo/resolvedor semántico,
+  signos españoles sin cierre y confusables cirílicos no pedidos. En la corrida
+  R6 el primer borrador de identidad copió el prompt y `Síо.` terminó con una
+  “о” cirílica; ambos fueron rechazados y el segundo borrador seguro fue el que
+  llegó a pantalla. La auditoría cruda fue opt-in y local en `%TEMP%`; no se
+  versionó ni publicó contenido.
+- `goal10_dose_turns.ps1` vuelve a adquirir el campo UIA inmediatamente antes de
+  cada envío. Si en 3 s no existe `submit.received`, lo adquiere de nuevo y sólo
+  reenvía tras comprobar otra vez que el bridge no aceptó el turno; el resultado
+  registra `bridgeAttempts`. La corrida ejerció el segundo intento sin duplicar
+  turnos. `goal10_uia_dump.ps1` muestra ahora los últimos 50 textos, donde vive la
+  conversación, en vez de los primeros 30 ocupados por telemetría.
+- Repetición limpia `conversation-clean-r6`, Release, cuatro turnos: **3,112 s /
+  4,752 s / 0,769 s / 1,006 s**, todos con `visible.text`, cero core y cero error.
+  La UI mostró exactamente: «Soy BAXY, un compañero que vive en el PC.»; una
+  descripción honesta de ayuda conversacional e idiomas; «Hola.»; y «Sí, estoy
+  aquí.». No quedó plan pendiente. Ésta es una sesión válida de regresión, pero
+  todavía no se suma a la dosis de 200 porque nació para repetir una sesión que
+  había fallado honestidad.
+- Validación de esta frontera: `test_turn_policy.py` completo **835/835**;
+  regresiones focales de planner **58/58**; puntuación C# **10/10**; ambos scripts
+  PowerShell parsean. `scripts/test_source_quality.ps1` pasó completo en modo
+  Fast, incluido build Release con **0 warnings / 0 errors**.

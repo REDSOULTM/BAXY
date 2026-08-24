@@ -3022,6 +3022,25 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             "",
         )
 
+    def test_visible_message_rejects_unbalanced_spanish_punctuation(self):
+        facts = {
+            "situation": {
+                "kind": "error",
+                "polarity": "failure",
+                "cause": "model_invalid",
+            }
+        }
+
+        self.assertEqual(
+            compose_visible_defect(
+                "¿No pude: no pude usar esa respuesta.",
+                "error",
+                "¿Quién eres?",
+                facts,
+            ),
+            "unbalanced_punctuation",
+        )
+
     def test_visible_message_retries_and_rejects_dropped_verified_facts(self):
         runtime = object.__new__(LlmRuntime)
         replies = iter(

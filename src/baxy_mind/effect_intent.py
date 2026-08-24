@@ -2025,7 +2025,10 @@ def conversation_only_content_request(text: str) -> bool:
         r"^(?:pon|put)\s+into\s+(?:english|ingles|spanish|espanol|italian|italiano)"
         r"\b.{0,160}\b(?:frase|phrase|sentence)\b|"
         r"^(?:pon|put)\b.{0,32}\b(?:ingles|english)\b.{0,48}"
-        r"\b(?:frase|phrase|sentence)\b.{1,128}$",
+        r"\b(?:frase|phrase|sentence)\b.{1,128}$|"
+        r"^(?:respondeme|responde|reply|answer)\b.{0,96}"
+        r"\b(?:saludo|greeting|frase|phrase|oracion|sentence|texto|text|"
+        r"palabra|word)\b.{0,96}$",
     )
 
 

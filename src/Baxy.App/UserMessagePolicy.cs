@@ -207,6 +207,11 @@ internal static class UserMessagePolicy
         {
             return "unsafe_language";
         }
+        if (modelText.Contains('¿') && !modelText.Contains('?')
+            || modelText.Contains('¡') && !modelText.Contains('!'))
+        {
+            return "unbalanced_punctuation";
+        }
         if (Regex.IsMatch(
                 modelText,
                 @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",

@@ -365,7 +365,11 @@ TURN_POLICY_PROMPT = (
     "controlar algo sí es un efecto cuando un candidato lo realiza directamente; "
     "la forma gramatical de pregunta o cortesía no lo convierte en conversación. "
     "Una pregunta de conocimiento estable que puede responderse sin consultar "
-    "estado ni una fuente sigue siendo conversation. Si la persona corrige un "
+    "estado ni una fuente sigue siendo conversation. Pedir una respuesta que "
+    "sólo consiste en texto dentro de esta conversación —saludar, explicar, "
+    "redactar, traducir o resumir— también es conversation, no una operación. "
+    "Preguntar quién eres o qué puedes hacer es knowledge aunque exista historial; "
+    "no es una referencia elíptica. Si la persona corrige un "
     "objetivo dentro del mismo turno, conserva sólo la corrección más reciente "
     "y no la trates como ambigüedad. clarify se usa sólo si existe una operación "
     "candidata compatible y al pedido le falta un dato que la persona puede "
@@ -472,7 +476,11 @@ def _native_selection_description(operation: str, description: str) -> str:
 SEMANTIC_EFFECT_GUARD_PROMPT = (
     "Clasifica semánticamente el pedido actual. request_type es "
     "stable_conversation para charla, reacciones o conocimiento estable "
-    "contestable sin consultar fuentes ni estado; external_read si exige "
+    "contestable sin consultar fuentes ni estado. Una respuesta cuyo único "
+    "resultado es texto en esta conversación —incluidos un saludo, explicación, "
+    "redacción, traducción o resumen— es stable_conversation; también lo son las "
+    "preguntas sobre la identidad o las capacidades generales de BAXY. Usa "
+    "external_read si exige "
     "consultar información vigente, una fuente nombrada, datos personales o "
     "estado del equipo; environment_change si pide crear, abrir, reproducir, "
     "cambiar o controlar algo, incluida cualquier acción del mundo real fuera "
@@ -1852,9 +1860,15 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_is_a_fixed_stall(value):
         return True
+    if visible_text_leaks_internal_vocabulary(value):
+        return True
+    content = str(value or "").strip()
+    if re.search(r"[\u0400-\u04ff]", content) is not None and re.search(
+        r"[\u0400-\u04ff]", str(request or "")
+    ) is None:
+        return True
     if shape is None:
         return False
-    content = str(value or "").strip()
     if shape == "roleplay_draft":
         participants = _roleplay_participant_names(request)
         folded_content = _policy_guard_text(content)
@@ -2014,10 +2028,11 @@ def _unsupported_answer_has_inability(value: object) -> bool:
 # which is the catalogue's own wording leaking onto the screen. Operation ids
 # are matched structurally because they are open-ended.
 _VISIBLE_INTERNAL_VOCABULARY = re.compile(
-    r"\b(?:smtc|json|schema|esquema|endpoint|sidecar|router|shortlist|payload|"
+    r"\b(?:smtc|json|schema|esquema|endpoint|sidecar|planner|router|shortlist|payload|"
     r"manifest|manifiesto|sha256|kernel|provider|proveedor|"
-    r"catalogo\s+(?:activo|tipado)|catalog\s+(?:entry|operation)|"
+    r"cat[aá]logo\s+(?:activo|tipado)|catalog\s+(?:entry|operation)|"
     r"knn|embedding|token|prompt|runtime|deserializ\w*|serializ\w*|"
+    r"resolvedor\s+semantico|semantic\s+resolver|referencias\s+conversacionales|"
     r"stacktrace|traceback|exception|nullptr|"
     r"parametro\s+requerido|required\s+parameter)\b"
     r"|\b[a-z][a-z0-9]*\.[a-z][a-z0-9.]*\b",
@@ -2819,6 +2834,10 @@ def compose_visible_defect(
     stripped = _strip_prompt_labels((text or "").strip())
     if not stripped:
         return "empty"
+    if ("¿" in stripped and "?" not in stripped) or (
+        "¡" in stripped and "!" not in stripped
+    ):
+        return "unbalanced_punctuation"
     if visible_reply_is_a_fixed_stall(stripped):
         return "stall"
     if visible_reply_invents_a_spanish_infinitive(stripped):
@@ -4557,6 +4576,7 @@ class LlmRuntime:
             if (
                 candidate
                 and not candidate.rstrip().endswith(("?", "？"))
+                and not visible_text_leaks_internal_vocabulary(candidate)
                 and normalized_candidate != _normalized_dialogue_text(current)
                 and normalized_candidate not in prior_normalized
             ):
@@ -4569,6 +4589,7 @@ class LlmRuntime:
         if (
             answer
             and not answer.rstrip().endswith(("?", "？"))
+            and not visible_text_leaks_internal_vocabulary(answer)
             and normalized_answer != _normalized_dialogue_text(current)
             and normalized_answer not in prior_normalized
         ):
@@ -7845,6 +7866,9 @@ class LlmRuntime:
             "missing_composition_loss": (
                 "Di honestamente que no pudiste redactar o word the verified result; "
                 "no inventes otra causa."
+            ),
+            "unbalanced_punctuation": (
+                "Cierra cada signo de apertura español con ? o !, según corresponda."
             ),
             "wrong_language": "Same language as the request.",
             "extra_claim": "Only facts in seen.",
