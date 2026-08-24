@@ -1005,3 +1005,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   palabras repetidas a través de coma/punto y coma/dos puntos, no sólo espacio;
   regresión exacta y suite dueña `test_goal06_voice.py` **10/10**, cero skips.
   Falta reproducción de fecha y otra tanda completa.
+- R28 verificó que `Hoy, hoy` ya se descarta, pero los intentos siguientes sin
+  forma específica agotaron el turno con pregunta/jerga y el shell publicó el
+  falso fallo: **0/1**, inválida. El contrato de fecha actual ahora acompaña los
+  tres intentos: sólo fecha observada, una oración, `hoy` como máximo una vez,
+  sin pregunta, saludo, `Listo`, hora ni campos internos. Focales **2/2** y
+  suites dueñas combinadas **159/159 + 101 subtests**, cero skips. Falta
+  reproducción física.

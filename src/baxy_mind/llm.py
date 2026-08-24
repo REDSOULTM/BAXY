@@ -7688,6 +7688,25 @@ class LlmRuntime:
             "interpretes, amplíes ni parafrasees; no enumeres sitios, no mezcles "
             "otros resultados y no inventes detalles ausentes."
         )
+        current_date_request = bool(
+            intent == "status"
+            and operation == "system.time"
+            and re.search(
+                r"\b(?:dia|fecha|date|today)\b",
+                _policy_guard_text(user_text),
+            )
+            and re.search(
+                r"\b(?:hora|time|reloj|clock)\b",
+                _policy_guard_text(user_text),
+            )
+            is None
+        )
+        current_date_instruction = (
+            "Responde sólo la fecha calendario observada en una oración breve y "
+            "natural en el idioma del pedido. Usa «hoy» como máximo una vez; no "
+            "hagas preguntas, no saludes, no empieces con «Listo» y no menciones "
+            "campos, códigos ni la hora."
+        )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
                 "\nGreet briefly, masculine, no apps."
@@ -7698,6 +7717,8 @@ class LlmRuntime:
             )
         elif news_summary_request:
             payload["messages"][1]["content"] += "\n" + news_summary_instruction
+        elif current_date_request:
+            payload["messages"][1]["content"] += "\n" + current_date_instruction
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
                 "\nAsk one short question that disambiguates. Do not guess."
@@ -8232,6 +8253,8 @@ class LlmRuntime:
         )
         if news_summary_request:
             retry_user += "\n" + news_summary_instruction
+        elif current_date_request:
+            retry_user += "\n" + current_date_instruction
         retry_system = (
             CPU_USER_MESSAGE_PROMPT
             if cause == "acting" or defect == "internal_code"
@@ -8278,6 +8301,8 @@ class LlmRuntime:
         )
         if news_summary_request:
             third_user += "\n" + news_summary_instruction
+        elif current_date_request:
+            third_user += "\n" + current_date_instruction
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},

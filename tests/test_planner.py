@@ -2932,6 +2932,40 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(responses, [])
 
+    def test_current_date_contract_survives_every_compose_attempt(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {"choices": [{"message": {"content": ""}}]}
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "¿Qué día es hoy?",
+            "status",
+            {
+                "situation": json.dumps(
+                    {
+                        "kind": "operation",
+                        "operation": "system.time",
+                        "polarity": "success",
+                        "verified": True,
+                        "observed": {"localDate": "2026-08-24"},
+                    },
+                    ensure_ascii=False,
+                )
+            },
+        )
+
+        self.assertEqual(result, "")
+        self.assertEqual(len(seen), 3)
+        for payload in seen:
+            instruction = payload["messages"][1]["content"].casefold()
+            self.assertIn("sólo la fecha calendario observada", instruction)
+            self.assertIn("hoy» como máximo una vez", instruction)
+            self.assertIn("no hagas preguntas", instruction)
+
     def test_cpu_visible_message_uses_the_compact_fully_validated_prompt(self):
         runtime = object.__new__(LlmRuntime)
         seen = []
