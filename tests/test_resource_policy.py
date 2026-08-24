@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind.resource_policy import (  # noqa: E402
     MAX_CPU_INFERENCE_THREADS,
+    _lowest_available_affinity_mask,
     bounded_cpu_threads,
     cpu_session_options,
 )
@@ -57,6 +58,11 @@ def test_cpu_session_options_bound_workers_and_disable_spinning(monkeypatch) -> 
 def test_invalid_thread_override_returns_small_default(monkeypatch) -> None:
     monkeypatch.setenv("BAXY_TEST_ONNX_THREADS", "not-a-number")
     assert bounded_cpu_threads("BAXY_TEST_ONNX_THREADS") == 2
+
+
+def test_process_affinity_selects_only_the_requested_available_cpus() -> None:
+    assert _lowest_available_affinity_mask(0b1111_1111, 4) == 0b0000_1111
+    assert _lowest_available_affinity_mask(0b1010_1010, 3) == 0b0010_1010
 
 
 def test_piper_owns_a_non_spinning_bounded_session(tmp_path, monkeypatch) -> None:

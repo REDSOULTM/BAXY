@@ -35,6 +35,10 @@ os.environ.setdefault("OMP_WAIT_POLICY", "PASSIVE")
 os.environ.setdefault("KMP_BLOCKTIME", "0")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
+from .resource_policy import constrain_current_windows_process
+
+constrain_current_windows_process()
+
 from . import protocol
 from . import effect_intent
 from .corrector import catalog_correction_terms

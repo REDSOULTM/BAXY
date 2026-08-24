@@ -1,0 +1,45 @@
+{
+  "schema": "baxy-resource-guard-v1",
+  "action": "baxy_process_family_killed",
+  "reasons": [
+    "total_cpu"
+  ],
+  "killed_pids": [
+    14720,
+    19400,
+    34968,
+    27492,
+    33836,
+    30276,
+    35552,
+    6408,
+    32944,
+    25912,
+    30660,
+    35172,
+    26852,
+    36572,
+    36404,
+    18156
+  ],
+  "samples": 79,
+  "elapsed_seconds": 42.45,
+  "limits": {
+    "total_cpu_percent": 85.0,
+    "baxy_cpu_percent": 70.0,
+    "system_ram_percent": 90.0,
+    "baxy_rss_mib": 6144.0,
+    "gpu_percent": 90.0,
+    "gpu_memory_percent": 85.0,
+    "consecutive_samples": 3,
+    "gpu_consecutive_samples": 5
+  },
+  "peak": {
+    "total_cpu_percent": 100.0,
+    "baxy_cpu_percent": 8.58,
+    "system_ram_percent": 62.6,
+    "baxy_rss_mib": 5226.98,
+    "gpu_utilization_percent": 95.0,
+    "gpu_memory_percent": 25.01
+  }
+}

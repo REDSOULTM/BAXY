@@ -56,8 +56,61 @@ def cpu_session_options(
     return options
 
 
+def _lowest_available_affinity_mask(available_mask: int, count: int) -> int:
+    selected = 0
+    remaining = max(1, count)
+    bit = 1
+    while available_mask and remaining:
+        if available_mask & bit:
+            selected |= bit
+            available_mask &= ~bit
+            remaining -= 1
+        bit <<= 1
+    return selected
+
+
+def constrain_current_windows_process() -> None:
+    """Give the mind a hard CPU boundary before any native runtime loads."""
+
+    if os.name != "nt":
+        return
+
+    import ctypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+    kernel32.SetPriorityClass.argtypes = (ctypes.c_void_p, ctypes.c_uint32)
+    kernel32.SetPriorityClass.restype = ctypes.c_int
+    kernel32.GetProcessAffinityMask.argtypes = (
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+    )
+    kernel32.GetProcessAffinityMask.restype = ctypes.c_int
+    kernel32.SetProcessAffinityMask.argtypes = (ctypes.c_void_p, ctypes.c_size_t)
+    kernel32.SetProcessAffinityMask.restype = ctypes.c_int
+    process = kernel32.GetCurrentProcess()
+    below_normal_priority_class = 0x00004000
+    if not kernel32.SetPriorityClass(process, below_normal_priority_class):
+        raise OSError(ctypes.get_last_error(), "SetPriorityClass failed")
+
+    process_mask = ctypes.c_size_t()
+    system_mask = ctypes.c_size_t()
+    if not kernel32.GetProcessAffinityMask(
+        process,
+        ctypes.byref(process_mask),
+        ctypes.byref(system_mask),
+    ):
+        raise OSError(ctypes.get_last_error(), "GetProcessAffinityMask failed")
+    cpu_count = bounded_cpu_threads("BAXY_MIND_PROCESS_CPUS", default=4)
+    selected = _lowest_available_affinity_mask(process_mask.value, cpu_count)
+    if not selected or not kernel32.SetProcessAffinityMask(process, selected):
+        raise OSError(ctypes.get_last_error(), "SetProcessAffinityMask failed")
+
+
 __all__ = [
     "MAX_CPU_INFERENCE_THREADS",
     "bounded_cpu_threads",
+    "constrain_current_windows_process",
     "cpu_session_options",
 ]

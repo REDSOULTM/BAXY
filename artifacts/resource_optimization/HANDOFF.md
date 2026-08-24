@@ -67,6 +67,17 @@ esta sesión.
 - El muestreo GPU ahora vive en un hilo independiente y la enumeración evita
   leer la línea de comando de procesos no Python. Self-test R4: 6 muestras en
   3,02 s (intervalo efectivo 0,50 s), CPU pico 4,2 %, GPU 1 %, sin acción.
+- Corrida física R2: el guardián cortó el árbol antes del turno tras tres
+  muestras de CPU total a 100 %. RSS BAXY pico 5,23 GiB, VRAM 25,01 %, GPU
+  95 %. La atribución por PID de esa corrida era inválida porque se recreaba
+  el objeto `psutil.Process` en cada muestra (su primera lectura siempre es
+  cero); el total y el corte sí fueron válidos. Evidencia:
+  `physical_run_r2.json` y `.jsonl`.
+- El guardián conserva ahora el objeto de cada PID entre muestras. Como
+  frontera independiente de cualquier biblioteca nativa, `baxy_mind` arranca
+  con prioridad `BELOW_NORMAL` y afinidad dura a 4 CPUs lógicas; los hijos la
+  heredan. Prueba aislada real: afinidad `[0,1,2,3]`, prioridad 16384. Así una
+  sesión sherpa/ORT que conserve spinning no puede ocupar los 24 hilos.
 
 ## Siguiente paso obligatorio
 

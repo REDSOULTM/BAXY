@@ -184,19 +184,19 @@ def take_sample(
     known: dict[int, psutil.Process],
     gpu: dict[str, float | None],
 ) -> dict[str, Any]:
-    processes = baxy_process_family()
-    for process in processes:
+    discovered = baxy_process_family()
+    for process in discovered:
         if process.pid not in known:
             try:
                 process.cpu_percent(interval=None)
             except (psutil.AccessDenied, psutil.NoSuchProcess):
                 pass
             known[process.pid] = process
-    active = {process.pid: process for process in processes}
+    active = {process.pid: process for process in discovered}
     for pid in tuple(known):
         if pid not in active:
             del known[pid]
-    known.update(active)
+    processes = list(known.values())
 
     cpu_raw = 0.0
     rss = 0
