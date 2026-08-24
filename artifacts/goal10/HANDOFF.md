@@ -768,3 +768,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Focales de los hitos internos **3/3** (`test_mind_voice_runtime` +
   `test_resource_policy`) y `ShellTraceTests` **8/8**, cero skips, build Release
   verde. Instrumentación lista para la reproducción física.
+- `narration-r10` localizó el bloqueo antes de ONNX: tras esperar el
+  `welcome silent`, el primer turno emitió `voice.cancel accepted`, terminó en
+  **1,031 s**, aceptó la narración y el worker la desencoló en **0,225 ms**,
+  pero no alcanzó `phonemes` ni error aun después de más de 10 s. El hito
+  `phonemes` se emite justo después de `_PiperOnnxEngine._phonemes`, por lo que
+  el atasco está dentro del `subprocess.run` de eSpeak. Una inspección viva más
+  de dos minutos después encontró el proceso de mente activo pero ningún
+  `espeak.exe`/`espeak-ng.exe` hijo: no es un ejecutable de eSpeak que siga
+  corriendo, sino el borde de creación/espera del subprocess. Sonda del agente,
+  suma 0. Falta separar `Popen` de `communicate`, reparar ese borde y repetir el
+  primer turno fresco.
