@@ -594,3 +594,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   rechaza `AppID` y «autoridad CAS». Focales **14/14** y suites dueñas completas
   `test_effect_intent.py + test_turn_policy.py` **2333/2333** en **64,73 s**,
   cero skips. Falta Fast y repetición viva completa de esta sesión.
+- Fast de la reparación social/corrección **verde**: PowerShell, Ruff,
+  compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings
+  / 0 errors**. Binario listo para repetir los tres turnos reales.
