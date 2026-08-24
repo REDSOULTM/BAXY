@@ -506,6 +506,189 @@ def _public_live_lookup_request(folded: str) -> bool:
     )
 
 
+def _public_fact_lookup_request(folded: str) -> bool:
+    """Recognize public fact questions whose answer must be observed.
+
+    A local model may explain or create text, but it cannot be the verifier for
+    names, dates, releases, biographies or other claims about the outside
+    world. Keep this boundary syntactic and deliberately reject private,
+    local-machine, assistant-identity and creative/opinion requests before a
+    literal user clause becomes a public search query.
+    """
+
+    folded = _strip_request_envelope(folded).strip(" \t\r\n¿?¡!.,;:")
+    folded = re.sub(
+        r"^(?:please\s+)?(?:(?:olly|alexa|bax[yi]|ok\s+google)\s*[,;:]?\s+)?",
+        "",
+        folded,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    folded = re.sub(
+        (
+            r"^(?:(?:can|could|would|will)\s+you|(?:puedes|podrias))\s+"
+            r"(?:please\s+|por\s+favor\s+)?(?:tell|show|give|decir|mostrar|dar)"
+            r"(?:me|\s+me)?\s+"
+        ),
+        "",
+        folded,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    if not folded or len(folded.encode("utf-8")) > 512:
+        return False
+    if _has(
+        folded,
+        (
+            r"\b(?:mi|mis|mio|mia|mios|mias|my|mine|our|ours|nuestro|"
+            r"nuestra|nuestros|nuestras|tu|tus|tuyo|tuya|you|your|yours)\b|"
+            r"\b(?:bax[yi]|asistente|assistant)\b"
+        ),
+    ):
+        return False
+    if re.fullmatch(
+        r"(?:(?:quien|who)\s+(?:soy|am)\s+(?:yo|i)|"
+        r"(?:quien|who)\s+(?:eres|are)\s+(?:tu|you))",
+        folded,
+        re.IGNORECASE,
+    ) is not None:
+        return False
+    if _has(
+        folded,
+        (
+            r"\b(?:pc|computer|computador|computadora|ordenador|maquina|machine|"
+            r"device|dispositivo|pantalla|screen|ventana|window|clipboard|"
+            r"portapapeles|archivo|file|"
+            r"carpeta|folder|"
+            r"documento|document|descargas|downloads|escritorio|desktop|"
+            r"nota|notes?|tarea|tasks?|recordatorio|reminders?|alarmas?|alarms?|"
+            r"temporizadores?|timers?|calendario|calendar|volumen|volume|"
+            r"silencio|silenciad[oa]|mute|muted|mutead[oa]|bateria|battery|"
+            r"procesador|processor|nucleos?|"
+            r"cores?|vram|gpu|cpu|ram|tarjeta\s+grafica|graphics\s+card|"
+            r"disco|disk|espacio\s+libre|free\s+space|"
+            r"notebook|"
+            r"aplicacion(?:es)?\s+instalad[ao]s?|installed\s+apps?|"
+            r"instalad[ao]s?|installed)\b"
+        ),
+    ):
+        return False
+    if _has(
+        folded,
+        r"^(?:what|que)\b.{0,32}\b(?:i|yo)\b.{0,32}\b(?:copy|copied|copie|copiado)\b",
+    ):
+        return False
+    if _has(
+        folded,
+        r"^(?:how\s+many|cuantas?)\s+(?:windows|ventanas)\b.{0,24}\b(?:open|abiertas?)\b",
+    ):
+        return False
+    if _has(folded, r"\b(?:programas?|programs?|procesos?|processes)\b") and _has(
+        folded,
+        r"\b(?:memoria|memory|cpu|ram|recursos?|resources?)\b",
+    ):
+        return False
+    if re.fullmatch(
+        (
+            r"(?:(?:que|cual)\s+(?:hora|fecha|dia)\b.{0,48}|"
+            r"what\s+(?:time|date|day)\b.{0,48}|"
+            r"(?:que\s+)?(?:hora|fecha)\s+(?:es|tenemos)\b.{0,32}|"
+            r"(?:hora|fecha|time|date)\s+(?:actual|now|today|hoy)\b.{0,32})"
+        ),
+        folded,
+        re.IGNORECASE,
+    ) is not None:
+        return False
+    if re.fullmatch(
+        r"(?:que\s+sucede\s+en\s+ano\s+nuevo|what\s+is\s+going\s+on\s+tonight)",
+        folded,
+        re.IGNORECASE,
+    ) is not None:
+        return False
+    if _has(
+        folded,
+        (
+            r"\b(?:direccion|address|telefono|phone|correo|email|e-mail|"
+            r"contrasena|password|cuenta\s+bancaria|bank\s+account)\b|"
+            r"\b(?:opina|opinion|piensas|think|recommend|recomienda|"
+            r"deberia|should|por\s+que|why|como\s+(?:puedo|hago)|how\s+to|"
+            r"escribe|write|redacta|draft|traduce|translate|resume|summarize|"
+            r"inventa|invent|cuento|story|poema|poem|chiste|joke)\b"
+        ),
+    ):
+        return False
+
+    public_question_head = (
+        re.match(
+            (
+                r"^(?:"
+                r"quien(?:es)?\b|who\b|"
+                r"(?:que|cual|cuales|what|which)\b|"
+                r"(?:cuando|donde|when|where)\b|"
+                r"(?:cuanto|cuanta|cuantos|cuantas)\b|"
+                r"(?:for|durante)\s+(?:how\s+many|cuantos?)\b|"
+                r"(?:in|en)\s+(?:what|que|cuanto|cuanta|cuantos|cuantas)\b|"
+                r"(?:de\s+)?que\s+color\b|"
+                r"como\s+de\s+(?:alto|alta|grande|lejos|largo|larga)\b|"
+                r"how\s+(?:old|many|much|tall|big|large|far|long)\b|"
+                r"(?:es|son|era|fue|fueron|esta|estan|is|are|was|were|"
+                r"did|does|do|has|have)\b"
+                r")"
+            ),
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+    public_information_request = (
+        re.match(
+            (
+                r"^(?:"
+                r"(?:dime|cuentame|contame|tell\s+me)\b.{0,48}\b"
+                r"(?:sobre|about|quien|what|where|when|how|donde|cuando|"
+                r"como|cuanto|cuanta|cuantos|cuantas|todo|everything|"
+                r"profesion|profession|mayor|menor|mas\s+grande|largest|"
+                r"smallest|oldest|newest)|"
+                r"(?:dame|give\s+me|show\s+me)\b.{0,24}"
+                r"\b(?:informacion|information|detalles|details)\b|"
+                r"(?:informacion|information|info|detalles|details)\b.{0,24}"
+                r"\b(?:sobre|about|of|on)\b|"
+                r"\S.{0,80}\b(?:informacion|information|info|detalles|details)$|"
+                r"(?:confirmar?|confirma|confirm)\b.{0,24}\b(?:si|if|whether)\b|"
+                r"(?:i\s+need|necesito)\b.{0,24}"
+                r"\b(?:informacion|information|info|detalles|details)\b|"
+                r"(?:look\s+up|google)\b.{1,120}|"
+                r"(?:show|muestra|mostrar|explain|explica)\b.{0,40}"
+                r"\b(?:geographic|geographical|geografia|ubicacion|location|"
+                r"biografia|biography|detalles|details)\b"
+                r")"
+            ),
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+    latest_public_release = (
+        _has(
+            folded,
+            r"\b(?:ultimo|ultima|mas\s+reciente|latest|newest|most\s+recent)\b",
+        )
+        and _has(
+            folded,
+            r"\b(?:salio|salido|lanzo|lanzado|estreno|estrenado|publico|"
+            r"publicado|release|released|came\s+out|movie|film|pelicula|"
+            r"game|juego|book|libro|album|disco|version)\b",
+        )
+    )
+    return public_question_head or public_information_request or latest_public_release
+
+
+def _public_verified_lookup_request(folded: str) -> bool:
+    """Return whether a clause is safe and requires verified public input."""
+
+    return _public_live_lookup_request(folded) or _public_fact_lookup_request(folded)
+
+
 def _direct_current_time_request(folded: str) -> bool:
     """Recognize a direct request for the computer's current local time."""
 
@@ -1144,7 +1327,7 @@ def _curated_domain_is_grounded(
             _location_recommendation_request(folded)
             or _public_route_lookup_request(folded)
             or _public_calendar_fact_lookup_request(folded)
-            or _public_live_lookup_request(folded)
+            or _public_verified_lookup_request(folded)
             or _public_commerce_lookup_request(folded)
             or (
                 _has(
@@ -12540,7 +12723,7 @@ def resolve_explicit_effects(
         len(clauses) == 1
         and "web.search" in available
         and (
-            _public_live_lookup_request(folded)
+            _public_verified_lookup_request(folded)
             or _public_route_lookup_request(folded)
             or _public_calendar_fact_lookup_request(folded)
         )
@@ -12954,6 +13137,14 @@ def unresolved_compound_contract(
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     clauses = _request_clauses(folded)
     available = tuple(available_operations)
+    if (
+        isinstance(resolved_intent, EffectIntent)
+        and resolved_intent.operations == ("web.search",)
+        and _public_verified_lookup_request(folded)
+    ):
+        # A verified public read is one closed observation. Question words and
+        # entity names must not be reinterpreted as unresolved action clauses.
+        return None
     authenticated_applications = build_application_catalog_index(
         application_names,
     )
@@ -13029,10 +13220,10 @@ def unresolved_compound_contract(
         and resolved_intent.operations == ("web.search",)
         and _public_product_correction_lookup_request(folded)
     )
-    benign_live_lookup = (
+    benign_public_lookup = (
         isinstance(resolved_intent, EffectIntent)
         and resolved_intent.operations == ("web.search",)
-        and _public_live_lookup_request(folded)
+        and _public_verified_lookup_request(folded)
     )
     benign_game_correction = (
         isinstance(resolved_intent, EffectIntent)
@@ -13051,7 +13242,7 @@ def unresolved_compound_contract(
             and not benign_media_alternative
             and not benign_asr_catalog_report
             and not benign_product_correction
-            and not benign_live_lookup
+            and not benign_public_lookup
             and not benign_game_correction
             and not benign_trash_prepare_without_commit
         )

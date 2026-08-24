@@ -454,3 +454,41 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   total **5.283 MiB**, llama-server vivo. `artifacts/goal10/soak.json{,l}` vuelve
   a pertenecer exclusivamente a este tramo; no matar ni recompilar BAXY mientras
   corra, salvo que un defecto obligue honestamente a reiniciar las 24 h.
+
+## Continuación — hechos públicos sin verificar invalidan el tramo
+
+- Durante uso real concurrente de la persona, la pregunta `Quien es batman?`
+  mostró: **«Batman es un personaje de ficción de cómic y animación, creado por
+  Bob Kane y William Marovich en 1939. Es un detective que vive en GOTHAM y
+  lucha contra el crimen con su identidad secreta. Su boda con la detective
+  Barbara Gordon lo convierte en un personaje de serie.»**. Es una afirmación
+  factual no verificada con falsedades visibles; el trace confirma
+  `decision.ready=conversation`, sin core.
+- En la misma sesión, `Cual es el ultimo mortal kombat que salio?` terminó en
+  plan/aclaración sin core y mostró **«¿Cuál es el nombre del último Mortal
+  Kombat lanzado en el mercado?»**. Ante `Dimelo tu`, mostró **«No puedo decir
+  cuál fuerió el último kombat que salió.»**. La entrada llegó por `key.enter`:
+  no fue un falso positivo de wake. Los tres son turnos reales, pero esta sesión
+  no cuenta porque violó honestidad y plantillas; se repetirá completa tras la
+  reparación.
+- El tramo iniciado a 18:34:40Z queda invalidado y detenido. Se conserva como
+  `soak-invalid-public-facts.json{,l}`: **182,2 s / 4 muestras**, RSS inicial
+  **171,2 MiB**, última/pico **271,5 MiB** durante carga interactiva; no es
+  evidencia idle ni suma a las 24 h. Se detuvieron app y ambos samplers. No se
+  inicia otro tramo hasta que preguntas factuales públicas crucen `web.search`,
+  el kernel verifique el resultado y la repetición viva sea limpia.
+- La evidencia acumulada confirmó que no era un caso especial: el holdout
+  versionado de mensajes reales contiene **456** filas `qa_factoid` dentro de
+  9.172 turnos. La nueva frontera sintáctica reconoce **357/456 (78,3 %)** sin
+  etiqueta ni modelo: personas, capitales, fechas, cantidades, biografías,
+  estado civil y lanzamientos. Los restantes incluyen deliberadamente datos de
+  contacto, posesivos/localización personal, opinión, deícticos sin referente y
+  formas corruptas del corpus que no deben convertirse automáticamente en una
+  consulta saliente.
+- `web.search` se selecciona después de los reconocedores específicos: las
+  lecturas de batería, GPU, ventana, portapapeles, aplicaciones, calendario y
+  audio conservan su operación dueña. La búsqueda pública queda cerrada antes
+  del decisor, conserva el texto literal como `query` y no acepta identidad de
+  BAXY, contenido creativo, datos personales o estado de este PC. Suites dueñas
+  completas: `test_effect_intent.py + test_turn_policy.py` **2327/2327** en
+  49,07 s. Falta compuerta Fast y repetición viva del proveedor/narración.

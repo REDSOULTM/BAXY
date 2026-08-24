@@ -6,6 +6,8 @@ import pytest
 
 from baxy_mind.effect_intent import (
     CompoundEffectContract,
+    _fold,
+    _strip_request_envelope,
     build_application_catalog_index,
     build_game_catalog_index,
     compound_retrieval_clauses,
@@ -213,14 +215,14 @@ def test_public_questions_cannot_gain_local_search_or_alarm_authority(
     assert operation_domain_is_grounded(text, operation) is False
 
 
-def test_bare_spanish_temperature_factoid_does_not_force_a_live_lookup() -> None:
-    assert (
-        resolve_explicit_effects(
-            "cual es la temperatura en barcelona cataluna",
-            {"web.search", "notification.diagnose"},
-        )
-        is None
+def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
+    result = resolve_explicit_effects(
+        "cual es la temperatura en barcelona cataluna",
+        {"web.search", "notification.diagnose"},
     )
+
+    assert result is not None
+    assert result.operations == ("web.search",)
 
 
 @pytest.mark.parametrize(
@@ -1413,7 +1415,6 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "I won't open Spotify",
         "You should not open Spotify",
         "I cannot open Spotify",
-        "What is ping?",
         "Explain the concept of ping",
         "Bluetooth devices use radio waves",
         "List biological processes that use memory",
@@ -2397,14 +2398,47 @@ def test_authenticated_play_game_phrase_resolves_exact_installed_title() -> None
     assert result.evidence == ("Fall Guys",)
 
 
-def test_current_public_role_question_does_not_authorize_a_web_effect() -> None:
-    assert (
-        operation_domain_is_grounded(
-            "quien es el actual primer ministro de rusia",
-            "web.search",
-        )
-        is False
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Quien es Batman?",
+        "Cual es el ultimo Mortal Kombat que salio?",
+        "quien es el actual primer ministro de rusia",
+        "what is the capital of Nigeria?",
+        "how old is Mariah Carey?",
+        "is Steph Curry married?",
+        "can you tell me how many stomachs a cow has?",
+        "What is ping?",
+    ],
+)
+def test_public_fact_questions_resolve_to_verified_web_lookup(text: str) -> None:
+    assert operation_domain_is_grounded(text, "web.search") is True
+
+    result = resolve_explicit_effects(text, {"web.search"})
+
+    assert result is not None
+    assert result.operations == ("web.search",)
+    assert result.evidence == (
+        _strip_request_envelope(_fold(text)),
     )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "quien eres tu?",
+        "que es BAXY?",
+        "cual es mi direccion IP?",
+        "what is on my calendar?",
+        "escribe una historia de Batman",
+        "por que Batman no mata?",
+        "tell me Billy Crystal's address",
+    ],
+)
+def test_private_local_identity_and_creative_questions_do_not_become_web_queries(
+    text: str,
+) -> None:
+    assert operation_domain_is_grounded(text, "web.search") is False
 
 
 @pytest.mark.parametrize(
@@ -3299,7 +3333,8 @@ def test_r15_address_and_message_task_chain_preserve_closed_authority() -> None:
         "message.send",
         "note.list",
     )
-    assert knowledge is None
+    assert knowledge is not None
+    assert knowledge.operations == ("web.search",)
 
 
 @pytest.mark.parametrize(

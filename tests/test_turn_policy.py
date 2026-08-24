@@ -1773,6 +1773,16 @@ def test_location_recommendation_preserves_literal_web_query() -> None:
         "What was the weather like on this day last year",
         schema,
     ) == {"query": "What was the weather like on this day last year"}
+    assert _ground_explicit_arguments(
+        "web.search",
+        "Quien es Batman?",
+        schema,
+    ) == {"query": "Quien es Batman?"}
+    assert _ground_explicit_arguments(
+        "web.search",
+        "Cual es el ultimo Mortal Kombat que salio?",
+        schema,
+    ) == {"query": "Cual es el ultimo Mortal Kombat que salio?"}
 
 
 def test_nominal_reminder_lookup_is_read_only_and_title_grounded() -> None:
@@ -3497,6 +3507,67 @@ def test_live_weather_feed_is_closed_before_model_selection(text: str) -> None:
             "id": "live-weather",
             "text": text,
         },
+        llm=NoModel(),
+        planner_catalog=catalog,
+        turn_evidence=NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"web.search": tool},
+    )
+
+    assert result["kind"] == "action"
+    assert result["operation"] == "web.search"
+    assert result["intentOperations"] == ["web.search"]
+    assert result["effectOperations"] == ["web.search"]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Quien es Batman?",
+        "Cual es el ultimo Mortal Kombat que salio?",
+        "what is the capital of Nigeria?",
+    ],
+)
+def test_public_fact_question_is_closed_before_model_selection(text: str) -> None:
+    tool = {
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "canonical_name": "web.search",
+            "description": "Search public information and verify the result.",
+            "risk": "read_only",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "x-nonWhitespace": True},
+                },
+                "required": ["query"],
+                "additionalProperties": False,
+            },
+        },
+    }
+    catalog = PlannerCatalog([tool])
+
+    class NoEvidence:
+        @staticmethod
+        def candidate_families(*_args: object) -> tuple[str, ...]:
+            raise AssertionError("a public fact must not rank families")
+
+        @staticmethod
+        def retrieve(*_args: object) -> list[object]:
+            raise AssertionError("a public fact must not retrieve evidence")
+
+    class NoModel:
+        @staticmethod
+        def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
+            raise AssertionError("the verified public lookup must own the turn")
+
+        @staticmethod
+        def retire_deferred_response_language(_text: str) -> None:
+            return None
+
+    result = _prepare_turn_result(
+        {"id": "public-fact", "text": text},
         llm=NoModel(),
         planner_catalog=catalog,
         turn_evidence=NoEvidence(),

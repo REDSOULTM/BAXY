@@ -5672,6 +5672,25 @@ def _prepare_turn_result(
             objective,
         )
     )
+    resolved_explicit_intent = (
+        None
+        if non_target_language is not None
+        else resolve_explicit_effects(
+            objective,
+            available_operations,
+            application_names,
+            game_catalog,
+        )
+    )
+    verified_public_intent = (
+        resolved_explicit_intent
+        if resolved_explicit_intent is not None
+        and resolved_explicit_intent.operations == ("web.search",)
+        and effect_intent._public_verified_lookup_request(
+            effect_intent._strip_request_envelope(effect_intent._fold(objective))
+        )
+        else None
+    )
     stable_no_effect_is_closed = (
         explicit_non_action
         or literal_recall_decision is not None
@@ -5687,24 +5706,11 @@ def _prepare_turn_result(
             )
         )
     )
-    live_public_intent = (
-        EffectIntent(("web.search",), (objective,))
-        if "web.search" in available_operations
-        and effect_intent._public_live_lookup_request(
-            effect_intent._strip_request_envelope(effect_intent._fold(objective))
-        )
-        else None
-    )
     explicit_intent = (
         None
-        if non_target_language is not None or stable_no_effect_is_closed
-        else live_public_intent
-        or resolve_explicit_effects(
-            objective,
-            available_operations,
-            application_names,
-            game_catalog,
-        )
+        if non_target_language is not None
+        or (stable_no_effect_is_closed and verified_public_intent is None)
+        else resolved_explicit_intent
     )
     # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
     # (app.open, note.create, task.create) after the grammar already named
@@ -5744,7 +5750,7 @@ def _prepare_turn_result(
         else catalog_unavailable_decision
         or _explicit_social_turn_decision(objective)
         or _explicit_nonunderstanding_turn_decision(objective, history)
-        or stable_no_effect_decision
+        or (stable_no_effect_decision if explicit_intent is None else None)
     )
     withdrawn_closed_refusal = ""
     if (
