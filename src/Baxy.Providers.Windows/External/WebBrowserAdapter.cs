@@ -602,9 +602,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     private static bool IsSearchStopWord(string token) => token is
         "a" or "an" or "and" or "the" or "to" or "for" or "from" or "in" or "of" or "on"
-        or "search" or "find"
+        or "search" or "find" or "latest" or "newest" or "most" or "recent"
+        or "release" or "released" or "available" or "now"
         or "de" or "del" or "el" or "en" or "la" or "las" or "los" or "para" or "por"
-        or "un" or "una" or "y" or "busca" or "buscar";
+        or "un" or "una" or "y" or "busca" or "buscar" or "ultimo" or "ultima"
+        or "reciente" or "lanzamiento" or "disponible" or "ahora";
 
     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
         ExternalJson.Create(writer =>

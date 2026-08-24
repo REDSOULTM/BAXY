@@ -532,3 +532,16 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Fast del fallback **verde**: PowerShell, Ruff, compileall, ESLint, ambos TSC,
   `dotnet format` y build Release; **0 warnings / 0 errors**. Binario listo para
   `public-facts-r3`.
+- `public-facts-r3` cruzó limpio el bridge, UIA y core en ambos turnos, pero no
+  cuenta: Batman quedó sin las falsedades originales; Mortal Kombat usó el
+  fallback y recibió cinco resultados, incluidos `Mortal Kombat 1: Definitive
+  Edition` (14-05-2025) y una fuente que aún decía «más reciente: Onslaught,
+  octubre de 2023». El compositor eligió esa afirmación obsoleta y la mostró
+  como actual. Es otra violación de honestidad; se conserva la corrida en
+  `public-facts-r3.json` y se repite.
+- La sonda también tenía una carrera real: `dom.applied` puede preceder por una
+  posición a `response.final`. Ahora exige DOM después de `visible.text`, que es
+  la publicación causal; R3 produjo el JSON de dos turnos en vez de un falso
+  timeout. La consulta de recencia se cambia a “most recent release available
+  now” y esos términos temporales dejan de puntuar relevancia: la entidad sigue
+  siendo obligatoria, pero una etiqueta «latest» no convierte HVAC en pertinente.

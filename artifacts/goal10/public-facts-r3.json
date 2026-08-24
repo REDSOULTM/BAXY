@@ -1,0 +1,39 @@
+{
+  "session": "public-facts-r3",
+  "journalPath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\dev-mente-v2\\journal\\missions.jsonl",
+  "tracePath": "C:\\Users\\usuario\\AppData\\Local\\Temp\\baxy-goal10\\trace-public-facts-r3.jsonl",
+  "turns": [
+    {
+      "session": "public-facts-r3",
+      "index": 1,
+      "text": "Quien es batman?",
+      "turnId": "t1",
+      "submitted": true,
+      "coreOperation": "web.search",
+      "visibleTextAccepted": true,
+      "visibleText": "Listo, la biografía de batman es una historia de un hombre que se convierte en un vigilante nocturno para proteger la ciudad de gotham.",
+      "finalMs": 47601.768,
+      "submitMs": 42931.241,
+      "elapsedS": 5.565,
+      "bridgeAttempts": 1,
+      "error": null
+    },
+    {
+      "session": "public-facts-r3",
+      "index": 2,
+      "text": "Cual es el ultimo mortal kombat que salio?",
+      "turnId": "t2",
+      "submitted": true,
+      "coreOperation": "web.search",
+      "visibleTextAccepted": true,
+      "visibleText": "Listo, el último Mortal Kombat que salió es Mortal Kombat: Onslaught, publicado en octubre de 2023.",
+      "finalMs": 50600.035,
+      "submitMs": 48453.428,
+      "elapsedS": 2.895,
+      "bridgeAttempts": 1,
+      "error": null
+    }
+  ],
+  "count": 2,
+  "finishedAt": "2026-08-24T15:20:27.2211237-04:00"
+}

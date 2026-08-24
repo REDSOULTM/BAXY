@@ -3712,14 +3712,14 @@ def _explicit_public_fact_search_arguments(
             r"(?:ultimo|ultima|mas\s+reciente)\s+(?P<subject>.+?)"
             r"(?=\s+que\s+(?:salio|ha\s+salido|se\s+lanzo|fue\s+lanzad[oa])$|$)"
             r"(?:\s+que\s+(?:salio|ha\s+salido|se\s+lanzo|fue\s+lanzad[oa]))?$",
-            "{subject} ultimo lanzamiento",
+            "{subject} most recent release available now",
         ),
         (
             r"^(?:what|which)\s+(?:is|was)\s+(?:the\s+)?"
             r"(?:latest|newest|most\s+recent)\s+(?P<subject>.+?)"
             r"(?=\s+(?:released|that\s+came\s+out)$|$)"
             r"(?:\s+(?:released|that\s+came\s+out))?$",
-            "{subject} latest release",
+            "{subject} most recent release available now",
         ),
         (
             r"^how\s+old\s+(?:is|was)\s+(?P<subject>.+)$",

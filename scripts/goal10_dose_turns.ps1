@@ -186,7 +186,10 @@ foreach ($text in $Turns) {
     }
     [void](Wait-Until -TimeoutSeconds 5 -Failure (
         "Turno $index no llegó al DOM: $text") -Condition {
-            Find-Stage -Rows (Read-Trace) -Stage 'dom.applied' -AfterSequence ([long]$final.seq)
+            # WebView2 can acknowledge the DOM immediately before the bridge
+            # thread appends response.final. visible.text is the causal UI
+            # publication boundary; require the DOM acknowledgement after it.
+            Find-Stage -Rows (Read-Trace) -Stage 'dom.applied' -AfterSequence ([long]$visible.seq)
         })
     $visibleText = Wait-Until -TimeoutSeconds 5 -Failure (
         "Turno $index no expuso la respuesta por UIA: $text") -Condition {

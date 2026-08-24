@@ -1782,7 +1782,7 @@ def test_location_recommendation_preserves_literal_web_query() -> None:
         "web.search",
         "Cual es el ultimo Mortal Kombat que salio?",
         schema,
-    ) == {"query": "Mortal Kombat ultimo lanzamiento"}
+    ) == {"query": "Mortal Kombat most recent release available now"}
     assert _ground_explicit_arguments(
         "web.search",
         "what is the capital of Nigeria?",
