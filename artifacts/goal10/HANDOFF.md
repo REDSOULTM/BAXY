@@ -923,3 +923,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   es inválida y suma cero. Bloqueo vivo: capturar el defecto exacto de los tres
   borradores del compositor con su auditoría local sin contenido, reparar y
   repetir las quince; no se baja ningún validador.
+- La auditoría local r17 aisló los tres descartes: **3/3 `internal_code`**. La
+  causa no era jerga generada, sino que el validador `_DOTTED_OP` trataba el
+  dominio público de la fuente periodística (por ejemplo `biobiochile.cl`) como
+  si fuera una operación interna. Ahora un nombre con puntos sólo se admite en
+  un resultado `web.search` cuando aparece literalmente dentro del `observed`
+  verificado; `web.search`, snake_case y cualquier dominio no observado siguen
+  bloqueados. Focal reproducible **2/2**, `test_goal06_voice.py` **9/9** y suites
+  de mente **1033/1033 + 101 subtests**, cero skips. Falta reproducción física
+  del titular y luego la tanda completa 15/15.

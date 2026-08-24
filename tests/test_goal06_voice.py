@@ -723,6 +723,37 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
     ) == "wrong_language"
 
 
+def test_verified_news_source_domain_is_not_mistaken_for_an_internal_code() -> None:
+    facts = {
+        "situation": (
+            '{"kind":"operation","operation":"web.search",'
+            '"polarity":"success","verified":true,"observed":{'
+            '"results":[{"title":"Neurohack 2026 impulsa tecnología",'
+            '"source":"biobiochile.cl"}]}}'
+        )
+    }
+    user_text = "Busca noticias actuales de tecnología y resume una."
+
+    assert (
+        compose_visible_defect(
+            "Biobiochile.cl informa que Neurohack 2026 impulsa tecnología.",
+            "status",
+            user_text,
+            facts,
+        )
+        == ""
+    )
+    assert (
+        compose_visible_defect(
+            "El resultado interno fue web.search.",
+            "status",
+            user_text,
+            facts,
+        )
+        == "internal_code"
+    )
+
+
 def test_compose_rejects_invented_words_on_the_shipped_entry(monkeypatch) -> None:
     captured: list[str] = []
 

@@ -3037,15 +3037,26 @@ def compose_visible_defect(
         return "stall"
     if visible_reply_invents_a_spanish_infinitive(stripped):
         return "invented"
-    if _SNAKE_CODE.search(stripped) is not None or _DOTTED_OP.search(stripped) is not None:
-        return "internal_code"
-    if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
-        return "internal_code"
     situation = _situation_from_facts(facts)
     polarity = str(situation.get("polarity") or "").strip().lower()
     kind = str(situation.get("kind") or intent).strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()
     operation = str(situation.get("operation") or "").strip().lower()
+    observed_blob = json.dumps(
+        situation.get("observed") or {}, ensure_ascii=False
+    ).casefold()
+    dotted_tokens = _DOTTED_OP.findall(stripped)
+    grounded_public_sources = bool(
+        operation == "web.search"
+        and dotted_tokens
+        and all(token.casefold() in observed_blob for token in dotted_tokens)
+    )
+    if _SNAKE_CODE.search(stripped) is not None or (
+        dotted_tokens and not grounded_public_sources
+    ):
+        return "internal_code"
+    if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
+        return "internal_code"
     blob = f"{user_text} {json.dumps(situation, ensure_ascii=False)}".casefold()
     folded = stripped.casefold()
     if "spotify" in folded and "spotify" not in blob:
