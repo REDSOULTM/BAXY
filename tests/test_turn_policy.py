@@ -80,6 +80,7 @@ from baxy_mind.llm import (
     _reads_as_an_observation,
     _shaped_conversation_answer_violates_contract,
     _shaped_presentation_text,
+    _without_unrequested_question_closing,
     _spanish_modal_is_malformed,
     canonicalize_turn_decision,
     derive_semantic_effect_state,
@@ -9524,21 +9525,21 @@ def test_unshaped_conversation_rejects_generic_assistance_closing(
         answer,
         "Hola.",
         None,
+        conversation_kind="social",
     )
 
 
-def test_social_chat_rewrites_generic_assistance_closing() -> None:
+def test_social_chat_removes_only_generic_question_closing() -> None:
     runtime = object.__new__(LlmRuntime)
     payloads: list[dict[str, object]] = []
 
     def post(payload: dict[str, object]) -> dict[str, object]:
         payloads.append(payload)
-        content = (
-            "Hola. ¿En qué puedo ayudarte?"
-            if len(payloads) == 1
-            else json.dumps({"answer": "Hola."}, ensure_ascii=False)
-        )
-        return {"choices": [{"message": {"content": content}}]}
+        return {
+            "choices": [
+                {"message": {"content": "Hola. ¿En qué puedo ayudarte?"}}
+            ]
+        }
 
     runtime._post = post  # type: ignore[method-assign]
 
@@ -9557,8 +9558,50 @@ def test_social_chat_rewrites_generic_assistance_closing() -> None:
 
     assert answer == "Hola."
     assert calls == []
-    assert len(payloads) == 2
-    assert "no termines con pregunta ni oferta" in repr(payloads[1]["messages"])
+    assert len(payloads) == 1
+
+
+@pytest.mark.parametrize(
+    ("answer", "expected"),
+    [
+        ("Sí, aquí. ¿Qué necesitas?", "Sí, aquí."),
+        ("Hola. ¿Qué te pasa?", "Hola."),
+        (
+            "Puedo ayudarte con información y explicaciones. "
+            "¿En qué puedo asistirte?",
+            "Puedo ayudarte con información y explicaciones.",
+        ),
+        ("Hello. How can I help you?", "Hello."),
+    ],
+)
+def test_unrequested_question_closing_preserves_model_answer(
+    answer: str,
+    expected: str,
+) -> None:
+    assert (
+        _without_unrequested_question_closing(
+            answer,
+            conversation_kind="social",
+            shape=None,
+        )
+        == expected
+    )
+
+
+def test_unrequested_question_rule_rejects_a_question_only_answer() -> None:
+    answer = "¿En qué puedo ayudarte?"
+
+    assert _without_unrequested_question_closing(
+        answer,
+        conversation_kind="social",
+        shape=None,
+    ) == answer
+    assert _shaped_conversation_answer_violates_contract(
+        answer,
+        "Hola.",
+        None,
+        conversation_kind="social",
+    )
 
 
 def test_capability_answer_without_generic_closing_remains_valid() -> None:
@@ -9566,6 +9609,7 @@ def test_capability_answer_without_generic_closing_remains_valid() -> None:
         "Puedo ayudarte con información, explicaciones y charla.",
         "¿Qué puedes hacer?",
         None,
+        conversation_kind="knowledge",
     )
 
 

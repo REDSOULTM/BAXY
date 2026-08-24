@@ -398,3 +398,13 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   genéricas cuando `_conversation_presentation_shape` no era `None`; saludos y
   capacidades pasan deliberadamente con shape nulo. La prohibición debe vivir
   antes de ese gate y provocar la reescritura model-authored ya existente.
+- `continuity-template-clean-r2` demostró que enumerar una coletilla tampoco
+  basta: el primer veto produjo variantes de la misma plantilla —«¿Qué
+  necesitas?», «¿Qué te pasa?» y «¿En qué puedo asistirte?»—. Los tres
+  turnos siguieron sin core en **1,369 s / 0,820 s / 1,084 s**, pero la sesión
+  vuelve a fallar y no cuenta. El contrato correcto no es una lista de frases:
+  para los actos sociales cerrados y las respuestas directas de conocimiento,
+  una pregunta final no solicitada se elimina conservando la declaración
+  model-authored que la precede; si no hay declaración o queda otra pregunta,
+  el candidato se rechaza. Borradores de contenido y role-play quedan fuera de
+  esa regla porque una pregunta puede ser parte del resultado solicitado.

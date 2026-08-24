@@ -1717,6 +1717,32 @@ def _conversation_presentation_shape(
     return None
 
 
+def _without_unrequested_question_closing(
+    value: object,
+    *,
+    conversation_kind: str | None,
+    shape: str | None,
+) -> str:
+    """Drop only a trailing unsolicited question after a model-authored answer."""
+
+    content = str(value or "").strip()
+    if (
+        shape is not None
+        or conversation_kind not in {"social", "knowledge"}
+        or not content.endswith(("?", "？"))
+    ):
+        return content
+    inverted = max(content.rfind("¿"), content.rfind("？"))
+    if inverted > 0:
+        prefix = content[:inverted].rstrip()
+        return prefix if prefix else content
+    boundaries = list(re.finditer(r"(?<=[.!…])\s+", content))
+    if not boundaries:
+        return content
+    prefix = content[: boundaries[-1].start() + 1].rstrip()
+    return prefix if prefix else content
+
+
 # An acknowledgement restates what the person said. A command is not a
 # statement, so acknowledging one invents a fact: "Compra un vuelo a Madrid"
 # came back as "Mencionas que compraste un vuelo a Madrid", which is simply
@@ -1843,6 +1869,7 @@ def _shaped_conversation_answer_violates_contract(
     shape: str | None,
     *,
     authenticated_operations: tuple[str, ...] = (),
+    conversation_kind: str | None = None,
 ) -> bool:
     """Validate bounded no-history prose without supplying visible wording."""
 
@@ -1886,6 +1913,12 @@ def _shaped_conversation_answer_violates_contract(
     if any(
         folded_content == closing or folded_content.endswith(f" {closing}")
         for closing in generic_assistance_closings
+    ):
+        return True
+    if (
+        shape is None
+        and conversation_kind in {"social", "knowledge"}
+        and any(marker in content for marker in ("?", "¿", "？"))
     ):
         return True
     if shape is None:
@@ -4925,6 +4958,12 @@ class LlmRuntime:
             conversation_kind=conversation_kind,
             presentation_shape=presentation_shape,
         )
+        content = _without_unrequested_question_closing(
+            content,
+            conversation_kind=conversation_kind,
+            shape=presentation_shape,
+        )
+        message = {**message, "content": content}
         # Un acto social puede responderse legítimamente con un espejo: la
         # respuesta natural a «nos vemos» es «¡nos vemos!», y a «chau», «chau».
         # El guard anti-eco existe para atrapar a un modelo que repite la
@@ -4966,6 +5005,7 @@ class LlmRuntime:
             text,
             presentation_shape,
             authenticated_operations=authenticated_operations,
+            conversation_kind=conversation_kind,
         )
         if (
             not content
@@ -5095,7 +5135,12 @@ class LlmRuntime:
                     }
         else:
             final_messages = payload["messages"]
-        final_content = str(message.get("content") or "").strip()
+        final_content = _without_unrequested_question_closing(
+            message.get("content"),
+            conversation_kind=conversation_kind,
+            shape=presentation_shape,
+        )
+        message = {**message, "content": final_content}
         if (
             not final_content
             or (
@@ -5122,6 +5167,7 @@ class LlmRuntime:
                 text,
                 presentation_shape,
                 authenticated_operations=authenticated_operations,
+                conversation_kind=conversation_kind,
             )
         ):
             failure_reason = (
