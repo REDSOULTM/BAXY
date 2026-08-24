@@ -616,3 +616,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Fast posterior al cierre de cláusulas sociales **verde**: PowerShell, Ruff,
   compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings
   / 0 errors**. Binario listo para repetición viva desde sesión nueva.
+- Repetición viva `social-correction-r2`, sesión `76245ab202f1`, limpia:
+  `Hola` → **«Hola.»**; `Me puedes ayudar en algo` → **«Claro.»**; `Nop, quiero
+  que abras steam` → Steam abierto/enfocado y **«Listo, Steam está abierto.»**.
+  Son tres sondas del agente, por lo que prueban la reparación pero no suman a
+  los 200 turnos normales del dueño. No hubo eco, plantilla, jerga ni falsedad.
