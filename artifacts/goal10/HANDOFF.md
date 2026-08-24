@@ -445,3 +445,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   conserva por separado como `soak-invalid-visible-continuity.json{,l}`: terminó
   en 605,7 s / 11 muestras, sobre un proceso anterior y con carga interactiva;
   no se usa como evidencia idle ni como parte de las 24 h.
+- `scripts/test_source_quality.ps1` pasó en modo Fast sobre el árbol de esta
+  frontera: PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y
+  build Release con **0 warnings / 0 errors**.
+- El tramo definitivo se reinició desde cero a **2026-08-24 18:34:40Z** sobre
+  `cad6d09`, con BAXY Release PID `4432`, wake permanente y sampler wrapper
+  `32892` / worker `35296`. La primera muestra es app RSS **171,2 MiB**, GPU
+  total **5.283 MiB**, llama-server vivo. `artifacts/goal10/soak.json{,l}` vuelve
+  a pertenecer exclusivamente a este tramo; no matar ni recompilar BAXY mientras
+  corra, salvo que un defecto obligue honestamente a reiniciar las 24 h.
