@@ -813,3 +813,7 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   módulo culpable. No se atribuye a contenido del dueño: el siguiente paso es
   reproducir sólo con datos sintéticos en un `BAXY_DATA_DIR` aislado y capturar
   pila/módulo nativos sin incluir conversación personal.
+- Fast posterior a la reparación de narración **verde completo**:
+  PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build
+  Release; **0 warnings / 0 errors**. La caída nativa sigue abierta porque una
+  compuerta verde no sustituye la reproducción viva.
