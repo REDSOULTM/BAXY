@@ -1,12 +1,11 @@
-# Handoff — Goal 09 — 2026-08-24 — (uncommitted)
+# Handoff — Goal 09 — 2026-08-24 — 273a321+
 
 ## Objetivo
 BAXY oye «BAXY», transcribe y habla, local e interrumpible.
 
 ## Estado
-Hecho: TTS neural Piper es_MX-claude-high (onnxruntime+eSpeak, no piper.exe); habla siempre; barge-in cancel; listen-command por voz; STT Parakeet con transcripción dudosa → pregunta; holdout wake 12/12 Sabina+Zira umbral 0,5; manifiesto TTS+STT con SHA; pruebas `test_goal09_voice_engines.py` y `VoiceListenCommandTests`.
-En curso: FAR de horas sobre series (checkpoint en scratch `wake_far.json`); wake_on_start sigue false hasta Poisson ≤0,1/h.
-Sin: calibración aprobada (FAR de TV comedia ya disparó 1 vez en ~0,1 h).
+Hecho: TTS neural Piper es_MX-claude-high; habla siempre; barge-in; listen-command; STT Parakeet; holdout 12/12; EOU p50 0,38 s; launch 2/2; FAR **2,02 h / 6 disparos**.
+`wake_on_start` false: Poisson 5,85/h > 0,1/h. No se retoca el umbral 0,5.
 
 ## Decisiones tomadas
 - Umbral wake 0,5 del goal 01, no retocado.

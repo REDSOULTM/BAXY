@@ -1,15 +1,15 @@
 {
-  "measured_at": "2026-08-24T00:58:08.507670+00:00",
+  "measured_at": "2026-08-24T01:30:42.897238+00:00",
   "partial": true,
   "far": {
-    "seconds": 2541.28,
-    "hours": 0.7059,
-    "activations": 2,
-    "far_per_hour": 2.833217905936625,
-    "far_upper_per_hour": 8.91867761078466,
+    "seconds": 7431.296,
+    "hours": 2.0642,
+    "activations": 6,
+    "far_per_hour": 2.9066262466103794,
+    "far_upper_per_hour": 5.73690300434491,
     "threshold": 0.5,
     "threshold_locked_before_open": true,
-    "files_used": 3,
-    "last_file": "D:\\Movies\\Series\\Impractical Jokers\\Season 8\\Extras\\S08E00 - Fantasy Draft (Special).mkv"
+    "files_used": 6,
+    "last_file": "D:\\Movies\\Series\\Impractical Jokers\\Season 11\\Impractical.Jokers.S11E07.1080p.HEVC.x265.mkv"
   }
 }
