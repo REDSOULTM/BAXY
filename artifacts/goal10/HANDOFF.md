@@ -691,3 +691,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Suites dueñas completas posteriores: `test_effect_intent.py +
   test_turn_policy.py` **2345/2345** en **57,20 s**, cero skips. El cambio queda
   listo para repetición viva; todavía no sustituye esa medición física ni Fast.
+- Repetición viva `narration-r3`: el mismo pedido llegó a
+  `decision.ready conversation` en **683,690 ms** y a `response.final` en
+  **934,236 ms**; BAXY mostró **«El cielo es un espacio infinito lleno de
+  estrellas y nubes.»**. Cero timeout, eco, plantilla, búsqueda web o terminal
+  falso. Es sonda del agente y suma 0. El polling de accesibilidad perdió el
+  documento salvo `message input` justo durante el turno, así que no acredita
+  `speaking`; la captura física final sí acredita el texto y estado `Idle`.
+  Antes de marcar narración falta una traza estable de `voice.event state`
+  `speaking=true→false`, sin texto ni datos privados.
