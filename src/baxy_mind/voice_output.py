@@ -488,8 +488,13 @@ def neural_tts_identity(model_path: Path | None = None) -> tuple[str, str] | Non
 class NeuralSpeechOutput:
     """Cola TTS neural cancelable; misma frontera pública que SAPI."""
 
-    def __init__(self, on_state: Callable[[bool], None] | None = None) -> None:
+    def __init__(
+        self,
+        on_state: Callable[[bool], None] | None = None,
+        on_error: Callable[[str], None] | None = None,
+    ) -> None:
         self._on_state = on_state or (lambda _speaking: None)
+        self._on_error = on_error or (lambda _code: None)
         self._queue: queue.Queue[_SpeechCommand] = queue.Queue(_MAX_QUEUE_ITEMS)
         self._cancel = threading.Event()
         self._shutdown = threading.Event()
@@ -606,6 +611,13 @@ class NeuralSpeechOutput:
             logger.debug("observador TTS rechazó el cambio de estado")
         return True
 
+    def _report_error(self, code: str, error: BaseException) -> None:
+        self.last_error = f"{code}:{type(error).__name__}"
+        try:
+            self._on_error(code)
+        except Exception:  # noqa: BLE001 - diagnostic observer only
+            logger.debug("observador TTS rechazó el error estable")
+
     def _run(self) -> None:
         tts = None
         sample_rate = 22050
@@ -649,8 +661,12 @@ class NeuralSpeechOutput:
                     waveform = tts.generate(item.text)
                     if waveform.size == 0:
                         raise RuntimeError("neural_tts_empty")
-                    if self._command_cancelled(item.generation):
-                        continue
+                except Exception as error:  # noqa: BLE001 - device boundary
+                    self._report_error("tts_generate_failed", error)
+                    continue
+                if self._command_cancelled(item.generation):
+                    continue
+                try:
                     self._set_speaking(True)
                     sd.play(waveform, samplerate=sample_rate, blocking=False)
                     deadline = time.monotonic() + min(
@@ -676,8 +692,8 @@ class NeuralSpeechOutput:
                         sd.stop()
                     except Exception:  # noqa: BLE001
                         pass
-                except Exception as error:  # noqa: BLE001
-                    self.last_error = f"tts_failed:{type(error).__name__}"
+                except Exception as error:  # noqa: BLE001 - device boundary
+                    self._report_error("tts_play_failed", error)
                     try:
                         sd.stop()
                     except Exception:  # noqa: BLE001
@@ -701,11 +717,12 @@ class NeuralSpeechOutput:
 
 def create_speech_output(
     on_state: Callable[[bool], None] | None = None,
+    on_error: Callable[[str], None] | None = None,
 ) -> NeuralSpeechOutput | SapiSpeechOutput:
     """Una sola salida viva: neural si el modelo está, SAPI si no."""
 
     if resolve_neural_tts_model() is not None and _espeak_exe() is not None:
-        return NeuralSpeechOutput(on_state)
+        return NeuralSpeechOutput(on_state, on_error)
     return SapiSpeechOutput(on_state)
 
 

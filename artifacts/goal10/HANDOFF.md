@@ -736,3 +736,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   impide que una cancelación vieja alcance una voz nueva. `ShellTraceTests`
   **8/8**, cero skips, build Release verde. Falta repetición fresca del primer
   turno posterior al saludo y Fast.
+- Repetición fresca `narration-r6` rechazó esa hipótesis: aun esperando
+  `welcome silent`, el primer turno llegó a `response.final` en **945,446 ms**,
+  `voice.speak accepted` en el mismo milisegundo y volvió a quedar sin
+  `speaking`. Encadenar cancel→speak no arregló nada y se retiró; no queda una
+  capa sin propósito. El worker ahora emite dos fallos asíncronos cerrados:
+  `tts_generate_failed` y `tts_play_failed`; focales Python **2/2** y
+  `ShellTraceTests` **8/8**, cero skips, build Release verde tras repetir sin el
+  BAXY que había causado el MSB3027 esperado. Falta una reproducción con esos
+  códigos para nombrar el borde real.

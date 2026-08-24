@@ -15,6 +15,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import baxy_mind.voice as voice_module
+import baxy_mind.voice_output as voice_output_module
 from baxy_mind.voice import (
     MIN_UTTERANCE_S,
     SAMPLE_RATE,
@@ -32,6 +33,7 @@ from baxy_mind.voice import (
 from baxy_mind.corrector import FuzzyCorrector
 from baxy_mind.voice_aec import EchoCanceller
 from baxy_mind.voice_output import (
+    NeuralSpeechOutput,
     SapiSpeechOutput,
     _speech_markup,
     _tail_grace_seconds,
@@ -500,6 +502,60 @@ def _write_wake_manifest(path: Path, *, approved: bool = True) -> Path:
         encoding="utf-8",
     )
     return manifest
+
+
+@pytest.mark.parametrize(
+    ("failure_stage", "expected_code"),
+    [
+        ("generate", "tts_generate_failed"),
+        ("play", "tts_play_failed"),
+    ],
+)
+def test_neural_tts_reports_the_async_failure_boundary(
+    monkeypatch,
+    tmp_path: Path,
+    failure_stage: str,
+    expected_code: str,
+) -> None:
+    class Engine:
+        sample_rate = 22_050
+
+        def __init__(self, _model: Path) -> None:
+            pass
+
+        @staticmethod
+        def generate(_text: str) -> np.ndarray:
+            if failure_stage == "generate":
+                raise RuntimeError("synthetic generation failure")
+            return np.ones(128, dtype=np.float32)
+
+    sounddevice = ModuleType("sounddevice")
+
+    def play(*_args: object, **_kwargs: object) -> None:
+        if failure_stage == "play":
+            raise RuntimeError("synthetic playback failure")
+
+    sounddevice.play = play  # type: ignore[attr-defined]
+    sounddevice.stop = lambda: None  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "sounddevice", sounddevice)
+    monkeypatch.setattr(
+        voice_output_module,
+        "resolve_neural_tts_model",
+        lambda: tmp_path / "voice.onnx",
+    )
+    monkeypatch.setattr(voice_output_module, "_PiperOnnxEngine", Engine)
+    errors: list[str] = []
+    output = NeuralSpeechOutput(on_error=errors.append)
+    try:
+        assert output.start(timeout=1.0)
+        assert output.speak("frase sintética")
+        deadline = time.monotonic() + 1.0
+        while not errors and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert errors == [expected_code]
+        assert output.last_error == f"{expected_code}:RuntimeError"
+    finally:
+        assert output.stop(timeout=1.0)
 
 
 def test_tts_cancel_after_dequeue_never_speaks_the_stale_item(monkeypatch) -> None:

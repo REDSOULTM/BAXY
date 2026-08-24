@@ -30,7 +30,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
-    private Task<bool> _voiceCancelTask = Task.FromResult(true);
     private bool _resumeWakeAfterDirect;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
@@ -1669,6 +1668,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     // The following ASR turn transcribes content; it does not
                     // decide whether BAXY woke up.
                     StatusDescription = "Te escucho…";
+                }
+                else if (eventName == "error")
+                {
+                    string code = (string?)voiceEvent["code"] ?? string.Empty;
+                    string detail = code switch
+                    {
+                        "tts_generate_failed" => code,
+                        "tts_play_failed" => code,
+                        _ => "other",
+                    };
+                    ShellTraceSink.Record(
+                        ShellTraceScopes.Turn,
+                        ShellTraceSink.TurnId,
+                        ShellTraceStages.VoiceError,
+                        detail);
                 }
                 else if (eventName == "partial")
                 {
@@ -3396,7 +3410,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             if (isUser)
             {
-                _voiceCancelTask = mind.VoiceCancelAsync(
+                _ = mind.VoiceCancelAsync(
                     TimeSpan.FromSeconds(3),
                     CancellationToken.None);
             }
@@ -3405,8 +3419,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _ = SpeakMessageAsync(
                     mind,
                     body,
-                    ShellTraceSink.TurnId,
-                    _voiceCancelTask);
+                    ShellTraceSink.TurnId);
             }
         }
     }
@@ -3414,10 +3427,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private static async Task SpeakMessageAsync(
         MindSidecarClient mind,
         string body,
-        string turnId,
-        Task<bool> voiceCancellation)
+        string turnId)
     {
-        _ = await voiceCancellation.ConfigureAwait(false);
         bool accepted = await mind.VoiceSpeakAsync(
             body,
             TimeSpan.FromSeconds(5),

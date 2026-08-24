@@ -643,7 +643,7 @@ class VoiceEngine:
         self._armed_until = 0.0
         self._loopback = LoopbackReference()
         self._ducker = AudioDucker()
-        self._output = create_speech_output(self._on_tts_state)
+        self._output = create_speech_output(self._on_tts_state, self._on_tts_error)
         self._pcm_inbox: queue.Queue[np.ndarray] | None = None
         self._wake = WakePhraseMatcher()
         self._input_device_name = ""
@@ -664,6 +664,10 @@ class VoiceEngine:
             self._on_event(payload)
         except Exception:  # noqa: BLE001 - protocolo observador degradable
             logger.debug("observador de voz rechazó evento %s", event)
+
+    def _on_tts_error(self, code: str) -> None:
+        self.last_error = code
+        self._emit("error", code=code)
 
     @classmethod
     def probe(cls) -> dict[str, Any]:
