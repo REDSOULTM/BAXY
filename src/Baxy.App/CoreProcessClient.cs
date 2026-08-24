@@ -516,6 +516,42 @@ internal sealed class CoreProcessClient : IAsyncDisposable
             return;
         }
 
+        int exitCode = 0;
+        try
+        {
+            if (sender is Process process)
+            {
+                exitCode = process.ExitCode;
+            }
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        string diagnostics = string.Join(" | ", _diagnostics);
+        try
+        {
+            string directory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "BAXY",
+                "presence");
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(
+                Path.Combine(directory, "last-core-exit.txt"),
+                DateTimeOffset.Now.ToString("o")
+                    + Environment.NewLine
+                    + "exit="
+                    + exitCode.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    + Environment.NewLine
+                    + diagnostics);
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+
         SignalDisconnected(new IOException("El motor local terminó inesperadamente."));
     }
 

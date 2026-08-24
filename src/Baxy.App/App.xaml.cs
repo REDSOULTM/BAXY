@@ -25,6 +25,23 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        DispatcherUnhandledException += (_, args) =>
+        {
+            WriteCrash("dispatcher", args.Exception);
+            args.Handled = true;
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            if (args.ExceptionObject is Exception exception)
+            {
+                WriteCrash("domain", exception);
+            }
+        };
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            WriteCrash("task", args.Exception);
+            args.SetObserved();
+        };
         base.OnStartup(e);
         ShellTraceSink.Record(
             ShellTraceScopes.Startup,
@@ -122,6 +139,27 @@ public partial class App : Application
         }
     }
 
+    private static void WriteCrash(string origin, Exception exception)
+    {
+        try
+        {
+            string directory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "BAXY",
+                "presence");
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(
+                Path.Combine(directory, "last-crash.txt"),
+                origin + Environment.NewLine + DateTimeOffset.Now.ToString("o") + Environment.NewLine + exception);
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+    }
+
     private static bool HasTrayArgument(string[] args)
     {
         foreach (string argument in args)
@@ -137,6 +175,24 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        try
+        {
+            string directory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "BAXY",
+                "presence");
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(
+                Path.Combine(directory, "last-exit.txt"),
+                DateTimeOffset.Now.ToString("o") + " code=" + e.ApplicationExitCode);
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+
         _tray?.Dispose();
         _tray = null;
         _showEvent?.Dispose();

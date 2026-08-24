@@ -60,9 +60,20 @@ Presence 3 + MemoryPanel round-trip store + tiempo JSON + NativeBridge. `Confirm
 ## Costuras (vacías, goal 10)
 `documentacion/03_COSTURAS.md` filas: Almacén de memoria; Capa visual (bandeja/WebView); Instalación y arranque. Rellenar con medición repetible **después** de idle+reboot+panel vivo.
 
+## Avance 2026-08-24 00:18–00:22 (esta sesión)
+- HANDOFF publicado: `52a2676`.
+- Autostart **sí registrado**: `HKCU\...\Run\BAXY` = `"...\Baxy.exe" --tray`.
+- `py main.py` a veces no deja proceso (el inspect llega tarde o `close_previous` mata). Lanzar **Baxy.exe directo** con `BAXY_DATA_DIR` + `BAXY_APP_TRACE`.
+- El proceso **puede vivir >15 s**. `startup.ready` ~0,8–1,4 s. Hijo visible: sólo `msedgewebview2.exe`. **Nunca vimos `baxy-core.exe` vivo** en el poll.
+- UIA: esperar ~10 s a que el árbol tenga 100 nodos. Edit `message input` **sigue `en=False`** tras `5b65951` y rebuild 00:18. Hipótesis fuerte: **core muere → `OnCoreDisconnected` → `IsReady=false` → input disabled**. El teclado no es ya el compose; es que no hay motor.
+- Sampler `--once` midió RSS 0 porque Baxy ya no estaba. GPU 549/16380 MiB, llama-server off. **No hay soak continuo.**
+- Añadido (aún sin commit si el build no corre): `last-crash.txt` (dispatcher handled) y `last-core-exit.txt` (exit code + stderr del core) en `%LOCALAPPDATA%\BAXY\presence\`.
+- **No matar** un Baxy vivo para inspeccionar; `py main.py` mata al anterior. No mezclar UIA a los 2 s (edits=0).
+
 ## Siguiente acción — una, por este fichero
-1. Matar `Baxy` / `py` / `python` huérfanos si los hay.
-2. `py main.py` desde `BAXY Definitivo` con `BAXY_APP_TRACE` a scratch `launch-1.trace.jsonl`.
+1. Compilar App Release, lanzar `Baxy.exe` directo, esperar 12 s, leer `%LOCALAPPDATA%\BAXY\presence\last-core-exit.txt`. El exit code (73=otra instancia del data root, 70=JsonException, 74=journal) decide el arreglo.
+2. Arreglar por qué el core no se queda. Sin core no hay dosis.
+3. Entonces UIA `message input` enabled, turno hora, sampler 24 h, launch-2, dosis.
 3. Cuando haya `startup.ready`, dump UIA: Edit `message input` tiene que estar **enabled=true**. Si no, el WS `AgentEvent` o el poll no están en el binario que corre (mirar timestamp de `Baxy.dll` vs `5b65951`).
 4. Un turno «qué hora es» por `scripts/goal10_dose_turns.ps1`. Guardar `{SCRATCH}/launch-1.log` con operación, verified, hora vs reloj.
 5. **En el mismo momento** sampler idle 24 h (`scripts/goal10_idle_sampler.py`) a `artifacts/goal10/soak.json` **y** copia en scratch. El soak no se comprime; cada hora sin él es hora perdida.
