@@ -61,6 +61,7 @@ from baxy_mind.llm import (
     _literal_recall_reference,
     _loopback_endpoint_from_env,
     _request_timeout_from_env,
+    compose_visible_defect,
     validate_missing_argument_clarification,
 )
 
@@ -2936,8 +2937,8 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         runtime = object.__new__(LlmRuntime)
         replies = iter(
             [
-                "Confirmar / cancel",
-                "Confirmar / confirm o cancelar / cancel",
+                "¿Confirmar o cancel?",
+                "¿Confirmar / confirm o cancelar / cancel?",
             ]
         )
         seen = []
@@ -2961,9 +2962,65 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(result, "Confirmar / confirm o cancelar / cancel")
+        self.assertEqual(result, "¿Confirmar / confirm o cancelar / cancel?")
         self.assertEqual(len(seen), 2)
         self.assertEqual(seen[1]["temperature"], 0.0)
+
+    def test_visible_message_preserves_uncertain_recovery(self):
+        facts = {
+            "situation": {
+                "kind": "error",
+                "polarity": "failure",
+                "cause": "mission_recovery_uncertain_effect",
+            }
+        }
+
+        self.assertEqual(
+            compose_visible_defect(
+                "No pude: el efecto anterior ocurrió.",
+                "error",
+                "continúa",
+                facts,
+            ),
+            "missing_uncertainty",
+        )
+        self.assertEqual(
+            compose_visible_defect(
+                "No pude: el efecto anterior podría haber ocurrido.",
+                "error",
+                "continúa",
+                facts,
+            ),
+            "",
+        )
+
+    def test_visible_message_discloses_composition_loss(self):
+        facts = {
+            "situation": {
+                "kind": "error",
+                "polarity": "failure",
+                "cause": "composition_lost_verified_facts",
+            }
+        }
+
+        self.assertEqual(
+            compose_visible_defect(
+                "No pude: no pude encontrarlo.",
+                "error",
+                "abre Steam",
+                facts,
+            ),
+            "missing_composition_loss",
+        )
+        self.assertEqual(
+            compose_visible_defect(
+                "No pude redactar el resultado verificado sin perder sus hechos.",
+                "error",
+                "abre Steam",
+                facts,
+            ),
+            "",
+        )
 
     def test_visible_message_retries_and_rejects_dropped_verified_facts(self):
         runtime = object.__new__(LlmRuntime)

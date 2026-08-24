@@ -64,6 +64,38 @@ public sealed class DurableRetryStoreTests
     }
 
     [Test]
+    public void FreshSupersedingEffectReplacesEquivalentPendingIdentityAtomically()
+    {
+        var routed = new RoutedOperation(
+            "app.open",
+            new JsonObject { ["appId"] = "Steam" });
+        var firstRegistry = new RetryableOperationRegistry(_outboxPath);
+        PreparedOperation uncertain = firstRegistry.GetOrAdd(routed);
+
+        var resumedRegistry = new RetryableOperationRegistry(_outboxPath);
+        PreparedOperation fresh = resumedRegistry.StartFreshSupersedingEquivalent(routed);
+        PreparedOperation persisted = new RetryableOperationRegistry(_outboxPath)
+            .SnapshotPendingOperations()
+            .Single();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fresh.MissionId, Is.Not.EqualTo(uncertain.MissionId));
+            Assert.That(fresh.InvocationId, Is.Not.EqualTo(uncertain.InvocationId));
+            Assert.That(persisted.MissionId, Is.EqualTo(fresh.MissionId));
+            Assert.That(persisted.InvocationId, Is.EqualTo(fresh.InvocationId));
+            Assert.That(
+                MindPlanBoundary.FreshInvocationSupersedesEquivalentPendingEffect(
+                    "app.open"),
+                Is.True);
+            Assert.That(
+                MindPlanBoundary.FreshInvocationSupersedesEquivalentPendingEffect(
+                    "message.send"),
+                Is.False);
+        });
+    }
+
+    [Test]
     public void EquivalentArgumentsWithDifferentPropertyOrderRecoverTheSameIdentifiers()
     {
         var firstRoute = new RoutedOperation(

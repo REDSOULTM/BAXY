@@ -13,6 +13,38 @@ namespace Baxy.Integration.Tests;
 public sealed class PlannerAppBoundaryTests
 {
     [Test]
+    public void SingleStepMissionPublishesItsVerifiedFactsWithoutJsonNesting()
+    {
+        string verified = TurnVisibleFacts.Status(
+            "opened",
+            new JsonObject
+            {
+                ["observed"] = new JsonObject
+                {
+                    ["appId"] = "Steam",
+                    ["displayName"] = "Steam",
+                },
+            });
+
+        Assert.That(
+            MissionNarration.CreateCompletionMessage([verified]),
+            Is.EqualTo(verified));
+    }
+
+    [TestCase("confirmar", true)]
+    [TestCase("cancel", true)]
+    [TestCase("continuar", true)]
+    [TestCase("CONTINUE", true)]
+    [TestCase("¿Quién eres?", false)]
+    [TestCase("abre Steam", false)]
+    public void RecoveryControlRepliesAreSeparatedFromIndependentRequests(
+        string text,
+        bool expected)
+    {
+        Assert.That(MindPlanBoundary.IsRecoveryControlReply(text), Is.EqualTo(expected));
+    }
+
+    [Test]
     public void EmptyClosedSchemasDoNotRequireModelArgumentExtraction()
     {
         Assert.That(
@@ -2176,9 +2208,10 @@ public sealed class PlannerAppBoundaryTests
         execution.RequireConfirmation(confirmation!);
 
         string recoveryPrompt = MissionNarration.CreateRecoveryPrompt(execution);
+        UserMessageEvent recoveryEvent = MissionNarration.CreateRecoveryEvent(execution);
         UserMessageDraft recoveryDraft = UserMessagePolicy.Create(
             recoveryPrompt,
-            UserMessageEvent.Confirmation);
+            recoveryEvent);
 
         Assert.Multiple(() =>
         {
@@ -2192,6 +2225,7 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 recoveryPrompt,
                 Does.Contain("mission_recovery_uncertain_step"));
+            Assert.That(recoveryEvent, Is.SameAs(UserMessageEvent.Confirmation));
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
                     recoveryPrompt,
@@ -2202,6 +2236,72 @@ public sealed class PlannerAppBoundaryTests
                     "Di confirmar / confirm o cancelar / cancel.",
                     recoveryDraft),
                 Is.Not.Null);
+        });
+    }
+
+    [Test]
+    public void UnrefreshableUncertainRecoveryIsAnHonestTerminalFailure()
+    {
+        var execution = new PendingMindPlanExecution(
+            "consulta el audio",
+            [
+                new MindPlanStep(
+                    "audio",
+                    "audio.status",
+                    "Consulta el audio.",
+                    [],
+                    "literal",
+                    new JsonObject()),
+            ])
+        {
+            PendingEffectMayHaveOccurred = true,
+            PendingOperation = PreparedOperation.Create(
+                "audio.status",
+                new JsonObject()),
+        };
+
+        string prompt = MissionNarration.CreateRecoveryPrompt(execution);
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            prompt,
+            MissionNarration.CreateRecoveryEvent(execution));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(prompt, Does.Contain("mission_recovery_uncertain_effect"));
+            Assert.That(
+                MissionNarration.CreateRecoveryEvent(execution).DiagnosticCode,
+                Is.EqualTo(UserMessageDiagnosticCodes.ActionNotCompleted));
+            Assert.That(
+                draft.Intent,
+                Is.EqualTo("error"));
+            Assert.That(
+                MindPlanBoundary.IsTerminalUnrefreshableEffect(execution),
+                Is.True);
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "No pude: el efecto anterior podría haber ocurrido y debo comprobarlo.",
+                    draft),
+                Is.Null);
+        });
+    }
+
+    [Test]
+    public void CompositionRecoveryCannotInventAnotherFailureCause()
+    {
+        UserMessageDraft draft = ModelMessageComposer.CreateRecoveryDraft();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "No pude: no pude encontrarlo.",
+                    draft),
+                Is.EqualTo("missing_composition_loss"));
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "No pude redactar el resultado verificado sin perder sus hechos.",
+                    draft),
+                Is.Null);
         });
     }
 

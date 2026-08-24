@@ -349,11 +349,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 messageEvent: UserMessageEvent.Welcome);
             if (_pendingMindPlan is not null)
             {
+                PendingMindPlanExecution restoredPlan = _pendingMindPlan;
                 AddMessage(
                     "BAXY",
-                    MissionNarration.CreateRecoveryPrompt(_pendingMindPlan),
+                    MissionNarration.CreateRecoveryPrompt(restoredPlan),
                     isUser: false,
-                    messageEvent: UserMessageEvent.Confirmation);
+                    messageEvent: MissionNarration.CreateRecoveryEvent(restoredPlan));
+                if (MindPlanBoundary.IsTerminalUnrefreshableEffect(restoredPlan))
+                {
+                    // The retry registry keeps the exact unresolved invocation.
+                    // Only the plan that cannot advance safely is terminalized.
+                    ClearMindPlan();
+                }
             }
             AnnounceUnreadableOutbox();
             RecoverPendingAudioOperation(announce: true);
@@ -470,6 +477,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ?? throw new InvalidOperationException("La cola durable no está disponible.");
             if (_pendingMindPlan is not null)
             {
+                if (!MindPlanBoundary.IsRecoveryControlReply(text)
+                    && await TryExecuteWithMindAsync(
+                        route,
+                        registry,
+                        cancellationToken,
+                        allowOnlyConversation: true))
+                {
+                    return;
+                }
+
                 await HandlePendingMindPlanAsync(text, registry, cancellationToken);
                 return;
             }
@@ -1901,7 +1918,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         MissionInputRoute route,
         RetryableOperationRegistry registry,
         CancellationToken cancellationToken,
-        string? pendingClarificationObjective = null)
+        string? pendingClarificationObjective = null,
+        bool allowOnlyConversation = false)
     {
         // A bare numbered reply is meaningful only while a verified
         // disambiguation is pending. Pending choices are handled before this
@@ -1939,6 +1957,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (mind is null && MindSidecarClient.IsConfigured)
             {
+                RecordMindFault(
+                    "turn_client_unavailable"
+                        + " state=" + _mindStartupState
+                        + " client=" + (_mindClient is not null)
+                        + " ready=" + (_mindClient?.IsReady ?? false)
+                        + " initialization=" + (_mindInitializationTask?.Status.ToString() ?? "null"));
                 AddMessage(
                     "BAXY",
                     TurnVisibleFacts.Failure("compose_unavailable"),
@@ -1956,7 +1980,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         StatusDescription = "understanding";
         IReadOnlyList<(string Role, string Content)> decisionHistory =
-            pendingClarificationObjective is null
+            pendingClarificationObjective is null && !allowOnlyConversation
                 ? BuildMindHistory()
                 : [];
         string decisionTraceId = _currentTurnTraceId;
@@ -2006,6 +2030,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             return AddMindConversationFallback();
+        }
+
+        if (allowOnlyConversation)
+        {
+            PendingMindPlanExecution execution = _pendingMindPlan
+                ?? throw new InvalidOperationException("No hay un plan pendiente.");
+            AddMessage(
+                "BAXY",
+                MissionNarration.CreateRecoveryPrompt(execution),
+                isUser: false,
+                messageEvent: MissionNarration.CreateRecoveryEvent(execution));
+            return true;
         }
 
         if (turn.Kind == "clarify")
@@ -2295,7 +2331,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             MindPlanBoundary.ValidateGroundedArguments(step.Operation, arguments);
             var routed = new RoutedOperation(step.Operation, arguments);
             PreparedOperation prepared = execution.PendingOperation
-                ?? registry.GetOrAdd(routed);
+                ?? (MindPlanBoundary.FreshInvocationSupersedesEquivalentPendingEffect(
+                        step.Operation)
+                    ? registry.StartFreshSupersedingEquivalent(routed)
+                    : registry.GetOrAdd(routed));
             execution.PendingOperation = prepared;
             PersistMindPlan(execution);
             OperationResponse response = await client.SendOperationAsync(
@@ -2317,7 +2356,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 execution.PendingEffectMayHaveOccurred |= response.EffectMayHaveOccurred;
                 _pendingMindPlan = execution;
-                PersistMindPlan(execution);
+                if (MindPlanBoundary.IsTerminalUnrefreshableEffect(execution))
+                {
+                    ClearMindPlan();
+                }
+                else
+                {
+                    PersistMindPlan(execution);
+                }
                 AddMessage(
                     "BAXY",
                     response.EffectMayHaveOccurred
@@ -2347,10 +2393,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 execution.PendingOperation = prepared;
                 execution.PendingEffectMayHaveOccurred = true;
                 _pendingMindPlan = execution;
-                PersistMindPlan(execution);
+                if (MindPlanBoundary.IsTerminalUnrefreshableEffect(execution))
+                {
+                    ClearMindPlan();
+                }
+                else
+                {
+                    PersistMindPlan(execution);
+                }
                 AddMessage(
                     "BAXY",
-                    $"El paso {execution.NextIndex + 1} no pudo verificarse y el efecto puede haber ocurrido. Conservé su identidad durable; no continuaré, replanearé ni lo repetiré hasta reconciliarlo.",
+                    TurnVisibleFacts.Failure(
+                        "step_uncertain",
+                        new JsonObject { ["step"] = execution.NextIndex + 1 }),
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -2553,7 +2608,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             if (execution.PendingEffectMayHaveOccurred)
             {
-                PersistMindPlan(execution);
+                // The mission is terminally abandoned, but its exact invocation
+                // remains unresolved in the durable retry registry. This keeps
+                // the evidence without letting one uncertain effect capture all
+                // future turns forever.
+                ClearMindPlan();
                 AddMessage(
                     "BAXY",
                     TurnVisibleFacts.Status("stopped_keeping_evidence"),
@@ -2599,7 +2658,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ? TurnVisibleFacts.Confirmation(
                         "keep_recovery_evidence",
                         TurnVisibleFacts.ConfirmCancel)
-                    : "No repetiré este paso porque el efecto anterior puede haber ocurrido. Debe reconciliarse con el estado real antes de continuar.",
+                    : TurnVisibleFacts.Status("mission_recovery_uncertain_effect"),
                 isUser: false);
             return;
         }
@@ -2610,7 +2669,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                "Di «continuar» para reintentar el paso pendiente o «cancelar» para detener el resto del plan.",
+                TurnVisibleFacts.Confirmation(
+                    "mission_recovery_resume",
+                    TurnVisibleFacts.ContinueCancel),
                 isUser: false,
                 messageEvent: UserMessageEvent.Confirmation);
             return;

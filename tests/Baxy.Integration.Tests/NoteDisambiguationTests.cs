@@ -41,6 +41,8 @@ public sealed partial class NoteDisambiguationTests
     [TestCase("1.5")]
     [TestCase("1 y bórrala")]
     [TestCase("both")]
+    [TestCase("¿Quién eres?")]
+    [TestCase("Who are you?")]
     public void ContextualParserRejectsBulkOrMalformedSelections(string text)
     {
         Assert.That(

@@ -18,6 +18,12 @@ internal static class MissionNarration
                 nameof(completedMessages));
         }
 
+        if (completedMessages.Count == 1
+            && UserMessagePolicy.IsStructuredFacts(completedMessages[0]))
+        {
+            return completedMessages[0];
+        }
+
         var steps = new JsonArray();
         foreach (string message in completedMessages)
         {
@@ -67,12 +73,21 @@ internal static class MissionNarration
 
         if (execution.PendingEffectMayHaveOccurred)
         {
-            return TurnVisibleFacts.Status("mission_recovery_uncertain_effect");
+            return TurnVisibleFacts.Failure("mission_recovery_uncertain_effect");
         }
 
         return TurnVisibleFacts.Confirmation(
             "mission_recovery_resume",
             TurnVisibleFacts.ContinueCancel);
+    }
+
+    internal static UserMessageEvent CreateRecoveryEvent(
+        PendingMindPlanExecution execution)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        return MindPlanBoundary.IsTerminalUnrefreshableEffect(execution)
+            ? UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted)
+            : UserMessageEvent.Confirmation;
     }
 
     private static string NormalizeOutcome(string message)

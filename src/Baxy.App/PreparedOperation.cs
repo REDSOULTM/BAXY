@@ -248,6 +248,26 @@ internal sealed class RetryableOperationRegistry
         return GetOrAddPrepared(candidate);
     }
 
+    internal PreparedOperation StartFreshSupersedingEquivalent(RoutedOperation routed)
+    {
+        ArgumentNullException.ThrowIfNull(routed);
+        PreparedOperation candidate = PreparedOperation.Create(routed.Name, routed.Arguments);
+        if (!_operations.TryGetValue(
+                candidate.IdentityKey,
+                out PreparedOperation? existing))
+        {
+            return GetOrAddPrepared(candidate);
+        }
+
+        PreparedOperation[] next = _operations.Values
+            .Where(operation => !ReferenceEquals(operation, existing))
+            .Append(candidate)
+            .ToArray();
+        _store.Save(next);
+        _operations[candidate.IdentityKey] = candidate;
+        return candidate;
+    }
+
     public PreparedOperation GetOrAdd(ProtectedMemoryOperation protectedOperation)
     {
         ArgumentNullException.ThrowIfNull(protectedOperation);

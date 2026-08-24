@@ -9,6 +9,19 @@ namespace Baxy.Integration.Tests;
 
 public sealed class NaturalMemoryRequestParserTests
 {
+    [TestCase("¿Quién eres?")]
+    [TestCase("Who are you?")]
+    public void ConversationalIdentityFlowsToTheMind(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.NoRoute), result.ToString());
+            Assert.That(result.MustNotClaimStandaloneRoute, Is.False, result.ToString());
+        });
+    }
+
     [Test]
     public void AmbiguousAudioDeviceRequestFlowsToTheMindPlanner()
     {

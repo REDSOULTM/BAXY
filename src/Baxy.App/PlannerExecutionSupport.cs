@@ -155,12 +155,33 @@ internal sealed class MindReplanSuffixContract
 
 internal static class MindPlanBoundary
 {
+    internal static bool IsRecoveryControlReply(string text)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(text);
+        string normalized = text.Trim();
+        return ConfirmationReplyParser.Parse(normalized) != ConfirmationReplyKind.Invalid
+            || string.Equals(normalized, "continuar", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(normalized, "continue", StringComparison.OrdinalIgnoreCase);
+    }
+
     internal static bool MustRetainAmbiguousEffect(OperationResponse response)
     {
         ArgumentNullException.ThrowIfNull(response);
         return response.EffectMayHaveOccurred
             && (response.Status != OperationStatuses.Completed || !response.Verified);
     }
+
+    internal static bool IsTerminalUnrefreshableEffect(
+        PendingMindPlanExecution execution)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        return execution.PendingEffectMayHaveOccurred
+            && !CanRefreshConfirmationChallenge(execution);
+    }
+
+    internal static bool FreshInvocationSupersedesEquivalentPendingEffect(
+        string operation) =>
+        string.Equals(operation, "app.open", StringComparison.Ordinal);
 
     internal static bool CanRefreshConfirmationChallenge(
         PendingMindPlanExecution execution)

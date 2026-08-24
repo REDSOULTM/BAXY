@@ -252,3 +252,52 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build Release
   con **0 warnings / 0 errors**. Fue necesario reponer `node_modules` exactamente
   desde `pnpm-lock.yaml --frozen-lockfile`; no cambió ningún fichero versionado.
+
+## Continuación — decisor recuperado y apertura de Steam honesta
+
+- La mente sí estaba publicada. El bloqueo que capturaba cada entrada estaba en
+  `%LOCALAPPDATA%\BAXY\dev-mente-v2\shell\planner-state.v1.bin`: un plan antiguo
+  de `app.open` para Steam conservaba `pendingEffectMayHaveOccurred=true`, mission
+  `a68179ed-14ac-4fa5-882f-56211ac2944b` e invocation
+  `cb6a6bb9-b306-4c28-90ce-412eb90a6839`. Ninguna respuesta podía refrescar ese
+  estado y `cancelar` volvía a persistirlo; por eso el plan sobrevivía y tomaba
+  los turnos siguientes antes del decisor.
+- Un efecto incierto sin desafío actualizable es ahora un fallo terminal honesto:
+  el plan que no puede avanzar se borra, pero la invocación exacta continúa en el
+  outbox durable como evidencia. Las conversaciones independientes vuelven a la
+  mente con historial vacío mientras exista una recuperación; sólo las respuestas
+  de control se entregan al plan pendiente.
+- Una nueva petición equivalente sólo sustituye la identidad abandonada cuando la
+  operación es `app.open`: el postcondition de abrir/enfocar y verificar la misma
+  aplicación absorbe la incertidumbre anterior. No se generalizó a mensajes,
+  borrados ni otros efectos. El reemplazo guarda atómicamente una mission e
+  invocation nuevas antes de actualizar el registro en memoria.
+- La falsa respuesta sobre Steam tenía una segunda causa: la narración de una
+  misión de un paso anidaba sus hechos estructurados dentro de un string JSON. El
+  compositor exigía después ese JSON literal, fallaba y podía intentar inventar
+  otra causa. Una misión de un paso publica ahora directamente el resultado
+  estructurado. La política visible conserva además la incertidumbre y exige que
+  una pérdida de composición se nombre como tal; no acepta un «no pude
+  encontrarlo» inventado. Las sondas de composición registran sólo causa, hashes,
+  tamaños y conteos, nunca contenido.
+- Corrida viva `steam-visible`, Release: `abre Steam` cruzó
+  `decision.ready=action`, extrajo `app.open`, llamó al core durante ~180 ms y
+  llegó a `response.final` en **1,585 s**. La UI mostró exactamente **«Steam ya
+  está abierto.»**. La nueva invocation
+  `6115856d-4ad1-433d-ad60-e457c608ef93` quedó journalizada con
+  `verified=true`, `alreadyRunning=true`, `processId=28036` y `windowHandle=68200`;
+  el outbox terminó vacío y el planner state siguió ausente.
+- En la misma instancia, el turno posterior `¿Quién eres?` cruzó el bridge,
+  terminó en `decision.ready=conversation` y `response.final` en **7,969 s**, sin
+  core ni plantilla. Los parsers de memoria y selección ya tienen regresiones para
+  no capturar esa pregunta. Sigue habiendo variación de latencia del decisor —se
+  observó antes un timeout aislado de ~22 s—, que debe medirse durante la dosis y
+  no ocultarse.
+- Validación de esta tanda: filtro C# final **22/22**, filtro amplio de parsers
+  **1772/1772** y contratos Python nuevos **5/5**. `test_planner.py` completo quedó
+  en **138 pass + 101 subtests / 7 fail**: cuatro expectativas caducadas de
+  prompt/cache, dos frases de prompt ausentes y la corrección de una misión parcial;
+  son rojos reales a resolver antes del Full, no se ocultaron ni marcaron skip.
+  `scripts/test_source_quality.ps1` pasó completo en modo Fast: PowerShell, Ruff,
+  compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings /
+  0 errors**.

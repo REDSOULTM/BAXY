@@ -216,6 +216,22 @@ internal static class UserMessagePolicy
         }
         if (draft.Intent is "status" or "error")
         {
+            if (RequiresUncertainty(draft.Source)
+                && !Regex.IsMatch(
+                    FoldForPolicy(modelText),
+                    @"\b(?:puede|podria|quiza|quizas|tal vez|may|might|could)\b",
+                    RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+            {
+                return "missing_uncertainty";
+            }
+            if (RequiresCompositionLossDisclosure(draft.Source)
+                && !Regex.IsMatch(
+                    FoldForPolicy(modelText),
+                    @"\b(?:redact\w*|formul\w*|expres\w*|word\w*|phras\w*|render\w*)\b",
+                    RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+            {
+                return "missing_composition_loss";
+            }
             if (AttributesBaxyActionToUser(draft.Source, modelText))
             {
                 return "wrong_actor";
@@ -644,6 +660,23 @@ internal static class UserMessagePolicy
         return facts.Take(20).ToArray();
     }
 
+    private static bool RequiresUncertainty(string source)
+    {
+        return TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("cause", out JsonElement cause)
+            && cause.ValueKind == JsonValueKind.String
+            && cause.GetString() is "mission_recovery_uncertain_effect"
+                or "mission_recovery_uncertain_step";
+    }
+
+    private static bool RequiresCompositionLossDisclosure(string source)
+    {
+        return TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("cause", out JsonElement cause)
+            && cause.ValueKind == JsonValueKind.String
+            && cause.GetString() == "composition_lost_verified_facts";
+    }
+
     private static bool TryReadJson(string source, out JsonElement root)
     {
         try
@@ -713,8 +746,25 @@ internal static class UserMessagePolicy
         string first,
         string second)
     {
-        bool sourceHasPair = source.Contains(first, StringComparison.OrdinalIgnoreCase)
-            && source.Contains(second, StringComparison.OrdinalIgnoreCase);
+        bool sourceHasPair;
+        if (IsStructuredFacts(source)
+            && TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("choices", out JsonElement choices)
+            && choices.ValueKind == JsonValueKind.Array)
+        {
+            string[] offered = choices.EnumerateArray()
+                .Select(static item => item.GetString())
+                .Where(static item => !string.IsNullOrWhiteSpace(item))
+                .Select(static item => item!)
+                .ToArray();
+            sourceHasPair = offered.Contains(first, StringComparer.OrdinalIgnoreCase)
+                && offered.Contains(second, StringComparer.OrdinalIgnoreCase);
+        }
+        else
+        {
+            sourceHasPair = source.Contains(first, StringComparison.OrdinalIgnoreCase)
+                && source.Contains(second, StringComparison.OrdinalIgnoreCase);
+        }
         return !sourceHasPair
             || result.Contains(first, StringComparison.OrdinalIgnoreCase)
                 && result.Contains(second, StringComparison.OrdinalIgnoreCase);

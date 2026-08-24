@@ -2626,8 +2626,18 @@ _CAUSE_FACT = {
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
     "model_invalid": "unusable answer",
+    "composition_lost_verified_facts": (
+        "I could not safely word the verified result without losing its facts"
+    ),
     "app_not_found": "not found",
     "mission_failed": "mission unfinished",
+    "mission_recovery_uncertain_effect": (
+        "the previous effect may already have happened and real state must be checked "
+        "before continuing"
+    ),
+    "mission_recovery_uncertain_step": (
+        "an interrupted step may already have happened and needs a real-state check"
+    ),
     "acting": "still working",
     "ambiguous_request": "unclear request",
     "memory_forget_irreversible": "cannot be undone",
@@ -2882,6 +2892,19 @@ def compose_visible_defect(
         r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", folded
     ):
         return "wrong_language"
+    if cause in {
+        "mission_recovery_uncertain_effect",
+        "mission_recovery_uncertain_step",
+    } and re.search(
+        r"\b(?:puede|podr[ií]a|quiz[aá]s?|tal vez|may|might|could)\b",
+        folded,
+    ) is None:
+        return "missing_uncertainty"
+    if cause == "composition_lost_verified_facts" and re.search(
+        r"\b(?:redact\w*|formul\w*|expres\w*|word\w*|phras\w*|render\w*)\b",
+        folded,
+    ) is None:
+        return "missing_composition_loss"
     is_failure = intent == "error" or polarity == "failure"
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
@@ -7373,7 +7396,7 @@ class LlmRuntime:
             )
         elif intent == "confirmation" or kind == "confirmation":
             payload["messages"][1]["content"] += (
-                "\nOne question with confirm and cancel. Do not assert."
+                "\nOne question using every offered choice. Do not assert."
             )
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
@@ -7803,9 +7826,25 @@ class LlmRuntime:
 
         retry_payload = dict(payload)
         defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
+        _capture_message_compose_diagnostic(
+            f"first_draft_rejected:{defect}",
+            text,
+            required_fact_count=len(required_facts),
+            required_fact_characters=sum(len(fact) for fact in required_facts),
+            required_actions=required_actions,
+            required_words=required_words,
+        )
         retry_hint = {
             "missing_confirmation_choice": (
-                "Pregunta con confirmar/confirm y cancelar/cancel."
+                "Pregunta e incluye literalmente todas las opciones ofrecidas."
+            ),
+            "missing_uncertainty": (
+                "Conserva la incertidumbre: usa podría/puede o may/might; "
+                "no afirmes que el efecto ocurrió."
+            ),
+            "missing_composition_loss": (
+                "Di honestamente que no pudiste redactar o word the verified result; "
+                "no inventes otra causa."
             ),
             "wrong_language": "Same language as the request.",
             "extra_claim": "Only facts in seen.",
@@ -7880,6 +7919,17 @@ class LlmRuntime:
         retry_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(retry_text)))))
         if publishable(retry_text):
             return retry_text
+        retry_defect = (
+            compose_visible_defect(retry_text, intent, user_text, facts) or "contrato"
+        )
+        _capture_message_compose_diagnostic(
+            f"retry_draft_rejected:{retry_defect}",
+            retry_text,
+            required_fact_count=len(required_facts),
+            required_fact_characters=sum(len(fact) for fact in required_facts),
+            required_actions=required_actions,
+            required_words=required_words,
+        )
         third_payload = dict(payload)
         third_payload["temperature"] = 0.0
         third_system = (
@@ -7905,4 +7955,17 @@ class LlmRuntime:
             (third["choices"][0]["message"].get("content") or "").strip()
         )
         third_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(third_text)))))
-        return third_text if publishable(third_text) else ""
+        if publishable(third_text):
+            return third_text
+        third_defect = (
+            compose_visible_defect(third_text, intent, user_text, facts) or "contrato"
+        )
+        _capture_message_compose_diagnostic(
+            f"final_draft_rejected:{third_defect}",
+            third_text,
+            required_fact_count=len(required_facts),
+            required_fact_characters=sum(len(fact) for fact in required_facts),
+            required_actions=required_actions,
+            required_words=required_words,
+        )
+        return ""
