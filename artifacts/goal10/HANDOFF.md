@@ -790,3 +790,15 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   tubería; no es fallback ni reduce ningún umbral funcional. Regresión dueña
   `test_resource_policy.py`: **9/9**, cero skips. Falta reproducción física
   fresca y Fast.
+- Reproducción física fresca `narration-r11` **verde**: el saludo completó
+  `dequeued→phonemes→inference→generated→speaking→silent`. Antes de entrar la
+  sonda del agente, un turno concurrente lanzado por el dueño fue el primer
+  turno posterior al saludo: `submit.received` → `response.final` en
+  **1,075 s**, `voice.speak accepted`, fonemas en **95,7 ms**, audio generado
+  en **255,8 ms**, `speaking` en **256,2 ms** y `silent` 4,480 s después. Es la
+  secuencia completa que fallaba determinísticamente en r4–r10; la reparación
+  del PIPE queda demostrada en producto real. El dueño describió estos turnos
+  concurrentes como pruebas, por lo que no se incorporan a la dosis de 200 de
+  uso normal. Las entradas posteriores se solaparon con una sonda del agente y
+  tampoco se atribuyen. La salida narrada está cerrada; aún falta acreditar el
+  uso entero sin pantalla desde wake/voz y ejecutar Fast.
