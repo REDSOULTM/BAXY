@@ -643,7 +643,11 @@ class VoiceEngine:
         self._armed_until = 0.0
         self._loopback = LoopbackReference()
         self._ducker = AudioDucker()
-        self._output = create_speech_output(self._on_tts_state, self._on_tts_error)
+        self._output = create_speech_output(
+            self._on_tts_state,
+            self._on_tts_error,
+            self._on_tts_stage,
+        )
         self._pcm_inbox: queue.Queue[np.ndarray] | None = None
         self._wake = WakePhraseMatcher()
         self._input_device_name = ""
@@ -668,6 +672,9 @@ class VoiceEngine:
     def _on_tts_error(self, code: str) -> None:
         self.last_error = code
         self._emit("error", code=code)
+
+    def _on_tts_stage(self, stage: str) -> None:
+        self._emit("tts_stage", stage=stage)
 
     @classmethod
     def probe(cls) -> dict[str, Any]:

@@ -545,7 +545,8 @@ def test_neural_tts_reports_the_async_failure_boundary(
     )
     monkeypatch.setattr(voice_output_module, "_PiperOnnxEngine", Engine)
     errors: list[str] = []
-    output = NeuralSpeechOutput(on_error=errors.append)
+    stages: list[str] = []
+    output = NeuralSpeechOutput(on_error=errors.append, on_stage=stages.append)
     try:
         assert output.start(timeout=1.0)
         assert output.speak("frase sintética")
@@ -553,6 +554,7 @@ def test_neural_tts_reports_the_async_failure_boundary(
         while not errors and time.monotonic() < deadline:
             time.sleep(0.01)
         assert errors == [expected_code]
+        assert stages == ["dequeued"]
         assert output.last_error == f"{expected_code}:RuntimeError"
     finally:
         assert output.stop(timeout=1.0)

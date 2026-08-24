@@ -64,6 +64,7 @@ internal static class ShellTraceStages
     internal const string VoiceError = "voice.error";
     internal const string VoiceSpeak = "voice.speak";
     internal const string VoiceState = "voice.state";
+    internal const string VoiceWorker = "voice.worker";
     internal const string TraceTruncated = "trace.truncated";
 
     /// <summary>Marcas que sólo puede emitir el observador del documento.</summary>
@@ -120,6 +121,7 @@ internal static class ShellTraceStages
         VoiceError,
         VoiceSpeak,
         VoiceState,
+        VoiceWorker,
         TraceTruncated,
         DomApplied,
         PaintObserved,

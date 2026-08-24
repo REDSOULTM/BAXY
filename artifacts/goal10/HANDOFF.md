@@ -753,3 +753,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   shell respecto del `voice.speak`. Se añadió `voice.cancel accepted|rejected`
   con el ID capturado del turno; `ShellTraceTests` **8/8**, cero skips, build
   Release verde. Falta reproducción.
+- `narration-r8`: `voice.cancel accepted` terminó **564,777 ms antes** de
+  `voice.speak accepted`; la carrera del shell queda descartada con dato y su
+  reparación experimental ya estaba retirada. Sin `speaking` ni `voice.error`,
+  el hueco restante está dentro del worker. Se añadieron hitos cerrados
+  `voice.worker dequeued|stale|cancelled`; focales Python **2/2** y
+  `ShellTraceTests` **8/8**, cero skips, build Release verde. Falta
+  reproducción.

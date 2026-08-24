@@ -1684,6 +1684,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         ShellTraceStages.VoiceError,
                         detail);
                 }
+                else if (eventName == "tts_stage")
+                {
+                    string stage = (string?)voiceEvent["stage"] ?? string.Empty;
+                    string detail = stage switch
+                    {
+                        "dequeued" => stage,
+                        "stale" => stage,
+                        "cancelled" => stage,
+                        _ => "other",
+                    };
+                    ShellTraceSink.Record(
+                        ShellTraceScopes.Turn,
+                        ShellTraceSink.TurnId,
+                        ShellTraceStages.VoiceWorker,
+                        detail);
+                }
                 else if (eventName == "partial")
                 {
                     StatusDescription = "Transcribiendo…";
