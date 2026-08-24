@@ -846,3 +846,15 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   solo texto incorrecto invalida la sesión. Bloqueo vivo: aislar historia para
   preguntas autocontenidas, impedir que un fallo de contrato se convierta en
   falsa aclaración/plan y repetir este mismo corpus sintético antes de uso dueño.
+- Primer cierre del bloqueo semántico r13: una conversación reconocida por un
+  patrón cerrado y autocontenido ahora llega a `llm.chat` con historial vacío;
+  los seguimientos reales conservan el suyo. Si aun así falla dos veces, la
+  recuperación de identidad/capacidad, aritmética, redacción o un marco
+  explícito sin acción sólo puede recomponer una conversación sin autoridad:
+  nunca publica `clarify`, nunca preserva objetivo y nunca deja un plan pendiente
+  para contaminar la petición siguiente. También se cerró la superficie real
+  sin tilde `Quien eres tu?`, que el reconocedor no cubría. Regresión que
+  reproduce la respuesta técnica anterior y verifica historia vacía + cero
+  aclaración/efectos; suite dueña `test_turn_policy.py`: **870/870**, cero skips.
+  Falta construir y repetir manualmente las 15 respuestas visibles; los defectos
+  independientes de fecha, noticias y clima siguen abiertos.

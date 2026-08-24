@@ -2706,7 +2706,7 @@ def _assistant_identity_or_capability_question(objective: str) -> bool:
     return (
         re.fullmatch(
             (
-                r"[¿?¡!\s]*(?:quien\s+eres|who\s+are\s+you|"
+                r"[¿?¡!\s]*(?:quien\s+eres(?:\s+tu)?|who\s+are\s+you|"
                 r"what\s+(?:can|can\s*t|cannot)\s+you\s+do|"
                 r"que\s+(?:puedes|no\s+puedes)\s+hacer|"
                 r"cuales\s+son\s+tus\s+capacidades)"
@@ -6405,9 +6405,15 @@ def _prepare_turn_result(
                     response_language = llm.detect_response_language(objective)
                 except ValueError:
                     response_language = None
+        conversation_history = (
+            []
+            if explicit_conversation_decision is not None
+            and presentation_conversation_kind != "followup"
+            else history
+        )
         reply_text, _ = llm.chat(
             objective,
-            history=history,
+            history=conversation_history,
             tools=None,
             temperature=0.0,
             conversation_kind=presentation_conversation_kind,
@@ -6568,6 +6574,82 @@ def _recover_failed_turn(
         return result
 
     if llm is not None:
+        stable_no_effect = _explicit_stable_no_effect_turn_decision(objective)
+        stable_conversation_kind = (
+            str(stable_no_effect.get("conversation_kind") or "")
+            if stable_no_effect is not None
+            else ""
+        )
+        closed_standalone_recovery = (
+            effect_intent.explicit_non_action_frame(objective)
+            or conversation_only_content_request(objective)
+            or _assistant_identity_or_capability_question(objective)
+            or _simple_arithmetic_question(objective)
+        )
+        if (
+            closed_standalone_recovery
+            and stable_conversation_kind in {"social", "knowledge", "unsupported"}
+        ):
+            # A closed, standalone conversational request has no missing field.
+            # Turning a failed wording into a clarification invents ambiguity,
+            # and the shell then treats that invented question as a pending
+            # objective on the next turn. Recompose the same no-authority
+            # answer in isolation instead. The model still authors every
+            # visible word; the deterministic recogniser only proves that no
+            # follow-up context or effect is needed.
+            try:
+                reply, _ = llm.chat(
+                    objective,
+                    history=[],
+                    tools=None,
+                    temperature=0.2,
+                    conversation_kind=stable_conversation_kind,
+                    authenticated_operations=(),
+                    response_language=(
+                        str(stable_no_effect.get("response_language") or "") or None
+                    ),
+                )
+                reply = str(reply or "").strip()
+                if not reply:
+                    raise ValueError("empty_stable_conversation_recovery")
+                return audited(
+                    {
+                        "type": "turn.result",
+                        "id": message.get("id"),
+                        "kind": "conversation",
+                        "operation": None,
+                        "intentOperations": [],
+                        "effectOperations": [],
+                        "preserveObjective": False,
+                        "question": "",
+                        "reply": reply,
+                        "turn_attempts": max(0, attempts),
+                        "turn_recovery": "protocol_fallback",
+                        "recovery_attempts": 1,
+                        "failure_code": failure_code,
+                    }
+                )
+            except Exception:  # noqa: BLE001 - keep the protocol boundary total
+                # A clear request must not become an invented question even
+                # when local generation is unavailable. Empty conversation is
+                # the honest, zero-authority transport floor.
+                return audited(
+                    {
+                        "type": "turn.result",
+                        "id": message.get("id"),
+                        "kind": "conversation",
+                        "operation": None,
+                        "intentOperations": [],
+                        "effectOperations": [],
+                        "preserveObjective": False,
+                        "question": "",
+                        "reply": "",
+                        "turn_attempts": max(0, attempts),
+                        "turn_recovery": "protocol_fallback",
+                        "recovery_attempts": 1,
+                        "failure_code": failure_code,
+                    }
+                )
         try:
             question = llm.clarify_after_turn_failure(
                 objective,

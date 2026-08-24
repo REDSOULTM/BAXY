@@ -1189,6 +1189,7 @@ def test_assistant_preference_question_is_conversation_not_a_task_action() -> No
         ("encontrar ruta", "knowledge", "es"),
         ("dime la dirección de billy crytals", "unsupported", "es"),
         ("¿Quién eres?", "knowledge", "es"),
+        ("Quien eres tu?", "knowledge", "es"),
         ("Who are you?", "knowledge", "en"),
         ("¿Qué puedes hacer?", "knowledge", "es"),
         ("Que puedes hacer?", "knowledge", "es"),
@@ -1387,6 +1388,7 @@ def test_one_sentence_drafting_closes_before_model_routing() -> None:
     ],
 )
 def test_closed_identity_and_arithmetic_never_authorize_web_search(text: str) -> None:
+    chat_histories: list[object] = []
     web_tool = {
         "type": "function",
         "function": {
@@ -1415,10 +1417,20 @@ def test_closed_identity_and_arithmetic_never_authorize_web_search(text: str) ->
     class Runtime:
         @staticmethod
         def chat(*_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+            chat_histories.append(_kwargs["history"])
             return "Respuesta sintética.", []
 
     result = _prepare_turn_result(
-        {"id": "closed-no-effect", "text": text},
+        {
+            "id": "closed-no-effect",
+            "text": text,
+            "history": [
+                {
+                    "role": "assistant",
+                    "content": "¿Quieres que restaure una ventana?",
+                }
+            ],
+        },
         llm=Runtime(),
         planner_catalog=PlannerCatalog([web_tool]),
         turn_evidence=NoEvidence(),
@@ -1429,6 +1441,7 @@ def test_closed_identity_and_arithmetic_never_authorize_web_search(text: str) ->
     assert result["kind"] == "conversation"
     assert result["intentOperations"] == []
     assert result["effectOperations"] == []
+    assert chat_histories == [[]]
 
 
 @pytest.mark.parametrize(
@@ -4568,6 +4581,72 @@ def test_failed_turn_protocol_fallback_is_textless_without_language_model() -> N
     assert result["turn_attempts"] == 0
     assert result["recovery_attempts"] == 0
     assert result["failure_code"] == "turn_unavailable"
+
+
+def test_closed_conversation_recovery_cannot_invent_clarification() -> None:
+    calls: list[dict[str, object]] = []
+
+    class RecoveryRuntime:
+        @staticmethod
+        def chat(
+            text: str,
+            history: object,
+            tools: object,
+            temperature: float,
+            *,
+            conversation_kind: str,
+            authenticated_operations: tuple[str, ...],
+            response_language: str | None,
+        ) -> tuple[str, list[dict[str, object]]]:
+            calls.append(
+                {
+                    "text": text,
+                    "history": history,
+                    "tools": tools,
+                    "temperature": temperature,
+                    "conversation_kind": conversation_kind,
+                    "authenticated_operations": authenticated_operations,
+                    "response_language": response_language,
+                }
+            )
+            return "Soy BAXY, un asistente local.", []
+
+        @staticmethod
+        def clarify_after_turn_failure(*_args: object, **_kwargs: object) -> str:
+            raise AssertionError("a clear identity question has no missing field")
+
+    result = _recover_failed_turn(
+        {
+            "id": "turn-clear-identity",
+            "text": "Quien eres tu?",
+            "history": [
+                {
+                    "role": "assistant",
+                    "content": "¿Quieres que restaure una ventana?",
+                }
+            ],
+        },
+        RecoveryRuntime(),
+        failure_kinds=("contract", "contract"),
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["question"] == ""
+    assert result["reply"] == "Soy BAXY, un asistente local."
+    assert result["intentOperations"] == []
+    assert result["effectOperations"] == []
+    assert result["preserveObjective"] is False
+    assert calls == [
+        {
+            "text": "Quien eres tu?",
+            "history": [],
+            "tools": None,
+            "temperature": 0.2,
+            "conversation_kind": "knowledge",
+            "authenticated_operations": (),
+            "response_language": "es",
+        }
+    ]
 
 
 def guard_response(
