@@ -555,3 +555,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   de 2025. Tiempos totales de sonda **5,307 s / 3,180 s**, un solo bridge,
   `visible.text`, DOM, cero `turn.error`. Es la repetición obligatoria de R1–R3:
   demuestra la reparación, pero no suma a los 200.
+- Tramo continuo definitivo reiniciado a **2026-08-24 19:26:18Z** sobre
+  `ef10aed`: BAXY PID `44880`, sampler wrapper `39580` / Python `47588`, wake
+  permanente activo. Primera muestra: app RSS **274,8 MiB**, llama-server vivo,
+  GPU reportada **6.392 MiB** en uso de 16.380 MiB totales. Desde aquí no matar
+  ni recompilar; uso real y dosis se ejecutan sobre esta misma instancia.
