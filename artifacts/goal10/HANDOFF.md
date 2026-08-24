@@ -653,3 +653,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Fast posterior a la reparación y al CRUD vivo **verde**: PowerShell, Ruff,
   compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings
   / 0 errors**. Memoria lista para el tramo continuo final.
+- La primera sonda viva de narración, `narration-r1`, descubrió otro fallo de
+  honestidad y queda invalidada: la petición clara **«Di una frase breve y
+  completa sobre el cielo.»** agotó exactamente el límite del decisor
+  (`decision.start` 51.194 ms → `decision.ready unavailable` 73.196 ms) y el
+  shell publicó **«No pude: la solicitud no fue clara.»**. No era ambigüedad:
+  fue indisponibilidad/timeout del decisor mal proyectada como ambigüedad. Es
+  una sonda del agente y suma 0 turnos; narración todavía no quedó ejercitada.
