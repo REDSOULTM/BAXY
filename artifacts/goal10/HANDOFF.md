@@ -705,3 +705,13 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `speaking|silent`, correlacionado al turno vigente; nunca texto ni contenido
   privado. `ShellTraceTests` **8/8**, cero skips, y build Release verde. Falta
   repetir en producto para observar el par real.
+- Producto vivo `narration-r4`: el saludo de arranque sí cruzó
+  `voice.state speaking→silent` (**2,444 s**); el primer pedido lunar respondió
+  en **1,064 s** con **«La luna brilla silenciosa en el cielo.»**, pero quedó
+  silencioso aun 16 s después. Un `Hola` posterior narró (`speaking` a 211 ms
+  de `response.final`) y la repetición literal del pedido lunar también
+  (`speaking` a 251 ms, `silent` 1,666 s después). El motor, el idioma y el
+  texto quedan descartados como causa permanente; existe una pérdida
+  intermitente del primer envío de narración. Las tres son sondas del agente y
+  suman 0. Narración todavía no se cierra: hay que distinguir rechazo JSONL de
+  fallo asíncrono del sintetizador y reparar el dueño real.
