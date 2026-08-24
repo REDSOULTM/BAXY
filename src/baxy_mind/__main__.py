@@ -31,6 +31,8 @@ from urllib.parse import urlsplit
 # paging. Keep explicit operator overrides, but use a small production default.
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 os.environ.setdefault("MKL_NUM_THREADS", "4")
+os.environ.setdefault("OMP_WAIT_POLICY", "PASSIVE")
+os.environ.setdefault("KMP_BLOCKTIME", "0")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from . import protocol

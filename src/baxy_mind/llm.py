@@ -11,6 +11,7 @@ Config por entorno:
 - BAXY_MIND_CTX: contexto (default y máximo: 4096). El límite protege el
   presupuesto total de 3 GiB de VRAM; no se usa el contexto nominal del modelo
   sin una nueva medición física.
+- BAXY_MIND_LLM_THREADS: hilos CPU del servidor (default 4, máximo 4).
 - BAXY_MIND_LLM_INVALID_JSON_DIR: diagnóstico local opt-in; conserva sólo la
   respuesta inválida sanitizada y metadatos de terminación, nunca el prompt.
 """
@@ -57,6 +58,7 @@ from .process_lifecycle import (
     report_incomplete_reap,
     terminate_and_reap_bounded,
 )
+from .resource_policy import bounded_cpu_threads
 from .time_budget import remaining_seconds
 
 
@@ -3480,6 +3482,7 @@ class LlmRuntime:
         parallel = 3 if getattr(self, "_parallel_turn_verification", False) else 1
         context_size = _context_size_from_env()
         batch_size, ubatch_size = _batch_sizes_from_env()
+        cpu_threads = bounded_cpu_threads("BAXY_MIND_LLM_THREADS", default=4)
         command = [
             str(self._server),
             "-m",
@@ -3496,6 +3499,16 @@ class LlmRuntime:
             str(batch_size),
             "-ub",
             str(ubatch_size),
+            "--threads",
+            str(cpu_threads),
+            "--threads-batch",
+            str(cpu_threads),
+            "--threads-http",
+            "2",
+            "--prio",
+            "-1",
+            "--prio-batch",
+            "0",
             # The measured quantized V cache requires Flash Attention in llama.cpp.
             # CPU fallback still has no GPU compute/offload because -dev none
             # and the three explicit no-offload flags below are authoritative.

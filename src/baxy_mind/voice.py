@@ -40,6 +40,7 @@ from typing import Any, Callable
 import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
+from .resource_policy import bounded_cpu_threads
 from .time_budget import remaining_seconds
 from .voice_aec import AudioDucker, EchoCanceller, LoopbackReference
 from .voice_output import (
@@ -762,7 +763,10 @@ class VoiceEngine:
             decoder=str(stt_dir / "decoder.int8.onnx"),
             joiner=str(stt_dir / "joiner.int8.onnx"),
             tokens=str(stt_dir / "tokens.txt"),
-            num_threads=max(2, min(6, (os.cpu_count() or 4) // 2)),
+            num_threads=bounded_cpu_threads(
+                "BAXY_VOICE_STT_THREADS",
+                default=4,
+            ),
             model_type="nemo_transducer",
             decoding_method="modified_beam_search",
             max_active_paths=8,
@@ -960,7 +964,10 @@ class VoiceEngine:
                 decoder=str(stt_dir / "decoder.int8.onnx"),
                 joiner=str(stt_dir / "joiner.int8.onnx"),
                 tokens=str(stt_dir / "tokens.txt"),
-                num_threads=max(2, min(6, (os.cpu_count() or 4) // 2)),
+                num_threads=bounded_cpu_threads(
+                    "BAXY_VOICE_STT_THREADS",
+                    default=4,
+                ),
                 model_type="nemo_transducer",
                 decoding_method="greedy_search",
                 enable_endpoint_detection=False,

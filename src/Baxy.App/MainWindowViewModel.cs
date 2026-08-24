@@ -82,6 +82,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             WaitForMindReadyAsync,
             PublishComposedMessageAsync,
             failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
+            failure => InvokeOnUiAsync(
+                () =>
+                {
+                    LastMessageCompositionFailure = failure;
+                    RestorePresentationState();
+                }),
             OnModelMessageQueued);
     }
 

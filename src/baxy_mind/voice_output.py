@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .assets import AssetDescriptorError, resolve_asset
+from .resource_policy import cpu_session_options
 from .time_budget import remaining_seconds
 
 logger = logging.getLogger(__name__)
@@ -399,8 +400,13 @@ class _PiperOnnxEngine:
         self._exe = _espeak_exe()
         if self._exe is None:
             raise FileNotFoundError("espeak_missing")
+        options = cpu_session_options(
+            ort,
+            environment_name="BAXY_VOICE_TTS_THREADS",
+        )
         self._session = ort.InferenceSession(
             str(model_path),
+            sess_options=options,
             providers=["CPUExecutionProvider"],
         )
 

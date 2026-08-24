@@ -12,12 +12,20 @@ namespace Baxy.App;
 /// </summary>
 internal sealed class PendingModelMessageQueue
 {
+    internal const int MaximumCompositionAttempts = 3;
+
     private readonly object _lock = new();
     private readonly Queue<PendingModelMessage> _pending = new();
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
     private readonly Func<string, string?, Task> _publishAsync;
     private readonly Func<string?, Task> _reportFailureAsync;
+    private readonly Func<string?, Task> _reportTerminalFailureAsync;
     private readonly Action _onQueued;
+    private readonly Func<
+        PendingModelMessage,
+        MindSidecarClient,
+        CancellationToken,
+        Task<ModelMessageCompositionOutcome>> _composeAsync;
     private Task? _worker;
     private bool _isClosed;
 
@@ -25,16 +33,25 @@ internal sealed class PendingModelMessageQueue
         Func<CancellationToken, Task<MindSidecarClient?>> waitForMind,
         Func<string, string?, Task> publishAsync,
         Func<string?, Task> reportFailureAsync,
-        Action onQueued)
+        Func<string?, Task> reportTerminalFailureAsync,
+        Action onQueued,
+        Func<
+            PendingModelMessage,
+            MindSidecarClient,
+            CancellationToken,
+            Task<ModelMessageCompositionOutcome>>? composeAsync = null)
     {
         ArgumentNullException.ThrowIfNull(waitForMind);
         ArgumentNullException.ThrowIfNull(publishAsync);
         ArgumentNullException.ThrowIfNull(reportFailureAsync);
+        ArgumentNullException.ThrowIfNull(reportTerminalFailureAsync);
         ArgumentNullException.ThrowIfNull(onQueued);
         _waitForMind = waitForMind;
         _publishAsync = publishAsync;
         _reportFailureAsync = reportFailureAsync;
+        _reportTerminalFailureAsync = reportTerminalFailureAsync;
         _onQueued = onQueued;
+        _composeAsync = composeAsync ?? ComposeAsync;
     }
 
     internal int Count
@@ -122,24 +139,37 @@ internal sealed class PendingModelMessageQueue
                     .ConfigureAwait(false);
             }
 
-            ModelMessageCompositionOutcome outcome =
-                await ComposeAsync(pending, mind, cancellationToken).ConfigureAwait(false);
+            ModelMessageCompositionOutcome outcome = await _composeAsync(
+                    pending,
+                    mind,
+                    cancellationToken)
+                .ConfigureAwait(false);
             if (outcome.Text is null)
             {
                 pending.Attempts++;
                 await _reportFailureAsync(outcome.Failure).ConfigureAwait(false);
+                if (pending.Attempts >= MaximumCompositionAttempts)
+                {
+                    RemoveHead(pending);
+                    await _reportTerminalFailureAsync(outcome.Failure).ConfigureAwait(false);
+                }
                 continue;
             }
 
-            lock (_lock)
-            {
-                if (_pending.Count > 0 && ReferenceEquals(_pending.Peek(), pending))
-                {
-                    _pending.Dequeue();
-                }
-            }
+            RemoveHead(pending);
 
             await _publishAsync(outcome.Text, outcome.Failure).ConfigureAwait(false);
+        }
+    }
+
+    private void RemoveHead(PendingModelMessage pending)
+    {
+        lock (_lock)
+        {
+            if (_pending.Count > 0 && ReferenceEquals(_pending.Peek(), pending))
+            {
+                _pending.Dequeue();
+            }
         }
     }
 

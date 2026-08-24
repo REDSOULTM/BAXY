@@ -19,6 +19,7 @@ from typing import Any
 import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
+from .resource_policy import cpu_session_options
 from .wakeword import WakeWordDetection, WakeWordRuntimeError
 
 
@@ -892,12 +893,10 @@ class HyperspotterCascadeDetector:
             try:
                 import onnxruntime as ort
 
-                options = ort.SessionOptions()
-                options.graph_optimization_level = (
-                    ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+                options = cpu_session_options(
+                    ort,
+                    environment_name="BAXY_VOICE_WAKE_THREADS",
                 )
-                options.intra_op_num_threads = max(1, min(4, os.cpu_count() or 1))
-                options.inter_op_num_threads = 1
                 if upstream_sessions is None:
                     upstream_sessions = tuple(
                         ort.InferenceSession(

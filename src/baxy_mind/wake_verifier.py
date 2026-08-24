@@ -16,6 +16,7 @@ from typing import Any
 import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
+from .resource_policy import cpu_session_options
 
 
 SAMPLE_RATE = 16_000
@@ -778,8 +779,10 @@ class OnnxWakeVerifier:
             try:
                 import onnxruntime as ort
 
-                options = ort.SessionOptions()
-                options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+                options = cpu_session_options(
+                    ort,
+                    environment_name="BAXY_VOICE_WAKE_THREADS",
+                )
                 session = ort.InferenceSession(
                     str(config.graph_path),
                     sess_options=options,
