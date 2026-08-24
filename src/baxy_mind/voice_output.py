@@ -16,6 +16,7 @@ import math
 import os
 import queue
 import re
+import tempfile
 import threading
 import time
 
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 _MAX_TEXT_CHARS = 8_192
 _MAX_QUEUE_ITEMS = 16
+_ESPEAK_TIMEOUT_SECONDS = 5.0
 _CONTROL_CHARACTERS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
 
 # SpeechVoiceSpeakFlags from sapi.h.
@@ -418,14 +420,23 @@ class _PiperOnnxEngine:
     def _phonemes(self, text: str) -> str:
         import subprocess
 
-        completed = subprocess.run(
-            [str(self._exe), "-q", "-v", self._voice, "--ipa=3", text],
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
-        return " ".join(completed.stdout.split())
+        # Windows implements communicate() over PIPEs with one Python reader
+        # thread per stream. The resident voice stack can leave Thread.start()
+        # waiting forever there even after eSpeak has exited. A file-backed
+        # stdout needs no helper thread and the phoneme payload is bounded by
+        # the already-bounded utterance.
+        with tempfile.TemporaryFile() as stdout:
+            subprocess.run(
+                [str(self._exe), "-q", "-v", self._voice, "--ipa=3", text],
+                check=True,
+                stdin=subprocess.DEVNULL,
+                stdout=stdout,
+                stderr=subprocess.DEVNULL,
+                timeout=_ESPEAK_TIMEOUT_SECONDS,
+            )
+            stdout.seek(0)
+            phonemes = stdout.read().decode("utf-8")
+        return " ".join(phonemes.split())
 
     def generate(self, text: str) -> np.ndarray:
         phonemes = self._phonemes(text)

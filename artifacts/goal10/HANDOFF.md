@@ -779,3 +779,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   corriendo, sino el borde de creación/espera del subprocess. Sonda del agente,
   suma 0. Falta separar `Popen` de `communicate`, reparar ese borde y repetir el
   primer turno fresco.
+- Una pila viva de la mente (`py-spy`, PID 45240) identificó el bloqueo exacto:
+  `baxy-neural-output` estaba en `subprocess._communicate` →
+  `threading.Thread.start`, no en eSpeak ni en el callback de protocolo. La
+  mente sólo tenía 27 hilos y 642 handles, así que no era agotamiento general;
+  era la dependencia de `capture_output=True` en lectores auxiliares de PIPE de
+  Windows. `_PiperOnnxEngine._phonemes` ahora dirige stdout a un fichero
+  temporal local, cierra stdin/stderr, conserva `check=True` y añade un terminal
+  honesto de 5 s. Así lee los fonemas en el propio worker sin crear hilos de
+  tubería; no es fallback ni reduce ningún umbral funcional. Regresión dueña
+  `test_resource_policy.py`: **9/9**, cero skips. Falta reproducción física
+  fresca y Fast.

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -133,6 +134,49 @@ def test_piper_owns_a_non_spinning_bounded_session(tmp_path, monkeypatch) -> Non
     assert options.inter_op_num_threads == 1
     assert options.entries["session.intra_op.allow_spinning"] == "0"
     assert captured["providers"] == ["CPUExecutionProvider"]
+
+
+def test_piper_phonemes_do_not_require_windows_pipe_reader_threads(
+    tmp_path, monkeypatch
+) -> None:
+    class _FakeInferenceSession:
+        def __init__(self, _model, *, sess_options, providers) -> None:
+            pass
+
+    fake_ort = _fake_ort()
+    fake_ort.InferenceSession = _FakeInferenceSession
+    monkeypatch.setitem(sys.modules, "onnxruntime", fake_ort)
+    monkeypatch.setattr(voice_output, "_espeak_exe", lambda: tmp_path / "espeak.exe")
+
+    model = tmp_path / "voice.onnx"
+    model.write_bytes(b"not-loaded-by-the-fake")
+    model.with_suffix(".onnx.json").write_text(
+        json.dumps(
+            {
+                "phoneme_id_map": {"^": [1], "$": [2]},
+                "audio": {"sample_rate": 22050},
+            }
+        ),
+        encoding="utf-8",
+    )
+    captured: dict[str, object] = {}
+
+    def fake_run(args, **kwargs) -> SimpleNamespace:
+        captured["args"] = args
+        captured["kwargs"] = kwargs
+        kwargs["stdout"].write("o la".encode("utf-8"))
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    engine = voice_output._PiperOnnxEngine(model)  # noqa: SLF001
+
+    assert engine._phonemes("hola") == "o la"  # noqa: SLF001
+    kwargs = captured["kwargs"]
+    assert isinstance(kwargs, dict)
+    assert kwargs["stdout"] is not subprocess.PIPE
+    assert kwargs["stderr"] is subprocess.DEVNULL
+    assert kwargs["stdin"] is subprocess.DEVNULL
+    assert kwargs["timeout"] == 5.0
 
 
 def test_silero_vad_uses_numpy_and_a_non_spinning_owned_session(
