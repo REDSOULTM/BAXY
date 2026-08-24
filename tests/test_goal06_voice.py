@@ -763,6 +763,23 @@ def test_verified_news_source_domain_is_not_mistaken_for_an_internal_code() -> N
     )
 
 
+def test_compose_rejects_a_word_repeated_across_punctuation() -> None:
+    assert (
+        compose_visible_defect(
+            "Hoy, hoy es 24 de agosto de 2026.",
+            "status",
+            "¿Qué día es hoy?",
+            {
+                "situation": (
+                    '{"kind":"operation","operation":"system.time",'
+                    '"polarity":"success","verified":true}'
+                )
+            },
+        )
+        == "invented"
+    )
+
+
 def test_compose_rejects_invented_words_on_the_shipped_entry(monkeypatch) -> None:
     captured: list[str] = []
 

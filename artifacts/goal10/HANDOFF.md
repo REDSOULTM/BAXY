@@ -998,3 +998,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   aysenino, según radiosantamaria.cl.» Conserva título y fuente exactos, atribuye
   de forma legible y no añade hechos; `compose.end` sin fallo y auditoría sin
   descartes. Falta Fast y r27 fresca completa; r26 es sonda y suma cero dosis.
+- Fast verde completo. R27 produjo 15 respuestas factualmente correctas y
+  noticias quedó bien en 2,819 s, pero la revisión manual estricta rechaza la
+  fecha «Hoy, hoy es 24 de agosto de 2026» por repetición visible: **14/15**,
+  sesión inválida y suma cero. El detector general de duplicación ahora cubre
+  palabras repetidas a través de coma/punto y coma/dos puntos, no sólo espacio;
+  regresión exacta y suite dueña `test_goal06_voice.py` **10/10**, cero skips.
+  Falta reproducción de fecha y otra tanda completa.

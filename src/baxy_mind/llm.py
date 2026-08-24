@@ -3093,7 +3093,7 @@ def compose_visible_defect(
         return "internal_code"
     if cause == "timeout" and "trajo" in folded:
         return "invented"
-    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", folded):
+    if re.search(r"\b(\w+)(?:\s*[,;:]\s*|\s+)\1\b", folded):
         return "invented"
     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
         return "copied_instruction"
