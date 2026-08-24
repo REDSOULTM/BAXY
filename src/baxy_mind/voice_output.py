@@ -374,7 +374,11 @@ def _espeak_data_dir() -> Path | None:
 class _PiperOnnxEngine:
     """Piper VITS ONNX + eSpeak. Sherpa rejects this export (no sample_rate meta)."""
 
-    def __init__(self, model_path: Path) -> None:
+    def __init__(
+        self,
+        model_path: Path,
+        on_stage: Callable[[str], None] | None = None,
+    ) -> None:
         import onnxruntime as ort
 
         config_path = model_path.with_suffix(".onnx.json")
@@ -397,6 +401,7 @@ class _PiperOnnxEngine:
         self._length_scale = float(inference.get("length_scale") or 1.0)
         self._noise_w = float(inference.get("noise_w") or 0.8)
         self._voice = str(espeak.get("voice") or "es-419")
+        self._on_stage = on_stage or (lambda _stage: None)
         self._exe = _espeak_exe()
         if self._exe is None:
             raise FileNotFoundError("espeak_missing")
@@ -424,6 +429,7 @@ class _PiperOnnxEngine:
 
     def generate(self, text: str) -> np.ndarray:
         phonemes = self._phonemes(text)
+        self._on_stage("phonemes")
         ids = list(self._id_map.get("^", [1]))
         for character in phonemes:
             ids.extend(self._id_map.get(character, []))
@@ -434,10 +440,12 @@ class _PiperOnnxEngine:
             [self._noise_scale, self._length_scale, self._noise_w],
             dtype=np.float32,
         )
+        self._on_stage("inference")
         output = self._session.run(
             None,
             {"input": phoneme, "input_lengths": lengths, "scales": scales},
         )[0]
+        self._on_stage("generated")
         audio = np.asarray(output, dtype=np.float32).reshape(-1)
         peak = float(np.max(np.abs(audio))) if audio.size else 0.0
         if peak > 1.0:
@@ -635,7 +643,7 @@ class NeuralSpeechOutput:
             model_path = resolve_neural_tts_model()
             if model_path is None:
                 raise FileNotFoundError("neural_tts_model_missing")
-            tts = _PiperOnnxEngine(model_path)
+            tts = _PiperOnnxEngine(model_path, self._report_stage)
             sample_rate = tts.sample_rate
             self._model_path = model_path
             self._voice_name = model_path.stem

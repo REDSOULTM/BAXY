@@ -1692,6 +1692,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         "dequeued" => stage,
                         "stale" => stage,
                         "cancelled" => stage,
+                        "phonemes" => stage,
+                        "inference" => stage,
+                        "generated" => stage,
                         _ => "other",
                     };
                     ShellTraceSink.Record(

@@ -760,3 +760,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `voice.worker dequeued|stale|cancelled`; focales Python **2/2** y
   `ShellTraceTests` **8/8**, cero skips, build Release verde. Falta
   reproducción.
+- `narration-r9` consumió el comando (`voice.worker dequeued` a **0,648 ms** de
+  `voice.speak accepted`) y quedó dentro de `generate` más de 10 s, sin error,
+  estado físico ni descarte. Se añadieron hitos internos cerrados
+  `phonemes→inference→generated` para separar el subprocess eSpeak del
+  `InferenceSession.run`; falta focal y reproducción.
+- Focales de los hitos internos **3/3** (`test_mind_voice_runtime` +
+  `test_resource_policy`) y `ShellTraceTests` **8/8**, cero skips, build Release
+  verde. Instrumentación lista para la reproducción física.

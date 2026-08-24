@@ -520,7 +520,11 @@ def test_neural_tts_reports_the_async_failure_boundary(
     class Engine:
         sample_rate = 22_050
 
-        def __init__(self, _model: Path) -> None:
+        def __init__(
+            self,
+            _model: Path,
+            _on_stage: object = None,
+        ) -> None:
             pass
 
         @staticmethod
