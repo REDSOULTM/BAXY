@@ -387,6 +387,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 }
             }
         }
+        string authority = "bing_rss_https";
+        if (results.Count == 0)
+        {
+            (List<(string Title, string Url, string Snippet)> fallback,
+                int fallbackValid) = await SearchDuckDuckGoAsync(
+                    query, queryTokens, limit, cancellationToken).ConfigureAwait(false);
+            if (fallback.Count > 0)
+            {
+                results = fallback;
+                structurallyValidItems = fallbackValid;
+                authority = "duckduckgo_html_https";
+            }
+        }
         if (structurallyValidItems > 0 && results.Count == 0)
         {
             return ExternalJson.FailureBeforeEffect(
@@ -408,10 +421,109 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
-            writer.WriteString("authority", "bing_rss_https");
+            writer.WriteString("authority", authority);
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private async Task<(List<(string Title, string Url, string Snippet)> Results,
+        int StructurallyValid)> SearchDuckDuckGoAsync(
+        string query,
+        string[] queryTokens,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        Uri endpoint = new("https://html.duckduckgo.com/html/?q="
+            + Uri.EscapeDataString(query));
+        using HttpResponseMessage response = await _http.GetAsync(
+            endpoint, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+        string html = await response.Content.ReadAsStringAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (html.Length > 2_000_000)
+        {
+            throw new InvalidDataException("The search response exceeded its bound.");
+        }
+
+        MatchCollection links = Regex.Matches(
+            html,
+            "<a[^>]*class=[\\\"']result__a[\\\"'][^>]*href=[\\\"'](?<url>[^\\\"']+)[\\\"'][^>]*>(?<title>.*?)</a>",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline,
+            TimeSpan.FromSeconds(1));
+        MatchCollection snippets = Regex.Matches(
+            html,
+            "<a[^>]*class=[\\\"']result__snippet[\\\"'][^>]*>(?<snippet>.*?)</a>",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline,
+            TimeSpan.FromSeconds(1));
+        var results = new List<(string Title, string Url, string Snippet)>();
+        int structurallyValid = 0;
+        for (int index = 0; index < links.Count && results.Count < limit; index++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Match link = links[index];
+            string title = CleanSearchHtml(link.Groups["title"].Value, 4_096);
+            string snippet = index < snippets.Count
+                ? CleanSearchHtml(snippets[index].Groups["snippet"].Value, 16_384)
+                : string.Empty;
+            Uri? parsed = ResolveDuckDuckGoResultUri(link.Groups["url"].Value);
+            if (parsed is null || title.Length == 0)
+            {
+                continue;
+            }
+            structurallyValid++;
+            if (IsSearchResultRelevant(queryTokens, title, parsed, snippet))
+            {
+                results.Add((title, parsed.AbsoluteUri, snippet));
+            }
+        }
+        return (results, structurallyValid);
+    }
+
+    private static Uri? ResolveDuckDuckGoResultUri(string encoded)
+    {
+        string href = System.Net.WebUtility.HtmlDecode(encoded);
+        if (href.StartsWith("//", StringComparison.Ordinal))
+        {
+            href = "https:" + href;
+        }
+        if (!Uri.TryCreate(href, UriKind.Absolute, out Uri? parsed)
+            || parsed.Scheme is not ("http" or "https"))
+        {
+            return null;
+        }
+        if (!parsed.Host.Equals("duckduckgo.com", StringComparison.OrdinalIgnoreCase))
+        {
+            return parsed;
+        }
+        foreach (string field in parsed.Query.TrimStart('?').Split('&'))
+        {
+            if (!field.StartsWith("uddg=", StringComparison.Ordinal))
+            {
+                continue;
+            }
+            string destination = Uri.UnescapeDataString(field[5..]);
+            return Uri.TryCreate(destination, UriKind.Absolute, out Uri? target)
+                && target.Scheme is "http" or "https"
+                ? target
+                : null;
+        }
+        return null;
+    }
+
+    private static string CleanSearchHtml(string value, int maximumLength)
+    {
+        string withoutTags = Regex.Replace(
+            value,
+            "<[^>]+>",
+            " ",
+            RegexOptions.Singleline,
+            TimeSpan.FromSeconds(1));
+        string decoded = System.Net.WebUtility.HtmlDecode(withoutTags);
+        string compact = string.Join(' ', decoded.Split(
+            (char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        return compact.Length <= maximumLength ? compact : compact[..maximumLength];
     }
 
     private static string[] SearchTokens(string value)

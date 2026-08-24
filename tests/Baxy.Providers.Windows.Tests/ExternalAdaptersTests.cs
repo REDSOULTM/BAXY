@@ -1950,6 +1950,46 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task StructuredWebSearchFallsBackWhenBingReturnsUnrelatedResults()
+    {
+        const string rss = """
+            <rss><channel><item><title>Commercial HVAC</title><link>https://example.com/hvac</link><description>Heating services</description></item></channel></rss>
+            """;
+        const string html = """
+            <html><body>
+              <a rel="nofollow" class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fmortal-kombat&amp;rut=abc">Mortal Kombat: Legacy Kollection launches</a>
+              <a class="result__snippet">The latest Mortal Kombat release is available now.</a>
+            </body></html>
+            """;
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(
+            temporary.Path, new(false, false, "", "", "", "unused"));
+        var handler = new SequencedHttpHandler(rss, html);
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"Mortal Kombat latest release","limit":5}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("duckduckgo_html_https"));
+            Assert.That(receipt.Result?.GetProperty("results")[0]
+                .GetProperty("title").GetString(), Does.Contain("Mortal Kombat"));
+            Assert.That(handler.Hosts, Is.EqualTo(new[]
+            {
+                "www.bing.com",
+                "html.duckduckgo.com",
+            }));
+        });
+    }
+
+    [Test]
     public async Task StructuredWebSearchReturnsOnlyResultsRelatedToTheQuery()
     {
         const string rss = """
@@ -2545,6 +2585,27 @@ public sealed class ExternalAdaptersTests
                 {
                     Content = new StringContent(body, Encoding.UTF8, "application/xml"),
                 });
+    }
+
+    private sealed class SequencedHttpHandler(params string[] bodies) : HttpMessageHandler
+    {
+        private readonly Queue<string> _bodies = new(bodies);
+        internal List<string> Hosts { get; } = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Hosts.Add(request.RequestUri?.Host ?? string.Empty);
+            if (!_bodies.TryDequeue(out string? body))
+            {
+                throw new InvalidOperationException("Unexpected HTTP request.");
+            }
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(body, Encoding.UTF8, "text/html"),
+            });
+        }
     }
 
     private sealed class RecordingInvalidJsonHttpHandler : HttpMessageHandler

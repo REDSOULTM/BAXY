@@ -512,3 +512,15 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Fast del grounding centrado **verde**: toda la estática multilenguaje y build
   Release **0 warnings / 0 errors**. El commit `19c4527` está local; dos pushes
   fallaron por conexión a `github.com:443`, no por rechazo, y se reintentará.
+- `public-facts-r2` verificó que `batman biografia` sí devuelve cinco resultados
+  pertinentes (Wikipedia ES/EN, DC e IMDb) y el core los marcó verificados; la
+  UI mostró una descripción de Batman como vigilante de Gotham. Mortal Kombat
+  siguió fallando, ahora por proveedor: Bing RSS devolvió HVAC, White Sands y
+  otros dominios ajenos incluso para tres variantes inglesas centradas. El gate
+  `web_search_results_irrelevant` los rechazó correctamente. R2 no cuenta.
+- Desde esta misma máquina, DuckDuckGo HTML devolvió resultados pertinentes para
+  la misma consulta (Mortal Kombat 1, Definitive Edition y Legacy Kollection).
+  El provider mantiene Bing y, sólo si no obtiene ningún resultado relevante,
+  consulta DuckDuckGo, decodifica la URL final HTTPS, limita el cuerpo a 2 M de
+  caracteres y aplica el mismo filtro de tokens. Regresión dueña focal:
+  `StructuredWebSearch*` **4/4**, cero skips. Falta suite completa/Fast/vivo.
