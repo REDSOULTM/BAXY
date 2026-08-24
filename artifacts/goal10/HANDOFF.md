@@ -529,3 +529,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   ambientales como «Omitidas» (NativeAOT CoreAudio, Wi-Fi real, DXGI/PDH e IP
   real). No se usan esos cuatro como cobertura ejecutada; el fallback HTTP sí
   corrió dentro de los 452. Falta Fast y repetición viva.
+- Fast del fallback **verde**: PowerShell, Ruff, compileall, ESLint, ambos TSC,
+  `dotnet format` y build Release; **0 warnings / 0 errors**. Binario listo para
+  `public-facts-r3`.
