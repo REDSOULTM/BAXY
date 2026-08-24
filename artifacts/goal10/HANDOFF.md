@@ -560,3 +560,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   permanente activo. Primera muestra: app RSS **274,8 MiB**, llama-server vivo,
   GPU reportada **6.392 MiB** en uso de 16.380 MiB totales. Desde aquí no matar
   ni recompilar; uso real y dosis se ejecutan sobre esta misma instancia.
+- La primera comprobación visual de modos encontró un bloqueo real: `/settings`
+  ya leía y persistía `normal/bypass`, pero `field-native-bridge.js` ocultaba la
+  pestaña `agent`, deshabilitaba el selector de confirmaciones y ocultaba
+  `apply`; el bypass era imposible de activar desde el producto. La capa nativa
+  ahora expone esa pestaña, mantiene administrados los demás controles y deja
+  editables sólo `confirmation policy` y `apply`. Regresión dueña aislada (sin
+  tocar el PID vivo): `NativeBridgePreservesTheHistoricalContractLocally`
+  **1/1**, cero skips, build Release en salida temporal. El tramo de 19:26:18Z
+  se invalidará al relanzar el binario reparado; no puede contar como las 24 h.

@@ -6,6 +6,7 @@
   const sockets = new Map();
   const managedSettingsTabs = new Set([
     'connection',
+    'agent',
     'transcript',
     'prompt',
     'about',
@@ -252,7 +253,7 @@
     }
     const settingsBody = settingsPanel.querySelector('.settings-body');
     if (settingsBody) {
-      const readOnlyMessage = 'Configuración administrada por BAXY; datos de solo lectura.';
+      const readOnlyMessage = 'Configuración administrada por BAXY; el modo de confirmación es editable.';
       if (settingsBody.getAttribute('aria-label') !== readOnlyMessage) {
         settingsBody.setAttribute('aria-label', readOnlyMessage);
       }
@@ -260,14 +261,21 @@
         settingsBody.setAttribute('title', readOnlyMessage);
       }
       for (const control of settingsBody.querySelectorAll('input, select, textarea, button')) {
-        if (!control.disabled) control.disabled = true;
+        const isConfirmationPolicy = control.matches('select[aria-label="confirmation policy"]');
+        if (isConfirmationPolicy) {
+          if (control.disabled) control.disabled = false;
+        } else if (!control.disabled) {
+          control.disabled = true;
+        }
       }
     }
     for (const footerButton of settingsPanel.querySelectorAll('.settings-footer button')) {
       const label = (footerButton.textContent || '').trim().toLowerCase();
       const isClose = label === 'cancel' || label === 'later' || label === 'cerrar';
-      if (footerButton.hidden === isClose) footerButton.hidden = !isClose;
-      const hiddenValue = isClose ? 'false' : 'true';
+      const isApply = label === 'apply' || label === 'applying…';
+      const isSupported = isClose || isApply;
+      if (footerButton.hidden === isSupported) footerButton.hidden = !isSupported;
+      const hiddenValue = isSupported ? 'false' : 'true';
       if (footerButton.dataset.baxyManagedHidden !== hiddenValue) {
         footerButton.dataset.baxyManagedHidden = hiddenValue;
       }

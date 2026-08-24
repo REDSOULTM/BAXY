@@ -167,8 +167,11 @@ public sealed class MainWindowShellContractTests
             Assert.That(script, Does.Contain("Baxy.App · .NET 10"));
             Assert.That(script, Does.Contain("baxy_mind"));
             Assert.That(script, Does.Contain("managedSettingsTabs"));
+            Assert.That(script, Does.Contain("'agent'"));
+            Assert.That(script, Does.Contain("select[aria-label=\"confirmation policy\"]"));
+            Assert.That(script, Does.Contain("label === 'apply'"));
             Assert.That(script, Does.Contain("diagnóstico local"));
-            Assert.That(script, Does.Contain("Configuración administrada por BAXY"));
+            Assert.That(script, Does.Contain("el modo de confirmación es editable"));
             Assert.That(host, Does.Contain("new MissionInput(text, MissionInputSource.Text)"));
             Assert.That(host, Does.Contain("SetWakeVoiceAsync"));
             Assert.That(host, Does.Contain("StartDirectVoiceAsync"));
