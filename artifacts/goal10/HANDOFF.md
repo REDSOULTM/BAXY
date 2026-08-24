@@ -1025,3 +1025,17 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   fecha 1,258 s. Es la primera tanda sintética semántica verde y suma cero a las
   200 interacciones normales del dueño. Siguen abiertos los criterios amplios:
   corpus real, dosis normal multi-sesión, 24 h con reinicio y manos libres.
+- Tramo de 24 h iniciado sobre r30 a **2026-08-24T23:45:14.919011Z** con el
+  sampler dueño cada 60 s (`soak-r30.json[l]`), escucha permanente y llama-server
+  vivos. Baseline: Baxy.exe RSS **281,0 MiB**, VRAM total de GPU reportada
+  **6612/16380 MiB**; PID de sampler Python 43892. Aún no cumple duración,
+  reinicio ni muestra final. Los turnos concurrentes del dueño siguen siendo
+  explícitamente de prueba y no cuentan como uso normal.
+- Auditoría acotada del corpus consolidado actual (streaming, sin leer contenido
+  al contexto): `historical_messages.jsonl` tiene **14.836 filas**, **10.867
+  canónicas**, 3.639 de origen `observed_user`, 656 redactadas, 3.640 con
+  timestamp, **307 rutas fuente** y raíces `functiongemma` 7.082,
+  `probando_gemma4` 3.789, `carter_os_ai` 2.028, `codex` 1.692, `baxy` 154 y
+  `gemma4_local` 90. Esto confirma que el corpus heredado es mucho mayor que las
+  3.691 frases únicas de la extracción Carter/Gemma4 de 2026-06-02; se usa para
+  variedad y prioridades, nunca para sumar los 200 turnos normales.
