@@ -621,3 +621,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   que abras steam` → Steam abierto/enfocado y **«Listo, Steam está abierto.»**.
   Son tres sondas del agente, por lo que prueban la reparación pero no suman a
   los 200 turnos normales del dueño. No hubo eco, plantilla, jerga ni falsedad.
+- Modos normal/bypass verificados desde la interfaz viva: se seleccionó bypass,
+  se aplicó y al reabrir ajustes seguía activo; después se seleccionó normal,
+  se aplicó y al reabrir seguía restaurado. El producto queda en **normal**.
