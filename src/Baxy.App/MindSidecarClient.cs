@@ -158,6 +158,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool dense = partialMission
             || requiredFactCount >= 8
             || requiredFactCharacters >= 512;
+        bool verifiedNewsSummary = IsVerifiedNewsSummary(facts);
         if (cpuFallback)
         {
             return dense
@@ -165,9 +166,34 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 : CpuMessageCompositionRequestTimeout;
         }
 
-        return dense
+        return dense || verifiedNewsSummary
             ? DenseMessageCompositionRequestTimeout
             : MessageCompositionRequestTimeout;
+    }
+
+    private static bool IsVerifiedNewsSummary(JsonObject facts)
+    {
+        if (facts["situation"]?.GetValue<string>() is not { Length: > 0 } source)
+        {
+            return false;
+        }
+
+        try
+        {
+            JsonNode? situation = JsonNode.Parse(source);
+            return string.Equals(
+                    situation?["operation"]?.GetValue<string>(),
+                    "web.search",
+                    StringComparison.Ordinal)
+                && string.Equals(
+                    situation?["observed"]?["authority"]?.GetValue<string>(),
+                    "google_news_rss_https",
+                    StringComparison.Ordinal);
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return false;
+        }
     }
 
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>

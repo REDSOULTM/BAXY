@@ -953,3 +953,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `ModelMessageComposer.ComposeAsync`, no al guard Python. `compose.end` ahora
   registra el código de fallo del outcome (o `exception`) para obtener el dato
   exacto en una reproducción aislada; falta build y r21 de un turno.
+- Reproducción aislada r21 midió el terminal exacto:
+  **`compose.end=no_response`** tras 10,0 s. El primer request ordinario agotaba
+  su techo GPU de 5 s mientras Python regeneraba el borrador corrupto; el shell
+  entonces usaba otros 5 s para componer la disculpa. La selección de timeout
+  ahora asigna el presupuesto GPU denso ya existente de 10 s sólo cuando el
+  resultado observado tiene autoridad `google_news_rss_https`; composiciones
+  ordinarias siguen en 5 s y los presupuestos CPU siguen en 60/130 s. Falta
+  focal .NET y reproducción física r22.

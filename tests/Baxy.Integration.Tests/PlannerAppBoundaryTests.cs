@@ -329,6 +329,12 @@ public sealed class PlannerAppBoundaryTests
             ["requiredFacts"] = new JsonArray("Paso 1: listo"),
             ["partialMission"] = true,
         };
+        var verifiedNews = new JsonObject
+        {
+            ["situation"] = """
+                {"kind":"operation","operation":"web.search","polarity":"success","observed":{"authority":"google_news_rss_https"}}
+                """,
+        };
 
         Assert.Multiple(() =>
         {
@@ -345,6 +351,9 @@ public sealed class PlannerAppBoundaryTests
                 MindSidecarClient.SelectMessageCompositionTimeout(partialMission),
                 Is.EqualTo(TimeSpan.FromSeconds(10)));
             Assert.That(
+                MindSidecarClient.SelectMessageCompositionTimeout(verifiedNews),
+                Is.EqualTo(TimeSpan.FromSeconds(10)));
+            Assert.That(
                 MindSidecarClient.SelectMessageCompositionTimeout(
                     ordinary,
                     cpuFallback: true),
@@ -354,6 +363,11 @@ public sealed class PlannerAppBoundaryTests
                     dense,
                     cpuFallback: true),
                 Is.EqualTo(TimeSpan.FromSeconds(130)));
+            Assert.That(
+                MindSidecarClient.SelectMessageCompositionTimeout(
+                    verifiedNews,
+                    cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(60)));
         });
     }
 
