@@ -606,3 +606,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   real: Steam se abrió/enfocó y BAXY mostró **«Listo, Steam está abierto.»**. La
   corrección de prefijo y el enrutado `app.open` quedan verificados en producto;
   falta cerrar el truncamiento social y repetir la sesión entera.
+- Causa del truncamiento cerrada: el modelo producía saludo/acuse seguido de
+  invitación (`Hola, ¿…?` / `Claro, ¿…?`) y el filtro que retira preguntas no
+  solicitadas conservaba la coma de enlace. Ahora el prefijo superviviente se
+  cierra como oración y el contrato rechaza borradores que realmente terminen
+  en coma, punto y coma o dos puntos. Focales **9/9** y suite dueña
+  `test_turn_policy.py` **861/861** en **4,08 s**, cero skips. Falta Fast y la
+  repetición viva completa.

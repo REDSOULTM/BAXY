@@ -9693,6 +9693,37 @@ def test_unrequested_closing_preserves_model_answer(
     )
 
 
+@pytest.mark.parametrize(
+    ("answer", "expected"),
+    [
+        ("Hola, ¿En qué puedo ayudarte?", "Hola."),
+        ("Claro: ¿Qué necesitas?", "Claro."),
+    ],
+)
+def test_unrequested_closing_completes_dangling_separator(
+    answer: str,
+    expected: str,
+) -> None:
+    assert (
+        _without_unrequested_conversation_closing(
+            answer,
+            conversation_kind="social",
+            shape=None,
+        )
+        == expected
+    )
+
+
+@pytest.mark.parametrize("answer", ["Hola,", "Claro:", "Yes;"])
+def test_unshaped_conversation_rejects_dangling_separator(answer: str) -> None:
+    assert _shaped_conversation_answer_violates_contract(
+        answer,
+        "Hola.",
+        None,
+        conversation_kind="social",
+    )
+
+
 def test_unrequested_question_rule_rejects_a_question_only_answer() -> None:
     answer = "¿En qué puedo ayudarte?"
 

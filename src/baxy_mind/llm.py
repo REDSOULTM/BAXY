@@ -1765,6 +1765,11 @@ def _without_unrequested_conversation_closing(
         inverted = -1
     if inverted > 0:
         prefix = content[:inverted].rstrip()
+        if prefix.endswith((",", ";", ":")):
+            # The comma belongs to the removed invitation (``Hola, ¿en qué
+            # puedo ayudarte?``), not to a complete surviving reply. Leaving
+            # it behind made the visible answer read as a truncated clause.
+            prefix = prefix[:-1].rstrip() + "."
         return prefix if prefix else content
     boundaries = list(re.finditer(r"(?<=[.!…])\s+", content))
     if not boundaries:
@@ -1927,6 +1932,8 @@ def _shaped_conversation_answer_violates_contract(
     if visible_text_leaks_internal_vocabulary(value):
         return True
     content = str(value or "").strip()
+    if content.endswith((",", ";", ":")):
+        return True
     if re.search(r"[\u0400-\u04ff]", content) is not None and re.search(
         r"[\u0400-\u04ff]", str(request or "")
     ) is None:
