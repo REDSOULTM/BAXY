@@ -110,14 +110,6 @@ function Find-Stage(
     return $null
 }
 
-function Get-VisibleText([Diagnostics.Process]$Process) {
-    $Process.Refresh()
-    if ($Process.MainWindowHandle -eq [IntPtr]::Zero) { return '' }
-    $root = [Windows.Automation.AutomationElement]::FromHandle($Process.MainWindowHandle)
-    if ($null -eq $root) { return '' }
-    return [string]$root.Current.Name + ' ' + [string]$root.Current.HelpText
-}
-
 $app = Get-RepoAppProcess
 if ($null -eq $app) { throw 'BAXY no está en marcha.' }
 $field = Wait-Until -TimeoutSeconds $StartupTimeoutSeconds -Failure (

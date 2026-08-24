@@ -685,6 +685,10 @@ function Invoke-SourceQualityGate {
                 '-c',
                 'Release',
                 '--no-restore',
+                # Keep the validation gate from monopolising a developer PC.
+                # Test projects are already serialised below; the build may
+                # use two nodes while leaving the rest of Windows responsive.
+                '-m:2',
                 '--nologo'
             ) `
             -WorkingDirectory $root

@@ -138,14 +138,20 @@ esta sesión.
   R6: CPU total 44,7 %, CPU BAXY 11,48 %, RAM del sistema 56,8 %, RSS 5.052,75
   MiB, GPU 92 % aislado durante carga, VRAM total 25,69 %. No hubo 99 % ni pico
   GPU sostenido. Evidencia: `physical_run_r6.json` y `.jsonl`.
+- La propia compuerta Full tenía el build Release sin límite de nodos; ahora
+  usa `-m:2` (tests .NET ya estaban serializados con `-m:1`). Regresión de
+  política: 7 passed. Su preflight encontró además una función sin consumidores
+  en `goal10_dose_turns.ps1`; se retiró. Un Full sobre el árbol de trabajo pasó
+  estática, Ruff y TypeScript y llegó a .NET, pero se detuvo al mezclar los
+  cambios preexistentes no committeados de Goal 10: las narraciones se
+  convertían en JSON de instrumentación y causaban fallos en cascada ajenos a
+  este goal. El árbol del gate se terminó completo para no consumir recursos.
 
 ## Siguiente paso obligatorio
 
-No lanzar BAXY sin iniciar primero el guardián. Hacer una corrida acotada de
-arranque → reposo → una respuesta hablada → 60 s post-turno, conservar el JSONL
-y demostrar que no cruza los límites. Después medir qué parte del RSS/VRAM
-pertenece a App, mente, encoder y LLM y reducir sólo lo que siga siendo excesivo
-sin reabrir calidad a ciegas.
+Ejecutar Full sobre un worktree temporal del commit publicado, sin tocar ni
+ocultar los cambios no committeados de Goal 10. Si queda verde, documentar el
+resultado exacto, verificar árbol/diff y cerrar este goal.
 
 ## Árbol sucio ajeno a este goal
 

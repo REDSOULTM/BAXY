@@ -87,6 +87,17 @@ def test_voice_uses_one_sherpa_thread_and_mind_keeps_two_cpu_boundary() -> None:
     assert 'bounded_cpu_threads("BAXY_MIND_PROCESS_CPUS", default=2)' in policy_source
 
 
+def test_source_quality_build_is_bounded_to_two_msbuild_nodes() -> None:
+    root = Path(__file__).resolve().parents[1]
+    source = (root / "scripts" / "test_source_quality.ps1").read_text(
+        encoding="utf-8"
+    )
+    build_section = source[source.index("-Stage 'dotnet-build-release'") :]
+    build_section = build_section[: build_section.index("if ($Mode -ceq 'Full')")]
+
+    assert "'-m:2'" in build_section
+
+
 def test_piper_owns_a_non_spinning_bounded_session(tmp_path, monkeypatch) -> None:
     captured: dict[str, object] = {}
 
