@@ -547,3 +547,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   siendo obligatoria, pero una etiqueta «latest» no convierte HVAC en pertinente.
 - Focales de R4: grounding Python **4/4** y `StructuredWebSearch*` C# **4/4**.
   Fast verde completo, build Release **0 warnings / 0 errors**.
+- `public-facts-r4` limpia en producto: Batman cruzó Bing verificado y mostró
+  una descripción breve de su papel como vigilante de Gotham; Mortal Kombat
+  cruzó DuckDuckGo verificado y mostró **«El último Mortal Kombat que salió es
+  Mortal Kombat: Legacy Kollection, lanzado en 2025.»**. La evidencia incluyó
+  Gematsu (lanzamiento 30 de octubre), PlayStation y la ficha de la compilación
+  de 2025. Tiempos totales de sonda **5,307 s / 3,180 s**, un solo bridge,
+  `visible.text`, DOM, cero `turn.error`. Es la repetición obligatoria de R1–R3:
+  demuestra la reparación, pero no suma a los 200.
