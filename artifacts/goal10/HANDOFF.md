@@ -660,3 +660,9 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   shell publicó **«No pude: la solicitud no fue clara.»**. No era ambigüedad:
   fue indisponibilidad/timeout del decisor mal proyectada como ambigüedad. Es
   una sonda del agente y suma 0 turnos; narración todavía no quedó ejercitada.
+- Reparación focal del falso terminal: cuando `turn.decide` no entrega contrato,
+  el shell ya no retorna al camino de `ambiguous_request`; publica
+  `compose_unavailable` con diagnóstico de servicio local y conserva el fallo
+  honesto. Un sidecar contractual fuerza esa respuesta ausente y la regresión
+  `UnavailableMindDecisionNeverClaimsThatTheRequestWasAmbiguous` pasa **1/1**,
+  cero skips. Falta repetición física y Fast.

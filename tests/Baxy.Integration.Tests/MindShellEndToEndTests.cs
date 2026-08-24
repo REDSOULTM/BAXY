@@ -86,6 +86,21 @@ public sealed class MindShellEndToEndTests
     }
 
     [Test]
+    public async Task UnavailableMindDecisionNeverClaimsThatTheRequestWasAmbiguous()
+    {
+        await WithContractMindAsync(async (viewModel, _, _) =>
+        {
+            string answer = await SubmitAsync(viewModel, "FORCE_DECISION_UNAVAILABLE");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(answer, Does.Contain("compose_unavailable"));
+                Assert.That(answer, Does.Not.Contain("ambiguous_request"));
+            });
+        });
+    }
+
+    [Test]
     public async Task PriorUserFactCrossesTheMindBoundaryAndIsUsedForRecall()
     {
         const string nonce = "Nimbo7391";

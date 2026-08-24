@@ -2000,7 +2000,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             turn is null ? "unavailable" : SanitizedTurnKind(turn.Kind));
         if (turn is null)
         {
-            return false;
+            AddMessage(
+                "BAXY",
+                TurnVisibleFacts.Failure("compose_unavailable"),
+                isUser: false,
+                messageEvent: UserMessageEvent.Error(
+                    UserMessageDiagnosticCodes.LocalService));
+            return true;
         }
 
         if (pendingClarificationObjective is not null

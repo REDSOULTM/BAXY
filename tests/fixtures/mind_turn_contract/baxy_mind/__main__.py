@@ -276,7 +276,17 @@ def main() -> int:
             count = len(capabilities) if isinstance(capabilities, list) else 0
             _write({"type": "catalog.ready", "id": request_id, "count": count})
         elif kind == "turn.decide":
-            _write(_turn(message))
+            if message.get("text") == "FORCE_DECISION_UNAVAILABLE":
+                _write(
+                    {
+                        "type": "error",
+                        "id": request_id,
+                        "code": "forced_decision_unavailable",
+                        "message": "fixture",
+                    }
+                )
+            else:
+                _write(_turn(message))
         elif kind == "arguments":
             operation = message.get("operation")
             arguments = (
