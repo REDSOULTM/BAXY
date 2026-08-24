@@ -3134,7 +3134,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertNotIn("requiredFacts", prompt)
         self.assertIn("Acciones: abrí", prompt)
         self.assertIn("Hechos: Steam, hora", prompt)
-        self.assertTrue(seen[0]["cache_prompt"])
+        self.assertFalse(seen[0]["cache_prompt"])
 
     def test_dense_verified_facts_use_a_compact_grounded_scaffold(self):
         runtime = object.__new__(LlmRuntime)
@@ -3163,7 +3163,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(len(seen), 1)
         self.assertEqual(seen[0]["max_tokens"], 192)
         self.assertNotIn(required_facts[0], seen[0]["messages"][1]["content"])
-        self.assertTrue(seen[0]["cache_prompt"])
+        self.assertFalse(seen[0]["cache_prompt"])
 
     def test_maximum_eight_step_mission_uses_the_grounded_scaffold(self):
         runtime = object.__new__(LlmRuntime)
@@ -3270,7 +3270,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         for fact in required_facts:
             self.assertIn(fact.strip(), result)
         self.assertEqual(seen[0]["max_tokens"], 192)
-        self.assertTrue(seen[0]["cache_prompt"])
+        self.assertFalse(seen[0]["cache_prompt"])
         self.assertNotIn(required_facts[1], seen[0]["messages"][1]["content"])
 
     def test_cpu_multi_fact_scaffold_retries_when_required_action_is_missing(self):

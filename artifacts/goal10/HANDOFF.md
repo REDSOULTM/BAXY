@@ -340,3 +340,23 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   regresiones focales de planner **58/58**; puntuación C# **10/10**; ambos scripts
   PowerShell parsean. `scripts/test_source_quality.ps1` pasó completo en modo
   Fast, incluido build Release con **0 warnings / 0 errors**.
+
+## Continuación — soak iniciado y planner dueño verde
+
+- El tramo continuo comenzó a **2026-08-24 18:08:53Z** con BAXY Release PID
+  `37388`, wake permanente activo y el sampler dueño en
+  `artifacts/goal10/soak.json{,l}` (wrapper `28956`, worker `37720`). Muestra
+  inicial: app RSS **210,2 MiB**, GPU total en uso **4.360 MiB** y llama-server
+  vivo. A 121,6 s / 3 muestras: app RSS **208,9 MiB**, pico 210,2 MiB, GPU
+  **4.417 MiB**; no hay crecimiento inicial. Los ficheros siguen actualizándose
+  cada 60 s y deben sobrevivir sin truncarse hasta el cierre del tramo.
+- Los siete rojos de `test_planner.py` se resolvieron sin skip ni umbral menor:
+  el prompt compacto recuperó primera persona, actor, no invención, idioma e
+  internos; el prompt general recuperó hechos verificables y la prohibición de
+  pregunta genérica/imperativos ingleses; el cache de composición continúa
+  deliberadamente apagado por la repetición cruzada de Spotify ya medida y los
+  tests reflejan ese contrato; una misión parcial puede publicar más de una
+  frase cuando conserva sus hechos. Resultado dueño: **146 pass + 101 subtests**.
+- No se mata BAXY para repetir Fast durante el tramo continuo. Esta tanda sólo
+  toca Python y su suite dueña está verde; la compuerta Fast se repetirá en la
+  ventana de reinicio o en el cierre, sin sacrificar la continuidad medida.
