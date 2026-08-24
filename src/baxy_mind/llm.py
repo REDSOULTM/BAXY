@@ -1073,6 +1073,7 @@ def validate_missing_argument_clarification(
         or "\r" in question
         or question.count("?") != 1
         or not question.endswith("?")
+        or visible_text_leaks_internal_vocabulary(question)
         or any(
             unicodedata.category(character) in {"Cc", "Cf", "Cs"}
             for character in question
@@ -2100,7 +2101,8 @@ def _unsupported_answer_has_inability(value: object) -> bool:
 # are matched structurally because they are open-ended.
 _VISIBLE_INTERNAL_VOCABULARY = re.compile(
     r"\b(?:smtc|json|schema|esquema|endpoint|sidecar|planner|router|shortlist|payload|"
-    r"manifest|manifiesto|sha256|kernel|provider|proveedor|"
+    r"manifest|manifiesto|sha256|kernel|provider|proveedor|app\s*id|appid|"
+    r"autoridad\s+cas|cas\s+authority|"
     r"cat[aá]logo\s+(?:activo|tipado)|catalog\s+(?:entry|operation)|"
     r"knn|embedding|token|prompt|runtime|deserializ\w*|serializ\w*|"
     r"resolvedor\s+semantico|semantic\s+resolver|referencias\s+conversacionales|"

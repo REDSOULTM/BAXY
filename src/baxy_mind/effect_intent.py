@@ -4175,6 +4175,11 @@ _REQUEST_PREFIX = (
     rf"(?:{_LOCAL_TASK_FRAME}\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"
     rf"{_COMPUTER_INSTRUCTION_FRAME}|"
     rf"{_LOCAL_SCOPE_COURTESY_FRAME}|"
+    # A punctuated rejection can introduce the replacement request in one
+    # follow-up: ``Nop, quiero que abras Steam``.  Punctuation is mandatory so
+    # ``no quiero que abras Steam`` remains a negated request and never gains
+    # authority by normalization.
+    r"(?:no|nop|nope)\s*[,;:.!?]+\s*|"
     rf"(?:por favor|porfa|please)\s*[,;:.!?]?{_PREFIX_GAP}|"
     rf"(?:una\s+(?:pequena\s+)?cuestion|i\s+small\s+question)"
     rf"\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"

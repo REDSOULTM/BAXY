@@ -10409,6 +10409,8 @@ def test_an_imperative_is_never_acknowledged_as_an_observation(
         ("¿Qué operación audio.volume quieres?", True),
         ("El schema del payload es inválido.", True),
         ("Revisa el manifest y el sha256.", True),
+        ("¿Quieres que inicie un AppID poseído?", True),
+        ("¿Quieres que emita autoridad CAS?", True),
         # Ordinary prose must survive untouched, including sentence periods.
         ("¿Te refieres a la reunión del martes o la del jueves?", False),
         ("No puedo regar las plantas del balcón.", False),
@@ -10934,3 +10936,58 @@ def test_a_closed_refusal_asks_the_catalogue_before_it_speaks() -> None:
     )
     assert mind_main._catalog_answers_the_request(*arguments, Refuses(), ()) == ""
     assert mind_main._catalog_answers_the_request(*arguments, object(), ()) == ""
+
+
+def test_a_social_offer_never_becomes_a_catalogue_confirmation() -> None:
+    class SocialRuntime(_WithheldEffectLlm):
+        def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+            return {
+                "mode": "conversation",
+                "operation": None,
+                "question": "",
+                "conversation_kind": "social",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": "es",
+            }
+
+        def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+            self.chats += 1
+            return "Sí, te escucho.", []
+
+    runtime = SocialRuntime(
+        identifies=True,
+        question="¿Quieres que emita autoridad CAS sin exponer detalles?",
+    )
+    result = _prepare_turn_result(
+        {"id": "owner-social-offer", "text": "Me puedes ayudar en algo"},
+        llm=runtime,
+        planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["reply"] == "Sí, te escucho."
+    assert result["intentOperations"] == []
+    assert runtime.confirmations == 0
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Quieres que inicie un AppID poseído?",
+        "¿Quieres que emita autoridad CAS sin exponer detalles?",
+    ],
+)
+def test_machine_vocabulary_cannot_escape_through_a_clarification(
+    question: str,
+) -> None:
+    assert not mind_main._recovery_question_is_valid(question)
+    with pytest.raises(ValueError, match="aclaración"):
+        llm_module.validate_missing_argument_clarification(
+            {"requested_fields": ["target"], "question": question},
+            ("target",),
+        )

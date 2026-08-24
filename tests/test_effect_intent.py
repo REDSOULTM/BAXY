@@ -6,6 +6,7 @@ import pytest
 
 from baxy_mind.effect_intent import (
     CompoundEffectContract,
+    EffectIntent,
     _fold,
     _strip_request_envelope,
     build_application_catalog_index,
@@ -6374,3 +6375,23 @@ def test_a_catalog_object_is_not_an_instruction_frame(text: str) -> None:
     from baxy_mind.effect_intent import _fold, _strip_request_envelope
 
     assert ":" in _strip_request_envelope(_fold(text))
+
+
+def test_punctuated_rejection_exposes_only_the_replacement_request() -> None:
+    text = "Nop, quiero que abras Steam"
+
+    assert _strip_request_envelope(_fold(text)) == "quiero que abras steam"
+    assert resolve_explicit_effects(
+        text,
+        {"app.open"},
+        application_names=("Steam",),
+    ) == EffectIntent(("app.open",), ("steam",))
+    # Without punctuation this is a negation, not a discourse correction.
+    assert (
+        resolve_explicit_effects(
+            "No quiero que abras Steam",
+            {"app.open"},
+            application_names=("Steam",),
+        )
+        is None
+    )

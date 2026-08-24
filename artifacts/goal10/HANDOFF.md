@@ -575,3 +575,22 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   pero no suma a las 24 h. Fast posterior a la reparación **verde**: PowerShell,
   Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0
   warnings / 0 errors**. El siguiente lanzamiento ya contiene el selector vivo.
+- La primera sesión del dueño tras ese lanzamiento tampoco cuenta. Turnos
+  visibles: `Hola` → «Hola,»; `Me puedes ayudar en algo` → **«¿Quieres que
+  resuelva un único título literal y emita autoridad CAS sin exponer
+  detalles?»**; `Nop, quiero que abras steam` → **«¿Quieres que inicie un AppID
+  poseído y verifique la identidad del proceso lanzado?»**. Las dos últimas son
+  plantillas técnicas no solicitadas; cero efectos llegaron al core.
+- Causas cerradas sin reabrir el planner: la protección de estado local decía
+  que excluía turnos sociales, pero el código incluía `social` junto a
+  `knowledge` y convertía una oferta de ayuda en confirmación del vecino de
+  catálogo; además el prefijo correctivo puntuado `Nop, ...` no se retiraba, por
+  lo que `quiero que abras Steam` no alcanzaba el reconocedor autenticado de
+  `app.open`. `AppID` y «autoridad CAS» tampoco estaban en el veto de vocabulario
+  interno para preguntas.
+- Reparación focal: sólo `knowledge` puede entrar a la protección de recitado de
+  estado; `No/Nop/Nope, ...` expone la solicitud sustituta sólo con puntuación
+  obligatoria (la negación `No quiero...` sigue sin autoridad); toda aclaración
+  rechaza `AppID` y «autoridad CAS». Focales **14/14** y suites dueñas completas
+  `test_effect_intent.py + test_turn_policy.py` **2333/2333** en **64,73 s**,
+  cero skips. Falta Fast y repetición viva completa de esta sesión.

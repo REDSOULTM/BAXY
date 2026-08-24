@@ -77,6 +77,7 @@ from .llm import (
     _literal_recall_reference,
     _native_selection_description,
     _reads_as_an_observation,
+    visible_text_leaks_internal_vocabulary,
 )
 from .planner import (
     MAX_SHORTLIST_OPERATIONS,
@@ -6262,7 +6263,7 @@ def _prepare_turn_result(
     # abstention it could cost is not on this path.
     if (
         decision["mode"] == "conversation"
-        and decision["conversation_kind"] in {"knowledge", "social"}
+        and decision["conversation_kind"] == "knowledge"
         and not decision["effect_operations"]
         and shortlist
     ):
@@ -6465,6 +6466,7 @@ def _recovery_question_is_valid(value: object) -> bool:
         )
         and value.endswith("?")
         and value.count("?") == 1
+        and not visible_text_leaks_internal_vocabulary(value)
     )
 
 
