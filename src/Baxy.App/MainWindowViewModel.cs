@@ -30,6 +30,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
+    private Task<bool> _voiceCancelTask = Task.FromResult(true);
     private bool _resumeWakeAfterDirect;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
@@ -3395,13 +3396,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             if (isUser)
             {
-                _ = mind.VoiceCancelAsync(
+                _voiceCancelTask = mind.VoiceCancelAsync(
                     TimeSpan.FromSeconds(3),
                     CancellationToken.None);
             }
             else
             {
-                _ = SpeakMessageAsync(mind, body, ShellTraceSink.TurnId);
+                _ = SpeakMessageAsync(
+                    mind,
+                    body,
+                    ShellTraceSink.TurnId,
+                    _voiceCancelTask);
             }
         }
     }
@@ -3409,8 +3414,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private static async Task SpeakMessageAsync(
         MindSidecarClient mind,
         string body,
-        string turnId)
+        string turnId,
+        Task<bool> voiceCancellation)
     {
+        _ = await voiceCancellation.ConfigureAwait(false);
         bool accepted = await mind.VoiceSpeakAsync(
             body,
             TimeSpan.FromSeconds(5),

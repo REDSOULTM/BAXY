@@ -730,3 +730,9 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   agregar la respuesta sin relación causal ni espera. Un cancel tardío puede
   borrar una narración ya admitida. Hay que encadenar el speak al cancel exacto
   del turno y repetir desde arranque fresco.
+- Reparación aplicada en el dueño: el `Task<bool>` del cancel se conserva al
+  agregar el mensaje del usuario y cada narración de respuesta espera ese
+  cancel exacto antes de enviar `voice.speak`. No bloquea texto ni UI; sólo
+  impide que una cancelación vieja alcance una voz nueva. `ShellTraceTests`
+  **8/8**, cero skips, build Release verde. Falta repetición fresca del primer
+  turno posterior al saludo y Fast.
