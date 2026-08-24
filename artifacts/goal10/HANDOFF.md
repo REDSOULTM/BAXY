@@ -1054,3 +1054,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   con cero skips mediante `dotnet test ... --no-build`. Falta comprobar el botón
   nuevo en el producto tras terminar el tramo de 24 h, porque reiniciar ahora
   invalidaría el soak vivo.
+- El sampler de 24 h ya puede reanudar el mismo estado tras terminar su proceso o
+  reiniciar Windows: conserva `started_at`, muestra inicial, total, pico y mínimo,
+  calcula duración por reloj UTC y registra cada proceso con PID y
+  `windows_booted_at`. El estado legado r30 se migra sin perder sus nueve primeras
+  muestras. Regresión de reinicio **1/1** y `compileall` verdes. La instancia de
+  sampler que corre desde las 23:45Z sigue usando el código anterior en memoria;
+  el proceso que arranque después del reinicio leerá el JSON existente con el
+  código nuevo. Falta instalar y verificar el disparador de reanudación al logon.
