@@ -831,3 +831,18 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   mientras el modelo conserva la respuesta natural. Focales **62/62** y suite
   dueña `test_turn_policy.py` **868/868**, cero skips. Falta repetir ambas frases
   en producto nuevo y otra tanda bajo `cdb`.
+- Repetición exacta fresca r13 de capacidad + aritmética: **2/2**
+  `decision.ready=conversation`, cero core, respuestas visibles correctas y
+  narración completa. Sin embargo, la revisión manual obligatoria de la dosis
+  posterior invalidó otra vez la sesión: sólo **7/15** respuestas fueron
+  aceptables. Fallos visibles: identidad produjo una pregunta técnica de
+  restaurar ventana; capacidad heredó esa falsa aclaración, ejecutó
+  `system.identity` y dijo `Listo`; nube tuvo error factual/gramatical; clima no
+  dio el clima pedido; identidad inglesa emitió un falso `No pude`; noticias
+  claras acabaron en aclaración; fecha afirmó octubre de 2023; y un resumen de
+  capacidades pidió contexto inexistente. La traza había marcado 15/15 finales,
+  cero `turn.error` y cero fallos de voz: queda demostrado que eso **no** es un
+  gate semántico. Desde aquí cada dosis se revisa manualmente par por par y un
+  solo texto incorrecto invalida la sesión. Bloqueo vivo: aislar historia para
+  preguntas autocontenidas, impedir que un fallo de contrato se convierta en
+  falsa aclaración/plan y repetir este mismo corpus sintético antes de uso dueño.
