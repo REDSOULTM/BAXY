@@ -977,3 +977,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   siguiente redacción que conserva título + fuente: focal **2/2**, suite dueña
   `test_planner.py` **148/148 + 101 subtests**, cero skips. Falta reproducción
   física y otra tanda fresca completa.
+- Reproducción aislada r24 conservó por fin el titular literal y no añadió
+  hechos, pero omitió la fuente: revisión manual **0/1**, inválida. La causa es
+  contractual: el proveedor extraía la fuente del título RSS y sólo la dejaba
+  embebida en `snippet`, no como campo tipado. El mismo resultado verificado
+  ahora expone `results[].source`; la mente ya exige literalmente `title` y
+  `source`, sin inferir un dominio. Focal del proveedor **1/1** y suite completa
+  `Baxy.Providers.Windows.Tests` **454/454**, cero skips en el resumen. Falta
+  reproducción física.

@@ -556,7 +556,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         using XmlReader reader = XmlReader.Create(stream, settings);
         var xml = new XmlDocument { XmlResolver = null };
         xml.Load(reader);
-        var results = new List<(string Title, string Url, string Snippet)>();
+        var results = new List<(string Title, string Url, string Snippet, string Source)>();
         foreach (XmlNode item in xml.GetElementsByTagName("item"))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -588,7 +588,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             string snippet = string.IsNullOrWhiteSpace(published)
                 ? $"Titular publicado por {source}."
                 : $"Titular publicado por {source} el {published}.";
-            results.Add((title, parsed.AbsoluteUri, snippet));
+            results.Add((title, parsed.AbsoluteUri, snippet, source));
         }
         if (results.Count == 0)
         {
@@ -602,12 +602,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("query", query);
             writer.WriteNumber("count", results.Count);
             writer.WriteStartArray("results");
-            foreach ((string title, string url, string snippet) in results)
+            foreach ((string title, string url, string snippet, string source) in results)
             {
                 writer.WriteStartObject();
                 writer.WriteString("title", title);
                 writer.WriteString("url", url);
                 writer.WriteString("snippet", snippet);
+                writer.WriteString("source", source);
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();

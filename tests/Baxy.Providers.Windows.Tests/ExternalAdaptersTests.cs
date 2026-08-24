@@ -2000,6 +2000,9 @@ public sealed class ExternalAdaptersTests
                 .GetProperty("snippet").GetString(),
                 Is.EqualTo("Titular publicado por Universidad de La Frontera el "
                     + "Mon, 24 Aug 2026 19:27:53 GMT."));
+            Assert.That(receipt.Result?.GetProperty("results")[0]
+                .GetProperty("source").GetString(),
+                Is.EqualTo("Universidad de La Frontera"));
             Assert.That(handler.Hosts, Is.EqualTo(new[] { "news.google.com" }));
         });
     }
