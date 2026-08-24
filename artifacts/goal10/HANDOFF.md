@@ -624,3 +624,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Modos normal/bypass verificados desde la interfaz viva: se seleccionó bypass,
   se aplicó y al reabrir ajustes seguía activo; después se seleccionó normal,
   se aplicó y al reabrir seguía restaurado. El producto queda en **normal**.
+- Bloqueo vivo nuevo en memoria: al abrir `MEMORY 0 pinned` en la sesión
+  `76245ab202f1`, el panel real muestra **`error · server error 409`**, cero
+  entradas y acciones de borrado deshabilitadas. El criterio de memoria no está
+  cumplido; hay que cerrar el conflicto en el contrato HTTP/core y repetir alta,
+  vista, edición y borrado desde este panel.
