@@ -867,3 +867,13 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   repetición física; clima sigue siendo un defecto aparte porque la búsqueda
   verificada devolvió enlaces sobre el tiempo pero ningún valor meteorológico
   actual que el compositor pudiera afirmar.
+- El defecto de clima queda reparado en el proveedor dueño, sin operación ni
+  capa nuevas: una consulta inequívoca de clima actual dentro de `web.search`
+  geocodifica el lugar y lee `temperature_2m`, sensación, código meteorológico,
+  viento y hora desde los endpoints HTTPS públicos de Open-Meteo. El recibo
+  conserva el mismo esquema `results[]`, marca autoridad
+  `open_meteo_current_https` y no afirma éxito si no obtiene todos los valores.
+  La prueba reproduce `el clima actual de Santiago` y exige valores + ambas
+  autoridades HTTP; focales de búsqueda **5/5** y suite completa
+  `Baxy.Providers.Windows.Tests` **453/453**, cero skips en el resumen. Falta
+  comprobar la red real y leer la frase compuesta en el producto vivo.

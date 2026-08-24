@@ -331,6 +331,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string query = ExternalJson.RequiredString(arguments, "query").Trim();
+        string? currentWeatherLocation = CurrentWeatherLocation(query);
+        if (currentWeatherLocation is not null)
+        {
+            return await ReadCurrentWeatherAsync(
+                operation, query, currentWeatherLocation, cancellationToken)
+                .ConfigureAwait(false);
+        }
         string[] queryTokens = SearchTokens(query);
         if (queryTokens.Length == 0)
         {
@@ -426,6 +433,152 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
+
+    private async ValueTask<ExternalCapabilityReceipt> ReadCurrentWeatherAsync(
+        string operation,
+        string query,
+        string location,
+        CancellationToken cancellationToken)
+    {
+        Uri geocodingEndpoint = new(
+            "https://geocoding-api.open-meteo.com/v1/search?name="
+            + Uri.EscapeDataString(location)
+            + "&count=1&language=es&format=json");
+        using JsonDocument geocoding = await ReadJsonAsync(
+            geocodingEndpoint, cancellationToken).ConfigureAwait(false);
+        if (!geocoding.RootElement.TryGetProperty("results", out JsonElement places)
+            || places.ValueKind != JsonValueKind.Array
+            || places.GetArrayLength() == 0)
+        {
+            return ExternalJson.FailureBeforeEffect(
+                operation, "web_search_results_irrelevant");
+        }
+
+        JsonElement place = places[0];
+        if (!place.TryGetProperty("latitude", out JsonElement latitudeElement)
+            || !latitudeElement.TryGetDouble(out double latitude)
+            || !place.TryGetProperty("longitude", out JsonElement longitudeElement)
+            || !longitudeElement.TryGetDouble(out double longitude))
+        {
+            return ExternalJson.FailureBeforeEffect(
+                operation, "web_search_results_irrelevant");
+        }
+        string placeName = place.TryGetProperty("name", out JsonElement nameElement)
+            ? nameElement.GetString() ?? location
+            : location;
+        string country = place.TryGetProperty("country", out JsonElement countryElement)
+            ? countryElement.GetString() ?? string.Empty
+            : string.Empty;
+        string label = string.IsNullOrWhiteSpace(country)
+            ? placeName
+            : $"{placeName}, {country}";
+
+        Uri forecastEndpoint = new(
+            "https://api.open-meteo.com/v1/forecast?latitude="
+            + latitude.ToString(CultureInfo.InvariantCulture)
+            + "&longitude="
+            + longitude.ToString(CultureInfo.InvariantCulture)
+            + "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m"
+            + "&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto");
+        using JsonDocument forecast = await ReadJsonAsync(
+            forecastEndpoint, cancellationToken).ConfigureAwait(false);
+        if (!forecast.RootElement.TryGetProperty("current", out JsonElement current)
+            || !TryReadDouble(current, "temperature_2m", out double temperature)
+            || !TryReadDouble(current, "apparent_temperature", out double apparent)
+            || !TryReadDouble(current, "wind_speed_10m", out double wind)
+            || !current.TryGetProperty("weather_code", out JsonElement codeElement)
+            || !codeElement.TryGetInt32(out int weatherCode))
+        {
+            return ExternalJson.FailureBeforeEffect(
+                operation, "web_search_results_irrelevant");
+        }
+        string observedAt = current.TryGetProperty("time", out JsonElement timeElement)
+            ? timeElement.GetString() ?? string.Empty
+            : string.Empty;
+        string snippet = "Temperatura "
+            + temperature.ToString("0.#", CultureInfo.InvariantCulture)
+            + " °C; sensación térmica "
+            + apparent.ToString("0.#", CultureInfo.InvariantCulture)
+            + " °C; "
+            + WeatherConditionInSpanish(weatherCode)
+            + "; viento "
+            + wind.ToString("0.#", CultureInfo.InvariantCulture)
+            + " km/h"
+            + (string.IsNullOrWhiteSpace(observedAt) ? "." : $"; dato de {observedAt}.");
+
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("query", query);
+            writer.WriteNumber("count", 1);
+            writer.WriteStartArray("results");
+            writer.WriteStartObject();
+            writer.WriteString("title", $"Clima actual en {label}");
+            writer.WriteString("url", "https://open-meteo.com/en/docs");
+            writer.WriteString("snippet", snippet);
+            writer.WriteEndObject();
+            writer.WriteEndArray();
+            writer.WriteString("authority", "open_meteo_current_https");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private async Task<JsonDocument> ReadJsonAsync(
+        Uri endpoint,
+        CancellationToken cancellationToken)
+    {
+        using Stream stream = await _http.GetStreamAsync(endpoint, cancellationToken)
+            .ConfigureAwait(false);
+        return await JsonDocument.ParseAsync(
+            stream,
+            new JsonDocumentOptions
+            {
+                AllowTrailingCommas = false,
+                CommentHandling = JsonCommentHandling.Disallow,
+                MaxDepth = 16,
+            },
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private static string? CurrentWeatherLocation(string query)
+    {
+        Match match = Regex.Match(
+            query,
+            @"\b(?:clima|tiempo|weather)\s+(?:actual|ahora|current|now)?\s*(?:de|en|for|in)\s+(?<place>[\p{L}][\p{L}\p{M} .,'-]{1,96})[\s?!.]*$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!match.Success)
+        {
+            return null;
+        }
+        string location = match.Groups["place"].Value.Trim(' ', '.', ',', '?', '!');
+        return location.Length >= 2 ? location : null;
+    }
+
+    private static bool TryReadDouble(
+        JsonElement value,
+        string property,
+        out double result)
+    {
+        result = default;
+        return value.TryGetProperty(property, out JsonElement element)
+            && element.TryGetDouble(out result)
+            && double.IsFinite(result);
+    }
+
+    private static string WeatherConditionInSpanish(int code) => code switch
+    {
+        0 => "cielo despejado",
+        1 or 2 => "cielo parcialmente nublado",
+        3 => "cielo cubierto",
+        45 or 48 => "niebla",
+        51 or 53 or 55 or 56 or 57 => "llovizna",
+        61 or 63 or 65 or 66 or 67 or 80 or 81 or 82 => "lluvia",
+        71 or 73 or 75 or 77 or 85 or 86 => "nieve",
+        95 or 96 or 99 => "tormenta",
+        _ => $"código meteorológico {code}",
+    };
 
     private async Task<(List<(string Title, string Url, string Snippet)> Results,
         int StructurallyValid)> SearchDuckDuckGoAsync(

@@ -1924,6 +1924,48 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task StructuredWebSearchReturnsVerifiedCurrentWeatherValues()
+    {
+        const string geocoding = """
+            {"results":[{"name":"Santiago","latitude":-33.4569,"longitude":-70.6483,"country":"Chile"}]}
+            """;
+        const string forecast = """
+            {"current":{"time":"2026-08-24T18:30","temperature_2m":12.4,"apparent_temperature":10.8,"weather_code":3,"wind_speed_10m":8.7}}
+            """;
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(
+            temporary.Path, new(false, false, "", "", "", "unused"));
+        var handler = new SequencedHttpHandler(geocoding, forecast);
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"el clima actual de Santiago","limit":5}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("open_meteo_current_https"));
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("results")[0]
+                .GetProperty("title").GetString(), Is.EqualTo("Clima actual en Santiago, Chile"));
+            Assert.That(receipt.Result?.GetProperty("results")[0]
+                .GetProperty("snippet").GetString(),
+                Is.EqualTo("Temperatura 12.4 °C; sensación térmica 10.8 °C; "
+                    + "cielo cubierto; viento 8.7 km/h; dato de 2026-08-24T18:30."));
+            Assert.That(handler.Hosts, Is.EqualTo(new[]
+            {
+                "geocoding-api.open-meteo.com",
+                "api.open-meteo.com",
+            }));
+        });
+    }
+
+    [Test]
     public async Task StructuredWebSearchRejectsAValidButUnrelatedFeed()
     {
         const string rss = """
