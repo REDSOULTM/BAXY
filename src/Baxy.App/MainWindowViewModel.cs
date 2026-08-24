@@ -239,7 +239,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         private set => SetField(ref _hasStartupError, value);
     }
 
-    public bool IsInputEnabled => IsReady && !IsBusy;
+    public bool IsInputEnabled => IsReady && !_turnExecutionActive;
 
     public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
 

@@ -181,7 +181,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             {
                 ["built"] = _viewModel.IsReady,
                 ["healthy"] = _viewModel.IsReady && !_viewModel.HasStartupError,
-                ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy,
+                ["ready"] = _viewModel.IsInputEnabled,
             });
         }
 
