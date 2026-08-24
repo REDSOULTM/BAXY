@@ -524,3 +524,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   consulta DuckDuckGo, decodifica la URL final HTTPS, limita el cuerpo a 2 M de
   caracteres y aplica el mismo filtro de tokens. Regresión dueña focal:
   `StructuredWebSearch*` **4/4**, cero skips. Falta suite completa/Fast/vivo.
+- Suite completa `Baxy.Providers.Windows.Tests` **452 pass** en 38 s según el
+  resumen VSTest (`Omitido: 0`), aunque la salida también imprimió cuatro casos
+  ambientales como «Omitidas» (NativeAOT CoreAudio, Wi-Fi real, DXGI/PDH e IP
+  real). No se usan esos cuatro como cobertura ejecutada; el fallback HTTP sí
+  corrió dentro de los 452. Falta Fast y repetición viva.
