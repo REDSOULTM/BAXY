@@ -79,12 +79,13 @@ esta sesión.
   frontera independiente de cualquier biblioteca nativa, `baxy_mind` arranca
   con prioridad `BELOW_NORMAL` y afinidad dura; los hijos la heredan. La prueba
   aislada inicial confirmó afinidad `[0,1,2,3]`, prioridad 16384.
-- Corrida física R3 atribuyó por fin el consumo: `python -m baxy_mind` (PID
-  23620) sostuvo 368–406 % de un core durante más de un minuto en reposo; GPU
-  se estabilizó en 7–10 %, VRAM 25,28 %, RSS BAXY 5,64 GiB. La aplicación se
-  detuvo voluntariamente. La correspondencia exacta con `num_threads=4` de
-  Parakeet demuestra que sherpa conserva cuatro workers en spin aun sin audio.
-  Evidencia: `physical_run_r3.jsonl`.
+- Corrida física R3 atribuyó por fin el consumo de la fase de carga: `python -m
+  baxy_mind` (PID 23620) sostuvo 368–406 % de un core durante el minuto
+  observado; GPU se estabilizó en 7–10 %, VRAM 25,28 %, RSS BAXY 5,64 GiB. La
+  aplicación se detuvo antes de que esa fase terminara. La correspondencia con
+  `num_threads=4` de Parakeet permitió acotar el arranque, pero R4 posterior
+  demostró que no era consumo permanente de reposo. Evidencia:
+  `physical_run_r3.jsonl`.
 - Corrección posterior a R3: Parakeet usa un hilo por defecto y la frontera del
   proceso se redujo a 2 CPUs lógicas. El segundo CPU queda disponible para el
   LLM local, pero sherpa ya no puede quemar cuatro cores en reposo.
@@ -92,6 +93,17 @@ esta sesión.
   tests de selección de streaming quedaron sin coincidencias en el filtro; la
   suite amplia mostró un fallo ambiental previo por `rapidfuzz` ausente en el
   Python global, independiente del cambio (73 tests restantes pasaron).
+- Corrida física R4, con Parakeet a un hilo y afinidad de la mente a dos CPU:
+  106 muestras durante 58 s. Durante carga el Python pesado alcanzó ~192 % de
+  un core, contenido por la afinidad. Desde la muestra 80 quedó realmente
+  ocioso: últimas 20 muestras CPU BAXY promedio 2,93 %, máximo 4,51 %; GPU
+  máximo 6 %. RSS residente final 5.628,48 MiB. Desglose: llama-server 2.855
+  MiB; los dos Python pesados 1.097 + 842 MiB; Baxy.exe 201 MiB; WebView2 ~555
+  MiB; Core 38 MiB. Evidencia: `physical_run_r4.jsonl`.
+- Requisito explícito del dueño: no cargar LLM/STT/router bajo demanda ni
+  descargarlos por inactividad; el primer turno no debe pagar carga fría. La
+  optimización mantiene los modelos residentes y elimina sólo trabajo o
+  memoria que no contribuya a latencia.
 
 ## Siguiente paso obligatorio
 
