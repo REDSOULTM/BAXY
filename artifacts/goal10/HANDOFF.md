@@ -645,3 +645,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   estuviera activo. Ahora abrirlo apagado devuelve 200 + lista vacía sin activar
   retención; sólo `add` conserva la operación explícita de habilitar. La prueba
   dueña añade el GET inicial apagado y pasa **1/1**, cero skips. Falta CRUD vivo.
+- CRUD de memoria verificado en producto vivo, sesión `e4704531533a`: apertura
+  apagada sin 409; alta sintética `goal10.panel=verde-panel`; valor visible;
+  corrección por la misma clave a `azul-panel`; selección, confirmación exacta y
+  borrado; panel final **0 entries**. Sólo se creó y eliminó esa entrada de
+  prueba, sin leer ni modificar memoria personal preexistente. Falta Fast.
