@@ -33,6 +33,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _resumeWakeAfterDirect;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
+    private MemoryPanelBridge? _memoryPanel;
     private PendingMemoryConfirmation? _pendingMemoryConfirmation;
     private bool _pendingMemoryConfirmationIsDurable;
     private bool _pendingMemoryConfirmationRequiresReconciliation;
@@ -74,6 +75,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindClientFactory =
             mindClientFactory ?? (static () => new MindSidecarClient());
         Messages = new ObservableCollection<ConversationMessage>();
+        _memoryPanel = new MemoryPanelBridge(
+            () => _coreClient,
+            () => _memoryProtector);
         _modelMessages = new PendingModelMessageQueue(
             WaitForMindReadyAsync,
             PublishComposedMessageAsync,
@@ -238,6 +242,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public bool IsInputEnabled => IsReady && !IsBusy;
 
     public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
+
+    internal MemoryPanelBridge MemoryPanel =>
+        _memoryPanel
+        ?? throw new InvalidOperationException("El panel de memoria no está construido.");
 
     internal string? LastMessageCompositionFailure { get; private set; }
 

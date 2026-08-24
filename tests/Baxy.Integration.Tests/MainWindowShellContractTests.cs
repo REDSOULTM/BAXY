@@ -173,6 +173,9 @@ public sealed class MainWindowShellContractTests
             Assert.That(host, Does.Contain("SetWakeVoiceAsync"));
             Assert.That(host, Does.Contain("StartDirectVoiceAsync"));
             Assert.That(host, Does.Contain("direct_tool_execution_disabled"));
+            Assert.That(host, Does.Contain("MemoryPanel"));
+            Assert.That(host, Does.Contain(".HandleAsync"));
+            Assert.That(host, Does.Not.Contain("private_memory_requires_chat"));
             Assert.That(window, Does.Contain("SetVirtualHostNameToFolderMapping"));
             Assert.That(window, Does.Contain("External network disabled"));
             Assert.That(window, Does.Not.Contain("http://"));

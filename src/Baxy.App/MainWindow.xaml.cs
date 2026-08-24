@@ -38,6 +38,51 @@ public partial class MainWindow : Window
         _surfaceNavigator = new AppSurfaceNavigator(
             AppSurfaceCatalog.CreateDefault(),
             new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer));
+        if (Application.Current is App { Tray: { } tray })
+        {
+            tray.ListenToggleRequested += OnTrayListenToggle;
+            tray.SetListening(_viewModel.IsWakeListening);
+            _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        }
+    }
+
+    internal void HideToTray()
+    {
+        ShowInTaskbar = false;
+        Hide();
+    }
+
+    internal void RestoreFromTray()
+    {
+        ShowInTaskbar = true;
+        Show();
+        if (WindowState == WindowState.Minimized)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        Activate();
+    }
+
+    private async void OnTrayListenToggle()
+    {
+        bool enable = !_viewModel.IsWakeListening;
+        bool applied = await _viewModel
+            .SetWakeVoiceAsync(enable, _lifetimeCancellation.Token)
+            .ConfigureAwait(true);
+        if (Application.Current is App { Tray: { } tray })
+        {
+            tray.SetListening(applied && enable);
+        }
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
+    {
+        if (eventArgs.PropertyName == nameof(MainWindowViewModel.IsWakeListening)
+            && Application.Current is App { Tray: { } tray })
+        {
+            tray.SetListening(_viewModel.IsWakeListening);
+        }
     }
 
     internal static Rect FitInitialBounds(
@@ -417,6 +462,15 @@ public partial class MainWindow : Window
     {
         if (_disposed)
         {
+            return;
+        }
+
+        bool productHost = Application.Current is App;
+        bool quitRequested = Application.Current is App { QuitRequested: true };
+        if (PresencePolicy.HideInsteadOfQuit(productHost, quitRequested))
+        {
+            eventArgs.Cancel = true;
+            HideToTray();
             return;
         }
 

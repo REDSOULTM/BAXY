@@ -173,7 +173,8 @@ def close_previous_development_window() -> None:
         "$path=[IO.Path]::GetFullPath($app.Path);"
         "if($path.StartsWith($rootPrefix,[StringComparison]::OrdinalIgnoreCase)){"
         "$null=$app.CloseMainWindow();"
-        "Wait-Process -Id $app.Id -Timeout 15 -ErrorAction SilentlyContinue"
+        "Wait-Process -Id $app.Id -Timeout 3 -ErrorAction SilentlyContinue;"
+        "if(-not $app.HasExited){Stop-Process -Id $app.Id -Force}"
         "}}catch{}}"
     )
     subprocess.run(

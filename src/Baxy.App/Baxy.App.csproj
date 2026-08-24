@@ -3,9 +3,14 @@
     <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Baxy</AssemblyName>
     <RootNamespace>Baxy.App</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" />
     <ProjectReference Include="..\Baxy.Core\Baxy.Core.csproj"

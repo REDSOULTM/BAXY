@@ -343,18 +343,30 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             return Json(new JsonObject { ["ok"] = true });
         }
 
-        if (method == "GET" && route == "/memory")
+        if ((method == "GET" && route == "/memory")
+            || (method == "POST" && route == "/memory")
+            || (method == "DELETE" && route.StartsWith("/memory/", StringComparison.Ordinal)))
         {
-            return Json(new JsonObject
+            try
             {
-                ["items"] = new JsonArray(),
-                ["error"] = "La memoria privada se gestiona mediante el chat de BAXY.",
-            });
-        }
-
-        if (route == "/memory" || route.StartsWith("/memory/", StringComparison.Ordinal))
-        {
-            return Error("private_memory_requires_chat", 409);
+                return await _viewModel.MemoryPanel
+                    .HandleAsync(method, route, body, _lifetimeCancellation)
+                    .ConfigureAwait(true);
+            }
+            catch (Exception exception) when (
+                exception is InvalidDataException
+                    or InvalidOperationException
+                    or IOException
+                    or UnauthorizedAccessException)
+            {
+                return Json(
+                    new JsonObject
+                    {
+                        ["error"] = exception.Message,
+                        ["items"] = new JsonArray(),
+                    },
+                    409);
+            }
         }
 
         if (method == "GET" && route == "/triggers")
