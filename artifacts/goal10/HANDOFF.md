@@ -569,3 +569,9 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   tocar el PID vivo): `NativeBridgePreservesTheHistoricalContractLocally`
   **1/1**, cero skips, build Release en salida temporal. El tramo de 19:26:18Z
   se invalidará al relanzar el binario reparado; no puede contar como las 24 h.
+- Tramo inválido por control de modo cerrado y preservado como
+  `soak-invalid-mode-control.json{,l}`: **545,8 s / 10 muestras**, RSS inicial
+  **274,8 MiB**, final/mínimo **269,6 MiB**, pico **274,8 MiB**; no hubo alza,
+  pero no suma a las 24 h. Fast posterior a la reparación **verde**: PowerShell,
+  Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0
+  warnings / 0 errors**. El siguiente lanzamiento ya contiene el selector vivo.
