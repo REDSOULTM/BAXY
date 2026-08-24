@@ -138,3 +138,89 @@ costuras, APLAZADOS de uso, compuerta Full.
 No bajar umbral FAR. No skip/xfail. No soak sintético. No corpus como dosis. No
 tocar el repo `BAXY` a secas. No inventar un HTTP extra para dosificar: el producto
 se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiendo.
+
+## Continuación 2026-08-24 — diagnóstico de la mente en curso
+
+- El árbol ya traía una instrumentación sin commit en
+  `MainWindowViewModel.InitializeMindAsync`; se completaron los cinco estados que
+  terminan en `Failed`/`NotConfigured`, incluidos cancelación de discovery y
+  `Ready` sin cliente vivo.
+- Corrida `trace-mind-handshake.jsonl`, Release, árbol de procesos limpio: el
+  sidecar llegó a `catalog_ready` a las `00:53:57`, unos 8 s después del launch.
+  Una segunda sonda dentro del caller observó `client_published` y
+  `voice_status=True`. Por tanto el bloqueo anterior no es manifiesto, discovery,
+  saludo ni catálogo: la mente sí se publica viva.
+- Aun así, el turno UIA real `¿Quién eres?` no produjo `response.final` dentro de
+  más de dos minutos y dejó la máquina sin capacidad práctica de planificar ni
+  `echo`/`taskkill`. La sonda de recursos muestra que el defecto aparece al entrar
+  el primer turno, no en el handshake; no cerrar ni dosificar hasta encontrar qué
+  trabajo neural/encoder está monopolizando el equipo.
+- Las llamadas de diagnóstico permanentes aún están sin decidir: conservar la
+  causa terminal en `last-mind-failure.txt`; retirar los hitos temporales de
+  `last-mind-handshake.txt` después de localizar el atasco.
+- Antes de seguir, recuperar/terminar exclusivamente el árbol de la instancia
+  `Baxy.exe` PID `51480` y sus hijos. Varias sesiones de consola quedaron en espera
+  porque Windows no les asignó CPU; preservar los traces del directorio
+  `%TEMP%\baxy-goal10` después de recuperar el equipo.
+- La terminación selectiva se intentó por PowerShell, `taskkill /T /F` y un runtime
+  Node independiente; ni siquiera `cmd /c echo` consiguió ejecutarse durante más de
+  15 min. Se dejó emitido `shutdown.exe /r /t 5 /f` (el reboot también es parte del
+  criterio de cierre), pero el comando seguía sin recibir CPU al último control. Si
+  esta tarea reaparece después de un reinicio físico, el árbol/diff/handoff están en
+  disco: comprobar primero `git status --short --branch` y preservar los traces antes
+  de volver a lanzar BAXY.
+
+## Continuación tras reboot — 2026-08-24 10:23
+
+- Windows volvió a arrancar a las `10:08:00`; `Baxy.exe --tray` apareció a las
+  `10:09:10` y publicó `last-mind-handshake.txt = initialize_complete` a las
+  `10:10:01`. UIA mostró el input habilitado. El autostart/reboot funciona.
+- En idle durante 5 s: App/Core consumieron 0 CPU; `llama-server` 0,06 s. Working
+  set: App 173,3 MiB, Core 67,3 MiB, llama 2.814,5 MiB, mente Python 1.114,6 MiB,
+  encoder Python 842,5 MiB y wrappers 18 MiB. Es baseline, no cierre de fuga.
+- El trace preservado `trace-mind-caller.jsonl` prueba el bloqueo anterior: 2.439
+  filas en 82 min, con **542 `compose.start` + 542 `compose.end`** y 1.320
+  `visible.indication`; 2.404 filas pertenecen al welcome/recovery `t0` y la
+  mayoría son intentos `confirmation` cada ~8 s. El data root de desarrollo sí
+  contiene `shell/planner-state.v1.bin`; el root normal no. La cola
+  `PendingModelMessageQueue` reintenta sin límite cualquier confirmación que el
+  compositor nunca acepta. Ésta es una causa demostrada de saturación, no una
+  hipótesis de encoder.
+- En el root normal sin recovery pendiente, el turno UIA real `¿Quién eres?`
+  terminó visualmente en **3,956 s** y respondió exactamente «Soy BAXY, un
+  compañero que vive en el PC.»: el decisor sí funciona y ya no hubo eco ni
+  plantilla visible.
+- Inmediatamente después de `response.final`, Windows volvió a quedar sin
+  planificación durante al menos 6 min: ni `cmd /c echo`, `git diff` ni
+  `taskkill /PID 24952 /T /F` avanzaron. Esto separa un segundo defecto vivo en
+  la fase posterior a la respuesta visible (narración/TTS o reanudación de wake).
+  El watchdog inicial se desactivó al ver texto, por lo que no cubrió esta fase.
+  Tras recuperar/reiniciar, instrumentar voz post-turn y usar un watchdog que
+  exija también idle estable después de `response.final`.
+
+## Continuación — corrección de saturación ya integrada en `origin/main`
+
+- La línea histórica relevante ya describía el mismo mecanismo: sesiones ONNX
+  sin `SessionOptions` podían ocupar los 24 hilos y mantenerlos en *spin* tras
+  la primera inferencia (`biblioteca/gemma4-agent/documentacion/03_voz_stt/research/plan_sherpa_parakeet_cpu_optimizacion.md:59-80,137-138`).
+- Los commits de recursos que ya están en `origin/main` corrigieron los dos
+  defectos demostrados por Goal 10: Piper/ONNX usa hilos acotados y no-spinning;
+  la mente corre con prioridad/afinidad dura; y `PendingModelMessageQueue`
+  terminaliza una composición fallida tras tres intentos en vez de reintentarla
+  para siempre.
+- La corrida física R6 del árbol vigente midió 60 muestras post-inferencia sin
+  degradación: CPU BAXY promedio **0,73 %**, máximo **2,03 %**, RSS promedio
+  **5.052,1 MiB**, GPU máximo **2 %**; el guardián terminó `completed`, sin matar
+  procesos. Evidencia exacta en
+  `artifacts/resource_optimization/physical_run_r6.json{,l}` y resumen en
+  `artifacts/resource_optimization/HANDOFF.md`.
+- La instrumentación temporal `last-mind-handshake.txt` ya cumplió su propósito
+  y se retiró. Se conserva `last-mind-failure.txt` en todos los estados
+  terminales `Failed`/`NotConfigured`, que es la traza operativa permanente.
+- Validación dueña de esa frontera: los dos casos focales de
+  `MindRuntimeDiscoveryTests` (cancelación fail-closed y orden discovery→factory)
+  pasaron **2/2** en Release. Un filtro amplio de 36 tests dejó **29 pass / 7
+  fail** de baseline: seis lecturas de trace chocan con el writer vivo y una
+  prueba exige prosa fija frente al contrato estructurado vigente. No están
+  atribuidos a esta instrumentación y siguen siendo rojos a reparar antes del
+  Full final.

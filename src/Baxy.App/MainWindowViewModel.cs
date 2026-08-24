@@ -1714,16 +1714,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             discovery = await discoveryTask.WaitAsync(cancellationToken);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
         {
+            RecordMindFault("discovery_cancelled " + exception);
             _mindStartupState = MindStartupState.Failed;
             _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
             throw;
         }
         cancellationToken.ThrowIfCancellationRequested();
-        if (!MindRuntimeDiscovery.ApplyVerified(discovery)
-            || !MindSidecarClient.IsConfigured)
+        bool applied = MindRuntimeDiscovery.ApplyVerified(discovery);
+        if (!applied || !MindSidecarClient.IsConfigured)
         {
+            RecordMindFault(
+                "not_configured"
+                    + " applied=" + applied
+                    + " configured=" + MindSidecarClient.IsConfigured
+                    + " disabled=" + discovery.Disabled
+                    + " canConfigure=" + discovery.CanConfigure
+                    + " runtime=" + (discovery.Runtime is not null)
+                    + " assetDiagnostic=" + discovery.AssetDiagnostic);
             _mindStartupState = MindStartupState.NotConfigured;
             return;
         }
@@ -1783,18 +1792,29 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
             else
             {
+                RecordMindFault("sidecar_no_arranco (TryStartAsync=false, 120 s)");
                 await mind.DisposeAsync();
                 _mindStartupState = MindStartupState.Failed;
                 _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
             }
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            RecordMindFault(exception.ToString());
             await mind.DisposeAsync();
             _mindStartupState = MindStartupState.Failed;
             _mindRetryAfterUtc = DateTime.UtcNow.AddSeconds(10);
         }
     }
+
+    /// <summary>
+    /// Deja por qué no subió la mente. Sin esto, un BAXY sin decisor es
+    /// indistinguible de uno con decisor lento: sigue aceptando texto y
+    /// contesta, sólo que con el evento de estado en crudo en vez de una
+    /// respuesta. Es el fallo más caro de diagnosticar del producto.
+    /// </summary>
+    private static void RecordMindFault(string reason) =>
+        CoreProcessClient.RecordPresenceFault("last-mind-failure.txt", reason);
 
     private static Task<MindRuntimeDiscoveryResult> StartMindRuntimeDiscovery() =>
         Task.Run(static () => MindRuntimeDiscovery.DiscoverVerified());
@@ -1816,6 +1836,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (_mindStartupState == MindStartupState.Ready)
         {
+            RecordMindFault("ready_state_without_ready_client");
             _mindStartupState = MindStartupState.Failed;
             _mindRetryAfterUtc = DateTime.MinValue;
         }
