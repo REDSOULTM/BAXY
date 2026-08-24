@@ -119,6 +119,25 @@ esta sesión.
   contra la envoltura oficial: 100 frames, diferencia máxima y media exactamente
   0. Prueba focal: 6 passed. R5 se detuvo voluntariamente antes del turno para
   aplicar esta corrección; evidencia parcial: `physical_run_r5.jsonl`.
+- Corrida física R6 final: guardián `action=completed`, 766 muestras en 420,28
+  s, cero PIDs matados y ningún límite sostenido cruzado. Todos los modelos se
+  mantuvieron residentes. Reposo estable previo al turno (50 muestras): CPU
+  BAXY promedio 0,76 %, máximo 2,02 %; GPU máximo 2 %; RSS 4.801 MiB. Frente a
+  R4, los Python pesados bajaron de 1.097+842 MiB a 843+390 MiB al retirar
+  PyTorch de voz.
+- Dos turnos cruzaron la UI. `¿Quién eres?` resolvió la ruta ligera con pico CPU
+  BAXY 5,95 %, GPU 2 %, RSS 4.932 MiB. La pregunta conversacional fue aceptada
+  pero no produjo respuesta por el bloqueo de decisor expresamente fuera de
+  este goal; durante 40 s no hubo fuga (CPU pico 9,17 %, GPU 5 %, RSS 5.033
+  MiB) y la cola quedó acotada. Para ejercer el modelo residente sin reabrir
+  Goal 10, se invocó su endpoint loopback: 29 tokens en 429,3 ms, respuesta
+  correcta; llama-server alcanzó 48,6 % de un core y CPU BAXY pico 2,62 %. El
+  muestreo GPU de 0,5 s no capturó una inferencia tan corta.
+- Ventana post-inferencia de 60 muestras: CPU BAXY promedio 0,73 %, máximo 2,03
+  %, RSS promedio 5.052,1 MiB y máximo 5.052,68 MiB, GPU máximo 2 %. Pico global
+  R6: CPU total 44,7 %, CPU BAXY 11,48 %, RAM del sistema 56,8 %, RSS 5.052,75
+  MiB, GPU 92 % aislado durante carga, VRAM total 25,69 %. No hubo 99 % ni pico
+  GPU sostenido. Evidencia: `physical_run_r6.json` y `.jsonl`.
 
 ## Siguiente paso obligatorio
 

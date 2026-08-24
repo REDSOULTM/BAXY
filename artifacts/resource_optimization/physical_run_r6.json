@@ -1,0 +1,26 @@
+{
+  "schema": "baxy-resource-guard-v1",
+  "action": "completed",
+  "reasons": [],
+  "killed_pids": [],
+  "samples": 766,
+  "elapsed_seconds": 420.28,
+  "limits": {
+    "total_cpu_percent": 85.0,
+    "baxy_cpu_percent": 70.0,
+    "system_ram_percent": 90.0,
+    "baxy_rss_mib": 6144.0,
+    "gpu_percent": 90.0,
+    "gpu_memory_percent": 85.0,
+    "consecutive_samples": 3,
+    "gpu_consecutive_samples": 5
+  },
+  "peak": {
+    "total_cpu_percent": 44.7,
+    "baxy_cpu_percent": 11.48,
+    "system_ram_percent": 56.8,
+    "baxy_rss_mib": 5052.75,
+    "gpu_utilization_percent": 92.0,
+    "gpu_memory_percent": 25.69
+  }
+}
