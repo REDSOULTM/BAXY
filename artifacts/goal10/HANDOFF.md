@@ -509,3 +509,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   Nigeria`, `Mariah Carey age`). Identidad, estado local y privacidad siguen
   fuera; las consultas web explícitas conservan su literal. Suites dueñas tras
   el cambio: **2327/2327** en 56,80 s. Falta Fast y repetición viva.
+- Fast del grounding centrado **verde**: toda la estática multilenguaje y build
+  Release **0 warnings / 0 errors**. El commit `19c4527` está local; dos pushes
+  fallaron por conexión a `github.com:443`, no por rechazo, y se reintentará.
