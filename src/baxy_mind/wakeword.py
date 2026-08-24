@@ -29,6 +29,7 @@ from typing import Any
 import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
+from .resource_policy import cpu_session_options
 
 SAMPLE_RATE = 16_000
 WINDOW_SAMPLES = SAMPLE_RATE * 2
@@ -57,6 +58,85 @@ class WakeWordConfigurationError(ValueError):
 
 class WakeWordRuntimeError(RuntimeError):
     """El backend KWS no se pudo cargar o evaluar de forma segura."""
+
+
+def _livekit_runtime_components() -> tuple[Any, ...]:
+    """Resolve LiveKit's inference pieces without importing its training stack."""
+
+    import onnxruntime as ort
+    from livekit.wakeword.inference.model import WakeWordModel
+    from livekit.wakeword.models.feature_extractor import (
+        MelSpectrogramFrontend,
+        SpeechEmbedding,
+    )
+    from livekit.wakeword.resources import (
+        get_embedding_model_path,
+        get_mel_model_path,
+    )
+
+    return (
+        ort,
+        WakeWordModel,
+        MelSpectrogramFrontend,
+        SpeechEmbedding,
+        get_mel_model_path,
+        get_embedding_model_path,
+    )
+
+
+def _create_bounded_livekit_predictor(config: WakeWordModelConfig) -> Any:
+    """Build LiveKit's three ONNX stages with desktop-safe worker pools.
+
+    ``livekit-wakeword==0.1.0`` does not expose session options and otherwise
+    creates three default ORT pools. On the target PC those pools keep the two
+    CPUs assigned to the mind spinning for as long as wake listening is on.
+    Constructing the same model objects around owned sessions preserves the
+    dependency's inference code and weights while making their resource policy
+    explicit.
+    """
+
+    (
+        ort,
+        model_type,
+        mel_type,
+        embedding_type,
+        get_mel_model_path,
+        get_embedding_model_path,
+    ) = _livekit_runtime_components()
+    options = cpu_session_options(
+        ort,
+        environment_name="BAXY_VOICE_WAKE_THREADS",
+        default_threads=1,
+    )
+
+    mel = mel_type.__new__(mel_type)
+    mel._onnx_session = ort.InferenceSession(  # noqa: SLF001
+        str(get_mel_model_path()),
+        sess_options=options,
+        providers=["CPUExecutionProvider"],
+    )
+    mel._input_name = mel._onnx_session.get_inputs()[0].name  # noqa: SLF001
+
+    embedding = embedding_type.__new__(embedding_type)
+    embedding._session = ort.InferenceSession(  # noqa: SLF001
+        str(get_embedding_model_path()),
+        sess_options=options,
+        providers=["CPUExecutionProvider"],
+    )
+    embedding._input_name = embedding._session.get_inputs()[0].name  # noqa: SLF001
+
+    classifier = ort.InferenceSession(
+        str(config.model_path),
+        sess_options=options,
+        providers=["CPUExecutionProvider"],
+    )
+    predictor = model_type.__new__(model_type)
+    predictor._mel_frontend = mel  # noqa: SLF001
+    predictor._speech_embedding = embedding  # noqa: SLF001
+    predictor._classifiers = {  # noqa: SLF001
+        config.model_name: (classifier, classifier.get_inputs()[0].name)
+    }
+    return predictor
 
 
 @dataclass(frozen=True)
@@ -541,10 +621,7 @@ class AcousticWakeDetector:
         self.config = config
         if predictor is None:
             try:
-                from livekit.wakeword import WakeWordModel
-
-                predictor = WakeWordModel()
-                predictor.load_model(config.model_path, config.model_name)
+                predictor = _create_bounded_livekit_predictor(config)
             except ModuleNotFoundError as error:
                 raise WakeWordRuntimeError("wake_word_runtime_missing") from error
             except Exception as error:  # noqa: BLE001 - backend errors stay contained

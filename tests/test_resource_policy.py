@@ -20,6 +20,7 @@ from baxy_mind.resource_policy import (  # noqa: E402
 )
 from baxy_mind import voice  # noqa: E402
 from baxy_mind import voice_output  # noqa: E402
+from baxy_mind import wakeword  # noqa: E402
 
 
 class _FakeSessionOptions:
@@ -173,3 +174,61 @@ def test_silero_vad_uses_numpy_and_a_non_spinning_owned_session(
     inputs = captured["inputs"]
     assert inputs["input"].shape == (1, 576)
     assert inputs["state"].shape == (2, 1, 128)
+
+
+def test_livekit_wake_predictor_owns_three_non_spinning_sessions(
+    tmp_path, monkeypatch
+) -> None:
+    captured: list[tuple[str, _FakeSessionOptions, list[str]]] = []
+
+    class _FakeInput:
+        name = "input"
+
+    class _FakeInferenceSession:
+        def __init__(self, model, *, sess_options, providers) -> None:
+            captured.append((str(model), sess_options, providers))
+
+        @staticmethod
+        def get_inputs():
+            return [_FakeInput()]
+
+    class _FakeWakeWordModel:
+        pass
+
+    class _FakeMelFrontend:
+        pass
+
+    class _FakeSpeechEmbedding:
+        pass
+
+    fake_ort = _fake_ort()
+    fake_ort.InferenceSession = _FakeInferenceSession
+    mel = tmp_path / "mel.onnx"
+    embedding = tmp_path / "embedding.onnx"
+    classifier = tmp_path / "baxy.onnx"
+    monkeypatch.setattr(
+        wakeword,
+        "_livekit_runtime_components",
+        lambda: (
+            fake_ort,
+            _FakeWakeWordModel,
+            _FakeMelFrontend,
+            _FakeSpeechEmbedding,
+            lambda: mel,
+            lambda: embedding,
+        ),
+    )
+    config = SimpleNamespace(model_path=classifier, model_name="baxy")
+
+    predictor = wakeword._create_bounded_livekit_predictor(config)  # noqa: SLF001
+
+    assert isinstance(predictor, _FakeWakeWordModel)
+    assert [Path(row[0]) for row in captured] == [mel, embedding, classifier]
+    assert all(row[1].intra_op_num_threads == 1 for row in captured)
+    assert all(row[1].inter_op_num_threads == 1 for row in captured)
+    assert all(
+        row[1].entries["session.intra_op.allow_spinning"] == "0"
+        for row in captured
+    )
+    assert all(row[2] == ["CPUExecutionProvider"] for row in captured)
+    assert predictor._classifiers["baxy"][1] == "input"  # noqa: SLF001

@@ -224,3 +224,31 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   prueba exige prosa fija frente al contrato estructurado vigente. No están
   atribuidos a esta instrumentación y siguen siendo rojos a reparar antes del
   Full final.
+
+## Continuación — wake permanente sin dos CPUs en *spin*
+
+- La corrida `aa82f95-live` aisló otra fuga que R6 no había ejercido con wake
+  permanente: el Python de mente consumía **197,2 % de un core** mientras la UI
+  mostraba `microphone always listening`; apagar el micrófono desde la propia UI
+  lo llevó a **2,0 %** después de terminar la limpieza. No era carga útil ni
+  TTS.
+- Causa: `livekit-wakeword==0.1.0` crea tres `onnxruntime.InferenceSession`
+  (mel, embedding y clasificador) sin `SessionOptions`. Eran las únicas sesiones
+  ONNX del camino wake que todavía no pasaban por la política compartida
+  no-spinning. `wakeword.py` construye ahora exactamente esos tres stages y los
+  mismos pesos con un hilo, ejecución secuencial y spinning intra/inter apagado;
+  no añade otro predictor ni cambia el umbral.
+- Predictor real sobre silencio: carga **0,304 s**, inferencia p50 **17 ms** y
+  p95 **18 ms**, score `0,005929`. Prueba de política: **8/8**.
+- Corrida viva `wake-bounded`, 150,2 s y 269 muestras, con wake realmente activo:
+  el proceso de mente promedió **10,47 % de un core** durante una ventana directa
+  de 30 s (antes 197,2 %). En las últimas 50 muestras, BAXY completo promedió
+  **1,13 % CPU del sistema**, máximo 2,25 %; el proceso de mente promedió 9,7 %
+  de un core, máximo 17,1 %; RSS promedio 5.553,7 MiB y delta **−1,8 MiB**.
+  `baxy_resource_guard` terminó `completed`, cero PIDs muertos y ninguna razón.
+- Regresión física con el runtime dueño: **2/2** — BAXY sintetizado activa y
+  ruido no; el ciclo PCM wake→STT llega a `open notepad please`. No hubo skips.
+- `scripts/test_source_quality.ps1` pasó completo en modo Fast sobre este árbol:
+  PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build Release
+  con **0 warnings / 0 errors**. Fue necesario reponer `node_modules` exactamente
+  desde `pnpm-lock.yaml --frozen-lockfile`; no cambió ningún fichero versionado.
