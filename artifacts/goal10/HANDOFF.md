@@ -639,3 +639,9 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   pero el detalle compuesto llevaba caracteres que `ShellTrace` reduce a
   `invalid`. El formato ya es una etiqueta canónica sin contenido libre; la
   regresión CRUD sigue **1/1**, cero skips. Repetir una vez para leer el código.
+- La repetición canónica midió exactamente
+  **`memory.list.memory_disabled.unverified`**. No era corrupción ni transporte:
+  el almacén nace apagado por privacidad y el GET del panel listaba como si
+  estuviera activo. Ahora abrirlo apagado devuelve 200 + lista vacía sin activar
+  retención; sólo `add` conserva la operación explícita de habilitar. La prueba
+  dueña añade el GET inicial apagado y pasa **1/1**, cero skips. Falta CRUD vivo.

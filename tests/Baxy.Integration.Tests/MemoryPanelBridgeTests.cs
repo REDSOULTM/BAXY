@@ -27,6 +27,14 @@ public sealed class MemoryPanelBridgeTests
             await viewModel.InitializeAsync(CancellationToken.None);
             Assert.That(viewModel.IsReady, Is.True);
 
+            FieldHttpResponse initiallyDisabled = await viewModel.MemoryPanel.HandleAsync(
+                "GET",
+                "/memory",
+                body: null,
+                CancellationToken.None);
+            Assert.That(initiallyDisabled.Status, Is.EqualTo(200));
+            Assert.That(ItemValue(initiallyDisabled, Selector), Is.Null);
+
             FieldHttpResponse created = await viewModel.MemoryPanel.HandleAsync(
                 "POST",
                 "/memory",

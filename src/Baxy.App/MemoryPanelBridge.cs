@@ -69,6 +69,28 @@ internal sealed class MemoryPanelBridge
         MemoryOperationProtector protector,
         CancellationToken cancellationToken)
     {
+        JsonElement status = await ExecuteAsync(
+                client,
+                protector,
+                new MemoryRoutedOperation(
+                    "memory.status",
+                    new JsonObject { ["version"] = 1 }),
+                cancellationToken)
+            .ConfigureAwait(true);
+        if (!status.TryGetProperty("enabled", out JsonElement enabled)
+            || enabled.ValueKind != JsonValueKind.True)
+        {
+            // The store is default-off for privacy. Merely viewing the panel
+            // must neither enable retention nor turn that honest state into a
+            // 409. The explicit Add path below owns the enable operation.
+            return FieldHttpResponse.Json(
+                new JsonObject
+                {
+                    ["enabled"] = false,
+                    ["items"] = new JsonArray(),
+                });
+        }
+
         JsonElement payload = await ExecuteAsync(
                 client,
                 protector,
@@ -113,7 +135,8 @@ internal sealed class MemoryPanelBridge
             }
         }
 
-        return FieldHttpResponse.Json(new JsonObject { ["items"] = items });
+        return FieldHttpResponse.Json(
+            new JsonObject { ["enabled"] = true, ["items"] = items });
     }
 
     private static async Task<FieldHttpResponse> SaveOrCorrectAsync(
