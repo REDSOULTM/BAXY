@@ -688,3 +688,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   visible on screen»** permanecen fuera del cierre. Focales **7/7**, cero skips
   (`test_effect_intent`: 6; `test_turn_policy`: 1). Falta suites dueñas,
   repetición viva y Fast.
+- Suites dueñas completas posteriores: `test_effect_intent.py +
+  test_turn_policy.py` **2345/2345** en **57,20 s**, cero skips. El cambio queda
+  listo para repetición viva; todavía no sustituye esa medición física ni Fast.
