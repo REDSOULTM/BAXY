@@ -104,6 +104,21 @@ esta sesión.
   descargarlos por inactividad; el primer turno no debe pagar carga fría. La
   optimización mantiene los modelos residentes y elimina sólo trabajo o
   memoria que no contribuya a latencia.
+- Corrida física R5 aisló dos consumos residentes adicionales. Primero, la UI
+  repintaba a 60 FPS un borde cónico y forzaba un render React completo del
+  grafo neuronal en cada frame, aun en idle. Tras limitar sólo los repintados
+  (borde 10/s; grafo 4/s idle, 20–30/s activo), WebView pasó de promedio 60,8 %
+  de un core en R4 a 18,2 % en R5 (medianas 60,1→17,1; reducción ~70 %), sin
+  ocultar ni congelar el estado. `npm run lint` y `npm run build`: verdes.
+- R5 también demostró que el Python principal sostenía ~200 % de un core con
+  micrófono activo. Causa: `SileroVad` importaba todo PyTorch únicamente para
+  marshalling y el `OnnxWrapper` de terceros fijaba 1+1 hilos pero dejaba el
+  spinning de ORT habilitado. Se sustituyó la envoltura, no el modelo: mismo
+  `silero_vad.onnx`, estado `(2,1,128)`, contexto de 64 muestras, NumPy directo,
+  sesión ORT propia de un hilo y spinning intra/inter apagado. Comparación real
+  contra la envoltura oficial: 100 frames, diferencia máxima y media exactamente
+  0. Prueba focal: 6 passed. R5 se detuvo voluntariamente antes del turno para
+  aplicar esta corrección; evidencia parcial: `physical_run_r5.jsonl`.
 
 ## Siguiente paso obligatorio
 

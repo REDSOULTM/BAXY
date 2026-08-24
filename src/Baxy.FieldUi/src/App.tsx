@@ -502,6 +502,7 @@ export default function App() {
     if (!frame) return;
     let raf = 0;
     let last = performance.now();
+    let nextPaint = last;
     let angle = 0;
     let speed = 1; // 0..1 fraction of full speed
     const FULL = 360 / 3.4; // deg/s at full speed
@@ -513,8 +514,16 @@ export default function App() {
         raf = requestAnimationFrame(loop);
         return;
       }
-      const dt = Math.min(0.05, (now - last) / 1000);
+      // A continuously rasterised conic gradient made an idle WebView consume
+      // a material fraction of one CPU core. Ten paints per second preserve
+      // the slow ambient travel without paying for 60 identical UI updates.
+      if (now < nextPaint) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      const dt = Math.min(0.15, (now - last) / 1000);
       last = now;
+      nextPaint = now + 100;
       const target = poweredRef.current ? 1 : 0;
       speed += (target - speed) * Math.min(1, dt * 2.6);
       if (target === 0 && speed < 0.012) speed = 0;

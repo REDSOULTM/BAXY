@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import numpy as np
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind.resource_policy import (  # noqa: E402
@@ -16,6 +18,7 @@ from baxy_mind.resource_policy import (  # noqa: E402
     bounded_cpu_threads,
     cpu_session_options,
 )
+from baxy_mind import voice  # noqa: E402
 from baxy_mind import voice_output  # noqa: E402
 
 
@@ -118,3 +121,44 @@ def test_piper_owns_a_non_spinning_bounded_session(tmp_path, monkeypatch) -> Non
     assert options.inter_op_num_threads == 1
     assert options.entries["session.intra_op.allow_spinning"] == "0"
     assert captured["providers"] == ["CPUExecutionProvider"]
+
+
+def test_silero_vad_uses_numpy_and_a_non_spinning_owned_session(
+    tmp_path, monkeypatch
+) -> None:
+    captured: dict[str, object] = {}
+
+    class _FakeInferenceSession:
+        def __init__(self, model, *, sess_options, providers) -> None:
+            captured["model"] = model
+            captured["options"] = sess_options
+            captured["providers"] = providers
+
+        def run(self, output_names, inputs):
+            captured["inputs"] = inputs
+            return np.asarray([[0.25]], dtype=np.float32), inputs["state"] + 1
+
+    fake_ort = _fake_ort()
+    fake_ort.InferenceSession = _FakeInferenceSession
+    model = tmp_path / "silero_vad.onnx"
+    model.write_bytes(b"not-loaded-by-the-fake")
+    monkeypatch.setitem(sys.modules, "onnxruntime", fake_ort)
+    monkeypatch.setitem(sys.modules, "torch", None)
+    monkeypatch.setattr(
+        voice.resources,
+        "files",
+        lambda package: tmp_path,
+    )
+
+    vad = voice.SileroVad()
+    probability = vad.process(np.zeros(voice.VAD_WINDOW_SAMPLES, dtype=np.float32))
+
+    assert probability == 0.25
+    options = captured["options"]
+    assert isinstance(options, _FakeSessionOptions)
+    assert options.intra_op_num_threads == 1
+    assert options.entries["session.intra_op.allow_spinning"] == "0"
+    assert captured["providers"] == ["CPUExecutionProvider"]
+    inputs = captured["inputs"]
+    assert inputs["input"].shape == (1, 576)
+    assert inputs["state"].shape == (2, 1, 128)

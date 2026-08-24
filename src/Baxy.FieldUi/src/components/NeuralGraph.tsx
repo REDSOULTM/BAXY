@@ -337,10 +337,24 @@ export function NeuralGraph({ state }: Props) {
   // keep the RAF running unconditionally.
   useEffect(() => {
     let prev = performance.now();
+    let nextPaint = prev;
     const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - prev) / 1000);
-      prev = now;
       const s = stateRef.current;
+      // Idle is an ambient status, not a 60 FPS workload. Active states keep
+      // enough cadence to communicate progress; standby/idle repaint only
+      // four times per second. The RAF callback remains cheap between paints.
+      const frameInterval = s === 'standby' || s === 'idle'
+        ? 250
+        : s === 'thinking'
+          ? 1000 / 30
+          : 50;
+      if (now < nextPaint) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      const dt = Math.min(0.30, (now - prev) / 1000);
+      prev = now;
+      nextPaint = now + frameInterval;
 
       // pulses
       const next: Pulse[] = [];

@@ -25,6 +25,7 @@ from __future__ import annotations
 from collections import deque
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
+from importlib import resources
 import json
 import logging
 import math
@@ -40,7 +41,7 @@ from typing import Any, Callable
 import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
-from .resource_policy import bounded_cpu_threads
+from .resource_policy import bounded_cpu_threads, cpu_session_options
 from .time_budget import remaining_seconds
 from .voice_aec import AudioDucker, EchoCanceller, LoopbackReference
 from .voice_output import (
@@ -387,18 +388,40 @@ class SileroVad:
     window_size_samples = VAD_WINDOW_SAMPLES
 
     def __init__(self) -> None:
-        import torch
-        from silero_vad import load_silero_vad
+        import onnxruntime as ort
 
-        self._torch = torch
-        self._model = load_silero_vad(onnx=True)
+        model = resources.files("silero_vad.data").joinpath("silero_vad.onnx")
+        self._session = ort.InferenceSession(
+            str(model),
+            sess_options=cpu_session_options(
+                ort,
+                environment_name="BAXY_VOICE_VAD_THREADS",
+                default_threads=1,
+            ),
+            providers=["CPUExecutionProvider"],
+        )
+        self.reset()
 
     def process(self, frame: np.ndarray) -> float:
-        tensor = self._torch.from_numpy(np.asarray(frame, dtype=np.float32))
-        return float(self._model(tensor, SAMPLE_RATE).item())
+        samples = np.asarray(frame, dtype=np.float32).reshape(-1)
+        if samples.size != self.window_size_samples:
+            raise ValueError("Silero VAD requiere ventanas de 512 muestras")
+        batch = np.concatenate((self._context, samples.reshape(1, -1)), axis=1)
+        output, state = self._session.run(
+            None,
+            {
+                "input": batch,
+                "state": self._state,
+                "sr": np.asarray(SAMPLE_RATE, dtype=np.int64),
+            },
+        )
+        self._state = np.asarray(state, dtype=np.float32)
+        self._context = batch[:, -64:]
+        return float(np.asarray(output).reshape(-1)[0])
 
     def reset(self) -> None:
-        self._model.reset_states()
+        self._state = np.zeros((2, 1, 128), dtype=np.float32)
+        self._context = np.zeros((1, 64), dtype=np.float32)
 
 
 def _rms(frame: np.ndarray) -> float:
