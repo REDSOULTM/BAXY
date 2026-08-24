@@ -1039,3 +1039,7 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `gemma4_local` 90. Esto confirma que el corpus heredado es mucho mayor que las
   3.691 frases únicas de la extracción Carter/Gemma4 de 2026-06-02; se usa para
   variedad y prioridades, nunca para sumar los 200 turnos normales.
+- Integridad del corpus consolidado verificada con su suite dueña:
+  `tests/test_historical_corpus.py` **37/37 + 58 subtests**, cero skips. No se
+  alteró ni regeneró el corpus; la medición confirma el conjunto versionado que
+  se usará sólo como evidencia de amplitud.
