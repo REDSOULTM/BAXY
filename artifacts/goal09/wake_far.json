@@ -1,0 +1,15 @@
+{
+  "measured_at": "2026-08-24T00:58:08.507670+00:00",
+  "partial": true,
+  "far": {
+    "seconds": 2541.28,
+    "hours": 0.7059,
+    "activations": 2,
+    "far_per_hour": 2.833217905936625,
+    "far_upper_per_hour": 8.91867761078466,
+    "threshold": 0.5,
+    "threshold_locked_before_open": true,
+    "files_used": 3,
+    "last_file": "D:\\Movies\\Series\\Impractical Jokers\\Season 8\\Extras\\S08E00 - Fantasy Draft (Special).mkv"
+  }
+}

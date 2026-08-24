@@ -157,9 +157,9 @@ mentirosa.
 
 | Pieza | Borde | Qué decide el cambio | Elegido hoy | Goal | Fecha |
 |---|---|---|---|---|---|
-| **Wake word** | Proceso | Corpus positivo y negativo con voz real: máximo de score en cada uno y falsos disparos por hora. Medido hoy sobre el modelo heredado: positivo **0,916**, negativo **0,225 con 0 disparos**, RTF 0,026 | `baxy.onnx` (openWakeWord: mel → embedding → cabeza) + verificador logreg. **Funciona pero está apagado**: `wake_manifest` es `null` | 01 → 09 | 2026-08-16 |
-| **STT** | Proceso | WER en español, inglés y spanglish, RTF y **recuperación de nombres propios** — que es donde está el fallo, no en la palabra común | Parakeet TDT 0.6b v3 int8: RTF 0,065–0,087, 1 error en 47 palabras de español. Pero transcribe «BAXY» como «Maxi» / «Bacxi» | 01 → 09 | 2026-08-16 |
-| **TTS** | Proceso | | | 09 | |
+| **Wake word** | Proceso | Corpus **aislado** «Baxy»/«Baxy.» de voces holdout (Sabina es-MX + Zira en-US, rates −3/0/+3): FRR y máximo de score. FAR: Poisson unilateral 95 % sobre horas de película/serie que no le hablan a BAXY; el umbral **no se retoca** al abrir. Listón: FRR ≤5 %, FAR superior ≤0,1/h. Procedimiento: `scripts/evaluate_wake_corpus.py` y `scripts/measure_goal09_far.py` | `baxy.onnx` SHA `9b1ae5db…`, umbral **0,5** (punto del goal 01). Holdout 2026-08-23: **12/12** (FRR 0). Probe más ancho (rates ±6, Helena es-ES, frases largas) no es la población: el KWS oye una palabra, no la orden. FAR 0,5 h: **0 disparos** (superior 6,0/h; las 30 h van en `wake_far.json`) | 01 → 09 | 2026-08-23 |
+| **STT** | Proceso | WER / aciertos por locución en es, en y spanglish sobre WAV reales o SAPI holdout, RTF, y que una transcripción vacía o dudosa **pregunta** (`_transcript_is_doubtful`) en vez de ejecutar. CPU. `VoiceEngine.transcribe_pcm` | Parakeet TDT 0.6b v3 int8, SHA agregado `5a70e086…`. p50 decode **0,21 s** en esta máquina. «open notepad please» y «buenas noches» recuperan la palabra útil; «BAXY» aislado a menudo queda vacío y se trata como dudo, no como efecto. Qwen3-ASR GGUF en disco **no** se adoptó | 01 → 09 | 2026-08-23 |
+| **TTS** | Proceso | Primera muestra de audio, cancelación a media frase, y que la voz de producto no es SAPI. `NeuralSpeechOutput` / `tests/test_goal09_voice_engines.py` | Piper `es_MX-claude-high` ONNX SHA `3ef40a71…` + eSpeak `es-419` vía onnxruntime (no `piper.exe` GPL). Load 1,44 s; primera muestra **0,02 s** con el worker ya arriba; `cancel()` corta. SAPI es degradación si falta el ONNX | 09 | 2026-08-23 |
 
 ### La pila que actúa sobre la máquina
 

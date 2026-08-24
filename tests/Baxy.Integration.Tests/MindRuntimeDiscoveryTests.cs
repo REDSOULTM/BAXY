@@ -922,6 +922,8 @@ public sealed class MindRuntimeDiscoveryTests
               "stt_sha256": {{Json(SttSha256(stt))}},
               "wake_manifest": {{Json(wake)}},
               "wake_manifest_sha256": {{Json(Sha256(wake))}},
+              "tts_model": null,
+              "tts_sha256": null,
               "ngl": {{ngl}},
               "wake_on_start": true
             }

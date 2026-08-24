@@ -55,6 +55,11 @@ def test_local_manifest_matches_the_published_expectation() -> None:
         observed["nativeToolPolicyEnabled"]
         == published["expected"]["nativeToolPolicyEnabled"]
     )
+    assert observed["sttSha256"] == published["expected"]["sttSha256"]
+    assert observed.get("ttsSha256") == published["expected"].get("ttsSha256")
+    if published["expected"].get("wakeManifestSha256"):
+        assert observed["wakeManifestSha256"] == published["expected"]["wakeManifestSha256"]
+        assert observed["wakeOnStart"] is True
 
 
 def test_a_manifest_without_a_schema_is_not_versioned() -> None:

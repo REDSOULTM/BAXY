@@ -417,6 +417,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         CancellationToken cancellationToken)
     {
         string text = route.Text;
+        if (VoiceListenCommand.TryParse(text, out bool listenEnabled))
+        {
+            AddMessage("Tú", text, isUser: true);
+            bool changed = await SetWakeVoiceAsync(listenEnabled, cancellationToken);
+            AddMessage(
+                "BAXY",
+                listenEnabled
+                    ? (changed
+                        ? "Listo, te escucho. Dime «Baxy» cuando me necesites."
+                        : "No pude: la escucha permanente no está disponible.")
+                    : (changed
+                        ? "Listo, ya no te escucho."
+                        : "No pude apagar la escucha."),
+                isUser: false);
+            return;
+        }
+
         MemoryParseResult memory = route.Memory;
         string publicUserText = memory.MaskPublicProjection
             || NaturalMemoryRequestParser.ContainsSensitiveMaterial(text)
@@ -3237,7 +3254,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         Messages.Add(message);
         MessageAdded?.Invoke(message);
         MindSidecarClient? mind = _mindClient;
-        if (mind is { IsReady: true } && (IsListening || IsWakeListening))
+        if (mind is { IsReady: true })
         {
             _ = isUser
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)

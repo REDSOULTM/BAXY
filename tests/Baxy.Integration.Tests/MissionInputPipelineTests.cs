@@ -305,6 +305,7 @@ public sealed class MissionInputPipelineTests
             "NaturalNoteRequestParser.cs",
             "NaturalSystemStatusRequestParser.cs",
             "NoteDisambiguation.cs",
+            "VoiceListenCommand.cs",
         ];
         string[] actualRegexFiles = Directory
             .EnumerateFiles(appRoot, "*.cs", SearchOption.TopDirectoryOnly)

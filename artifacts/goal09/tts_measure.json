@@ -1,0 +1,9 @@
+{
+  "available": true,
+  "accepted": true,
+  "load_s": 1.639,
+  "first_audio_s": 2.03,
+  "cancelled_mid_utterance": true,
+  "voice": "es_MX-claude-high",
+  "measured_at": "2026-08-24T00:40:21.418436+00:00"
+}

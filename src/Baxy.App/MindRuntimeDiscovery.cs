@@ -63,6 +63,8 @@ internal static class MindRuntimeDiscovery
         "stt_sha256",
         "wake_manifest",
         "wake_manifest_sha256",
+        "tts_model",
+        "tts_sha256",
         "ngl",
         "wake_on_start",
     ];
@@ -315,6 +317,23 @@ internal static class MindRuntimeDiscovery
             }
             else if (wakeManifestElement.ValueKind != JsonValueKind.Null
                 || wakeHashElement.ValueKind != JsonValueKind.Null)
+            {
+                return null;
+            }
+
+            JsonElement ttsModelElement = root.GetProperty("tts_model");
+            JsonElement ttsHashElement = root.GetProperty("tts_sha256");
+            if (ttsModelElement.ValueKind == JsonValueKind.Null
+                && ttsHashElement.ValueKind == JsonValueKind.Null)
+            {
+                // Neural TTS is optional: SAPI remains the documented fallback.
+            }
+            else if (ttsModelElement.ValueKind != JsonValueKind.String
+                || ttsHashElement.ValueKind != JsonValueKind.String
+                || ExistingFile(
+                    ttsModelElement.GetString(),
+                    expectedName: null,
+                    ttsHashElement.GetString()) is null)
             {
                 return null;
             }

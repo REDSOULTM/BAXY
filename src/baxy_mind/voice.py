@@ -42,11 +42,17 @@ import numpy as np
 from .assets import AssetDescriptorError, resolve_asset
 from .time_budget import remaining_seconds
 from .voice_aec import AudioDucker, EchoCanceller, LoopbackReference
-from .voice_output import SapiSpeechOutput
+from .voice_output import (
+    NeuralSpeechOutput,
+    create_speech_output,
+    neural_tts_identity,
+    resolve_neural_tts_model,
+)
 from .wakeword import (
     AcousticWakeDetector,
     WakeWordDetection,
     WakeWordRuntimeError,
+    WINDOW_SAMPLES,
     inspect_wakeword_candidate_config,
     inspect_wakeword_config,
 )
@@ -301,6 +307,33 @@ def _compile_contextual_hotwords(
     return "/".join(encoded)
 
 
+class _PcmCaptureStream:
+    """Stand-in for sounddevice.InputStream so tests can feed WAV frames."""
+
+    def __init__(self, inbox: queue.Queue[np.ndarray], stop_event: threading.Event) -> None:
+        self._inbox = inbox
+        self._stop_event = stop_event
+        self.device = None
+
+    def __enter__(self) -> _PcmCaptureStream:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+    def read(self, frames: int) -> tuple[np.ndarray, bool]:
+        while not self._stop_event.is_set():
+            try:
+                block = self._inbox.get(timeout=0.05)
+            except queue.Empty:
+                continue
+            audio = np.asarray(block, dtype=np.float32).reshape(-1)
+            if audio.size < frames:
+                audio = np.pad(audio, (0, frames - audio.size))
+            return audio[:frames].reshape(-1, 1), False
+        return np.zeros((frames, 1), dtype=np.float32), False
+
+
 class WakePhraseMatcher:
     """Normaliza un prefijo ya autorizado; nunca es un detector acústico."""
 
@@ -393,6 +426,17 @@ def _looks_like_echo(microphone: np.ndarray, reference: np.ndarray) -> bool:
         if denominator > 1e-6:
             best = max(best, abs(float(np.dot(mic, candidate))) / denominator)
     return best >= 0.55
+
+
+def _transcript_is_doubtful(text: str) -> bool:
+    """A garbled decode is a question, never an unsolicited effect."""
+
+    folded = _fold(text)
+    letters = sum(character.isalpha() for character in folded)
+    if letters < 2:
+        return True
+    compact = "".join(character for character in folded if character.isalnum())
+    return bool(compact) and letters / max(1, len(compact)) < 0.5
 
 
 def _decode_offline_text(
@@ -575,7 +619,8 @@ class VoiceEngine:
         self._armed_until = 0.0
         self._loopback = LoopbackReference()
         self._ducker = AudioDucker()
-        self._output = SapiSpeechOutput(self._on_tts_state)
+        self._output = create_speech_output(self._on_tts_state)
+        self._pcm_inbox: queue.Queue[np.ndarray] | None = None
         self._wake = WakePhraseMatcher()
         self._input_device_name = ""
         self.last_error: str | None = None
@@ -655,7 +700,10 @@ class VoiceEngine:
             "input": input_available,
             "stt": not missing and dependencies.get("sherpa_onnx", False),
             "vad": dependencies.get("silero_vad", False),
-            "tts": dependencies.get("win32com.client", False),
+            "tts": (
+                bool(dependencies.get("sherpa_onnx") and resolve_neural_tts_model())
+                or dependencies.get("win32com.client", False)
+            ),
             "aec": _module_available("pyaudiowpatch"),
             "ducking": _module_available("pycaw"),
             "missing": missing,
@@ -1514,6 +1562,66 @@ class VoiceEngine:
             while self._speech_inflight:
                 self._cleanup_condition.wait()
 
+    def use_pcm_source(self) -> None:
+        """Feed later ``ingest_pcm`` calls instead of opening the microphone."""
+
+        self._pcm_inbox = queue.Queue(256)
+
+    def ingest_pcm(self, audio: np.ndarray) -> None:
+        """Push 16 kHz float32 mono PCM through the live capture path."""
+
+        inbox = self._pcm_inbox
+        if inbox is None:
+            raise RuntimeError("voice_pcm_source_inactive")
+        samples = np.asarray(audio, dtype=np.float32).reshape(-1)
+        if samples.size == 0:
+            return
+        for offset in range(0, samples.size, VAD_WINDOW_SAMPLES):
+            frame = samples[offset : offset + VAD_WINDOW_SAMPLES]
+            if frame.size < VAD_WINDOW_SAMPLES:
+                frame = np.pad(frame, (0, VAD_WINDOW_SAMPLES - frame.size))
+            try:
+                inbox.put(np.ascontiguousarray(frame), timeout=2.0)
+            except queue.Full as error:
+                raise RuntimeError("voice_pcm_source_full") from error
+
+    def transcribe_pcm(self, audio: np.ndarray) -> str:
+        """Run the shipped Parakeet final decode on one utterance."""
+
+        self.load()
+        recognizer = self._recognizer
+        if recognizer is None:
+            raise RuntimeError("final_stt_unavailable")
+        text = _decode_offline_text(
+            recognizer,
+            np.asarray(audio, dtype=np.float32),
+            hotwords=self._contextual_hotwords or self._wake_hotwords,
+        )
+        if self._corrector is not None:
+            text = self._corrector.correct(text)
+        return text.strip()
+
+    def detect_wake_pcm(self, audio: np.ndarray) -> WakeWordDetection | None:
+        """Score the shipped acoustic detector on one clip."""
+
+        self.load()
+        detector = self._acoustic_wake_detector
+        if not isinstance(detector, AcousticWakeDetector):
+            return None
+        detector.reset()
+        samples = np.asarray(audio, dtype=np.float32).reshape(-1)
+        if samples.size < WINDOW_SAMPLES:
+            samples = np.pad(samples, (0, WINDOW_SAMPLES - samples.size))
+        hit: WakeWordDetection | None = None
+        now = 0.0
+        for offset in range(0, samples.size, 512):
+            frame = samples[offset : offset + 512]
+            now = (offset + frame.size) / SAMPLE_RATE
+            found = detector.accept(frame, now=now)
+            if found is not None:
+                hit = found
+        return hit
+
     def speak(self, text: str) -> bool:
         with self._cleanup_condition:
             cleanup_job = self._cleanup_job
@@ -1568,6 +1676,9 @@ class VoiceEngine:
                 "listening": listening,
                 "speaking": self.speaking,
                 "ttsReady": self._output.available,
+                "ttsVoice": getattr(self._output, "voice_name", "sapi"),
+                "ttsNeural": isinstance(self._output, NeuralSpeechOutput),
+                "ttsSha256": (neural_tts_identity() or (None, None))[1],
                 "loopbackActive": self._loopback.active,
                 "inputDevice": self._input_device_name,
                 "sttModel": _stt_model_name(self._stt_directory)
@@ -2179,17 +2290,28 @@ class VoiceEngine:
 
             if vad is None:
                 raise RuntimeError("voice_vad_unavailable")
-            with sd.InputStream(
-                samplerate=SAMPLE_RATE,
-                channels=1,
-                dtype="float32",
-                blocksize=VAD_WINDOW_SAMPLES,
-            ) as stream:
+            inbox = self._pcm_inbox
+            stream_context = (
+                _PcmCaptureStream(inbox, event)
+                if inbox is not None
+                else sd.InputStream(
+                    samplerate=SAMPLE_RATE,
+                    channels=1,
+                    dtype="float32",
+                    blocksize=VAD_WINDOW_SAMPLES,
+                )
+            )
+            with stream_context as stream:
                 try:
-                    device = sd.query_devices(stream.device, kind="input")
-                    self._input_device_name = str(device["name"])[:120]
+                    if inbox is not None:
+                        self._input_device_name = "pcm-source"
+                    else:
+                        device = sd.query_devices(stream.device, kind="input")
+                        self._input_device_name = str(device["name"])[:120]
                 except Exception:  # noqa: BLE001
-                    self._input_device_name = "predeterminado"
+                    self._input_device_name = (
+                        "pcm-source" if inbox is not None else "predeterminado"
+                    )
                 if event.is_set() or not self._session_is_current(session_epoch):
                     return
                 with self._lock:
@@ -2786,6 +2908,10 @@ class VoiceEngine:
             text = self._corrector.correct(text, alternatives=alternatives)
         text = text.strip()
         if not text:
+            return
+        if _transcript_is_doubtful(text):
+            self._emit("ignored", reason="transcript_doubtful")
+            self.speak("¿Puedes repetirlo?")
             return
         with self._lock:
             if session_epoch is not None and self._session_epoch != session_epoch:

@@ -30,6 +30,8 @@ RUNTIME_PROPERTIES = {
     "stt_sha256",
     "wake_manifest",
     "wake_manifest_sha256",
+    "tts_model",
+    "tts_sha256",
     "ngl",
     "wake_on_start",
 }
@@ -149,9 +151,10 @@ def resolve_runtime(
             )
         manifest = _read_json_object(manifest_path)
         manifest_properties = set(manifest)
+        core = RUNTIME_PROPERTIES - OPTIONAL_TTS_PROPERTIES
         base_property_sets = (
-            RUNTIME_PROPERTIES,
-            RUNTIME_PROPERTIES - OPTIONAL_WAKE_PROPERTIES,
+            core,
+            core - OPTIONAL_WAKE_PROPERTIES,
         )
         valid_properties = {
             frozenset(properties | optional)
@@ -193,10 +196,15 @@ def resolve_runtime(
             expected = manifest.get(f"{name}_sha256")
             if not _sha256_text(expected) or file_sha256(path) != expected:
                 raise ValueError(f"hash SHA-256 no coincide: {name}")
-        if "tts_model" in manifest:
-            tts = _required_file(Path(str(manifest["tts_model"])), "tts_model")
-            expected_tts = manifest.get("tts_sha256")
-            if not _sha256_text(expected_tts) or file_sha256(tts) != expected_tts:
+        tts_model = manifest.get("tts_model")
+        tts_hash = manifest.get("tts_sha256")
+        if tts_model in (None, "") and tts_hash in (None, ""):
+            pass
+        elif tts_model in (None, "") or tts_hash in (None, ""):
+            raise ValueError("tts_model incompleto")
+        else:
+            tts = _required_file(Path(str(tts_model)), "tts_model")
+            if not _sha256_text(tts_hash) or file_sha256(tts) != tts_hash:
                 raise ValueError("hash SHA-256 no coincide: tts_model")
         stt = _required_directory(Path(str(manifest.get("stt_dir") or "")), "stt_dir")
         expected_stt = manifest.get("stt_sha256")

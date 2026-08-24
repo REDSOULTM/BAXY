@@ -16,6 +16,10 @@
     "llamaServerSha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
     "nativeToolPolicyEnabled": false,
     "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "sttSha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f",
+    "ttsName": "es_MX-claude-high.onnx",
+    "ttsSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+    "wakeManifestSha256": null,
     "wakeOnStart": false
   },
   "manifestIsVersioned": true,
@@ -24,5 +28,5 @@
   "overall_goal_met": false,
   "schema": "baxy.registered-runtime-expectation.r281.v1",
   "section_7_met": false,
-  "whyThisExists": "R280 found the meta document claiming Qwen3-4B while the machine ran Gemma-4, and the decision path differs between them. Goal 03 measured both on a fresh paraphrase population and promoted Qwen3-4B: 82 correct raw decisions of 124 against 63, with the model path at p50 1.97 s instead of 2.63 s. Recording the identity here turns a silent model swap into a red gate."
+  "whyThisExists": "R280 found the meta document claiming Qwen3-4B while the machine ran Gemma-4, and the decision path differs between them. Goal 03 measured both on a fresh paraphrase population and promoted Qwen3-4B. Goal 09 adds the STT/TTS/wake hashes so a silent voice-engine swap also turns the gate red."
 }

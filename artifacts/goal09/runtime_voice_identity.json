@@ -1,0 +1,13 @@
+{
+  "schema": "baxy-mind-runtime-v1",
+  "stt_dir_name": "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+  "stt_sha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f",
+  "tts_name": "es_MX-claude-high.onnx",
+  "tts_sha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+  "wake_manifest_name": null,
+  "wake_manifest_sha256": null,
+  "wake_on_start": false,
+  "engines_in_dotnet": false,
+  "engines_in_python_sidecar": true,
+  "substitutable_without_recompile": true
+}

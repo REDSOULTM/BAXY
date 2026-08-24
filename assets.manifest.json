@@ -107,7 +107,8 @@
       "candidates": [
         "${BAXY_ASSETS_ROOT}\\voice\\baxy-es",
         "D:\\BAXYRuntime\\assets\\voice\\baxy-es",
-        "${USERPROFILE}\\.gemma4\\models\\voice\\baxy-es"
+        "${USERPROFILE}\\.gemma4\\models\\voice\\baxy-es",
+        "${USERPROFILE}\\.gemma4\\models\\piper"
       ],
       "repair": "Declara una voz neural local compatible; la voz SAPI del sistema sigue siendo la degradación soportada."
     },

@@ -124,6 +124,28 @@ if (-not $NoWake.IsPresent -and -not $wakeOnStart) {
         ($wakeCandidates -join '; '))
 }
 
+$ttsModel = $null
+$ttsSha = $null
+$ttsResolution = Resolve-BaxyAsset -Name 'neural_tts_voice' -RepositoryRoot $repo
+foreach ($candidate in @($ttsResolution.Path) + @($ttsResolution.Candidates)) {
+    if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
+    $onnx = $candidate
+    if (Test-Path -LiteralPath $candidate -PathType Container) {
+        $named = Join-Path $candidate 'es_MX-claude-high.onnx'
+        if (Test-Path -LiteralPath $named -PathType Leaf) {
+            $onnx = $named
+        } else {
+            $found = @(Get-ChildItem -LiteralPath $candidate -Filter '*.onnx' -ErrorAction SilentlyContinue)
+            if ($found.Count -eq 1) { $onnx = $found[0].FullName } else { continue }
+        }
+    }
+    if (Test-Path -LiteralPath $onnx -PathType Leaf) {
+        $ttsModel = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $onnx).Path)
+        $ttsSha = Get-BaxySha256 -Path $ttsModel
+        break
+    }
+}
+
 $manifest = [ordered]@{
     schema = 'baxy-mind-runtime-v1'
     python = $pythonFull
@@ -141,6 +163,8 @@ $manifest = [ordered]@{
     } else {
         $null
     }
+    tts_model = $ttsModel
+    tts_sha256 = $ttsSha
     ngl = $GpuLayers
     wake_on_start = $wakeOnStart
 }

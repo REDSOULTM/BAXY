@@ -1,0 +1,22 @@
+{
+  "measured_at": "2026-08-24T00:39:45.712689+00:00",
+  "threshold": 0.5,
+  "threshold_locked_before_open": true,
+  "population": "isolated Baxy/Baxy. Sabina es-MX + Zira en-US rates -3,0,+3",
+  "positive": {
+    "files": 12,
+    "matched": 12,
+    "max_score": 0.8535230159759521,
+    "min_score": 0.16213580965995789,
+    "p50_wall_s": 0.1168632000000116,
+    "false_reject_rate": 0.0
+  },
+  "negative_synth": {
+    "files": 12,
+    "matched": 0,
+    "max_score": 0.09073317050933838,
+    "min_score": 0.0033174753189086914,
+    "p50_wall_s": 0.2224825000000692
+  },
+  "model_sha256": "9b1ae5dbfd09fe82e2a70a88731e229340c29e8a22c484c2a50c255b18fd9220"
+}

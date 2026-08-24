@@ -1,15 +1,16 @@
-"""Salida de voz local de BAXY mediante la API SAPI incluida en Windows.
+"""Salida de voz local de BAXY.
 
-La implementación no descarga modelos ni incorpora runtimes copyleft. SAPI
-usa las voces instaladas por Windows y mantiene todo el texto en el equipo.
-El objeto COM vive exclusivamente en su hilo propietario; ``speak`` y
-``cancel`` solo publican órdenes acotadas y por eso son seguros desde el hilo
-JSONL, el capturador y la UI al mismo tiempo.
+La voz de producto es neural, español latino (Piper ``es_MX-claude-high``
+vía sherpa-onnx, Apache 2.0 + pesos MIT). SAPI queda como degradación si
+el modelo neural no está en disco. El objeto de salida vive en su hilo
+propietario; ``speak`` y ``cancel`` solo publican órdenes acotadas.
 """
 
 from __future__ import annotations
 
+import hashlib
 import html
+import json
 import logging
 import math
 import os
@@ -17,9 +18,13 @@ import queue
 import re
 import threading
 import time
+
+import numpy as np
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 
+from .assets import AssetDescriptorError, resolve_asset
 from .time_budget import remaining_seconds
 
 logger = logging.getLogger(__name__)
@@ -334,4 +339,374 @@ class SapiSpeechOutput:
                     self._stopping = False
 
 
-__all__ = ["SapiSpeechOutput"]
+def _espeak_exe() -> Path | None:
+    configured = (os.environ.get("BAXY_ESPEAK_EXE") or "").strip()
+    candidates = [
+        Path(configured) if configured else None,
+        Path(r"C:\Program Files\eSpeak NG\espeak-ng.exe"),
+        Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng.exe"),
+    ]
+    for candidate in candidates:
+        if candidate is not None and candidate.is_file():
+            return candidate
+    return None
+
+
+def _espeak_data_dir() -> Path | None:
+    exe = _espeak_exe()
+    if exe is not None:
+        data = exe.parent / "espeak-ng-data"
+        if (data / "phontab").is_file():
+            return data
+    configured = (os.environ.get("BAXY_ESPEAK_DATA") or "").strip()
+    candidates = [
+        Path(configured) if configured else None,
+        Path(r"C:\Program Files\eSpeak NG\espeak-ng-data"),
+        Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng-data"),
+    ]
+    for candidate in candidates:
+        if candidate is not None and (candidate / "phontab").is_file():
+            return candidate
+    return None
+
+
+class _PiperOnnxEngine:
+    """Piper VITS ONNX + eSpeak. Sherpa rejects this export (no sample_rate meta)."""
+
+    def __init__(self, model_path: Path) -> None:
+        import onnxruntime as ort
+
+        config_path = model_path.with_suffix(".onnx.json")
+        if not config_path.is_file():
+            raise FileNotFoundError("piper_config_missing")
+        payload = json.loads(config_path.read_text(encoding="utf-8"))
+        mapping = payload.get("phoneme_id_map")
+        if not isinstance(mapping, dict):
+            raise ValueError("piper_phoneme_map_invalid")
+        self._id_map = {
+            str(phoneme): [int(item) for item in ids]
+            for phoneme, ids in mapping.items()
+            if isinstance(ids, list) and ids
+        }
+        inference = payload.get("inference") if isinstance(payload.get("inference"), dict) else {}
+        audio = payload.get("audio") if isinstance(payload.get("audio"), dict) else {}
+        espeak = payload.get("espeak") if isinstance(payload.get("espeak"), dict) else {}
+        self.sample_rate = int(audio.get("sample_rate") or 22050)
+        self._noise_scale = float(inference.get("noise_scale") or 0.667)
+        self._length_scale = float(inference.get("length_scale") or 1.0)
+        self._noise_w = float(inference.get("noise_w") or 0.8)
+        self._voice = str(espeak.get("voice") or "es-419")
+        self._exe = _espeak_exe()
+        if self._exe is None:
+            raise FileNotFoundError("espeak_missing")
+        self._session = ort.InferenceSession(
+            str(model_path),
+            providers=["CPUExecutionProvider"],
+        )
+
+    def _phonemes(self, text: str) -> str:
+        import subprocess
+
+        completed = subprocess.run(
+            [str(self._exe), "-q", "-v", self._voice, "--ipa=3", text],
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        return " ".join(completed.stdout.split())
+
+    def generate(self, text: str) -> np.ndarray:
+        phonemes = self._phonemes(text)
+        ids = list(self._id_map.get("^", [1]))
+        for character in phonemes:
+            ids.extend(self._id_map.get(character, []))
+        ids.extend(self._id_map.get("$", [2]))
+        phoneme = np.array([ids], dtype=np.int64)
+        lengths = np.array([phoneme.shape[1]], dtype=np.int64)
+        scales = np.array(
+            [self._noise_scale, self._length_scale, self._noise_w],
+            dtype=np.float32,
+        )
+        output = self._session.run(
+            None,
+            {"input": phoneme, "input_lengths": lengths, "scales": scales},
+        )[0]
+        audio = np.asarray(output, dtype=np.float32).reshape(-1)
+        peak = float(np.max(np.abs(audio))) if audio.size else 0.0
+        if peak > 1.0:
+            audio = audio / peak
+        return audio
+
+
+def resolve_neural_tts_model() -> Path | None:
+    """Locate the Piper ONNX voice. Missing is an honest SAPI fallback."""
+
+    configured = (os.environ.get("BAXY_NEURAL_TTS_MODEL") or "").strip()
+    if configured:
+        candidate = Path(configured).expanduser()
+        return candidate if candidate.is_file() else None
+    try:
+        resolution = resolve_asset("neural_tts_voice")
+    except AssetDescriptorError:
+        resolution = None
+    directories: list[Path] = []
+    if resolution is not None:
+        if resolution.path is not None:
+            directories.append(resolution.path)
+        directories.extend(resolution.candidates)
+    directories.append(Path.home() / ".gemma4" / "models" / "piper")
+    for directory in directories:
+        if not directory.is_dir():
+            continue
+        direct = directory / "es_MX-claude-high.onnx"
+        if direct.is_file():
+            return direct
+        onnx_files = sorted(directory.glob("*.onnx"))
+        if len(onnx_files) == 1:
+            return onnx_files[0]
+    return None
+
+
+def neural_tts_identity(model_path: Path | None = None) -> tuple[str, str] | None:
+    path = model_path or resolve_neural_tts_model()
+    if path is None or not path.is_file():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return path.name, digest.hexdigest()
+
+
+class NeuralSpeechOutput:
+    """Cola TTS neural cancelable; misma frontera pública que SAPI."""
+
+    def __init__(self, on_state: Callable[[bool], None] | None = None) -> None:
+        self._on_state = on_state or (lambda _speaking: None)
+        self._queue: queue.Queue[_SpeechCommand] = queue.Queue(_MAX_QUEUE_ITEMS)
+        self._cancel = threading.Event()
+        self._shutdown = threading.Event()
+        self._ready = threading.Event()
+        self._stopped = threading.Event()
+        self._lock = threading.Lock()
+        self._worker: threading.Thread | None = None
+        self._generation = 0
+        self._stopping = False
+        self._available = False
+        self._speaking = False
+        self._model_path: Path | None = None
+        self._voice_name = "es_MX-claude-high"
+        self.last_error: str | None = None
+
+    @property
+    def available(self) -> bool:
+        return self._available
+
+    @property
+    def speaking(self) -> bool:
+        return self._speaking
+
+    @property
+    def voice_name(self) -> str:
+        return self._voice_name
+
+    def start(self, timeout: float = 8.0) -> bool:
+        with self._lock:
+            if self._worker is not None and not self._worker.is_alive():
+                self._worker = None
+                self._stopping = False
+            if self._stopping:
+                return False
+            if self._worker is None:
+                self._discard_pending()
+                self._cancel.clear()
+                self._shutdown.clear()
+                self._stopped.clear()
+                self._ready.clear()
+                self._worker = threading.Thread(
+                    target=self._run,
+                    name="baxy-neural-output",
+                    daemon=True,
+                )
+                self._worker.start()
+        self._ready.wait(timeout=_bounded_wait_seconds(timeout))
+        with self._lock:
+            return (
+                self._available
+                and not self._stopping
+                and self._worker is not None
+                and self._worker.is_alive()
+            )
+
+    def speak(self, text: str) -> bool:
+        cleaned = _clean_text(text)
+        if not cleaned or not self.start():
+            return False
+        with self._lock:
+            if self._stopping or self._worker is None:
+                return False
+            try:
+                self._queue.put_nowait(_SpeechCommand(self._generation, cleaned))
+                return True
+            except queue.Full:
+                self.last_error = "tts_queue_full"
+                return False
+
+    def cancel(self) -> None:
+        with self._lock:
+            self._generation += 1
+            self._cancel.set()
+            self._discard_pending()
+
+    def _discard_pending(self) -> None:
+        while True:
+            try:
+                self._queue.get_nowait()
+            except queue.Empty:
+                break
+
+    def stop(self, timeout: float = 5.0) -> bool:
+        with self._lock:
+            worker = self._worker
+            if worker is None:
+                return True
+            self._stopping = True
+            self._generation += 1
+            self._cancel.set()
+            self._shutdown.set()
+            self._discard_pending()
+        worker.join(timeout=_bounded_wait_seconds(timeout))
+        stopped = not worker.is_alive() and self._stopped.is_set()
+        with self._lock:
+            if stopped and self._worker is worker:
+                self._worker = None
+                self._stopping = False
+        return stopped
+
+    def _command_cancelled(self, generation: int) -> bool:
+        if self._shutdown.is_set() or self._cancel.is_set():
+            return True
+        with self._lock:
+            return self._stopping or generation != self._generation
+
+    def _set_speaking(self, value: bool) -> bool:
+        if self._speaking == value:
+            return False
+        self._speaking = value
+        try:
+            self._on_state(value)
+        except Exception:  # noqa: BLE001
+            logger.debug("observador TTS rechazó el cambio de estado")
+        return True
+
+    def _run(self) -> None:
+        tts = None
+        sample_rate = 22050
+        try:
+            import sounddevice as sd
+
+            model_path = resolve_neural_tts_model()
+            if model_path is None:
+                raise FileNotFoundError("neural_tts_model_missing")
+            tts = _PiperOnnxEngine(model_path)
+            sample_rate = tts.sample_rate
+            self._model_path = model_path
+            self._voice_name = model_path.stem
+            self._available = True
+            self.last_error = None
+        except Exception as error:  # noqa: BLE001
+            tts = None
+            sd = None  # type: ignore[assignment]
+            self._available = False
+            self.last_error = f"tts_unavailable:{type(error).__name__}"
+        finally:
+            self._ready.set()
+
+        try:
+            while self._available and tts is not None and not self._shutdown.is_set():
+                try:
+                    item = self._queue.get(timeout=0.1)
+                except queue.Empty:
+                    continue
+                if not isinstance(item, _SpeechCommand):
+                    continue
+                with self._lock:
+                    if (
+                        self._stopping
+                        or self._shutdown.is_set()
+                        or item.generation != self._generation
+                    ):
+                        continue
+                    self._cancel.clear()
+                try:
+                    waveform = tts.generate(item.text)
+                    if waveform.size == 0:
+                        raise RuntimeError("neural_tts_empty")
+                    if self._command_cancelled(item.generation):
+                        continue
+                    self._set_speaking(True)
+                    sd.play(waveform, samplerate=sample_rate, blocking=False)
+                    deadline = time.monotonic() + min(
+                        30.0, (waveform.size / float(sample_rate)) + 1.0
+                    )
+                    while not self._command_cancelled(item.generation):
+                        if time.monotonic() >= deadline:
+                            break
+                        try:
+                            stream = sd.get_stream()
+                            active = stream is not None and bool(
+                                getattr(stream, "active", False)
+                            )
+                        except Exception:  # noqa: BLE001
+                            active = True
+                        if not active:
+                            break
+                        remaining = remaining_seconds(
+                            deadline, 30.0, now=time.monotonic()
+                        )
+                        self._cancel.wait(min(0.03, remaining if remaining > 0 else 0.03))
+                    try:
+                        sd.stop()
+                    except Exception:  # noqa: BLE001
+                        pass
+                except Exception as error:  # noqa: BLE001
+                    self.last_error = f"tts_failed:{type(error).__name__}"
+                    try:
+                        sd.stop()
+                    except Exception:  # noqa: BLE001
+                        pass
+                finally:
+                    self._set_speaking(False)
+        finally:
+            try:
+                if sd is not None:
+                    sd.stop()
+            except Exception:  # noqa: BLE001
+                pass
+            self._available = False
+            self._set_speaking(False)
+            self._stopped.set()
+            with self._lock:
+                if self._worker is threading.current_thread():
+                    self._worker = None
+                    self._stopping = False
+
+
+def create_speech_output(
+    on_state: Callable[[bool], None] | None = None,
+) -> NeuralSpeechOutput | SapiSpeechOutput:
+    """Una sola salida viva: neural si el modelo está, SAPI si no."""
+
+    if resolve_neural_tts_model() is not None and _espeak_exe() is not None:
+        return NeuralSpeechOutput(on_state)
+    return SapiSpeechOutput(on_state)
+
+
+__all__ = [
+    "NeuralSpeechOutput",
+    "SapiSpeechOutput",
+    "create_speech_output",
+    "neural_tts_identity",
+    "resolve_neural_tts_model",
+]

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "runs": [
+    {
+      "run": 1,
+      "started": true,
+      "mode": "wake",
+      "wakeWord": true,
+      "ttsNeural": true,
+      "ttsVoice": "es_MX-claude-high",
+      "spoke": true,
+      "speaking_observed": true,
+      "cancelled_mid_utterance": true,
+      "events": [
+        "ready",
+        "state",
+        "state",
+        "state",
+        "state",
+        "state"
+      ],
+      "last_error": null
+    },
+    {
+      "run": 2,
+      "started": true,
+      "mode": "wake",
+      "wakeWord": true,
+      "ttsNeural": true,
+      "ttsVoice": "es_MX-claude-high",
+      "spoke": true,
+      "speaking_observed": true,
+      "cancelled_mid_utterance": true,
+      "events": [
+        "ready",
+        "state",
+        "state",
+        "state",
+        "state",
+        "state"
+      ],
+      "last_error": null
+    }
+  ]
+}

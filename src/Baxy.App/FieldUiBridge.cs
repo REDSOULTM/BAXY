@@ -855,7 +855,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         }),
         ["tts"] = new JsonArray(new JsonObject
         {
-            ["name"] = "windows-sapi",
+            ["name"] = "es_MX-claude-high",
             ["downloaded"] = _viewModel.IsMicAvailable,
         }),
         ["wake"] = new JsonObject
@@ -878,8 +878,8 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             ["ctxSize"] = ContextSize(),
             ["sttProvider"] = "sherpa-onnx (local)",
             ["sttModel"] = "parakeet-tdt-0.6b-v3-int8",
-            ["ttsProvider"] = "windows sapi (local)",
-            ["ttsVoice"] = "system spanish voice",
+            ["ttsProvider"] = "sherpa-onnx piper (local)",
+            ["ttsVoice"] = "es_MX-claude-high",
             ["wakeWord"] = "Baxy",
             ["wakeWordEnabled"] = _viewModel.IsWakeListening,
             ["voiceEnabled"] = _viewModel.IsMicAvailable,

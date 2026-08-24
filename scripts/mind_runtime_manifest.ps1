@@ -15,6 +15,8 @@ $script:BaxyMindRuntimeProperties = @(
     'stt_sha256',
     'wake_manifest',
     'wake_manifest_sha256',
+    'tts_model',
+    'tts_sha256',
     'ngl',
     'wake_on_start'
 )
@@ -190,6 +192,32 @@ function Get-BaxyMindRuntimeStatus {
         $result.Code = 'runtime_manifest_wake_invalid'
         $result.Detail = "El manifiesto declara wake desactivado pero conserva rutas wake: $manifestFull"
         return [pscustomobject]$result
+    }
+
+    if ($null -eq $runtime.tts_model -and $null -eq $runtime.tts_sha256) {
+        # Neural TTS is optional; SAPI remains the documented fallback.
+    } elseif (
+        $null -eq $runtime.tts_model -or
+        $null -eq $runtime.tts_sha256 -or
+        -not (Test-BaxySha256Text $runtime.tts_sha256)
+    ) {
+        $result.Code = 'runtime_tts_invalid'
+        $result.Detail = "El manifiesto TTS es incompleto: $manifestFull"
+        return [pscustomobject]$result
+    } else {
+        try {
+            $tts = [IO.Path]::GetFullPath([string]$runtime.tts_model)
+        } catch {
+            $result.Code = 'runtime_tts_invalid'
+            $result.Detail = "La ruta TTS del manifiesto es invalida: $manifestFull"
+            return [pscustomobject]$result
+        }
+        if (-not (Test-Path -LiteralPath $tts -PathType Leaf) -or
+            (Get-BaxySha256 -Path $tts) -cne [string]$runtime.tts_sha256) {
+            $result.Code = 'runtime_tts_invalid'
+            $result.Detail = "El modelo TTS falta o no coincide con su SHA-256: $tts"
+            return [pscustomobject]$result
+        }
     }
     # ConvertFrom-Json materializes ordinary JSON integers as Int64 on Windows
     # PowerShell.  Accept both integral runtime representations, while keeping

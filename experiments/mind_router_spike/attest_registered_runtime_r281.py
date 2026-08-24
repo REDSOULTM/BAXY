@@ -59,6 +59,12 @@ def describe(manifest: dict[str, Any]) -> dict[str, Any]:
         "pythonSha256": manifest.get("python_sha256"),
         "gpuLayers": manifest.get("ngl"),
         "wakeOnStart": manifest.get("wake_on_start"),
+        "sttSha256": manifest.get("stt_sha256"),
+        "wakeManifestSha256": manifest.get("wake_manifest_sha256"),
+        "ttsName": (
+            Path(manifest["tts_model"]).name if manifest.get("tts_model") else None
+        ),
+        "ttsSha256": manifest.get("tts_sha256"),
         # El goal 03 midió el contrato forzado sobre población fresca y lo
         # rechazó, así que ya no depende del nombre del fichero del modelo:
         # está apagado por defecto y sólo lo enciende un override explícito,
@@ -92,8 +98,9 @@ def build(manifest_path: Path | None = None) -> dict[str, Any]:
         "expected": describe(manifest) if manifest else None,
         "whyThisExists": (
             "R280 found the meta document claiming Qwen3-4B while the machine ran "
-            "Gemma-4, and the decision path differs between them. Recording the identity "
-            "here turns a silent model swap into a red gate."
+            "Gemma-4, and the decision path differs between them. Goal 03 measured both "
+            "on a fresh paraphrase population and promoted Qwen3-4B. Goal 09 adds the "
+            "STT/TTS/wake hashes so a silent voice-engine swap also turns the gate red."
         ),
         "constraints": {
             "model_started": False,

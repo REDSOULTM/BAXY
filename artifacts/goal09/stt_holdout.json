@@ -1,0 +1,30 @@
+{
+  "rows": [
+    {
+      "file": "en_zira.wav",
+      "text": "Play the next song.",
+      "doubtful": false,
+      "seconds": 0.262
+    },
+    {
+      "file": "es_sabina.wav",
+      "text": "Abres Patify.",
+      "doubtful": false,
+      "seconds": 0.28
+    },
+    {
+      "file": "mix_sabina.wav",
+      "text": "Vaxiable.",
+      "doubtful": false,
+      "seconds": 0.364
+    },
+    {
+      "file": "mix_zira.wav",
+      "text": "Open spatifa poor favor.",
+      "doubtful": false,
+      "seconds": 0.312
+    }
+  ],
+  "stt_p50_s": 0.312,
+  "stt_max_s": 0.364
+}
