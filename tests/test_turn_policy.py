@@ -9479,7 +9479,7 @@ def test_social_greeting_after_welcome_does_not_enter_reference_resolution() -> 
 
     def normal_chat(payload: dict) -> dict:
         payloads.append(payload)
-        return {"choices": [{"message": {"content": "¡Hola! ¿En qué puedo ayudarte?"}}]}
+        return {"choices": [{"message": {"content": "¡Hola!"}}]}
 
     runtime._post = normal_chat  # type: ignore[method-assign]
     answer, _ = runtime.chat(
@@ -9495,7 +9495,7 @@ def test_social_greeting_after_welcome_does_not_enter_reference_resolution() -> 
         response_language="es",
     )
 
-    assert answer == "¡Hola! ¿En qué puedo ayudarte?"
+    assert answer == "¡Hola!"
     assert payloads[0]["messages"][-2:] == [
         {
             "role": "assistant",
@@ -9503,6 +9503,70 @@ def test_social_greeting_after_welcome_does_not_enter_reference_resolution() -> 
         },
         {"role": "user", "content": "Hola"},
     ]
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "Sí, estoy aquí. ¿En qué puedo ayudarte?",
+        "Hola. ¿En qué puedo ayudarte?",
+        (
+            "Puedo ayudarte con información, explicaciones y charla. "
+            "¿En qué puedo ayudarte?"
+        ),
+        "Hello. How can I help you?",
+    ],
+)
+def test_unshaped_conversation_rejects_generic_assistance_closing(
+    answer: str,
+) -> None:
+    assert _shaped_conversation_answer_violates_contract(
+        answer,
+        "Hola.",
+        None,
+    )
+
+
+def test_social_chat_rewrites_generic_assistance_closing() -> None:
+    runtime = object.__new__(LlmRuntime)
+    payloads: list[dict[str, object]] = []
+
+    def post(payload: dict[str, object]) -> dict[str, object]:
+        payloads.append(payload)
+        content = (
+            "Hola. ¿En qué puedo ayudarte?"
+            if len(payloads) == 1
+            else json.dumps({"answer": "Hola."}, ensure_ascii=False)
+        )
+        return {"choices": [{"message": {"content": content}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+
+    answer, calls = runtime.chat(
+        "Hola.",
+        history=[
+            {
+                "role": "assistant",
+                "content": "Sí, estoy aquí. ¿En qué puedo ayudarte?",
+            }
+        ],
+        temperature=0.0,
+        conversation_kind="social",
+        response_language="es",
+    )
+
+    assert answer == "Hola."
+    assert calls == []
+    assert len(payloads) == 2
+    assert "no termines con pregunta ni oferta" in repr(payloads[1]["messages"])
+
+
+def test_capability_answer_without_generic_closing_remains_valid() -> None:
+    assert not _shaped_conversation_answer_violates_contract(
+        "Puedo ayudarte con información, explicaciones y charla.",
+        "¿Qué puedes hacer?",
+        None,
+    )
 
 
 def test_native_tool_selection_accepts_only_declared_parameterless_calls() -> None:

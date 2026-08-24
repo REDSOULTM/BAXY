@@ -389,3 +389,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   PowerShell parsea sin errores. Falta repetir en producto tras reiniciar al
   árbol nuevo; el tramo de soak iniciado sobre el binario anterior queda
   invalidado por este defecto visible y no puede contar para las 24 h finales.
+- La repetición viva `continuity-clean-r1` sobre `d3df14d` confirmó que la
+  autoridad falsa desapareció: presencia, saludo y capacidades terminaron sin
+  core en **1,379 s / 0,815 s / 1,061 s**. No cuenta todavía: las tres respuestas
+  añadieron la misma coletilla **«¿En qué puedo ayudarte?»**, incluso aunque el
+  prompt ya la prohibía. Es una frase de plantilla visible y la sesión se marca
+  fallida. La causa es distinta: el validador global sólo rechazaba ofertas
+  genéricas cuando `_conversation_presentation_shape` no era `None`; saludos y
+  capacidades pasan deliberadamente con shape nulo. La prohibición debe vivir
+  antes de ese gate y provocar la reescritura model-authored ya existente.

@@ -1869,6 +1869,25 @@ def _shaped_conversation_answer_violates_contract(
         r"[\u0400-\u04ff]", str(request or "")
     ) is None:
         return True
+    folded_content = _policy_guard_text(content)
+    generic_assistance_closings = (
+        "en que puedo ayudarte",
+        "en que mas puedo ayudarte",
+        "como puedo ayudarte",
+        "en que te puedo ayudar",
+        "como te puedo ayudar",
+        "hay algo mas en lo que pueda ayudarte",
+        "how can i help",
+        "how can i help you",
+        "what can i help you with",
+        "is there anything else i can help you with",
+        "let me know how i can help",
+    )
+    if any(
+        folded_content == closing or folded_content.endswith(f" {closing}")
+        for closing in generic_assistance_closings
+    ):
+        return True
     if shape is None:
         return False
     if shape == "roleplay_draft":
@@ -4638,7 +4657,8 @@ class LlmRuntime:
         conversation_policies = {
             "social": (
                 "Política interna del turno: interacción social. Responde de "
-                "forma natural y breve, sin proponer una acción no solicitada."
+                "forma natural y breve, sin proponer una acción no solicitada. "
+                "Termina al responder: no cierres con una oferta genérica de ayuda."
             ),
             "knowledge": (
                 "Política interna del turno: conocimiento o explicación. "
@@ -4646,7 +4666,7 @@ class LlmRuntime:
                 "un máximo de cuatro frases, salvo que la persona pida un "
                 "formato concreto. Si el fragmento depende de alternativas o "
                 "contexto ausente, di brevemente qué comparación falta sin "
-                "inventarla."
+                "inventarla. No cierres con una oferta genérica de ayuda."
             ),
             "followup": (
                 "Política interna del turno: seguimiento elíptico. Usa como "
