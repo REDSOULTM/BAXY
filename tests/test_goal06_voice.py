@@ -752,6 +752,15 @@ def test_verified_news_source_domain_is_not_mistaken_for_an_internal_code() -> N
         )
         == "internal_code"
     )
+    assert (
+        compose_visible_defect(
+            "Mesas de trabajo y tecnologíaecnología reforzarán la seguridad.",
+            "status",
+            user_text,
+            facts,
+        )
+        == "invented"
+    )
 
 
 def test_compose_rejects_invented_words_on_the_shipped_entry(monkeypatch) -> None:

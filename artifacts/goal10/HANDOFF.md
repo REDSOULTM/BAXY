@@ -932,3 +932,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   bloqueados. Focal reproducible **2/2**, `test_goal06_voice.py` **9/9** y suites
   de mente **1033/1033 + 101 subtests**, cero skips. Falta reproducción física
   del titular y luego la tanda completa 15/15.
+- Reproducción física fresca r18 superó el falso `internal_code` y por primera
+  vez publicó un titular concreto con fuente y fecha, pero deformó una palabra
+  como `tecnologíaecnología`; revisión manual: **0/1**, inválida. El guard de
+  salida ahora detecta spans largos duplicados dentro de una sola palabra y los
+  clasifica como invención para regenerar, sin aceptar ni corregir texto a
+  ciegas. Focal que reproduce exactamente la corrupción **1/1**. Falta suite
+  dueña y otra reproducción física del mismo turno.

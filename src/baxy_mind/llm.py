@@ -3014,6 +3014,22 @@ def _glued_proper_name(text: str, situation: dict, user_text: str) -> bool:
     return False
 
 
+def _has_glued_duplicate_span(text: str) -> bool:
+    """Detect model copy corruption such as ``tecnologíaecnología``."""
+
+    for token in re.findall(r"[^\W_]+", _policy_guard_text(text), re.UNICODE):
+        if len(token) < 12:
+            continue
+        for width in range(6, (len(token) // 2) + 1):
+            spans: set[str] = set()
+            for start in range(0, len(token) - width + 1):
+                span = token[start : start + width]
+                if span in spans:
+                    return True
+                spans.add(span)
+    return False
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -3036,6 +3052,8 @@ def compose_visible_defect(
     if visible_reply_is_a_fixed_stall(stripped):
         return "stall"
     if visible_reply_invents_a_spanish_infinitive(stripped):
+        return "invented"
+    if _has_glued_duplicate_span(stripped):
         return "invented"
     situation = _situation_from_facts(facts)
     polarity = str(situation.get("polarity") or "").strip().lower()
