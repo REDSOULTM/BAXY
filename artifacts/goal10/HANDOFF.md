@@ -720,3 +720,13 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   del turno, antes de cualquier cambio físico `voice.state`. Es sólo telemetría
   cerrada y no cambia colas ni tiempos. `ShellTraceTests` **8/8**, cero skips,
   build Release verde. Falta reproducción instrumentada.
+- `narration-r5` descartó el solapamiento con el saludo: se esperó su
+  `silent`, el primer pedido lunar volvió a responder en **781,363 ms** y
+  `voice.speak` fue **accepted**, pero no hubo `speaking`. El Piper dueño,
+  ejecutado aislado con el mismo Python 3.10 y hardware, reprodujo
+  consecutivamente `Hola.` y la frase lunar (**0,407 s / 1,562 s**), sin
+  `last_error`; no es ONNX, eSpeak, dispositivo ni texto. El shell dispara
+  `VoiceCancelAsync` al agregar el mensaje del usuario y `VoiceSpeakAsync` al
+  agregar la respuesta sin relación causal ni espera. Un cancel tardío puede
+  borrar una narración ya admitida. Hay que encadenar el speak al cancel exacto
+  del turno y repetir desde arranque fresco.
