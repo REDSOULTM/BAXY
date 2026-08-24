@@ -650,3 +650,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   corrección por la misma clave a `azul-panel`; selección, confirmación exacta y
   borrado; panel final **0 entries**. Sólo se creó y eliminó esa entrada de
   prueba, sin leer ni modificar memoria personal preexistente. Falta Fast.
+- Fast posterior a la reparación y al CRUD vivo **verde**: PowerShell, Ruff,
+  compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings
+  / 0 errors**. Memoria lista para el tramo continuo final.
