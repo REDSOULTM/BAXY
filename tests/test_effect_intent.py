@@ -451,6 +451,31 @@ def test_spoken_content_work_stays_inside_the_conversation(text: str) -> None:
     assert resolve_explicit_effects(text, AVAILABLE) is None
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Di una frase breve y completa sobre el cielo.",
+        "Dime una oración corta sobre la lluvia",
+        "Say a sentence about a quiet harbor",
+        "Tell me one phrase about autumn",
+    ],
+)
+def test_one_sentence_drafting_stays_inside_the_conversation(text: str) -> None:
+    assert conversation_only_content_request(text) is True
+    assert resolve_explicit_effects(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Dime qué frase aparece en la ventana",
+        "Tell me which sentence is visible on screen",
+    ],
+)
+def test_visible_text_queries_are_not_misclassified_as_drafting(text: str) -> None:
+    assert conversation_only_content_request(text) is False
+
+
 def test_truncated_exhaustive_voice_report_fails_closed() -> None:
     text = (
         "sin omitir ninguno, revisa en este orden, las copias recuperables, "

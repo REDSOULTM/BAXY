@@ -1322,6 +1322,59 @@ def test_content_drafting_closes_before_message_delivery_clarification() -> None
     assert result["reply"] == "Here is a draft you can edit."
 
 
+def test_one_sentence_drafting_closes_before_model_routing() -> None:
+    harmless_tool = {
+        "type": "function",
+        "function": {
+            "name": "system_time",
+            "canonical_name": "system.time",
+            "description": "Read the verified local clock.",
+            "risk": "read_only",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False,
+            },
+        },
+    }
+
+    class NoCatalog:
+        @staticmethod
+        def candidate_families(*_args: object) -> tuple[str, ...]:
+            raise AssertionError("one-sentence drafting must not rank action families")
+
+        @staticmethod
+        def retrieve(*_args: object) -> list[object]:
+            raise AssertionError("one-sentence drafting must not retrieve action evidence")
+
+    class Runtime:
+        @staticmethod
+        def detect_response_language(_text: str) -> str:
+            raise AssertionError("the closed draft already owns its language")
+
+        @staticmethod
+        def chat(*_args: object, **kwargs: object) -> tuple[str, list[object]]:
+            assert kwargs["conversation_kind"] == "knowledge"
+            assert kwargs["response_language"] == "es"
+            return "El cielo guarda una calma azul.", []
+
+    result = _prepare_turn_result(
+        {
+            "id": "one-sentence-draft",
+            "text": "Di una frase breve y completa sobre el cielo.",
+        },
+        llm=Runtime(),
+        planner_catalog=PlannerCatalog([harmless_tool]),
+        turn_evidence=NoCatalog(),
+        encoder=lambda _texts: (),
+        tool_by_name={},
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["effectOperations"] == []
+    assert result["reply"] == "El cielo guarda una calma azul."
+
+
 @pytest.mark.parametrize(
     ("text", "language"),
     [

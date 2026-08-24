@@ -678,3 +678,13 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   cae en clasificación generativa antes de redactar. Narración no se da por
   verificada: la observación accesible no capturó estado `speaking` y no se
   afirma audio que la herramienta no oyó.
+- Reparación focal del atasco conversacional: `di/dime una frase/oración…` y
+  `say/tell me a/one sentence/phrase…` son ahora redacción autocontenida antes
+  de recuperación de efectos y antes del decisor generativo. La prueba reveló
+  además que dos variantes (`…sobre la lluvia`, `…about autumn`) se
+  autenticaban erróneamente como `web.search`; el veto de contenido se aplica
+  tanto a aclaración como a resolución de efectos. Las consultas de observación
+  **«Dime qué frase aparece en la ventana»** / **«Tell me which sentence is
+  visible on screen»** permanecen fuera del cierre. Focales **7/7**, cero skips
+  (`test_effect_intent`: 6; `test_turn_policy`: 1). Falta suites dueñas,
+  repetición viva y Fast.

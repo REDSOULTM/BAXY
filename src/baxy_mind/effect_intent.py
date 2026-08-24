@@ -2211,7 +2211,9 @@ def conversation_only_content_request(text: str) -> bool:
         r"\b(?:frase|phrase|sentence)\b.{1,128}$|"
         r"^(?:respondeme|responde|reply|answer)\b.{0,96}"
         r"\b(?:saludo|greeting|frase|phrase|oracion|sentence|texto|text|"
-        r"palabra|word)\b.{0,96}$",
+        r"palabra|word)\b.{0,96}$|"
+        r"^(?:di|dime|say|tell\s+me)\s+(?:un|una|a|one)\s+"
+        r"(?:frase|oracion|sentence|phrase)\b.{0,128}$",
     )
 
 
@@ -2402,7 +2404,7 @@ def resolve_explicit_clarification_intent(
 ) -> ClarificationIntent | None:
     """Preserve the operation identity of a recognized incomplete effect."""
 
-    if explicit_non_action_frame(text):
+    if explicit_non_action_frame(text) or conversation_only_content_request(text):
         return None
     folded = _strip_request_envelope(_strip_request_envelope(_fold(text)))
     available = frozenset(available_operations)
@@ -12185,7 +12187,7 @@ def resolve_explicit_effects(
 ) -> EffectIntent | None:
     """Resolve a bounded sequence of clause-local, closed-catalog effects."""
 
-    if explicit_non_action_frame(text):
+    if explicit_non_action_frame(text) or conversation_only_content_request(text):
         return None
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     available = frozenset(available_operations)
