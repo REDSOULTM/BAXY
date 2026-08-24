@@ -417,3 +417,13 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   espejo legítimo de repetir la propia respuesta previa. Se conserva el espejo
   social del usuario y se rechaza por separado cualquier eco del historial del
   asistente; el retry ya existente no lleva ese historial.
+- La repetición `continuity-history-clean-r4` probó que el eco se rechazaba,
+  pero agotaba los dos intentos y caía en la recuperación semántica, que hizo
+  visible otra pregunta de plantilla: «¿En qué puedo ayudarte hoy?»
+  (`decision.ready=clarify`, 2,611 s). Presencia y capacidades fueron limpias;
+  el saludo invalida otra vez la sesión. La causa restante es que `chat` todavía
+  entregaba historial al modelo para un acto social que el clasificador ya
+  demostró autocontenido. Los actos sociales cerrados dejan de cargar historial,
+  igual que el aviso de idioma cerrado; así no hay continuidad que inventar. El
+  veto de eco se conserva para respuestas de conocimiento, donde sí puede haber
+  historial legítimo.

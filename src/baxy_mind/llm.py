@@ -4744,11 +4744,11 @@ class LlmRuntime:
         if response_language is not None and response_language not in language_policies:
             raise ValueError("idioma de respuesta inválido")
         prior_messages = _bounded_history(history)
-        if conversation_kind == "unsupported_language":
-            # The closed language gate already owns this result. Replaying the
-            # apparent foreign-language action makes a small model translate or
-            # obey it instead of wording the safe notice, and exposes needless
-            # untrusted content to the presentation-only decode.
+        if conversation_kind in {"social", "unsupported_language"}:
+            # Both closed gates already own an independent current-turn result.
+            # Replaying history can make a small model answer the previous
+            # assistant turn instead of the new greeting. For unsupported
+            # language it can also translate or obey the apparent action.
             prior_messages = []
         if (
             prior_messages

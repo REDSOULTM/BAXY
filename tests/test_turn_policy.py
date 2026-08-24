@@ -9497,13 +9497,8 @@ def test_social_greeting_after_welcome_does_not_enter_reference_resolution() -> 
     )
 
     assert answer == "¡Hola!"
-    assert payloads[0]["messages"][-2:] == [
-        {
-            "role": "assistant",
-            "content": "Hola. Estoy lista para ayudarte con este equipo.",
-        },
-        {"role": "user", "content": "Hola"},
-    ]
+    assert payloads[0]["messages"][-1] == {"role": "user", "content": "Hola"}
+    assert "Estoy lista" not in repr(payloads[0]["messages"])
 
 
 @pytest.mark.parametrize(
@@ -9561,33 +9556,38 @@ def test_social_chat_removes_only_generic_question_closing() -> None:
     assert len(payloads) == 1
 
 
-def test_social_chat_rewrites_previous_assistant_echo() -> None:
+def test_knowledge_chat_rewrites_previous_assistant_echo() -> None:
     runtime = object.__new__(LlmRuntime)
     payloads: list[dict[str, object]] = []
 
     def post(payload: dict[str, object]) -> dict[str, object]:
         payloads.append(payload)
         content = (
-            "Sí, aquí. ¿Qué necesitas?"
+            "Puedo ayudarte con información."
             if len(payloads) == 1
-            else json.dumps({"answer": "Hola."}, ensure_ascii=False)
+            else json.dumps(
+                {"answer": "Puedo explicar conceptos y resolver dudas."},
+                ensure_ascii=False,
+            )
         )
         return {"choices": [{"message": {"content": content}}]}
 
     runtime._post = post  # type: ignore[method-assign]
 
     answer, calls = runtime.chat(
-        "Hola.",
-        history=[{"role": "assistant", "content": "Sí, aquí."}],
+        "¿Qué puedes hacer?",
+        history=[
+            {"role": "assistant", "content": "Puedo ayudarte con información."}
+        ],
         temperature=0.0,
-        conversation_kind="social",
+        conversation_kind="knowledge",
         response_language="es",
     )
 
-    assert answer == "Hola."
+    assert answer == "Puedo explicar conceptos y resolver dudas."
     assert calls == []
     assert len(payloads) == 2
-    assert "Sí, aquí." not in repr(payloads[1]["messages"])
+    assert "Puedo ayudarte con información." not in repr(payloads[1]["messages"])
 
 
 @pytest.mark.parametrize(
