@@ -700,3 +700,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `speaking`; la captura física final sí acredita el texto y estado `Idle`.
   Antes de marcar narración falta una traza estable de `voice.event state`
   `speaking=true→false`, sin texto ni datos privados.
+- Instrumentación de narración añadida al evento dueño de la UI: cada
+  `voice.event state` escribe sólo `voice.state` con detalle cerrado
+  `speaking|silent`, correlacionado al turno vigente; nunca texto ni contenido
+  privado. `ShellTraceTests` **8/8**, cero skips, y build Release verde. Falta
+  repetir en producto para observar el par real.

@@ -1636,6 +1636,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 if (eventName == "state")
                 {
+                    ShellTraceSink.Record(
+                        ShellTraceScopes.Turn,
+                        ShellTraceSink.TurnId,
+                        ShellTraceStages.VoiceState,
+                        speaking is true ? "speaking" : "silent");
                     IsVoiceSpeaking = speaking ?? false;
                     if (mode == "wake")
                     {
