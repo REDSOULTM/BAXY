@@ -802,3 +802,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   uso normal. Las entradas posteriores se solaparon con una sonda del agente y
   tampoco se atribuyen. La salida narrada está cerrada; aún falta acreditar el
   uso entero sin pantalla desde wake/voz y ejecutar Fast.
+- La misma r11 reveló un defecto terminal posterior y la sesión completa queda
+  invalidada para dosis: durante el segundo turno el proceso real de mente
+  Python 3.12 murió nativamente. Windows Event Log 1000/1001 registra PID 5824,
+  excepción **`0xc0000005`** (`BEX64`, ejecución sobre dirección inválida), a
+  las 18:00:23; WER report
+  `bf8d0edf-c17b-49d8-b643-d4e059cc34fc`. `Baxy.exe` y `baxy-core.exe`
+  sobrevivieron pero ya no había ningún hijo Python, y los turnos posteriores
+  sólo agotaron/completaron degradados del shell. El WER no guardó dump ni
+  módulo culpable. No se atribuye a contenido del dueño: el siguiente paso es
+  reproducir sólo con datos sintéticos en un `BAXY_DATA_DIR` aislado y capturar
+  pila/módulo nativos sin incluir conversación personal.
