@@ -961,3 +961,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   resultado observado tiene autoridad `google_news_rss_https`; composiciones
   ordinarias siguen en 5 s y los presupuestos CPU siguen en 60/130 s. Falta
   focal .NET y reproducción física r22.
+- Focal de timeout + traza **9/9**, cero skips. Reproducción física r22 de
+  noticias **1/1 correcta** en **7,373 s**: el primer borrador corrupto fue
+  rechazado como `invented`, el segundo resumió el titular y nombró la fuente
+  observada, y `compose.end` terminó sin fallo dentro del techo específico de
+  10 s. Falta Fast y r23 fresca de quince; r22 es sonda y suma cero dosis.
