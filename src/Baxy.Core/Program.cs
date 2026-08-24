@@ -70,13 +70,15 @@ internal static class Program
         {
             return 0;
         }
-        catch (JournalIntegrityException)
+        catch (JournalIntegrityException exception)
         {
+            RecordFault(dataRoot, 74, exception);
             Console.Error.WriteLine("BAXY core stopped because its mission journal failed integrity validation.");
             return 74;
         }
         catch (Exception exception)
         {
+            RecordFault(dataRoot, 70, exception);
             Console.Error.WriteLine($"BAXY core stopped safely ({exception.GetType().Name}).");
             return 70;
         }
@@ -428,6 +430,35 @@ internal static class Program
         {
             CryptographicOperations.ZeroMemory(wire.AsSpan(0, wireLength));
             pool.Return(wire);
+        }
+    }
+
+    /// <summary>
+    /// Deja la causa exacta de una parada fail-closed en el propio perfil de
+    /// datos. El canal de protocolo sólo puede decir el tipo —no se le puede
+    /// enviar prosa arbitraria a la app—, y sin esta traza un arranque que no
+    /// levanta es indistinguible de otro: la app queda en «no pudo iniciar» y
+    /// nadie sabe qué reparar. Es diagnóstico local, nunca sale de la máquina.
+    /// </summary>
+    private static void RecordFault(string dataRoot, int exitCode, Exception exception)
+    {
+        try
+        {
+            string directory = Path.Combine(dataRoot, "diagnostics");
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(
+                Path.Combine(directory, "last-core-fault.txt"),
+                string.Join(
+                    Environment.NewLine,
+                    DateTimeOffset.Now.ToString("o"),
+                    "exit=" + exitCode.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    exception.ToString()));
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
         }
     }
 

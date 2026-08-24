@@ -132,14 +132,51 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 throw new IOException("El motor local terminó durante el saludo de protocolo.");
             }
         }
-        catch
+        catch (Exception exception)
         {
+            // `Process.Exited` sólo se levanta una vez y el core puede morir
+            // antes de que el manejador quede suscrito: sin esta traza, un
+            // arranque que no levanta no deja nada que leer y la ventana sólo
+            // dice «no pudo iniciar».
+            RecordPresenceFault(
+                "last-core-start-failure.txt",
+                exception.GetType().Name
+                    + ": "
+                    + exception.Message
+                    + Environment.NewLine
+                    + string.Join(" | ", _diagnostics));
             await StopProcessAsync().ConfigureAwait(false);
             throw;
         }
         finally
         {
             _lifecycleLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// Escribe una causa de fallo local junto a las demás trazas de presencia.
+    /// Nunca contiene texto del usuario: sólo el tipo de fallo, su mensaje y
+    /// las líneas de diagnóstico que el propio core emitió por stderr.
+    /// </summary>
+    internal static void RecordPresenceFault(string fileName, string content)
+    {
+        try
+        {
+            string directory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "BAXY",
+                "presence");
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(
+                Path.Combine(directory, fileName),
+                DateTimeOffset.Now.ToString("o") + Environment.NewLine + content);
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
         }
     }
 
@@ -528,29 +565,12 @@ internal sealed class CoreProcessClient : IAsyncDisposable
         {
         }
 
-        string diagnostics = string.Join(" | ", _diagnostics);
-        try
-        {
-            string directory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "BAXY",
-                "presence");
-            Directory.CreateDirectory(directory);
-            File.WriteAllText(
-                Path.Combine(directory, "last-core-exit.txt"),
-                DateTimeOffset.Now.ToString("o")
-                    + Environment.NewLine
-                    + "exit="
-                    + exitCode.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                    + Environment.NewLine
-                    + diagnostics);
-        }
-        catch (IOException)
-        {
-        }
-        catch (UnauthorizedAccessException)
-        {
-        }
+        RecordPresenceFault(
+            "last-core-exit.txt",
+            "exit="
+                + exitCode.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                + Environment.NewLine
+                + string.Join(" | ", _diagnostics));
 
         SignalDisconnected(new IOException("El motor local terminó inesperadamente."));
     }

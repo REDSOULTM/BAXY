@@ -349,6 +349,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     isUser: false,
                     messageEvent: UserMessageEvent.Confirmation);
             }
+            AnnounceUnreadableOutbox();
             RecoverPendingAudioOperation(announce: true);
             RecoverPendingMemoryOperation(announce: true);
             RecoverPendingNoteInteraction(announce: true);
@@ -359,7 +360,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         catch (Exception exception) when (IsExpectedStartupFailure(exception))
         {
-            await HandleStartupFailureAsync(client);
+            await HandleStartupFailureAsync(client, exception);
         }
         finally
         {
@@ -3014,8 +3015,37 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindLifetimeCancellation.Dispose();
     }
 
-    private async Task HandleStartupFailureAsync(CoreProcessClient client)
+    /// <summary>
+    /// Dice, una sola vez por arranque, que había una cola de reintentos que
+    /// no se pudo leer. Callarlo sería afirmar por omisión que no quedaba
+    /// nada pendiente, y eso no se sabe.
+    /// </summary>
+    private void AnnounceUnreadableOutbox()
     {
+        string? unreadable = _retryableOperations?.UnreadableOutboxPath;
+        if (unreadable is null)
+        {
+            return;
+        }
+
+        CoreProcessClient.RecordPresenceFault("last-unreadable-outbox.txt", unreadable);
+        AddMessage(
+            "BAXY",
+            TurnVisibleFacts.Failure("durable_retry_unreadable"),
+            isUser: false,
+            messageEvent: UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
+    }
+
+    private async Task HandleStartupFailureAsync(
+        CoreProcessClient client,
+        Exception cause)
+    {
+        // Éste es el único punto donde muere la causa de un arranque fallido:
+        // la ventana sólo puede ofrecer «reintentar». Sin dejarla escrita, un
+        // BAXY que no levanta es indistinguible de otro que tampoco.
+        CoreProcessClient.RecordPresenceFault(
+            "last-startup-failure.txt",
+            cause.ToString());
         ClearVolatileMemoryConfirmation();
         DetachCoreDisconnectedHandler(client);
         await client.DisposeAsync();

@@ -100,6 +100,47 @@ internal sealed class DurableRetryStore
         return operations;
     }
 
+    /// <summary>
+    /// Carga la cola durable apartando el archivo cuando resultó ilegible.
+    /// Un outbox corrupto no puede impedir que BAXY vuelva a arrancar —el
+    /// «reintentar» de la ventana volvería a leerlo y fallaría igual, para
+    /// siempre—, pero tampoco se borra en silencio: puede contener
+    /// operaciones cuyo efecto quizá ocurrió, así que se conserva en disco
+    /// con nombre de cuarentena y quien llama lo dice en voz alta.
+    /// </summary>
+    public DurableRetryLoad LoadOrQuarantine()
+    {
+        try
+        {
+            return new DurableRetryLoad(Load(), UnreadablePath: null);
+        }
+        catch (InvalidDataException)
+        {
+            return new DurableRetryLoad([], Quarantine());
+        }
+    }
+
+    private string Quarantine()
+    {
+        string candidate = _path
+            + ".unreadable-"
+            + DateTime.UtcNow.ToString(
+                "yyyyMMdd'T'HHmmssfff'Z'",
+                System.Globalization.CultureInfo.InvariantCulture);
+        try
+        {
+            File.Move(_path, candidate);
+            return candidate;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // Apartarlo falló: el archivo sigue donde estaba y eso es lo que
+            // se reporta. Conservar la ruta real vale más que una ruta que no
+            // existe.
+            return _path;
+        }
+    }
+
     public void Save(IReadOnlyCollection<PreparedOperation> operations)
     {
         ArgumentNullException.ThrowIfNull(operations);
@@ -545,6 +586,15 @@ internal sealed class DurableRetryStore
         }
     }
 }
+
+/// <summary>
+/// Resultado de abrir la cola durable. <paramref name="UnreadablePath"/> es
+/// <see langword="null"/> cuando el archivo se leyó entero; si no, es dónde
+/// quedó lo que no se pudo interpretar.
+/// </summary>
+internal readonly record struct DurableRetryLoad(
+    IReadOnlyList<PreparedOperation> Operations,
+    string? UnreadablePath);
 
 internal sealed class DurableRetryDocument
 {

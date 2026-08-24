@@ -216,7 +216,9 @@ internal sealed class RetryableOperationRegistry
         ArgumentNullException.ThrowIfNull(store);
         _store = store;
         _memoryProtector = memoryProtector;
-        foreach (PreparedOperation operation in store.Load())
+        DurableRetryLoad loaded = store.LoadOrQuarantine();
+        UnreadableOutboxPath = loaded.UnreadablePath;
+        foreach (PreparedOperation operation in loaded.Operations)
         {
             AuthenticateLoadedMemoryOperation(operation);
             if (!_operations.TryAdd(operation.IdentityKey, operation))
@@ -225,6 +227,13 @@ internal sealed class RetryableOperationRegistry
             }
         }
     }
+
+    /// <summary>
+    /// Dónde quedó la cola durable que no se pudo leer al abrir, o
+    /// <see langword="null"/> si se leyó entera. Lo que había ahí no se
+    /// reintentará: hay que decirlo.
+    /// </summary>
+    internal string? UnreadableOutboxPath { get; }
 
     public static RetryableOperationRegistry CreateDefault(
         MemoryOperationProtector? memoryProtector = null) =>
