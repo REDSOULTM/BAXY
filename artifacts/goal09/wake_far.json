@@ -1,15 +1,17 @@
 {
-  "measured_at": "2026-08-24T01:30:42.897238+00:00",
-  "partial": true,
+  "measured_at": "2026-08-24T02:54:36.069071+00:00",
+  "threshold": 0.5,
+  "threshold_locked_before_open": true,
+  "partial": false,
   "far": {
-    "seconds": 7431.296,
-    "hours": 2.0642,
-    "activations": 6,
-    "far_per_hour": 2.9066262466103794,
-    "far_upper_per_hour": 5.73690300434491,
+    "seconds": 7200.0,
+    "hours": 2.0,
+    "activations": 5,
+    "far_per_hour": 2.499999999992108,
+    "far_upper_per_hour": 5.256517454354173,
     "threshold": 0.5,
     "threshold_locked_before_open": true,
-    "files_used": 6,
-    "last_file": "D:\\Movies\\Series\\Impractical Jokers\\Season 11\\Impractical.Jokers.S11E07.1080p.HEVC.x265.mkv"
+    "files_used": 7,
+    "last_file": "D:\\Movies\\Series\\Impractical Jokers\\Season 11\\Impractical.Jokers.S11E09.1080p.HEVC.x265.mkv"
   }
 }

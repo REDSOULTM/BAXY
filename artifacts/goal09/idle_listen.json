@@ -1,13 +1,24 @@
 {
   "wake_started": true,
-  "seconds": 17.179,
-  "rss_mb": 0.0,
-  "peak_rss_mb": 0.0,
-  "cpu_user_s": 333.15625,
-  "cpu_system_s": 7.390625,
+  "mode": "wake",
+  "wakeWord": true,
+  "seconds": 60.016,
+  "rss_mb": 1087.8,
+  "peak_rss_mb": 1087.9,
+  "min_rss_mb": 1082.0,
+  "samples": 59,
+  "cpu_process_s": 1349.922,
+  "cpu_percent_over_window": 2249.3,
+  "cpu_percent_p50": 2329.6,
+  "cpu_note": "process CPU across ONNX intra-op threads while scoring 16 kHz silence; not a single-core percent",
   "stt_on_cpu": true,
   "tts_on_cpu": true,
   "decisor_vram_untouched": true,
+  "gpu": {
+    "llama_server_running": false,
+    "nvidia_smi_memory_mib": "510, 16380"
+  },
   "last_error": null,
-  "measured_at": "2026-08-24T00:40:40.004793+00:00"
+  "measured_at": "2026-08-24T02:06:10.180490+00:00",
+  "always_on_listen": true
 }
