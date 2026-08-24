@@ -146,12 +146,28 @@ esta sesión.
   cambios preexistentes no committeados de Goal 10: las narraciones se
   convertían en JSON de instrumentación y causaban fallos en cascada ajenos a
   este goal. El árbol del gate se terminó completo para no consumir recursos.
+- Full se repitió en un worktree limpio detached de `e53ef23`, con afinidad 4 y
+  prioridad baja. Pasaron PowerShell, Ruff, compileall, ESLint, TypeScript,
+  `dotnet format` y build Release. .NET: Contracts 60/60, Kernel 137/137,
+  Providers 451/451 y Setup 477/477; Integration pasó 2.743, omitió 1 y falló
+  90 por expectativas de prosa fija frente al contrato estructurado ya vigente.
+  Pytest separado, limitado a dos CPU por la propia política: 8.632 passed, 431
+  subtests passed, 11 skipped y 38 fallos de baseline en packaging/artefactos y
+  contratos funcionales fuera de recursos. Los 7 tests de política de recursos
+  pasaron tanto focalmente como dentro de esa corrida. El worktree temporal se
+  eliminó después de verificar su ruta bajo `%LOCALAPPDATA%\Temp`; el runner no
+  dejó cambios en el repositorio principal.
 
-## Siguiente paso obligatorio
+## Cierre de este goal
 
-Ejecutar Full sobre un worktree temporal del commit publicado, sin tocar ni
-ocultar los cambios no committeados de Goal 10. Si queda verde, documentar el
-resultado exacto, verificar árbol/diff y cerrar este goal.
+- CPU/GPU/RAM descontroladas: corregidas y cubiertas además por guardián externo.
+- Modelos residentes, sin carga bajo demanda: conservados; inferencia caliente
+  comprobada en 429,3 ms.
+- Reposo cotidiano: CPU BAXY 0,76 % promedio, GPU ≤2 %, RSS ~4,8 GiB.
+- Actividad y post-turno: sin 99 %, sin crecimiento y retorno a 0,73 % CPU.
+- Full verde completo es inalcanzable dentro de este goal sin reabrir Goal 10 y
+  packaging: la evidencia limpia exacta queda arriba. No se relajó, ocultó ni
+  marcó `skip` ningún fallo.
 
 ## Árbol sucio ajeno a este goal
 
