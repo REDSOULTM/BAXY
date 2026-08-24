@@ -2893,6 +2893,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
                 "Radiosantamaria.cl indica que tecnología y maquinaria están "
                 "mejorando la seguridad de los buzos."
             ),
+            f"{title}, radiosantamaria.cl.",
             f'Según radiosantamaria.cl, el titular informa: "{title}".',
         ]
 

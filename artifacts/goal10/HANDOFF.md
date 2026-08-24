@@ -985,3 +985,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `source`, sin inferir un dominio. Focal del proveedor **1/1** y suite completa
   `Baxy.Providers.Windows.Tests` **454/454**, cero skips en el resumen. Falta
   reproducción física.
+- Fast verde completo. R25 conservó literal el título y la nueva fuente, sin
+  inventar, pero publicó la yuxtaposición torpe «…aysenino, radiosantamaria.cl.»;
+  revisión manual **0/1**, inválida. El contrato exige ahora una atribución
+  explícita natural (`según`, `informa`, `publicado por` o equivalentes EN),
+  además de título y fuente literales. La regresión descarta en orden la
+  paráfrasis con «maquinaria» y la coma desnuda antes de aceptar la atribución:
+  focal **2/2**, suite `test_planner.py` **148/148 + 101 subtests**, cero skips.
+  Falta reproducción física.

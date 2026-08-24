@@ -7683,9 +7683,10 @@ class LlmRuntime:
         news_summary_instruction = (
             "El primer elemento de seen.results es un titular individual "
             "verificado, no una portada. Conserva literalmente ese título y su "
-            "fuente en una sola frase natural. No lo interpretes, amplíes ni "
-            "parafrasees; no enumeres sitios, no mezcles otros resultados y no "
-            "inventes detalles ausentes."
+            "fuente en una sola frase natural, atribuyéndolo explícitamente con "
+            "«según FUENTE», «FUENTE informa» o el equivalente en inglés. No lo "
+            "interpretes, amplíes ni parafrasees; no enumeres sitios, no mezcles "
+            "otros resultados y no inventes detalles ausentes."
         )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
@@ -7780,6 +7781,12 @@ class LlmRuntime:
 
         def preserves_contract(text: str) -> bool:
             if intent == "status" and _starts_with_request_imperative(text):
+                return False
+            if news_summary_request and re.search(
+                r"\b(?:segun|informa|informo|publicado por|fuente|according to|"
+                r"reports?|published by|source)\b",
+                _policy_guard_text(text),
+            ) is None:
                 return False
             folded = text.casefold()
             if any(term.casefold() in folded for term in forbidden_terms):
