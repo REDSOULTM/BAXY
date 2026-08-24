@@ -60,6 +60,13 @@ esta sesión.
   1 passed, 0 skipped, 0 failed.
 - Guardián sin BAXY, 2 muestras: exit 0, ninguna acción.
 - Prueba focalizada del límite de compilación: 1 passed; Ruff: verde.
+- Corrida física R1 se detuvo voluntariamente antes del turno al descubrir que
+  la consulta síncrona a `nvidia-smi` dilataba el reloj de CPU a ~2,6 s. El
+  arranque alcanzó CPU BAXY 2,88 %, GPU 39 %, VRAM 22,3 %, RSS 2,81 GiB; no
+  hubo saturación. Evidencia parcial: `physical_run_r1.jsonl`.
+- El muestreo GPU ahora vive en un hilo independiente y la enumeración evita
+  leer la línea de comando de procesos no Python. Self-test R4: 6 muestras en
+  3,02 s (intervalo efectivo 0,50 s), CPU pico 4,2 %, GPU 1 %, sin acción.
 
 ## Siguiente paso obligatorio
 

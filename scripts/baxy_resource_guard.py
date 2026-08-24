@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import subprocess
+import threading
 import time
 from typing import Any
 
@@ -70,8 +71,12 @@ class BreachTracker:
 
 def _is_baxy_seed(process: psutil.Process) -> bool:
     try:
-        name = process.name().casefold()
-        command = " ".join(process.cmdline()).casefold()
+        info = getattr(process, "info", {})
+        name = str(info.get("name") or process.name()).casefold()
+        command_parts = None
+        if name in {"python.exe", "pythonw.exe"}:
+            command_parts = process.cmdline()
+        command = " ".join(command_parts or ()).casefold()
     except (psutil.AccessDenied, psutil.NoSuchProcess, psutil.ZombieProcess):
         return False
     if name in {"baxy.exe", "baxy-core.exe", "llama-server.exe"}:
@@ -82,7 +87,11 @@ def _is_baxy_seed(process: psutil.Process) -> bool:
 
 
 def baxy_process_family() -> list[psutil.Process]:
-    seeds = [process for process in psutil.process_iter() if _is_baxy_seed(process)]
+    seeds = [
+        process
+        for process in psutil.process_iter(attrs=("name",))
+        if _is_baxy_seed(process)
+    ]
     family: dict[int, psutil.Process] = {process.pid: process for process in seeds}
     for process in seeds:
         try:
@@ -93,7 +102,7 @@ def baxy_process_family() -> list[psutil.Process]:
     return list(family.values())
 
 
-def _gpu_sample() -> dict[str, float | None]:
+def _read_gpu_sample() -> dict[str, float | None]:
     try:
         completed = subprocess.run(
             [
@@ -125,6 +134,43 @@ def _gpu_sample() -> dict[str, float | None]:
         }
 
 
+class GpuSampler:
+    """Keep slow vendor telemetry away from the CPU safety clock."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._stop = threading.Event()
+        self._sample = {
+            "utilization_percent": None,
+            "memory_used_mib": None,
+            "memory_total_mib": None,
+            "memory_percent": None,
+        }
+        self._worker = threading.Thread(
+            target=self._run,
+            name="baxy-resource-gpu-sampler",
+            daemon=True,
+        )
+
+    def start(self) -> None:
+        self._worker.start()
+
+    def latest(self) -> dict[str, float | None]:
+        with self._lock:
+            return dict(self._sample)
+
+    def close(self) -> None:
+        self._stop.set()
+        self._worker.join(timeout=3.0)
+
+    def _run(self) -> None:
+        while not self._stop.is_set():
+            sample = _read_gpu_sample()
+            with self._lock:
+                self._sample = sample
+            self._stop.wait(1.0)
+
+
 def _prime_cpu(processes: list[psutil.Process]) -> None:
     psutil.cpu_percent(interval=None)
     for process in processes:
@@ -134,7 +180,10 @@ def _prime_cpu(processes: list[psutil.Process]) -> None:
             continue
 
 
-def take_sample(known: dict[int, psutil.Process]) -> dict[str, Any]:
+def take_sample(
+    known: dict[int, psutil.Process],
+    gpu: dict[str, float | None],
+) -> dict[str, Any]:
     processes = baxy_process_family()
     for process in processes:
         if process.pid not in known:
@@ -175,7 +224,7 @@ def take_sample(known: dict[int, psutil.Process]) -> dict[str, Any]:
         "baxy_cpu_percent": round(cpu_raw / logical, 2),
         "system_ram_percent": psutil.virtual_memory().percent,
         "baxy_rss_mib": round(rss / 1024 / 1024, 2),
-        "gpu": _gpu_sample(),
+        "gpu": gpu,
         "processes": sorted(rows, key=lambda row: int(row["pid"])),
     }
 
@@ -218,6 +267,8 @@ def main() -> int:
     tracker = BreachTracker(limits)
     known = {process.pid: process for process in baxy_process_family()}
     _prime_cpu(list(known.values()))
+    gpu_sampler = GpuSampler()
+    gpu_sampler.start()
     started = time.monotonic()
     peak: dict[str, float] = defaultdict(float)
     samples = 0
@@ -225,29 +276,32 @@ def main() -> int:
     reasons: list[str] = []
     killed: list[int] = []
 
-    with output.with_suffix(".jsonl").open("w", encoding="utf-8") as log:
-        while time.monotonic() - started < max(0.0, args.duration):
-            time.sleep(max(0.2, args.interval))
-            current = take_sample(known)
-            samples += 1
-            for key in (
-                "total_cpu_percent",
-                "baxy_cpu_percent",
-                "system_ram_percent",
-                "baxy_rss_mib",
-            ):
-                peak[key] = max(peak[key], float(current[key]))
-            gpu = current["gpu"]
-            for key in ("utilization_percent", "memory_percent"):
-                if gpu[key] is not None:
-                    peak[f"gpu_{key}"] = max(peak[f"gpu_{key}"], float(gpu[key]))
-            log.write(json.dumps(current, ensure_ascii=False) + "\n")
-            log.flush()
-            reasons = tracker.observe(current)
-            if reasons:
-                action = "baxy_process_family_killed"
-                killed = terminate_baxy_family(baxy_process_family())
-                break
+    try:
+        with output.with_suffix(".jsonl").open("w", encoding="utf-8") as log:
+            while time.monotonic() - started < max(0.0, args.duration):
+                time.sleep(max(0.2, args.interval))
+                current = take_sample(known, gpu_sampler.latest())
+                samples += 1
+                for key in (
+                    "total_cpu_percent",
+                    "baxy_cpu_percent",
+                    "system_ram_percent",
+                    "baxy_rss_mib",
+                ):
+                    peak[key] = max(peak[key], float(current[key]))
+                gpu = current["gpu"]
+                for key in ("utilization_percent", "memory_percent"):
+                    if gpu[key] is not None:
+                        peak[f"gpu_{key}"] = max(peak[f"gpu_{key}"], float(gpu[key]))
+                log.write(json.dumps(current, ensure_ascii=False) + "\n")
+                log.flush()
+                reasons = tracker.observe(current)
+                if reasons:
+                    action = "baxy_process_family_killed"
+                    killed = terminate_baxy_family(baxy_process_family())
+                    break
+    finally:
+        gpu_sampler.close()
 
     summary = {
         "schema": "baxy-resource-guard-v1",
