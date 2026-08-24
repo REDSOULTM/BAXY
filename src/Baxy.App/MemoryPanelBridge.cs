@@ -282,6 +282,15 @@ internal sealed class MemoryPanelBridge
         if (!string.Equals(response.Status, OperationStatuses.Completed, StringComparison.Ordinal)
             || !response.Verified)
         {
+            // Goal 10 live evidence must distinguish a store conflict from a
+            // transport/readiness failure without recording any private value.
+            ShellTraceSink.Record(
+                "memory",
+                "panel",
+                "operation.failed",
+                string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"{operation.Name}:{response.ErrorCode ?? response.Status}:verified={response.Verified}"));
             throw new InvalidDataException(
                 string.Create(
                     CultureInfo.InvariantCulture,

@@ -629,3 +629,9 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   entradas y acciones de borrado deshabilitadas. El criterio de memoria no está
   cumplido; hay que cerrar el conflicto en el contrato HTTP/core y repetir alta,
   vista, edición y borrado desde este panel.
+- Instrumentación mínima añadida al único borde `MemoryPanelBridge.ExecuteAsync`:
+  ante un terminal no completado registra en la traza sólo nombre de operación,
+  código y bit `verified`, nunca claves ni valores privados. La regresión dueña
+  `MemoryPanelBridgeTests` pasa **1/1**, cero skips, y sigue cubriendo alta,
+  lectura, edición y borrado sobre un almacén aislado. Falta relanzar contra el
+  estado vivo para obtener el código exacto del 409.
