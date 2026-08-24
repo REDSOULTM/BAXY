@@ -858,3 +858,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   aclaración/efectos; suite dueña `test_turn_policy.py`: **870/870**, cero skips.
   Falta construir y repetir manualmente las 15 respuestas visibles; los defectos
   independientes de fecha, noticias y clima siguen abiertos.
+- Las dos superficies explícitas que la tanda r13 había degradado ya quedan
+  cerradas antes del modelo: `Que dia es hoy?` autoriza exactamente
+  `system.time`, y `Busca noticias actuales de tecnologia y resume una.`
+  autoriza exactamente `web.search`. La gramática de noticias ahora reconoce
+  verbos explícitos de búsqueda, y hora/fecha reconoce `día` además de `fecha`.
+  Suite dueña `test_effect_intent.py`: **1485/1485**, cero skips. Falta
+  repetición física; clima sigue siendo un defecto aparte porque la búsqueda
+  verificada devolvió enlaces sobre el tiempo pero ningún valor meteorológico
+  actual que el compositor pudiera afirmar.

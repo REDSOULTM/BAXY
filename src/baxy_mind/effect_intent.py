@@ -162,7 +162,8 @@ def _public_live_lookup_request(folded: str) -> bool:
             (
                 r"^(?:(?:alexa|olly|bax[yi])\s+)?(?:"
                 r"i\s+(?:want|would\s+like)\s+to\s+(?:hear|know|see)|"
-                r"(?:pon|ponme|muestra|muestrame|show|play)\b"
+                r"(?:pon|ponme|muestra|muestrame|show|play|"
+                r"busca|buscar|consulta|consultar|search|look\s+up)\b"
                 r")"
             ),
             folded,
@@ -701,7 +702,8 @@ def _direct_current_time_request(folded: str) -> bool:
                 r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"
                 r"what\s+(?:time\s+is\s+it|is\s+the\s+time)(?:\s+right\s+now)?|"
                 r"(?:necesito|quiero)\s+saber\s+(?:la\s+)?hora\s+(?:ahora|actual)|"
-                r"(?:que|cual)\s+es\s+(?:la\s+)?hora\s+(?:ahora|actual)?"
+                r"(?:que|cual)\s+es\s+(?:la\s+)?hora\s+(?:ahora|actual)?|"
+                r"(?:que|cual)\s+(?:dia|fecha)\s+(?:es|tenemos)(?:\s+hoy)?"
                 r")"
             )
             + r"[\s.!?]*",
@@ -1662,14 +1664,14 @@ def _curated_domain_is_grounded(
             (
                 r"\b(?:time now|hora (?:actual|local)|(?:current|local) time|fecha de hoy|today(?:'s)? date|"
                 r"que hora es(?: ahora)?|what time is it(?: now)?|"
-                r"que fecha es(?: hoy)?|what date is it|dime la hora(?: local)?|"
+                r"que (?:fecha|dia) es(?: hoy)?|what (?:date|day) is it|dime la hora(?: local)?|"
                 r"tell me the (?:local )?time|"
                 r"que hora (?:marca|muestra|tiene) (?:este|el|mi) (?:computador|equipo|pc)|"
                 r"what time does (?:this|the|my) (?:computer|pc) (?:show|display))\b"
                 r"[\s?!.]*$"
                 r"|\b(?:time now|hora (?:actual|local)|(?:current|local) time|fecha de hoy|today(?:'s)? date|"
                 r"que hora es(?: ahora)?|what time is it(?: now)?|"
-                r"que fecha es(?: hoy)?|what date is it|dime la hora(?: local)?|"
+                r"que (?:fecha|dia) es(?: hoy)?|what (?:date|day) is it|dime la hora(?: local)?|"
                 r"tell me the (?:local )?time|"
                 r"que hora (?:marca|muestra|tiene) (?:este|el|mi) (?:computador|equipo|pc)|"
                 r"what time does (?:this|the|my) (?:computer|pc) (?:show|display))\b"

@@ -227,6 +227,23 @@ def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
 
 
 @pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("Que dia es hoy?", ("system.time",)),
+        ("Busca noticias actuales de tecnologia y resume una.", ("web.search",)),
+    ],
+)
+def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
+    text: str,
+    expected: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(text, {"system.time", "web.search"})
+
+    assert result is not None
+    assert result.operations == expected
+
+
+@pytest.mark.parametrize(
     ("text", "operation"),
     [
         ("Busca el archivo informe en Descargas", "filesystem.search"),
