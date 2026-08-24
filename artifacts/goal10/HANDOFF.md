@@ -434,3 +434,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   generaliza a un cierre no solicitado por forma: pregunta final o invitación
   condicional genérica. Si hay una declaración model-authored anterior, sólo se
   retira la coletilla; si la coletilla ocupa toda la respuesta, se rechaza.
+- Repetición `continuity-closing-clean-r6` sobre `cbb08d0`, limpia en producto
+  vivo: **«Sí, aquí.» / «Hola.» / «Puedo ayudarte con preguntas,
+  explicaciones y charlas.»**, en **1,657 s / 1,065 s / 1,517 s**. Los tres
+  turnos tuvieron `visible.text`, cero core, cero error y un solo cruce del
+  bridge. Esta corrida demuestra la reparación, pero no suma a los 200 porque es
+  la repetición obligatoria de las sesiones fallidas R1–R5.
+- Suites dueñas tras la frontera final: `test_turn_policy.py` **848/848** y
+  `test_planner.py` **146/146 + 101 subtests**. El segmento de soak invalidado se
+  conserva por separado como `soak-invalid-visible-continuity.json{,l}`: terminó
+  en 605,7 s / 11 muestras, sobre un proceso anterior y con carga interactiva;
+  no se usa como evidencia idle ni como parte de las 24 h.
