@@ -613,3 +613,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   en coma, punto y coma o dos puntos. Focales **9/9** y suite dueña
   `test_turn_policy.py` **861/861** en **4,08 s**, cero skips. Falta Fast y la
   repetición viva completa.
+- Fast posterior al cierre de cláusulas sociales **verde**: PowerShell, Ruff,
+  compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings
+  / 0 errors**. Binario listo para repetición viva desde sesión nueva.
