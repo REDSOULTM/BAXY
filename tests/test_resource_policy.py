@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -63,6 +64,24 @@ def test_invalid_thread_override_returns_small_default(monkeypatch) -> None:
 def test_process_affinity_selects_only_the_requested_available_cpus() -> None:
     assert _lowest_available_affinity_mask(0b1111_1111, 4) == 0b0000_1111
     assert _lowest_available_affinity_mask(0b1010_1010, 3) == 0b0010_1010
+
+
+def test_voice_uses_one_sherpa_thread_and_mind_keeps_two_cpu_boundary() -> None:
+    root = Path(__file__).resolve().parents[1]
+    voice_source = (root / "src" / "baxy_mind" / "voice.py").read_text(
+        encoding="utf-8"
+    )
+    policy_source = (root / "src" / "baxy_mind" / "resource_policy.py").read_text(
+        encoding="utf-8"
+    )
+
+    configured_stt_defaults = re.findall(
+        r'"BAXY_VOICE_STT_THREADS",(?:(?!\)).)*?default=1,',
+        voice_source,
+        flags=re.DOTALL,
+    )
+    assert len(configured_stt_defaults) == 2
+    assert 'bounded_cpu_threads("BAXY_MIND_PROCESS_CPUS", default=2)' in policy_source
 
 
 def test_piper_owns_a_non_spinning_bounded_session(tmp_path, monkeypatch) -> None:

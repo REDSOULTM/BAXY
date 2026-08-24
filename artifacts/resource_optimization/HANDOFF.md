@@ -36,7 +36,9 @@ esta sesión.
 - `src/baxy_mind/resource_policy.py`: política única para ONNX CPU, 2 hilos por
   defecto, techo duro 4, ejecución secuencial y spinning intra/inter desactivado.
 - Piper TTS, wake cascade y wake verifier usan esa política. Parakeet queda
-  acotado a 4 hilos. El proceso fija además `OMP_WAIT_POLICY=PASSIVE` y
+  acotado a 1 hilo por defecto: en este i9 el corpus heredado midió ~230 ms con
+  un hilo, mientras sherpa mantiene su pool en spin cuando está ocioso. El
+  proceso fija además `OMP_WAIT_POLICY=PASSIVE` y
   `KMP_BLOCKTIME=0`.
 - `llama-server` recibe `--threads 4`, `--threads-batch 4`, `--threads-http 2`,
   prioridad de generación baja y batch normal. El binario instalado confirmó
@@ -75,9 +77,21 @@ esta sesión.
   `physical_run_r2.json` y `.jsonl`.
 - El guardián conserva ahora el objeto de cada PID entre muestras. Como
   frontera independiente de cualquier biblioteca nativa, `baxy_mind` arranca
-  con prioridad `BELOW_NORMAL` y afinidad dura a 4 CPUs lógicas; los hijos la
-  heredan. Prueba aislada real: afinidad `[0,1,2,3]`, prioridad 16384. Así una
-  sesión sherpa/ORT que conserve spinning no puede ocupar los 24 hilos.
+  con prioridad `BELOW_NORMAL` y afinidad dura; los hijos la heredan. La prueba
+  aislada inicial confirmó afinidad `[0,1,2,3]`, prioridad 16384.
+- Corrida física R3 atribuyó por fin el consumo: `python -m baxy_mind` (PID
+  23620) sostuvo 368–406 % de un core durante más de un minuto en reposo; GPU
+  se estabilizó en 7–10 %, VRAM 25,28 %, RSS BAXY 5,64 GiB. La aplicación se
+  detuvo voluntariamente. La correspondencia exacta con `num_threads=4` de
+  Parakeet demuestra que sherpa conserva cuatro workers en spin aun sin audio.
+  Evidencia: `physical_run_r3.jsonl`.
+- Corrección posterior a R3: Parakeet usa un hilo por defecto y la frontera del
+  proceso se redujo a 2 CPUs lógicas. El segundo CPU queda disponible para el
+  LLM local, pero sherpa ya no puede quemar cuatro cores en reposo.
+- Validación focal posterior: `tests/test_resource_policy.py`: 5 passed. Los
+  tests de selección de streaming quedaron sin coincidencias en el filtro; la
+  suite amplia mostró un fallo ambiental previo por `rapidfuzz` ausente en el
+  Python global, independiente del cambio (73 tests restantes pasaron).
 
 ## Siguiente paso obligatorio
 

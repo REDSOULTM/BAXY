@@ -102,7 +102,9 @@ def constrain_current_windows_process() -> None:
         ctypes.byref(system_mask),
     ):
         raise OSError(ctypes.get_last_error(), "GetProcessAffinityMask failed")
-    cpu_count = bounded_cpu_threads("BAXY_MIND_PROCESS_CPUS", default=4)
+    # Two logical CPUs leave enough headroom for the mostly-GPU LLM while
+    # preventing any native child runtime from monopolising the workstation.
+    cpu_count = bounded_cpu_threads("BAXY_MIND_PROCESS_CPUS", default=2)
     selected = _lowest_available_affinity_mask(process_mask.value, cpu_count)
     if not selected or not kernel32.SetProcessAffinityMask(process, selected):
         raise OSError(ctypes.get_last_error(), "SetProcessAffinityMask failed")

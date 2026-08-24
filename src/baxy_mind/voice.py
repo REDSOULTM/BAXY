@@ -765,7 +765,10 @@ class VoiceEngine:
             tokens=str(stt_dir / "tokens.txt"),
             num_threads=bounded_cpu_threads(
                 "BAXY_VOICE_STT_THREADS",
-                default=4,
+                # sherpa-onnx keeps its worker pool spinning between decodes.
+                # One thread was measured at ~230 ms on the target i9, while
+                # four threads permanently occupied four logical CPUs at idle.
+                default=1,
             ),
             model_type="nemo_transducer",
             decoding_method="modified_beam_search",
@@ -966,7 +969,7 @@ class VoiceEngine:
                 tokens=str(stt_dir / "tokens.txt"),
                 num_threads=bounded_cpu_threads(
                     "BAXY_VOICE_STT_THREADS",
-                    default=4,
+                    default=1,
                 ),
                 model_type="nemo_transducer",
                 decoding_method="greedy_search",
