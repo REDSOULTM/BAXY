@@ -939,3 +939,9 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   clasifica como invención para regenerar, sin aceptar ni corregir texto a
   ciegas. Focal que reproduce exactamente la corrupción **1/1**. Falta suite
   dueña y otra reproducción física del mismo turno.
+- Suite dueña tras el guard **9/9**, cero skips. Reproducción física fresca r19
+  de noticias **1/1 correcta**: el primer borrador quedó auditado como
+  `invented` y se descartó; el siguiente publicó el titular sobre seguridad de
+  buzos, lo resumió como indicación del propio titular y nombró la fuente
+  observada `radiosantamaria.cl`, sin códigos ni falsos fallos. Falta Fast y una
+  sesión r20 limpia con las quince respuestas revisadas manualmente.
