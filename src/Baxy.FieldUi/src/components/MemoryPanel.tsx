@@ -1,5 +1,5 @@
 /* MemoryPanel — pinned facts CRUD. mirrors legacy MemoryDialog.PERSISTENT tab.
-   add / delete / clear-all. items keyed by string, value is plain text.
+   add / edit / delete / clear-all. items keyed by string, value is plain text.
    facts prefixed 'auto:' came from the LLM's auto-extraction. */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -79,6 +79,23 @@ export function MemoryPanel({ onClose }: Props) {
     } finally { setPending(false); }
   };
 
+  const editFact = async (item: MemoryItem) => {
+    const value = window.prompt(`new value for "${item.key}":`, item.value);
+    if (value === null) return;
+    setPending(true);
+    try {
+      const r = await fetch('/memory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: item.key, value }),
+      });
+      if (!r.ok) throw new Error(`status ${r.status}`);
+      await refresh();
+    } catch (e) {
+      toastError(`memory edit failed · ${String(e).replace(/^Error: /, '')}`);
+    } finally { setPending(false); }
+  };
+
   const deleteFact = async (key: string) => {
     if (!window.confirm(`delete memory "${key}"?`)) return;
     setPending(true);
@@ -141,6 +158,15 @@ export function MemoryPanel({ onClose }: Props) {
           <Icon name="plus" size={12} />
           <span>add</span>
         </button>
+        <button
+          type="button"
+          className="panel-btn ghost"
+          onClick={() => {
+            const item = items.find((candidate) => candidate.key === selected);
+            if (item) void editFact(item);
+          }}
+          disabled={!selected || pending}
+        >edit</button>
         <button
           type="button"
           className="panel-btn ghost"

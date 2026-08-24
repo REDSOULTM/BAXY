@@ -1043,3 +1043,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `tests/test_historical_corpus.py` **37/37 + 58 subtests**, cero skips. No se
   alteró ni regeneró el corpus; la medición confirma el conjunto versionado que
   se usará sólo como evidencia de amplitud.
+- Comprobación física del panel de memoria sobre la instancia viva r30: se abrió
+  vacío, se añadió la entrada sintética `goal10_test_color=turquesa` y reapareció
+  persistida con fecha y contador de una entrada. La inspección del código dueño
+  descubrió un defecto de cierre: el bridge ya soportaba edición, pero
+  `MemoryPanel.tsx` no exponía ninguna acción de editar. Se añadió el botón
+  `edit`, que reutiliza el `POST /memory` tipado con la clave seleccionada y el
+  valor actual como base. `npm run build` y `npm run lint` quedaron verdes; el
+  contrato dueño del bridge, que recorre crear/listar/editar/borrar, quedó **1/1**
+  con cero skips mediante `dotnet test ... --no-build`. Falta comprobar el botón
+  nuevo en el producto tras terminar el tramo de 24 h, porque reiniciar ahora
+  invalidaría el soak vivo.
