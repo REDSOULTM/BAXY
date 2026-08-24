@@ -1,30 +1,46 @@
 {
   "rows": [
     {
-      "file": "en_zira.wav",
-      "text": "Play the next song.",
-      "doubtful": false,
-      "seconds": 0.262
+      "id": "en_zira",
+      "prompt": "open notepad please",
+      "voice": "zira",
+      "kind": "english",
+      "expected": [
+        "notepad"
+      ],
+      "got": "Open notepad please",
+      "hit": true,
+      "seconds": 0.513
     },
     {
-      "file": "es_sabina.wav",
-      "text": "Abres Patify.",
-      "doubtful": false,
-      "seconds": 0.28
+      "id": "es_sabina",
+      "prompt": "buenas noches",
+      "voice": "sabina",
+      "kind": "spanish",
+      "expected": [
+        "noche",
+        "buenas"
+      ],
+      "got": "Buenas noches.",
+      "hit": true,
+      "seconds": 0.147
     },
     {
-      "file": "mix_sabina.wav",
-      "text": "Vaxiable.",
-      "doubtful": false,
-      "seconds": 0.364
-    },
-    {
-      "file": "mix_zira.wav",
-      "text": "Open spatifa poor favor.",
-      "doubtful": false,
-      "seconds": 0.312
+      "id": "mix_sabina",
+      "prompt": "abre notepad please",
+      "voice": "sabina",
+      "kind": "codeswitch",
+      "expected": [
+        "notepad"
+      ],
+      "got": "Abre notepad, please.",
+      "hit": true,
+      "seconds": 0.203
     }
   ],
-  "stt_p50_s": 0.312,
-  "stt_max_s": 0.364
+  "codeswitch_hit": true,
+  "hits": 3,
+  "n": 3,
+  "stt_p50_s": 0.203,
+  "stt_max_s": 0.513
 }

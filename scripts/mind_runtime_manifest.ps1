@@ -172,7 +172,13 @@ function Get-BaxyMindRuntimeStatus {
         $result.Detail = "El estado wake del manifiesto es invalido: $manifestFull"
         return [pscustomobject]$result
     }
-    if ($wakeOnStart) {
+    if ($null -eq $runtime.wake_manifest -and $null -eq $runtime.wake_manifest_sha256) {
+        if ($wakeOnStart) {
+            $result.Code = 'runtime_wake_invalid'
+            $result.Detail = "wake_on_start exige un manifiesto wake: $manifestFull"
+            return [pscustomobject]$result
+        }
+    } else {
         try {
             $wake = [IO.Path]::GetFullPath([string]$runtime.wake_manifest)
         } catch {
@@ -187,11 +193,6 @@ function Get-BaxyMindRuntimeStatus {
             $result.Detail = "El manifiesto wake falta o no coincide con su SHA-256: $wake"
             return [pscustomobject]$result
         }
-    } elseif ($null -ne $runtime.wake_manifest -or
-        $null -ne $runtime.wake_manifest_sha256) {
-        $result.Code = 'runtime_manifest_wake_invalid'
-        $result.Detail = "El manifiesto declara wake desactivado pero conserva rutas wake: $manifestFull"
-        return [pscustomobject]$result
     }
 
     if ($null -eq $runtime.tts_model -and $null -eq $runtime.tts_sha256) {

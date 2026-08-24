@@ -19,8 +19,9 @@
     "sttSha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f",
     "ttsName": "es_MX-claude-high.onnx",
     "ttsSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
-    "wakeManifestSha256": null,
-    "wakeOnStart": false
+    "wakeManifestSha256": "fefb95176c5db615e0d61b85744729fe242444697bc9c3315ad17a73fa3f6dfe",
+    "wakeName": "baxy-wakeword-v1.json",
+    "wakeOnStart": true
   },
   "manifestIsVersioned": true,
   "manifestPresent": true,

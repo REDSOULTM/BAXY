@@ -117,9 +117,15 @@ if (-not $wakeResolution.Found) {
     $wakeResolution = Resolve-BaxyAsset -Name 'wake_manifest' -RepositoryRoot $repo
     $wakeCandidates += @($wakeResolution.Candidates)
 }
-$wakeOnStart = -not $NoWake.IsPresent -and $wakeResolution.Found
-if (-not $NoWake.IsPresent -and -not $wakeOnStart) {
-    Write-Warning ("No hay un modelo wake acústico calibrado; BAXY se registra " +
+$installedWake = Join-Path $registrationRoot 'assets\wake\baxy-wakeword-v1.json'
+if (-not $wakeResolution.Found -and (Test-Path -LiteralPath $installedWake -PathType Leaf)) {
+    $wakeResolution = [pscustomobject]@{ Found = $true; Path = $installedWake }
+    $wakeCandidates += $installedWake
+}
+$wakeDeclared = $wakeResolution.Found
+$wakeOnStart = -not $NoWake.IsPresent -and $wakeDeclared
+if (-not $NoWake.IsPresent -and -not $wakeDeclared) {
+    Write-Warning ("No hay un modelo wake acústico; BAXY se registra " +
         "con micrófono directo. Rutas comprobadas: " +
         ($wakeCandidates -join '; '))
 }
@@ -157,8 +163,8 @@ $manifest = [ordered]@{
     llama_server_sha256 = Get-BaxySha256 -Path $serverFull
     stt_dir = $sttFull
     stt_sha256 = Get-BaxySttSha256 -Directory $sttFull
-    wake_manifest = if ($wakeOnStart) { $wakeResolution.Path } else { $null }
-    wake_manifest_sha256 = if ($wakeOnStart) {
+    wake_manifest = if ($wakeDeclared) { $wakeResolution.Path } else { $null }
+    wake_manifest_sha256 = if ($wakeDeclared) {
         Get-BaxySha256 -Path $wakeResolution.Path
     } else {
         $null

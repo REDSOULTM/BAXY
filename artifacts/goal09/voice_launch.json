@@ -4,40 +4,38 @@
     {
       "run": 1,
       "started": true,
-      "mode": "wake",
-      "wakeWord": true,
-      "ttsNeural": true,
-      "ttsVoice": "es_MX-claude-high",
+      "noise_did_not_wake": true,
+      "wake_detected": true,
+      "transcripts": [
+        "Open notepad please"
+      ],
+      "first_signal_s": 0.2037068999998155,
       "spoke": true,
-      "speaking_observed": true,
       "cancelled_mid_utterance": true,
-      "events": [
-        "ready",
-        "state",
-        "state",
-        "state",
-        "state",
-        "state"
+      "log": [
+        "run=1 start=True error=None",
+        "run=1 noise_wake=False",
+        "run=1 wake_detected=True events=['ready', 'state', 'wake_detected']",
+        "run=1 transcript=['Open notepad please'] first_signal_s=0.2037068999998155 spoke=True cancelled=True"
       ],
       "last_error": null
     },
     {
       "run": 2,
       "started": true,
-      "mode": "wake",
-      "wakeWord": true,
-      "ttsNeural": true,
-      "ttsVoice": "es_MX-claude-high",
+      "noise_did_not_wake": true,
+      "wake_detected": true,
+      "transcripts": [
+        "Open notepad please"
+      ],
+      "first_signal_s": 0.12667899999996735,
       "spoke": true,
-      "speaking_observed": true,
       "cancelled_mid_utterance": true,
-      "events": [
-        "ready",
-        "state",
-        "state",
-        "state",
-        "state",
-        "state"
+      "log": [
+        "run=2 start=True error=None",
+        "run=2 noise_wake=False",
+        "run=2 wake_detected=True events=['ready', 'state', 'wake_detected']",
+        "run=2 transcript=['Open notepad please'] first_signal_s=0.12667899999996735 spoke=True cancelled=True"
       ],
       "last_error": null
     }

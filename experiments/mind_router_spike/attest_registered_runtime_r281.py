@@ -60,6 +60,9 @@ def describe(manifest: dict[str, Any]) -> dict[str, Any]:
         "gpuLayers": manifest.get("ngl"),
         "wakeOnStart": manifest.get("wake_on_start"),
         "sttSha256": manifest.get("stt_sha256"),
+        "wakeName": (
+            Path(manifest["wake_manifest"]).name if manifest.get("wake_manifest") else None
+        ),
         "wakeManifestSha256": manifest.get("wake_manifest_sha256"),
         "ttsName": (
             Path(manifest["tts_model"]).name if manifest.get("tts_model") else None

@@ -206,7 +206,10 @@ def test_parakeet_transcribes_spanish_english_and_codeswitch(tmp_path: Path) -> 
     if not (stt / "encoder.int8.onnx").is_file():
         pytest.skip("Parakeet bundle is not on this machine")
     os.environ["BAXY_MIND_STT_DIR"] = str(stt)
-    engine = VoiceEngine(lambda _text: None)
+    engine = VoiceEngine(
+        lambda _text: None,
+        correction_terms=("notepad", "Spotify"),
+    )
     try:
         engine.load()
         # Synthetic silence must not become a catalog command.
@@ -242,8 +245,21 @@ def test_parakeet_transcribes_spanish_english_and_codeswitch(tmp_path: Path) -> 
             _speak_to_wav("buenas noches", tmp_path / "es.wav", "sabina")
         ).casefold()
         assert "noche" in spanish or "buenas" in spanish
+        mixed = engine.transcribe_pcm(
+            _speak_to_wav("abre notepad please", tmp_path / "mix.wav", "sabina")
+        ).casefold()
+        assert "notepad" in mixed
+        assert "abre" in mixed or "open" in mixed or "please" in mixed
     finally:
         engine.shutdown()
+
+
+def _ingest_paced(engine: VoiceEngine, audio: np.ndarray) -> None:
+    hop = 4_000
+    samples = np.asarray(audio, dtype=np.float32).reshape(-1)
+    for offset in range(0, samples.size, hop):
+        engine.ingest_pcm(samples[offset : offset + hop])
+        time.sleep(0.05)
 
 
 def test_voice_engine_pcm_source_wakes_on_injected_wav(tmp_path: Path) -> None:
@@ -261,12 +277,110 @@ def test_voice_engine_pcm_source_wakes_on_injected_wav(tmp_path: Path) -> None:
         started = engine.start("wake")
         if not started:
             pytest.skip(f"wake start failed: {engine.last_error}")
+        engine.ingest_pcm(np.zeros(4_000, dtype=np.float32))
+        time.sleep(0.8)
         noise = (np.random.default_rng(1).standard_normal(SAMPLE_RATE * 2) * 0.01).astype(
             np.float32
         )
-        engine.ingest_pcm(noise)
-        time.sleep(0.4)
+        _ingest_paced(engine, noise)
+        time.sleep(0.5)
         assert not any(event.get("event") == "wake_detected" for event in events)
+
+        baxy = _sapi_baxy_wav(tmp_path / "baxy_launch.wav")
+        if baxy.size < WINDOW_SAMPLES:
+            baxy = np.pad(baxy, (0, WINDOW_SAMPLES - baxy.size))
+        _ingest_paced(engine, baxy)
+        deadline = time.monotonic() + 4.0
+        while time.monotonic() < deadline and not any(
+            event.get("event") == "wake_detected" for event in events
+        ):
+            time.sleep(0.05)
+        assert any(event.get("event") == "wake_detected" for event in events)
+
+        engine.ingest_pcm(np.zeros(int(SAMPLE_RATE * 1.2), dtype=np.float32))
+        deadline = time.monotonic() + 3.0
+        while time.monotonic() < deadline:
+            if any(event.get("event") == "wake" for event in events) or engine.speaking:
+                break
+            time.sleep(0.05)
+        engine.cancel_speech()
+        before = list(transcripts)
+
+        request = _speak_named("open notepad please", tmp_path / "req.wav", "zira")
+        _ingest_paced(engine, request)
+        engine.ingest_pcm(np.zeros(int(SAMPLE_RATE * 1.2), dtype=np.float32))
+        deadline = time.monotonic() + 6.0
+        while time.monotonic() < deadline:
+            joined = " ".join(transcripts[len(before) :]).casefold()
+            if "notepad" in joined:
+                break
+            time.sleep(0.05)
+        joined = " ".join(transcripts[len(before) :]).casefold()
+        assert "notepad" in joined
     finally:
         engine.stop()
         engine.shutdown()
+
+
+def test_end_of_speech_to_first_signal_is_under_budget(tmp_path: Path) -> None:
+    stt = Path.home() / ".gemma4" / "models" / "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
+    if not (stt / "encoder.int8.onnx").is_file():
+        pytest.skip("Parakeet bundle is not on this machine")
+    os.environ["BAXY_MIND_STT_DIR"] = str(stt)
+    delays: list[float] = []
+    phrases = (
+        ("open notepad please", "zira", "notepad"),
+        ("buenas noches", "sabina", "noche"),
+        ("abre notepad please", "sabina", "notepad"),
+    )
+    for phrase, prefer, needle in phrases:
+        events: list[dict] = []
+        transcripts: list[str] = []
+        engine = VoiceEngine(transcripts.append, events.append)
+        engine.use_pcm_source()
+        try:
+            assert engine.start("direct")
+            audio = _speak_named(phrase, tmp_path / f"eou_{prefer}.wav", prefer)
+            engine.ingest_pcm(audio)
+            eou = time.perf_counter()
+            engine.ingest_pcm(np.zeros(int(SAMPLE_RATE * 1.2), dtype=np.float32))
+            deadline = time.monotonic() + 3.0
+            while time.monotonic() < deadline:
+                if any(event.get("event") in {"recognized", "partial"} for event in events) or transcripts:
+                    delays.append(time.perf_counter() - eou)
+                    break
+                time.sleep(0.02)
+            else:
+                delays.append(time.perf_counter() - eou)
+            joined = " ".join(transcripts).casefold()
+            assert needle in joined or any(
+                event.get("event") == "recognized" for event in events
+            )
+        finally:
+            engine.stop()
+            engine.shutdown()
+    ordered = sorted(delays)
+    p50 = ordered[len(ordered) // 2]
+    assert p50 <= 1.5
+    assert max(delays) < 3.0
+
+
+def _speak_named(phrase: str, dest: Path, prefer: str) -> np.ndarray:
+    import pythoncom
+    import win32com.client
+
+    pythoncom.CoInitialize()
+    try:
+        voice = win32com.client.Dispatch("SAPI.SpVoice")
+        stream = win32com.client.Dispatch("SAPI.SpFileStream")
+        stream.Open(str(dest), 3)
+        voice.AudioOutputStream = stream
+        for token in voice.GetVoices():
+            if prefer in str(token.GetDescription()).casefold():
+                voice.Voice = token
+                break
+        voice.Speak(phrase)
+        stream.Close()
+    finally:
+        pythoncom.CoUninitialize()
+    return _read_wav(dest)

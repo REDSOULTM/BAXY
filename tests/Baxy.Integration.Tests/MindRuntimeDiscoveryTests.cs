@@ -236,6 +236,7 @@ public sealed class MindRuntimeDiscoveryTests
             "BAXY_VOICE_WAKE_MANIFEST",
             "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
             "BAXY_VOICE_WAKE_ON_START",
+            "BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED",
             "HF_HUB_OFFLINE",
         ];
         var previous = names.ToDictionary(
@@ -298,6 +299,9 @@ public sealed class MindRuntimeDiscoveryTests
                     Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST"),
                     Is.EqualTo(wake));
                 Assert.That(Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"), Is.EqualTo("1"));
+                Assert.That(
+                    Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"),
+                    Is.EqualTo("1"));
                 Assert.That(Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"), Is.EqualTo("1"));
             });
         }
@@ -308,6 +312,69 @@ public sealed class MindRuntimeDiscoveryTests
                 Environment.SetEnvironmentVariable(name, value);
             }
 
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void DeclaredWakeIsPublishedEvenWhenBootListenIsOff()
+    {
+        string root = Path.Combine(
+            Path.GetTempPath(),
+            "baxy-mind-registration-wake-off-" + Guid.NewGuid());
+        Dictionary<string, string?> previous = CaptureRuntimeEnvironment();
+        try
+        {
+            ClearRuntimeEnvironment();
+            string python = Touch(Path.Combine(root, "venv", "python.exe"));
+            string pythonPath = Path.Combine(root, "source");
+            Touch(Path.Combine(pythonPath, "baxy_mind", "__main__.py"));
+            string gguf = Touch(Path.Combine(root, "models", "gemma.gguf"));
+            string server = Touch(Path.Combine(root, "llama", "llama-server.exe"));
+            string stt = Path.Combine(root, "stt");
+            foreach (string name in SttFiles)
+            {
+                Touch(Path.Combine(stt, name));
+            }
+
+            string manifest = Path.Combine(root, "mind-runtime-v1.json");
+            string wake = WriteRuntimeManifest(
+                manifest,
+                python,
+                pythonPath,
+                gguf,
+                server,
+                stt,
+                42,
+                wakeOnStart: false);
+
+            MindRuntimeConfiguration? discovered = MindRuntimeDiscovery.LoadRegistered(manifest);
+            bool configured = MindRuntimeDiscovery.TryConfigureCurrentProcess(manifest);
+
+            Assert.That(discovered, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(discovered!.WakeManifest, Is.EqualTo(wake));
+                Assert.That(discovered.WakeOnStart, Is.False);
+                Assert.That(configured, Is.True);
+                Assert.That(
+                    Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_MANIFEST"),
+                    Is.EqualTo(wake));
+                Assert.That(
+                    Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST"),
+                    Is.EqualTo(wake));
+                Assert.That(
+                    Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"),
+                    Is.EqualTo("1"));
+                Assert.That(
+                    Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
+                    Is.Null);
+            });
+        }
+        finally
+        {
+            RestoreRuntimeEnvironment(previous);
             Directory.Delete(root, recursive: true);
         }
     }
@@ -389,6 +456,7 @@ public sealed class MindRuntimeDiscoveryTests
             "BAXY_VOICE_WAKE_MANIFEST",
             "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
             "BAXY_VOICE_WAKE_ON_START",
+            "BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED",
             "HF_HUB_OFFLINE",
         ];
         var previous = names.ToDictionary(
@@ -474,6 +542,7 @@ public sealed class MindRuntimeDiscoveryTests
             "BAXY_VOICE_WAKE_MANIFEST",
             "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
             "BAXY_VOICE_WAKE_ON_START",
+            "BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED",
             "HF_HUB_OFFLINE",
         ];
         var previous = names.ToDictionary(
@@ -830,6 +899,7 @@ public sealed class MindRuntimeDiscoveryTests
         "BAXY_VOICE_WAKE_MANIFEST",
         "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
         "BAXY_VOICE_WAKE_ON_START",
+        "BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED",
         "HF_HUB_OFFLINE",
         "BAXY_ASSET_DESCRIPTOR",
     ];
@@ -895,7 +965,8 @@ public sealed class MindRuntimeDiscoveryTests
         string stt,
         int ngl,
         string wakeFileName = "baxy-wakeword-v1.json",
-        string wakeSchema = "baxy-wakeword-v1")
+        string wakeSchema = "baxy-wakeword-v1",
+        bool wakeOnStart = true)
     {
         string wake = Path.Combine(
             Path.GetDirectoryName(manifest)!,
@@ -906,6 +977,7 @@ public sealed class MindRuntimeDiscoveryTests
             wake,
             System.Text.Json.JsonSerializer.Serialize(new { schema = wakeSchema }));
         wake = Path.GetFullPath(wake);
+        string wakeOnStartJson = wakeOnStart ? "true" : "false";
         File.WriteAllText(
             manifest,
             $$"""
@@ -925,7 +997,7 @@ public sealed class MindRuntimeDiscoveryTests
               "tts_model": null,
               "tts_sha256": null,
               "ngl": {{ngl}},
-              "wake_on_start": true
+              "wake_on_start": {{wakeOnStartJson}}
             }
             """);
         return wake;

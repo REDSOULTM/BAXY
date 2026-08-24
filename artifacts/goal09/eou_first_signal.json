@@ -1,38 +1,56 @@
 {
   "metric": "end_of_utterance_to_first_signal",
+  "method": "VoiceEngine.start(direct); ingest_pcm(speech); clock at silence start; ingest_pcm(1.2s zeros); wait recognized/transcript",
   "first_signal_never_claims_a_result": true,
-  "should_emit_early_recognizer": false,
-  "stt_rows": [
+  "rows": [
     {
-      "file": "en_zira.wav",
-      "text": "Play the next song.",
-      "doubtful": false,
-      "seconds": 0.262
+      "prompt": "open notepad please",
+      "voice": "zira",
+      "started": true,
+      "first_signal_s": 0.307,
+      "first_event": "recognized",
+      "transcript": "Open notepad please",
+      "events": [
+        "ready",
+        "state",
+        "recognized"
+      ],
+      "hit": true,
+      "last_error": null
     },
     {
-      "file": "es_sabina.wav",
-      "text": "Abres Patify.",
-      "doubtful": false,
-      "seconds": 0.28
+      "prompt": "buenas noches",
+      "voice": "sabina",
+      "started": true,
+      "first_signal_s": 0.184,
+      "first_event": "recognized",
+      "transcript": "Buenas noches.",
+      "events": [
+        "ready",
+        "state",
+        "recognized"
+      ],
+      "hit": true,
+      "last_error": null
     },
     {
-      "file": "mix_sabina.wav",
-      "text": "Vaxiable.",
-      "doubtful": false,
-      "seconds": 0.364
-    },
-    {
-      "file": "mix_zira.wav",
-      "text": "Open spatifa poor favor.",
-      "doubtful": false,
-      "seconds": 0.312
+      "prompt": "abre notepad please",
+      "voice": "sabina",
+      "started": true,
+      "first_signal_s": 0.205,
+      "first_event": "recognized",
+      "transcript": "Abre Nootpad, please.",
+      "events": [
+        "ready",
+        "state",
+        "recognized"
+      ],
+      "hit": false,
+      "last_error": null
     }
   ],
-  "stt_p50_s": 0.312,
-  "stt_max_s": 0.364,
-  "recognizer_overhead_s": 0.07,
-  "p50_s": 0.382,
-  "max_s": 0.434,
+  "p50_s": 0.205,
+  "max_s": 0.307,
   "bar_p50_s": 1.5,
   "bar_never_silent_s": 3.0,
   "passed": true

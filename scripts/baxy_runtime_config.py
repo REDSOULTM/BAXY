@@ -215,19 +215,15 @@ def resolve_runtime(
         wake_on_start = manifest.get("wake_on_start")
         if not isinstance(wake_on_start, bool):
             raise ValueError("wake_on_start inválido")
-        if wake_on_start:
-            wake = _required_file(
-                Path(str(manifest.get("wake_manifest") or "")),
-                "wake_manifest",
-            )
-            expected_wake = manifest.get("wake_manifest_sha256")
+        wake_path = manifest.get("wake_manifest")
+        expected_wake = manifest.get("wake_manifest_sha256")
+        if wake_path in (None, "") and expected_wake in (None, ""):
+            if wake_on_start:
+                raise ValueError("wake_on_start exige wake_manifest")
+        else:
+            wake = _required_file(Path(str(wake_path or "")), "wake_manifest")
             if not _sha256_text(expected_wake) or file_sha256(wake) != expected_wake:
                 raise ValueError("hash SHA-256 no coincide: wake_manifest")
-        elif (
-            manifest.get("wake_manifest") is not None
-            or manifest.get("wake_manifest_sha256") is not None
-        ):
-            raise ValueError("wake desactivado conserva activos declarados")
 
     layers = gpu_layers
     if layers is None:

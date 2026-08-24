@@ -187,22 +187,29 @@ internal static class MindRuntimeDiscovery
                 SetIfMissing("BAXY_MIND_STT_DIR", runtime.SttDirectory);
             }
 
-            if (runtime.WakeOnStart)
+            if (!string.IsNullOrWhiteSpace(runtime.WakeManifest))
             {
                 if (string.IsNullOrWhiteSpace(
                         Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_MANIFEST"))
                     && string.IsNullOrWhiteSpace(
                         Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST")))
                 {
-                    // The registered field deliberately accepts either the original
-                    // acoustic manifest or the promoted cascade. Publishing the exact
-                    // hash-verified file to both resolvers lets their closed schemas
-                    // select the matching backend without guessing from a filename.
-                    SetIfMissing("BAXY_VOICE_WAKE_MANIFEST", runtime.WakeManifest!);
+                    // Hash-declared wake is published even when boot listen is
+                    // off, so the visible switch can start it without a click
+                    // that first installs the path.
+                    SetIfMissing("BAXY_VOICE_WAKE_MANIFEST", runtime.WakeManifest);
                     SetIfMissing(
                         "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
-                        runtime.WakeManifest!);
+                        runtime.WakeManifest);
                 }
+
+                // The FAR gate did not promote this head (see costuras). The
+                // runtime still names it; loading requires this explicit seam.
+                SetIfMissing("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED", "1");
+            }
+
+            if (runtime.WakeOnStart)
+            {
                 SetIfMissing("BAXY_VOICE_WAKE_ON_START", "1");
             }
 
@@ -299,13 +306,22 @@ internal static class MindRuntimeDiscovery
             JsonElement wakeManifestElement = root.GetProperty("wake_manifest");
             JsonElement wakeHashElement = root.GetProperty("wake_manifest_sha256");
             string? wakeManifest = null;
-            if (wakeOnStart)
+            if (wakeManifestElement.ValueKind == JsonValueKind.Null
+                && wakeHashElement.ValueKind == JsonValueKind.Null)
+            {
+                if (wakeOnStart)
+                {
+                    return null;
+                }
+            }
+            else
             {
                 if (wakeManifestElement.ValueKind != JsonValueKind.String
                     || wakeHashElement.ValueKind != JsonValueKind.String)
                 {
                     return null;
                 }
+
                 wakeManifest = ExistingFile(
                     wakeManifestElement.GetString(),
                     expectedName: null,
@@ -314,11 +330,6 @@ internal static class MindRuntimeDiscovery
                 {
                     return null;
                 }
-            }
-            else if (wakeManifestElement.ValueKind != JsonValueKind.Null
-                || wakeHashElement.ValueKind != JsonValueKind.Null)
-            {
-                return null;
             }
 
             JsonElement ttsModelElement = root.GetProperty("tts_model");
