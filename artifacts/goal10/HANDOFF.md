@@ -492,3 +492,7 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   BAXY, contenido creativo, datos personales o estado de este PC. Suites dueñas
   completas: `test_effect_intent.py + test_turn_policy.py` **2327/2327** en
   49,07 s. Falta compuerta Fast y repetición viva del proveedor/narración.
+- Compuerta `scripts/test_source_quality.ps1` **Fast verde** sobre `0a2c270`:
+  PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build
+  Release; compilación **0 warnings / 0 errors**. Ya puede repetirse en producto
+  desde binario limpio.
