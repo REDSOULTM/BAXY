@@ -9,7 +9,7 @@
 ## Dónde trabajas
 
 Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo`.
-Rama: `main`. Modelo: **Grok 4.6**, esfuerzo `high`.
+Rama: `main`. Esfuerzo de razonamiento: **`high` de suelo**.
 
 **Ojo con el nombre.** En la misma carpeta `Programacion` hay un repositorio
 llamado `BAXY` a secas: ése es el intento anterior y es **fuente de herencia, no
@@ -153,24 +153,30 @@ algo que suena a que alguien ya resolvió, para y ve a buscarlo primero.
 No es estilo: es lo que esta máquina y este harness te dan, y lo que este repositorio
 ya midió que hace falta decir.
 
-**Esfuerzo `high` de suelo.** Súbelo con `/effort xhigh` en el tramo que lo merezca —un
-diseño abierto, un fallo que no se explica— y bájalo después. Cada peldaño multiplica
-los tokens de razonamiento, y este goal está escrito para `high`.
+**Persiste hasta el cierre.** Este goal termina cuando sus criterios están marcados o
+cuando has medido y publicado que uno es inalcanzable. No devuelvas el control a mitad
+para confirmar un plan, pedir permiso ni resumir progreso: son las dos únicas formas de
+acabar. Ante una duda, elige la opción más razonable, **anótala** y sigue.
 
-**Busca y lee con tus tools, no con la shell.** `grep` es ripgrep por dentro: acótalo a
-`src tests scripts main.py` salvo que vayas a la evidencia a propósito, y pide rutas
-antes que líneas. Lee rangos con `read_file`, no ficheros enteros. En la shell **no
-existe `rg`**: es PowerShell, y `run_terminal_command` es para git, pytest, dotnet y
-procesos. Antes de abrir algo grande, mira el tamaño: `git ls-tree -r -l HEAD -- ruta`.
+**Cuánto explorar, y cuándo parar.** Busca lo justo para dar el paso siguiente, no un
+mapa completo del árbol. Regla de parada: en cuanto puedas nombrar el archivo y la
+línea que vas a tocar, deja de buscar y tócalo. Si dos lecturas seguidas no cambian lo
+que ibas a hacer, sobra la tercera. Acota las búsquedas a `src tests scripts main.py`
+salvo que vayas a la evidencia a propósito, y lee rangos, no ficheros enteros. En la
+shell **no existe `rg`**: es PowerShell. Antes de abrir algo grande, mira el tamaño:
+`git ls-tree -r -l HEAD -- ruta`.
 
 **Lo que tarda, en segundo plano.** Corridas de medición, compuerta y builds Release se
-lanzan en segundo plano y sigues con trabajo independiente; recoges el resultado con
-`get_command_or_subagent_output`, sin sondear en bucle.
+lanzan en segundo plano y sigues con trabajo independiente; recoges el resultado cuando
+llegue, sin sondear en bucle.
 
-**Sin subagentes.** `spawn_subagent` hereda tu modelo: paga otra vez contexto y
-razonamiento para devolverte un informe que además tienes que leer. Esto se resuelve en
-el hilo principal. Única excepción: una exploración de sólo lectura acotada cuyo
-resultado quepa en rutas + rangos + conclusión.
+**Un solo hilo.** Nada de delegar en sesiones hijas: pagan otra vez contexto y
+razonamiento para devolverte un informe que además tienes que leer. Esto se resuelve
+aquí. Única excepción: una exploración de sólo lectura acotada cuyo resultado quepa en
+rutas + rangos + conclusión.
+
+**Di lo que vas a hacer antes de una tanda larga, y qué salió después.** Una o dos
+frases, no un diario. Lo que importa que quede escrito va al repositorio, no al chat.
 
 **El estado, escrito en el repositorio.** La ventana es de 500K y se compacta sola al
 80 %: lo que sólo esté en la conversación se pierde. Deja el mapa, la medición y las
@@ -290,6 +296,25 @@ este goal existe para encontrar.
 
 Todo. Los tres ceros no se relajan porque el goal sea de uso. La compuerta sigue
 verde. Los invariantes de arquitectura siguen siendo invariantes.
+
+## Dónde está este goal ahora
+
+**No empiezas de cero.** Este goal lleva cinco commits en `origin/main`
+(`77537bf`, `e787281`, `5b65951`, `2dd5574`, `9e8f50b`). Lo que está hecho, lo
+que está medido, las decisiones que no se reabren y el bloqueo vivo están en
+**[`artifacts/goal10/HANDOFF.md`](../../artifacts/goal10/HANDOFF.md)**. Léelo
+antes de tocar nada y actualízalo a medida que avanzas, no al final.
+
+En corto, para que sepas dónde pisas:
+
+- **Resuelto y verificado en producto vivo:** bandeja, arranque con Windows,
+  panel de memoria real, el input acepta texto (`message input` UIA
+  `enabled=True`), el core se queda vivo, y un turno real cruza en 1,06 s.
+- **Bloqueo vivo:** la mente no sube. Sin decisor, lo que sale por pantalla son
+  ecos de la pregunta, frases de plantilla y una afirmación falsa. El handoff
+  dice la línea exacta por donde seguir.
+- **Sin empezar:** la dosis entera, el soak de 24 h, el reboot, los dos modos,
+  la narración, el panel usado de verdad, la compuerta Full.
 
 ## Criterios de cierre
 
