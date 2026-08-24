@@ -1012,3 +1012,7 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   sin pregunta, saludo, `Listo`, hora ni campos internos. Focales **2/2** y
   suites dueñas combinadas **159/159 + 101 subtests**, cero skips. Falta
   reproducción física.
+- Reproducción física r29 de fecha **1/1 correcta** en **5,436 s**: «24 de
+  agosto de 2026 es hoy.» Sólo contiene la fecha observada, una vez, sin saludo,
+  pregunta, `Listo`, hora ni código; `compose.end` limpio y auditoría sin
+  descartes. Falta Fast y r30 fresca completa; r29 suma cero dosis.
