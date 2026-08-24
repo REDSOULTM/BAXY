@@ -1016,3 +1016,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   agosto de 2026 es hoy.» Sólo contiene la fecha observada, una vez, sin saludo,
   pregunta, `Listo`, hora ni código; `compose.end` limpio y auditoría sin
   descartes. Falta Fast y r30 fresca completa; r29 suma cero dosis.
+- Fast verde completo. **R30 aprobada manualmente 15/15**: saludo, identidad
+  ES/EN, capacidades simple y envuelta, lluvia, aritmética, nube física, hora,
+  clima con valores, capital, otoño, ladrido, titular literal con fuente y fecha
+  fueron correctos; operaciones: sólo `web.search` en hora/clima/capital/noticia
+  y `system.time` en fecha. Cero errores de sonda, cero recuperación visible y
+  auditoría de composición vacía. Latencias: 0,854–5,205 s; noticias 2,807 s,
+  fecha 1,258 s. Es la primera tanda sintética semántica verde y suma cero a las
+  200 interacciones normales del dueño. Siguen abiertos los criterios amplios:
+  corpus real, dosis normal multi-sesión, 24 h con reinicio y manos libres.
