@@ -80,7 +80,7 @@ from baxy_mind.llm import (
     _reads_as_an_observation,
     _shaped_conversation_answer_violates_contract,
     _shaped_presentation_text,
-    _without_unrequested_question_closing,
+    _without_unrequested_conversation_closing,
     _spanish_modal_is_malformed,
     canonicalize_turn_decision,
     derive_semantic_effect_state,
@@ -9603,12 +9603,12 @@ def test_knowledge_chat_rewrites_previous_assistant_echo() -> None:
         ("Hello. How can I help you?", "Hello."),
     ],
 )
-def test_unrequested_question_closing_preserves_model_answer(
+def test_unrequested_closing_preserves_model_answer(
     answer: str,
     expected: str,
 ) -> None:
     assert (
-        _without_unrequested_question_closing(
+        _without_unrequested_conversation_closing(
             answer,
             conversation_kind="social",
             shape=None,
@@ -9620,7 +9620,7 @@ def test_unrequested_question_closing_preserves_model_answer(
 def test_unrequested_question_rule_rejects_a_question_only_answer() -> None:
     answer = "¿En qué puedo ayudarte?"
 
-    assert _without_unrequested_question_closing(
+    assert _without_unrequested_conversation_closing(
         answer,
         conversation_kind="social",
         shape=None,
@@ -9630,6 +9630,25 @@ def test_unrequested_question_rule_rejects_a_question_only_answer() -> None:
         "Hola.",
         None,
         conversation_kind="social",
+    )
+
+
+def test_generic_invitation_closing_preserves_capability_answer() -> None:
+    answer = (
+        "Puedo ayudarte con preguntas, explicaciones y charlas. "
+        "Si necesitas algo específico, avísame."
+    )
+
+    assert _without_unrequested_conversation_closing(
+        answer,
+        conversation_kind="knowledge",
+        shape=None,
+    ) == "Puedo ayudarte con preguntas, explicaciones y charlas."
+    assert _shaped_conversation_answer_violates_contract(
+        "Si necesitas algo específico, avísame.",
+        "¿Qué puedes hacer?",
+        None,
+        conversation_kind="knowledge",
     )
 
 

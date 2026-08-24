@@ -1717,27 +1717,61 @@ def _conversation_presentation_shape(
     return None
 
 
-def _without_unrequested_question_closing(
+def _is_generic_assistance_closing(value: object) -> bool:
+    """Recognize an invitation to continue that does not answer the turn."""
+
+    folded = _policy_guard_text(value)
+    exact = (
+        "en que puedo ayudarte",
+        "en que mas puedo ayudarte",
+        "como puedo ayudarte",
+        "en que te puedo ayudar",
+        "como te puedo ayudar",
+        "hay algo mas en lo que pueda ayudarte",
+        "how can i help",
+        "how can i help you",
+        "what can i help you with",
+        "is there anything else i can help you with",
+        "let me know how i can help",
+    )
+    return folded in exact or any(
+        re.fullmatch(pattern, folded) is not None
+        for pattern in (
+            r"si (?:necesitas|quieres|requieres)\b.{0,120}\b(?:avisame|dimelo|dime)",
+            r"(?:if|when) you (?:need|want)\b.{0,120}\blet me know",
+            r"(?:let me know|feel free)\b.{0,120}",
+        )
+    )
+
+
+def _without_unrequested_conversation_closing(
     value: object,
     *,
     conversation_kind: str | None,
     shape: str | None,
 ) -> str:
-    """Drop only a trailing unsolicited question after a model-authored answer."""
+    """Drop only a generic trailing invitation after a model-authored answer."""
 
     content = str(value or "").strip()
     if (
         shape is not None
         or conversation_kind not in {"social", "knowledge"}
-        or not content.endswith(("?", "？"))
     ):
         return content
-    inverted = max(content.rfind("¿"), content.rfind("？"))
+    if content.endswith(("?", "？")):
+        inverted = max(content.rfind("¿"), content.rfind("？"))
+    else:
+        inverted = -1
     if inverted > 0:
         prefix = content[:inverted].rstrip()
         return prefix if prefix else content
     boundaries = list(re.finditer(r"(?<=[.!…])\s+", content))
     if not boundaries:
+        return content
+    closing = content[boundaries[-1].end() :]
+    if not content.endswith(("?", "？")) and not _is_generic_assistance_closing(
+        closing
+    ):
         return content
     prefix = content[: boundaries[-1].start() + 1].rstrip()
     return prefix if prefix else content
@@ -1896,24 +1930,7 @@ def _shaped_conversation_answer_violates_contract(
         r"[\u0400-\u04ff]", str(request or "")
     ) is None:
         return True
-    folded_content = _policy_guard_text(content)
-    generic_assistance_closings = (
-        "en que puedo ayudarte",
-        "en que mas puedo ayudarte",
-        "como puedo ayudarte",
-        "en que te puedo ayudar",
-        "como te puedo ayudar",
-        "hay algo mas en lo que pueda ayudarte",
-        "how can i help",
-        "how can i help you",
-        "what can i help you with",
-        "is there anything else i can help you with",
-        "let me know how i can help",
-    )
-    if any(
-        folded_content == closing or folded_content.endswith(f" {closing}")
-        for closing in generic_assistance_closings
-    ):
+    if _is_generic_assistance_closing(content):
         return True
     if (
         shape is None
@@ -4958,7 +4975,7 @@ class LlmRuntime:
             conversation_kind=conversation_kind,
             presentation_shape=presentation_shape,
         )
-        content = _without_unrequested_question_closing(
+        content = _without_unrequested_conversation_closing(
             content,
             conversation_kind=conversation_kind,
             shape=presentation_shape,
@@ -5145,7 +5162,7 @@ class LlmRuntime:
                     }
         else:
             final_messages = payload["messages"]
-        final_content = _without_unrequested_question_closing(
+        final_content = _without_unrequested_conversation_closing(
             message.get("content"),
             conversation_kind=conversation_kind,
             shape=presentation_shape,

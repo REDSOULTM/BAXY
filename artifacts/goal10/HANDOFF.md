@@ -427,3 +427,10 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   igual que el aviso de idioma cerrado; así no hay continuidad que inventar. El
   veto de eco se conserva para respuestas de conocimiento, donde sí puede haber
   historial legítimo.
+- `continuity-social-clean-r5` dejó presencia y saludo limpios («Sí, aquí.» /
+  «Hola.», 1,388 s / 0,805 s), pero capacidades terminó su frase útil con
+  **«Si necesitas algo específico, avísame.»** (1,102 s). Es la misma plantilla
+  convertida en invitación declarativa y la sesión tampoco cuenta. La regla se
+  generaliza a un cierre no solicitado por forma: pregunta final o invitación
+  condicional genérica. Si hay una declaración model-authored anterior, sólo se
+  retira la coletilla; si la coletilla ocupa toda la respuesta, se rechaza.
