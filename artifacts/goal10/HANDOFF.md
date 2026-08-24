@@ -993,3 +993,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   paráfrasis con «maquinaria» y la coma desnuda antes de aceptar la atribución:
   focal **2/2**, suite `test_planner.py` **148/148 + 101 subtests**, cero skips.
   Falta reproducción física.
+- Reproducción física r26 de noticias **1/1 correcta** en **2,819 s**:
+  «Mesas de trabajo y tecnología reforzarán la seguridad de buzos en el litoral
+  aysenino, según radiosantamaria.cl.» Conserva título y fuente exactos, atribuye
+  de forma legible y no añade hechos; `compose.end` sin fallo y auditoría sin
+  descartes. Falta Fast y r27 fresca completa; r26 es sonda y suma cero dosis.
