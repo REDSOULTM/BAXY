@@ -635,3 +635,7 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `MemoryPanelBridgeTests` pasa **1/1**, cero skips, y sigue cubriendo alta,
   lectura, edición y borrado sobre un almacén aislado. Falta relanzar contra el
   estado vivo para obtener el código exacto del 409.
+- La primera reproducción instrumentada fijó la operación en `memory.list`,
+  pero el detalle compuesto llevaba caracteres que `ShellTrace` reduce a
+  `invalid`. El formato ya es una etiqueta canónica sin contenido libre; la
+  regresión CRUD sigue **1/1**, cero skips. Repetir una vez para leer el código.

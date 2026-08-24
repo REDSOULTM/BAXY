@@ -288,9 +288,11 @@ internal sealed class MemoryPanelBridge
                 "memory",
                 "panel",
                 "operation.failed",
-                string.Create(
-                    CultureInfo.InvariantCulture,
-                    $"{operation.Name}:{response.ErrorCode ?? response.Status}:verified={response.Verified}"));
+                string.Concat(
+                    operation.Name,
+                    ".",
+                    response.ErrorCode ?? response.Status,
+                    response.Verified ? ".verified" : ".unverified"));
             throw new InvalidDataException(
                 string.Create(
                     CultureInfo.InvariantCulture,
