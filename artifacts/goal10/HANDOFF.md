@@ -666,3 +666,15 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   honesto. Un sidecar contractual fuerza esa respuesta ausente y la regresión
   `UnavailableMindDecisionNeverClaimsThatTheRequestWasAmbiguous` pasa **1/1**,
   cero skips. Falta repetición física y Fast.
+- Repetición física `narration-r2`: el mismo pedido claro agotó otra vez los
+  **22,002 s** de `turn.decide` (`decision.start` 42.549 ms →
+  `decision.ready unavailable` 64.551 ms). El terminal reparado fue honesto,
+  **«No pude: el cielo no está disponible en este momento.»**, por lo que la
+  falsedad de `narration-r1` quedó cerrada; sin embargo, el defecto funcional
+  persiste y esta sonda también suma 0. La señal temprana llegó en 0,334 s:
+  el atasco está después del enrutado, dentro de la decisión/presentación local.
+  El pedido `Di una frase …` no cruza hoy el reconocedor cerrado de borrado de
+  contenido, aunque es exactamente una solicitud conversacional autocontenida;
+  cae en clasificación generativa antes de redactar. Narración no se da por
+  verificada: la observación accesible no capturó estado `speaking` y no se
+  afirma audio que la herramienta no oyó.
