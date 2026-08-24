@@ -545,3 +545,5 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   timeout. La consulta de recencia se cambia a “most recent release available
   now” y esos términos temporales dejan de puntuar relevancia: la entidad sigue
   siendo obligatoria, pero una etiqueta «latest» no convierte HVAC en pertinente.
+- Focales de R4: grounding Python **4/4** y `StructuredWebSearch*` C# **4/4**.
+  Fast verde completo, build Release **0 warnings / 0 errors**.
