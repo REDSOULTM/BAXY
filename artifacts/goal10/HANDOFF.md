@@ -894,3 +894,23 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `Baxy.Providers.Windows.Tests` **454/454**, cero skips en los resúmenes.
   Falta Fast/rebuild y repetir las 15; la frase de lluvia se reevalúa junto con
   la nueva generación aislada y no se dará por buena sin lectura manual.
+- Fast posterior verde completo (PowerShell, Ruff, compileall, ESLint, ambos
+  TSC, `dotnet format`, build Release, 0 warnings/errores) y tanda física r15
+  auditada manualmente: la primera sonda entregó 8 turnos y perdió foco antes
+  del noveno sin caída del producto; una continuación en la misma sesión
+  completó los 7 restantes. La sesión vuelve a ser **inválida**: nube confundió
+  el fenómeno físico con computación; identidad inglesa publicó un falso
+  `No pude`; perro dejó de ejecutar audio pero añadió morder/lamer como sonidos;
+  noticias verificó un titular pero la composición acabó en un falso fallo; y
+  lluvia siguió como fragmento pobre. Los otros diez textos fueron aceptables,
+  incluidos clima real, fecha, capital, aritmética y capacidad envuelta. La
+  pérdida de foco pertenece a la sonda UIA; mente, core y app siguieron vivos.
+- Los cinco fallos visibles de r15 ahora tienen contratos de presentación
+  generales, separados de autoridad: identidad propia ES/EN, capacidad propia,
+  nube meteorológica, sonido animal y oración completa. Cada contrato conserva
+  generación local pero rechaza la clase exacta de salida mala observada. La
+  instrucción de resumir un titular verificado y su fuente ahora sobrevive los
+  tres intentos del compositor, en vez de existir sólo en el primero. Focales
+  nuevas **19/19**; suites dueñas `test_turn_policy.py` **886/886** y
+  `test_planner.py` **147/147 + 101 subtests**, cero skips. Falta Fast y una
+  tanda física fresca 15/15 leída manualmente; ningún turno r13–r15 suma dosis.

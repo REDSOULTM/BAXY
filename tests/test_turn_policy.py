@@ -7793,6 +7793,11 @@ def test_unsupported_language_chat_requires_both_supported_languages() -> None:
             "knowledge",
             "content_draft",
         ),
+        ("Who are you?", "knowledge", "assistant_identity"),
+        ("Resume en una frase que puedes hacer.", "knowledge", "assistant_capability"),
+        ("Explica que es una nube en una frase.", "knowledge", "physical_cloud_definition"),
+        ("Que sonido hace un perro?", "knowledge", "animal_sound"),
+        ("Di una frase breve sobre la lluvia.", "knowledge", "complete_sentence"),
     ],
 )
 def test_no_history_conversation_shape_is_closed(
@@ -7831,6 +7836,51 @@ def test_addressed_roleplay_shape_overrides_a_generic_unsupported_label() -> Non
         )
         == "roleplay_draft"
     )
+
+
+@pytest.mark.parametrize(
+    ("user_text", "shape", "good", "bad"),
+    [
+        (
+            "Who are you?",
+            "assistant_identity",
+            "I am BAXY, a local companion on this PC.",
+            "I couldn't answer who I am.",
+        ),
+        (
+            "Resume en una frase que puedes hacer.",
+            "assistant_capability",
+            "Puedo conversar, explicar y responder preguntas.",
+            "No puedo ayudarte con eso.",
+        ),
+        (
+            "Explica que es una nube en una frase.",
+            "physical_cloud_definition",
+            "Una nube contiene gotas de agua suspendidas en la atmósfera.",
+            "Una nube ofrece software y aplicaciones por internet.",
+        ),
+        (
+            "Que sonido hace un perro?",
+            "animal_sound",
+            "Un perro ladra y también puede gruñir.",
+            "Un perro muerde o lame.",
+        ),
+        (
+            "Di una frase breve sobre la lluvia.",
+            "complete_sentence",
+            "La lluvia refresca las calles al caer.",
+            "Lluvia de agua que cae de los cielos.",
+        ),
+    ],
+)
+def test_daily_use_presentation_shapes_reject_measured_semantic_faults(
+    user_text: str,
+    shape: str,
+    good: str,
+    bad: str,
+) -> None:
+    assert not _shaped_conversation_answer_violates_contract(good, user_text, shape)
+    assert _shaped_conversation_answer_violates_contract(bad, user_text, shape)
 
 
 def test_joke_request_is_not_shaped_as_an_observation() -> None:

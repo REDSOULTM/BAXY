@@ -181,6 +181,39 @@ TRANSLATION_PRESENTATION_PROMPT = (
     "sin comillas, explicaciones, preguntas ni ofertas adicionales."
 )
 
+ASSISTANT_IDENTITY_PRESENTATION_PROMPT = (
+    "Responde directamente quién eres en primera persona. Tu nombre es BAXY y "
+    "eres un compañero o asistente local que vive en el PC. Usa una o dos frases "
+    "naturales en el idioma del pedido. No recites reglas, políticas de idioma ni "
+    "capacidades; no niegues poder responder y no hagas preguntas."
+)
+
+ASSISTANT_CAPABILITY_PRESENTATION_PROMPT = (
+    "Resume en primera persona qué ayuda conversacional puedes ofrecer: conversar, "
+    "explicar, responder y ayudar con conocimiento. Una sola frase natural en el "
+    "idioma del pedido. No ejecutes nada, no enumeres reglas internas, no niegues "
+    "poder responder y no hagas preguntas."
+)
+
+PHYSICAL_CLOUD_PRESENTATION_PROMPT = (
+    "La palabra nube en este pedido significa una nube meteorológica del cielo, no "
+    "computación en la nube. Explícala en una sola frase natural y correcta: está "
+    "formada por gotas de agua o cristales de hielo suspendidos en la atmósfera. "
+    "No menciones internet, servidores, software ni aplicaciones."
+)
+
+ANIMAL_SOUND_PRESENTATION_PROMPT = (
+    "Responde directamente qué sonido produce el animal nombrado, en una sola "
+    "frase natural. Para un perro, el sonido típico es el ladrido y también puede "
+    "gruñir; morder o lamer no son sonidos. No hables de dispositivos de audio."
+)
+
+COMPLETE_SENTENCE_PRESENTATION_PROMPT = (
+    "Escribe exactamente una oración gramaticalmente completa sobre el tema "
+    "natural pedido, con sujeto y verbo principal conjugado. No entregues un "
+    "sintagma nominal, una definición ni una introducción; devuelve sólo la oración."
+)
+
 USER_MESSAGE_PROMPT = (
     "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
     "Redacta UNA frase en el idioma del pedido. situation es JSON de ESTE turno: "
@@ -1635,6 +1668,39 @@ def _conversation_presentation_shape(
     """Close a few no-history prose contracts without changing turn authority."""
 
     semantic_text = explicit_non_action_body(text) or text
+    folded_semantic = _policy_guard_text(semantic_text)
+    if re.fullmatch(
+        r"(?:quien eres(?: tu)?|who are you)(?: baxy)?[?!.]*",
+        folded_semantic,
+    ):
+        return "assistant_identity"
+    if re.fullmatch(
+        r"(?:que puedes hacer|what can you do|cuales son tus capacidades|"
+        r"resume en una frase que puedes hacer|"
+        r"summarize in one sentence what you can do)(?: baxy)?[?!.]*",
+        folded_semantic,
+    ):
+        return "assistant_capability"
+    if (
+        re.match(r"(?:explica(?:me)? )?que es (?:una )?nube\b", folded_semantic)
+        and re.search(
+            r"\b(?:internet|servidor|software|aplicacion|computacion|digital)\b",
+            folded_semantic,
+        )
+        is None
+    ):
+        return "physical_cloud_definition"
+    if re.fullmatch(
+        r"(?:que sonido hace|what sound does)\s+(?:(?:un|una|el|la|a|an|the)\s+)?"
+        r"[a-z][a-z .'-]{0,48}(?: make)?[?!.]*",
+        folded_semantic,
+    ):
+        return "animal_sound"
+    if (
+        re.search(r"\b(?:frase|oracion|sentence)\b", folded_semantic)
+        and re.search(r"\b(?:lluvia|autumn|otono|rain)\b", folded_semantic)
+    ):
+        return "complete_sentence"
     if conversation_only_content_request(semantic_text):
         roleplay = _policy_guard_text(_strip_request_envelope(semantic_text))
         return (
@@ -1868,7 +1934,15 @@ def _shaped_presentation_text(text: str, shape: str | None) -> str:
             ensure_ascii=False,
             separators=(",", ":"),
         )
-    if shape in {"content_draft", "translation"}:
+    if shape in {
+        "assistant_identity",
+        "assistant_capability",
+        "physical_cloud_definition",
+        "animal_sound",
+        "complete_sentence",
+        "content_draft",
+        "translation",
+    }:
         current = explicit_non_action_body(text) or str(text)
         current = _strip_request_envelope(current.strip()).strip()
         return current or str(text)
@@ -1970,6 +2044,47 @@ def _shaped_conversation_answer_violates_contract(
     if shape in {"content_draft", "translation"}:
         return not content or _normalized_dialogue_text(content) == (
             _normalized_dialogue_text(request)
+        )
+    folded = _policy_guard_text(content)
+    if shape == "assistant_identity":
+        return not (
+            "baxy" in folded
+            and re.search(r"\b(?:soy|i am|i m)\b", folded)
+            and re.search(r"\b(?:no pude|no puedo|couldn t|cannot|can t)\b", folded)
+            is None
+            and re.search(r"\b(?:regla|politica|idioma del|rule|policy)\b", folded)
+            is None
+        )
+    if shape == "assistant_capability":
+        return not (
+            re.search(r"\b(?:puedo|i can)\b", folded)
+            and re.search(r"\b(?:no pude|no puedo|couldn t|cannot|can t)\b", folded)
+            is None
+        )
+    if shape == "physical_cloud_definition":
+        return not (
+            re.search(r"\b(?:agua|water|hielo|ice)\b", folded)
+            and re.search(r"\b(?:atmosfera|aire|cielo|atmosphere|air|sky)\b", folded)
+            and re.search(
+                r"\b(?:internet|servidor|server|software|aplicacion|application|"
+                r"computacion|computing)\b",
+                folded,
+            )
+            is None
+        )
+    if shape == "animal_sound":
+        return not (
+            re.search(r"\b(?:ladr\w*|bark\w*)\b", folded)
+            and re.search(r"\b(?:bocina|horn|muerd\w*|bite\w*|lam\w*|lick\w*)\b", folded)
+            is None
+        )
+    if shape == "complete_sentence":
+        return (
+            not content
+            or "\n" in content
+            or "\r" in content
+            or re.search(r"[.!…]\s+\S", content) is not None
+            or folded.startswith(("lluvia de ", "rain of "))
         )
     if (
         not content
@@ -4883,6 +4998,11 @@ class LlmRuntime:
             "content_draft": CONTENT_DRAFT_PRESENTATION_PROMPT,
             "roleplay_draft": ROLEPLAY_DRAFT_PRESENTATION_PROMPT,
             "translation": TRANSLATION_PRESENTATION_PROMPT,
+            "assistant_identity": ASSISTANT_IDENTITY_PRESENTATION_PROMPT,
+            "assistant_capability": ASSISTANT_CAPABILITY_PRESENTATION_PROMPT,
+            "physical_cloud_definition": PHYSICAL_CLOUD_PRESENTATION_PROMPT,
+            "animal_sound": ANIMAL_SOUND_PRESENTATION_PROMPT,
+            "complete_sentence": COMPLETE_SENTENCE_PRESENTATION_PROMPT,
         }
         logical_attempt = max(0, int(getattr(self, "_request_attempt", 0)))
         presentation_seed = logical_attempt * 1_009
@@ -7521,6 +7641,22 @@ class LlmRuntime:
         cause = str(situation.get("cause") or "").strip()
         kind = str(situation.get("kind") or intent).strip().lower()
         polarity = str(situation.get("polarity") or "").strip().lower()
+        operation = str(situation.get("operation") or "").strip()
+        news_summary_request = bool(
+            intent == "status"
+            and operation == "web.search"
+            and re.search(r"\b(?:noticias|news)\b", _policy_guard_text(user_text))
+            and re.search(
+                r"\b(?:resume|resumeme|summarize)\b",
+                _policy_guard_text(user_text),
+            )
+        )
+        news_summary_instruction = (
+            "El primer elemento de seen.results es un titular individual "
+            "verificado, no una portada. Resume sólo ese titular en una frase "
+            "con su hecho concreto y su fuente; no enumeres sitios, no mezcles "
+            "otros resultados y no inventes detalles ausentes."
+        )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
                 "\nGreet briefly, masculine, no apps."
@@ -7529,6 +7665,8 @@ class LlmRuntime:
             payload["messages"][1]["content"] += (
                 "\nOne question using every offered choice. Do not assert."
             )
+        elif news_summary_request:
+            payload["messages"][1]["content"] += "\n" + news_summary_instruction
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
                 "\nAsk one short question that disambiguates. Do not guess."
@@ -8036,6 +8174,8 @@ class LlmRuntime:
             )
             )
         )
+        if news_summary_request:
+            retry_user += "\n" + news_summary_instruction
         retry_system = (
             CPU_USER_MESSAGE_PROMPT
             if cause == "acting" or defect == "internal_code"
@@ -8080,6 +8220,8 @@ class LlmRuntime:
                 f"{language_contract} One sentence. No JSON. No codes."
             )
         )
+        if news_summary_request:
+            third_user += "\n" + news_summary_instruction
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},

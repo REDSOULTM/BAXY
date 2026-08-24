@@ -2837,6 +2837,48 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertIn("mantén la primera persona", prompt)
         self.assertIn("no agregues una pregunta genérica", prompt)
 
+    def test_current_news_summary_contract_survives_every_compose_attempt(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {"choices": [{"message": {"content": ""}}]}
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "Busca noticias actuales de tecnología y resume una.",
+            "status",
+            {
+                "situation": json.dumps(
+                    {
+                        "kind": "operation",
+                        "operation": "web.search",
+                        "polarity": "success",
+                        "verified": True,
+                        "observed": {
+                            "authority": "google_news_rss_https",
+                            "results": [
+                                {
+                                    "title": "Neurohack 2026 impulsa tecnología",
+                                    "snippet": "Titular publicado hoy.",
+                                }
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                )
+            },
+        )
+
+        self.assertEqual(result, "")
+        self.assertEqual(len(seen), 3)
+        for payload in seen:
+            instruction = payload["messages"][1]["content"].casefold()
+            self.assertIn("primer elemento de seen.results", instruction)
+            self.assertIn("resume sólo ese titular", instruction)
+            self.assertIn("no enumeres sitios", instruction)
+
     def test_cpu_visible_message_uses_the_compact_fully_validated_prompt(self):
         runtime = object.__new__(LlmRuntime)
         seen = []
