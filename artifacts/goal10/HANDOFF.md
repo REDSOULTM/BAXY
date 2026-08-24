@@ -597,3 +597,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Fast de la reparación social/corrección **verde**: PowerShell, Ruff,
   compileall, ESLint, ambos TSC, `dotnet format` y build Release con **0 warnings
   / 0 errors**. Binario listo para repetir los tres turnos reales.
+- Repetición viva `social-correction-r1`, sesión `2fa97ec19971`: la sesión sigue
+  invalidada y suma **0 turnos**. `Hola` → **«Hola,»** y `Me puedes ayudar en
+  algo` → **«Claro,»**: desapareció la jerga técnica, pero ambos actos sociales
+  quedaron truncados en una coma. Es un defecto visible reproducible, no una
+  preferencia de estilo.
+- En esa misma repetición, `Nop, quiero que abras steam` sí alcanzó el efecto
+  real: Steam se abrió/enfocó y BAXY mostró **«Listo, Steam está abierto.»**. La
+  corrección de prefijo y el enrutado `app.open` quedan verificados en producto;
+  falta cerrar el truncamiento social y repetir la sesión entera.
