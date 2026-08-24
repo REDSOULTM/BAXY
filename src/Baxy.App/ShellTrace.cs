@@ -60,6 +60,7 @@ internal static class ShellTraceStages
     internal const string TurnCancelled = "turn.cancelled";
     internal const string TurnError = "turn.error";
     internal const string TurnRecovered = "turn.recovered";
+    internal const string VoiceCancel = "voice.cancel";
     internal const string VoiceError = "voice.error";
     internal const string VoiceSpeak = "voice.speak";
     internal const string VoiceState = "voice.state";
@@ -115,6 +116,7 @@ internal static class ShellTraceStages
         TurnCancelled,
         TurnError,
         TurnRecovered,
+        VoiceCancel,
         VoiceError,
         VoiceSpeak,
         VoiceState,

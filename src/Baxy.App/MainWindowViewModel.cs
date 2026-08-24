@@ -3410,9 +3410,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             if (isUser)
             {
-                _ = mind.VoiceCancelAsync(
-                    TimeSpan.FromSeconds(3),
-                    CancellationToken.None);
+                _ = CancelMessageSpeechAsync(mind, ShellTraceSink.TurnId);
             }
             else
             {
@@ -3438,6 +3436,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             turnId,
             ShellTraceStages.VoiceSpeak,
             accepted ? "accepted" : "rejected");
+    }
+
+    private static async Task CancelMessageSpeechAsync(
+        MindSidecarClient mind,
+        string turnId)
+    {
+        bool cancelled = await mind.VoiceCancelAsync(
+            TimeSpan.FromSeconds(3),
+            CancellationToken.None).ConfigureAwait(false);
+        ShellTraceSink.Record(
+            ShellTraceScopes.Turn,
+            turnId,
+            ShellTraceStages.VoiceCancel,
+            cancelled ? "accepted" : "rejected");
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

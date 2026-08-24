@@ -745,3 +745,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `ShellTraceTests` **8/8**, cero skips, build Release verde tras repetir sin el
   BAXY que había causado el MSB3027 esperado. Falta una reproducción con esos
   códigos para nombrar el borde real.
+- `narration-r7` cerró el siguiente borde: primer turno en **799,898 ms**,
+  `voice.speak accepted`, sin `speaking` y también sin `voice.error`. El comando
+  desaparece antes de generación, sólo por cambio de generación o descarte de
+  cola. Barge-in no puede ser el causante porque su guard exige
+  `self.speaking=true`; falta medir cuándo termina el único `voice.cancel` del
+  shell respecto del `voice.speak`. Se añadió `voice.cancel accepted|rejected`
+  con el ID capturado del turno; `ShellTraceTests` **8/8**, cero skips, build
+  Release verde. Falta reproducción.
