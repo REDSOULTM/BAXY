@@ -41,6 +41,8 @@ esta sesión.
 - `llama-server` recibe `--threads 4`, `--threads-batch 4`, `--threads-http 2`,
   prioridad de generación baja y batch normal. El binario instalado confirmó
   esas opciones mediante `--help`, sin cargar el modelo.
+- `main.py` limita build y publish a dos nodos MSBuild (`-m:2`), para que una
+  recompilación previa al arranque tampoco ocupe todos los cores.
 - La cola de prosa hace como máximo 3 inferencias automáticas. Al agotarlas
   retira el pendiente, conserva el fallo observable y desbloquea la interfaz;
   ya no existe una inferencia periódica infinita.
@@ -57,6 +59,7 @@ esta sesión.
 - `dotnet test tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj -c Release --nologo -v:minimal --filter FullyQualifiedName~ResourceGovernanceTests -m:2`:
   1 passed, 0 skipped, 0 failed.
 - Guardián sin BAXY, 2 muestras: exit 0, ninguna acción.
+- Prueba focalizada del límite de compilación: 1 passed; Ruff: verde.
 
 ## Siguiente paso obligatorio
 

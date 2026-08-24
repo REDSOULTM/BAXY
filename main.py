@@ -203,6 +203,7 @@ def compile_if_needed(*, force: bool) -> None:
             str(APP_PROJECT),
             "-c",
             BUILD_LAYOUT.development_configuration,
+            "-m:2",
         ]
     )
     run_checked(
@@ -214,6 +215,7 @@ def compile_if_needed(*, force: bool) -> None:
             BUILD_LAYOUT.development_configuration,
             "-r",
             BUILD_LAYOUT.runtime_identifier,
+            "-m:2",
         ]
     )
     if not APP_EXE.is_file() or not CORE_EXE.is_file():

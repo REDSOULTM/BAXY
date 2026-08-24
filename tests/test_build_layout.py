@@ -339,6 +339,7 @@ def test_development_build_does_not_record_missing_outputs(
 ) -> None:
     state_directory = tmp_path / "state"
     events: list[str] = []
+    commands: list[list[str]] = []
     monkeypatch.setattr(development_entrypoint, "APP_EXE", tmp_path / "missing-app.exe")
     monkeypatch.setattr(
         development_entrypoint,
@@ -358,16 +359,18 @@ def test_development_build_does_not_record_missing_outputs(
         "validate_msbuild_outputs",
         lambda *_args: events.append("validated"),
     )
-    monkeypatch.setattr(
-        development_entrypoint,
-        "run_checked",
-        lambda _command: events.append("built"),
-    )
+    def record_build(command: list[str]) -> None:
+        events.append("built")
+        commands.append(command)
+
+    monkeypatch.setattr(development_entrypoint, "run_checked", record_build)
 
     with pytest.raises(RuntimeError, match="sin producir"):
         development_entrypoint.compile_if_needed(force=True)
 
     assert events == ["validated", "built", "built"]
+    assert len(commands) == 2
+    assert all("-m:2" in command for command in commands)
     assert not development_entrypoint.BUILD_STATE.exists()
 
 
