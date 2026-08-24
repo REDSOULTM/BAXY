@@ -1777,12 +1777,17 @@ def test_location_recommendation_preserves_literal_web_query() -> None:
         "web.search",
         "Quien es Batman?",
         schema,
-    ) == {"query": "Quien es Batman?"}
+    ) == {"query": "Batman biografia"}
     assert _ground_explicit_arguments(
         "web.search",
         "Cual es el ultimo Mortal Kombat que salio?",
         schema,
-    ) == {"query": "Cual es el ultimo Mortal Kombat que salio?"}
+    ) == {"query": "Mortal Kombat ultimo lanzamiento"}
+    assert _ground_explicit_arguments(
+        "web.search",
+        "what is the capital of Nigeria?",
+        schema,
+    ) == {"query": "capital of Nigeria"}
 
 
 def test_nominal_reminder_lookup_is_read_only_and_title_grounded() -> None:

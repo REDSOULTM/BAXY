@@ -496,3 +496,16 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build
   Release; compilación **0 warnings / 0 errors**. Ya puede repetirse en producto
   desde binario limpio.
+- `public-facts-r1` confirmó el enrutado pero encontró otra frontera: ambos
+  turnos fueron `action -> web.search` (Batman: core **465 ms**, visible **1,72
+  s** desde decisión; Mortal Kombat: core **239 ms**), pero la consulta enviada
+  era la pregunta entera. Bing devolvió cinco resultados sobre el pronombre
+  «quien» y BAXY mostró su definición; Mortal Kombat falló honestamente con
+  `web_search_results_irrelevant` y después el compositor mostró un error
+  genérico. R1 no cuenta y el soak sigue detenido.
+- La corrección siguiente no toca el proveedor ni relaja relevancia: el grounding
+  transforma sólo factoids públicos ya autorizados en una consulta centrada en
+  el sujeto (`Batman biografia`, `Mortal Kombat ultimo lanzamiento`, `capital of
+  Nigeria`, `Mariah Carey age`). Identidad, estado local y privacidad siguen
+  fuera; las consultas web explícitas conservan su literal. Suites dueñas tras
+  el cambio: **2327/2327** en 56,80 s. Falta Fast y repetición viva.

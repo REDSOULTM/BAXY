@@ -3688,6 +3688,78 @@ def _explicit_location_search_arguments(evidence: str) -> dict[str, object] | No
     return {"query": query}
 
 
+def _explicit_public_fact_search_arguments(
+    evidence: str,
+) -> dict[str, object] | None:
+    """Turn a public fact question into a subject-centred search query."""
+
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(evidence))
+    if effect_intent._public_live_lookup_request(folded) or not (
+        effect_intent._public_fact_lookup_request(folded)
+    ):
+        return None
+    clause = effect_intent._strip_request_envelope(evidence).strip(
+        " \t\r\n¿?¡!.,;:\"'“”‘’«»"
+    )
+    patterns = (
+        (
+            r"^(?:quien(?:es)?\s+(?:es|son|fue|fueron|era)|"
+            r"who\s+(?:is|are|was|were))\s+(?P<subject>.+)$",
+            "{subject} biografia",
+        ),
+        (
+            r"^(?:cual|que)\s+(?:es|fue|ha\s+sido)\s+(?:el|la)\s+"
+            r"(?:ultimo|ultima|mas\s+reciente)\s+(?P<subject>.+?)"
+            r"(?=\s+que\s+(?:salio|ha\s+salido|se\s+lanzo|fue\s+lanzad[oa])$|$)"
+            r"(?:\s+que\s+(?:salio|ha\s+salido|se\s+lanzo|fue\s+lanzad[oa]))?$",
+            "{subject} ultimo lanzamiento",
+        ),
+        (
+            r"^(?:what|which)\s+(?:is|was)\s+(?:the\s+)?"
+            r"(?:latest|newest|most\s+recent)\s+(?P<subject>.+?)"
+            r"(?=\s+(?:released|that\s+came\s+out)$|$)"
+            r"(?:\s+(?:released|that\s+came\s+out))?$",
+            "{subject} latest release",
+        ),
+        (
+            r"^how\s+old\s+(?:is|was)\s+(?P<subject>.+)$",
+            "{subject} age",
+        ),
+        (
+            r"^(?:is|was)\s+(?P<subject>.+?)\s+(?P<fact>married)$",
+            "{subject} {fact}",
+        ),
+        (
+            r"^(?:esta|estaba)\s+(?P<subject>.+?)\s+(?P<fact>casad[oa])$",
+            "{subject} {fact}",
+        ),
+        (
+            r"^(?:what|which)\s+(?:is|was|are|were)\s+(?:the\s+)?"
+            r"(?P<subject>.+)$",
+            "{subject}",
+        ),
+        (
+            r"^(?:que|cual|cuales)\s+(?:es|son|fue|fueron)\s+"
+            r"(?:(?:el|la|los|las|un|una)\s+)?(?P<subject>.+)$",
+            "{subject}",
+        ),
+    )
+    query = clause
+    for pattern, template in patterns:
+        match = re.fullmatch(pattern, clause, re.IGNORECASE)
+        if match is None:
+            continue
+        values = {
+            name: value.strip(" \t\r\n¿?¡!.,;:\"'“”‘’«»")
+            for name, value in match.groupdict().items()
+            if value is not None
+        }
+        query = template.format(**values)
+        break
+    query = " ".join(query.split())
+    return {"query": query} if query and len(query.encode("utf-8")) <= 512 else None
+
+
 _TEMPORAL_NUMBER_WORDS = {
     "one": 1,
     "un": 1,
@@ -4305,6 +4377,9 @@ def _explicit_arguments_from_evidence(
         location = _explicit_location_search_arguments(search_evidence)
         if location is not None:
             return location
+        public_fact = _explicit_public_fact_search_arguments(search_evidence)
+        if public_fact is not None:
+            return public_fact
         search = list(
             re.finditer(
                 (
@@ -4870,6 +4945,14 @@ def _ground_explicit_arguments(
     )
     if explicit is None:
         return None
+    if (
+        operation == "web.search"
+        and _explicit_public_fact_search_arguments(evidence) == explicit
+    ):
+        # This query is derived only by the closed public-fact grammar above:
+        # it removes interrogative filler and adds one fixed disambiguator. It
+        # cannot contain private context or a model-invented argument.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation in {
         "app.installed",
         "app.open",
