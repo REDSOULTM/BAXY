@@ -945,3 +945,11 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   buzos, lo resumió como indicación del propio titular y nombró la fuente
   observada `radiosantamaria.cl`, sin códigos ni falsos fallos. Falta Fast y una
   sesión r20 limpia con las quince respuestas revisadas manualmente.
+- Fast verde completo, 0 warnings/errores. Sesión fresca r20: revisión manual
+  **14/15**, otra vez inválida sólo por noticias. La auditoría de Python muestra
+  que el primer borrador corrupto fue descartado y no registra rechazo del
+  segundo; aun así, el shell publicó la recuperación `composition_lost...`.
+  Esto acota el rechazo posterior a `UserMessagePolicy` dentro de
+  `ModelMessageComposer.ComposeAsync`, no al guard Python. `compose.end` ahora
+  registra el código de fallo del outcome (o `exception`) para obtener el dato
+  exacto en una reproducción aislada; falta build y r21 de un turno.

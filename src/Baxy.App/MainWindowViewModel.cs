@@ -3327,13 +3327,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         "composer_request_failed",
                         UsedRecovery: false);
                 }
-                finally
+                catch
                 {
                     ShellTraceSink.Record(
                         ShellTraceScopes.Turn,
                         _currentTurnTraceId,
-                        ShellTraceStages.ComposeEnd);
+                        ShellTraceStages.ComposeEnd,
+                        "exception");
+                    throw;
                 }
+                ShellTraceSink.Record(
+                    ShellTraceScopes.Turn,
+                    _currentTurnTraceId,
+                    ShellTraceStages.ComposeEnd,
+                    outcome.Failure);
 
                 if (outcome.Text is { } finalBody)
                 {
