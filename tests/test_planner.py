@@ -2861,6 +2861,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
                             "results": [
                                 {
                                     "title": "Neurohack 2026 impulsa tecnología",
+                                    "source": "biobiochile.cl",
                                     "snippet": "Titular publicado hoy.",
                                 }
                             ],
@@ -2876,8 +2877,59 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         for payload in seen:
             instruction = payload["messages"][1]["content"].casefold()
             self.assertIn("primer elemento de seen.results", instruction)
-            self.assertIn("resume sólo ese titular", instruction)
+            self.assertIn("conserva literalmente ese título", instruction)
+            self.assertIn("neurohack 2026 impulsa tecnología", instruction)
+            self.assertIn("biobiochile.cl", instruction)
             self.assertIn("no enumeres sitios", instruction)
+
+    def test_current_news_rejects_an_invented_paraphrase_before_publish(self):
+        runtime = object.__new__(LlmRuntime)
+        title = (
+            "Mesas de trabajo y tecnología reforzarán la seguridad de buzos "
+            "en el litoral aysenino"
+        )
+        responses = [
+            (
+                "Radiosantamaria.cl indica que tecnología y maquinaria están "
+                "mejorando la seguridad de los buzos."
+            ),
+            f'Según radiosantamaria.cl, el titular informa: "{title}".',
+        ]
+
+        def fake_post(_payload):
+            return {"choices": [{"message": {"content": responses.pop(0)}}]}
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "Busca noticias actuales de tecnología y resume una.",
+            "status",
+            {
+                "situation": json.dumps(
+                    {
+                        "kind": "operation",
+                        "operation": "web.search",
+                        "polarity": "success",
+                        "verified": True,
+                        "observed": {
+                            "authority": "google_news_rss_https",
+                            "results": [
+                                {
+                                    "title": title,
+                                    "source": "radiosantamaria.cl",
+                                }
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                )
+            },
+        )
+
+        self.assertEqual(
+            result,
+            f'Según radiosantamaria.cl, el titular informa: "{title}".',
+        )
+        self.assertEqual(responses, [])
 
     def test_cpu_visible_message_uses_the_compact_fully_validated_prompt(self):
         runtime = object.__new__(LlmRuntime)

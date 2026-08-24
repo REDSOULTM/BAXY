@@ -7682,9 +7682,10 @@ class LlmRuntime:
         )
         news_summary_instruction = (
             "El primer elemento de seen.results es un titular individual "
-            "verificado, no una portada. Resume sólo ese titular en una frase "
-            "con su hecho concreto y su fuente; no enumeres sitios, no mezcles "
-            "otros resultados y no inventes detalles ausentes."
+            "verificado, no una portada. Conserva literalmente ese título y su "
+            "fuente en una sola frase natural. No lo interpretes, amplíes ni "
+            "parafrasees; no enumeres sitios, no mezcles otros resultados y no "
+            "inventes detalles ausentes."
         )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
@@ -7733,6 +7734,24 @@ class LlmRuntime:
             for value in (facts.get("requiredFacts") or [])
             if str(value).strip()
         ]
+        if news_summary_request:
+            observed_news = situation.get("observed")
+            news_results = (
+                observed_news.get("results")
+                if isinstance(observed_news, dict)
+                else None
+            )
+            first_news = (
+                news_results[0]
+                if isinstance(news_results, list)
+                and news_results
+                and isinstance(news_results[0], dict)
+                else {}
+            )
+            for key in ("title", "source"):
+                literal = str(first_news.get(key) or "").strip()
+                if literal and literal not in required_facts:
+                    required_facts.append(literal)
         forbidden_terms = [
             str(value).strip()
             for value in (facts.get("forbiddenResponseTerms") or [])
@@ -7785,6 +7804,7 @@ class LlmRuntime:
 
         if (
             intent == "status"
+            and not news_summary_request
             and len(required_facts) > 1
             and (not required_actions or required_actions == ["verifiqué"])
         ):

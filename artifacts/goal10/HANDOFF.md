@@ -966,3 +966,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   rechazado como `invented`, el segundo resumió el titular y nombró la fuente
   observada, y `compose.end` terminó sin fallo dentro del techo específico de
   10 s. Falta Fast y r23 fresca de quince; r22 es sonda y suma cero dosis.
+- Fast verde completo. La r23 fresca volvió a **14/15** tras revisión manual:
+  todos los turnos salvo noticias fueron correctos; noticias terminó en 4,443 s
+  pero añadió «maquinaria», ausente del titular observado, y alteró dentro de
+  comillas «litoral aysenino» por «litoral Aysén». La sesión es inválida y suma
+  cero. El contrato de noticias ahora deriva del primer resultado el `title` y
+  `source` dinámicos, exige ambos literalmente y prohíbe interpretación,
+  ampliación o paráfrasis; este par no entra en el scaffold de misión multi-paso.
+  La regresión rechaza exactamente la salida con «maquinaria» y sólo acepta la
+  siguiente redacción que conserva título + fuente: focal **2/2**, suite dueña
+  `test_planner.py` **148/148 + 101 subtests**, cero skips. Falta reproducción
+  física y otra tanda fresca completa.
