@@ -817,3 +817,17 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   PowerShell, Ruff, compileall, ESLint, ambos TSC, `dotnet format` y build
   Release; **0 warnings / 0 errors**. La caída nativa sigue abierta porque una
   compuerta verde no sustituye la reproducción viva.
+- Reproducción sintética `crash-r12c` bajo `cdb` nativo (sólo pila/módulos, sin
+  dump ni variables): **21 turnos** entre conversación, cálculo y búsquedas,
+  incluidos tres solapados; cero `turn.error`, cero `voice.speak rejected`, cero
+  `voice.error`, mente viva y ningún `0xc0000005`. La caída de r11 aún no es
+  reproducible, por lo que no se atribuye a un módulo sin dato.
+- Esa dosis sí reprodujo autoridad falsa estable: **`Que puedes hacer?`** y
+  **`Cuanto es 17 por 23?`** ejecutaron `web.search`. El helper conversacional
+  reconocía capacidad, pero la prioridad dejaba que un falso
+  `verified_public_intent` la sobreescribiera; además no había una clase cerrada
+  para aritmética numérica pura. Ahora identidad/capacidad y expresiones
+  numéricas cerradas son veto autoritativo de efectos antes de recuperación,
+  mientras el modelo conserva la respuesta natural. Focales **62/62** y suite
+  dueña `test_turn_policy.py` **868/868**, cero skips. Falta repetir ambas frases
+  en producto nuevo y otra tanda bajo `cdb`.

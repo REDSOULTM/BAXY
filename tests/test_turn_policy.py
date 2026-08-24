@@ -1191,6 +1191,9 @@ def test_assistant_preference_question_is_conversation_not_a_task_action() -> No
         ("¿Quién eres?", "knowledge", "es"),
         ("Who are you?", "knowledge", "en"),
         ("¿Qué puedes hacer?", "knowledge", "es"),
+        ("Que puedes hacer?", "knowledge", "es"),
+        ("Cuanto es 17 por 23?", "knowledge", "es"),
+        ("What is 17 times 23?", "knowledge", "en"),
         ("Respóndeme sólo con un saludo breve.", "knowledge", "es"),
     ],
 )
@@ -1373,6 +1376,59 @@ def test_one_sentence_drafting_closes_before_model_routing() -> None:
     assert result["kind"] == "conversation"
     assert result["effectOperations"] == []
     assert result["reply"] == "El cielo guarda una calma azul."
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Que puedes hacer?",
+        "Cuanto es 17 por 23?",
+        "What is 17 times 23?",
+    ],
+)
+def test_closed_identity_and_arithmetic_never_authorize_web_search(text: str) -> None:
+    web_tool = {
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "canonical_name": "web.search",
+            "description": "Search public web sources.",
+            "risk": "read_only",
+            "parameters": {
+                "type": "object",
+                "properties": {"query": {"type": "string"}},
+                "required": ["query"],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+    class NoEvidence:
+        @staticmethod
+        def candidate_families(*_args: object) -> tuple[str, ...]:
+            raise AssertionError("a closed no-effect turn must not rank actions")
+
+        @staticmethod
+        def retrieve(*_args: object) -> list[object]:
+            raise AssertionError("a closed no-effect turn must not retrieve actions")
+
+    class Runtime:
+        @staticmethod
+        def chat(*_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+            return "Respuesta sintética.", []
+
+    result = _prepare_turn_result(
+        {"id": "closed-no-effect", "text": text},
+        llm=Runtime(),
+        planner_catalog=PlannerCatalog([web_tool]),
+        turn_evidence=NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"web.search": web_tool},
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["intentOperations"] == []
+    assert result["effectOperations"] == []
 
 
 @pytest.mark.parametrize(

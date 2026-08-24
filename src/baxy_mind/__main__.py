@@ -2719,6 +2719,26 @@ def _assistant_identity_or_capability_question(objective: str) -> bool:
     )
 
 
+def _simple_arithmetic_question(objective: str) -> bool:
+    """Recognize a closed numeric expression that grants no PC authority."""
+
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    number = r"[-+]?\d+(?:[.,]\d+)?"
+    operator = (
+        r"(?:[+*/x×÷-]|mas|menos|por|entre|dividido\s+por|"
+        r"multiplicado\s+por|plus|minus|times|over|divided\s+by|multiplied\s+by)"
+    )
+    return (
+        re.fullmatch(
+            rf"[¿?¡!\s]*(?:cuanto\s+(?:es|da)|what\s+is|calculate|calcula(?:me)?)"
+            rf"\s+{number}(?:\s*{operator}\s*{number})+[\s?!.]*",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
 def _standalone_deictic_request(objective: str) -> bool:
     """Recognize a command whose required referent is entirely absent."""
 
@@ -3153,6 +3173,7 @@ def _explicit_stable_no_effect_turn_decision(
         is not None
     )
     capability_question = _assistant_identity_or_capability_question(objective)
+    simple_arithmetic_question = _simple_arithmetic_question(objective)
     # Both detectors below judge a *hypothesis*, and both are anchored to the
     # front of the request. A frame that denies an instruction -- "No assignment
     # for the computer, just answer me: what would happen if ..." -- sits in
@@ -3314,6 +3335,7 @@ def _explicit_stable_no_effect_turn_decision(
         or knowledge_after_negated_effect
         or opinion_prompt
         or capability_question
+        or simple_arithmetic_question
         or past_or_hypothetical
         or counterfactual_hypothetical
         or explicit_denial_frame
@@ -3351,6 +3373,7 @@ def _explicit_stable_no_effect_turn_decision(
                 or knowledge_after_negated_effect
                 or opinion_prompt
                 or capability_question
+                or simple_arithmetic_question
                 or counterfactual_hypothetical
                 # A denial of instruction asks to be talked to, not refused.
                 # "unsupported" would answer an answerable question with an
@@ -5775,11 +5798,15 @@ def _prepare_turn_result(
         )
         else None
     )
-    stable_no_effect_is_closed = (
+    authoritative_no_effect_is_closed = (
         explicit_non_action
         or literal_recall_decision is not None
         or content_drafting
         or _assistant_identity_or_capability_question(objective)
+        or _simple_arithmetic_question(objective)
+    )
+    stable_no_effect_is_closed = (
+        authoritative_no_effect_is_closed
         or (
             stable_no_effect_decision is not None
             and (
@@ -5793,6 +5820,7 @@ def _prepare_turn_result(
     explicit_intent = (
         None
         if non_target_language is not None
+        or authoritative_no_effect_is_closed
         or (stable_no_effect_is_closed and verified_public_intent is None)
         else resolved_explicit_intent
     )
