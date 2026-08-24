@@ -715,3 +715,8 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   intermitente del primer envío de narración. Las tres son sondas del agente y
   suman 0. Narración todavía no se cierra: hay que distinguir rechazo JSONL de
   fallo asíncrono del sintetizador y reparar el dueño real.
+- La frontera de salida ya no descarta silenciosamente el resultado de
+  `VoiceSpeakAsync`: traza `voice.speak accepted|rejected` con el ID capturado
+  del turno, antes de cualquier cambio físico `voice.state`. Es sólo telemetría
+  cerrada y no cambia colas ni tiempos. `ShellTraceTests` **8/8**, cero skips,
+  build Release verde. Falta reproducción instrumentada.

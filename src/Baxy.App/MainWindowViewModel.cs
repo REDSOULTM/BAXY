@@ -3393,10 +3393,33 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         MindSidecarClient? mind = _mindClient;
         if (mind is { IsReady: true })
         {
-            _ = isUser
-                ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)
-                : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
+            if (isUser)
+            {
+                _ = mind.VoiceCancelAsync(
+                    TimeSpan.FromSeconds(3),
+                    CancellationToken.None);
+            }
+            else
+            {
+                _ = SpeakMessageAsync(mind, body, ShellTraceSink.TurnId);
+            }
         }
+    }
+
+    private static async Task SpeakMessageAsync(
+        MindSidecarClient mind,
+        string body,
+        string turnId)
+    {
+        bool accepted = await mind.VoiceSpeakAsync(
+            body,
+            TimeSpan.FromSeconds(5),
+            CancellationToken.None).ConfigureAwait(false);
+        ShellTraceSink.Record(
+            ShellTraceScopes.Turn,
+            turnId,
+            ShellTraceStages.VoiceSpeak,
+            accepted ? "accepted" : "rejected");
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
