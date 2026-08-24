@@ -360,3 +360,32 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - No se mata BAXY para repetir Fast durante el tramo continuo. Esta tanda sólo
   toca Python y su suite dueña está verde; la compuerta Fast se repetirá en la
   ventana de reinicio o en el cierre, sin sacrificar la continuidad medida.
+
+## Continuación — la sonda visible detectó continuidad falsa
+
+- `goal10_dose_turns.ps1` ya no acepta `response.final` como sustituto de la
+  pantalla: exige `visible.text`, espera el `dom.applied` posterior y captura por
+  UIA la prosa exacta que vio la persona. La prueba viva `visible-capture-r1`
+  conservó «Sí, estoy aquí. ¿En qué puedo ayudarte?» en **1,393 s**.
+- La repetición multitur encontró un defecto grave antes de empezar la dosis:
+  después de esa pregunta genérica, `Hola.` se clasificó como `clarify` y mostró
+  **«¿Quieres que te diga el volumen y el silencio actuales de la salida
+  predeterminada?»** en 3,424 s. No hubo llamada al core, pero sí iniciativa no
+  solicitada; `visible-capture-r1/r2` son sondas fallidas y no cuentan.
+- Causa demostrada en el árbol: `_history_has_pending_clarification` infiere un
+  efecto pendiente de cualquier último mensaje del asistente terminado en `?`.
+  La app ya conserva la aclaración real en `_pendingMindClarificationObjective`
+  y, cuando existe, consulta primero la nueva entrada con historial vacío para
+  decidir si la reanuda o la sustituye. Por tanto, la puntuación del historial
+  Python convierte preguntas conversacionales normales en autoridad espuria y
+  no representa estado real. Se corrige en esa frontera y se repite desde una
+  instancia limpia antes de contar turnos.
+- La inferencia por `?` ya se retiró de los cierres sociales, de no comprensión
+  y de conversación estable; no queda un segundo estado de aclaración en Python.
+  La regresión extremo a extremo de la mente entrega `Hola.` como conversación
+  aun si el historial termina en «¿En qué puedo ayudarte?» y demuestra que no
+  rankea catálogo, no recupera evidencia y no concede efectos. Suite dueña:
+  `py -3.12 -m pytest tests/test_turn_policy.py -q` **835/835**; la sonda
+  PowerShell parsea sin errores. Falta repetir en producto tras reiniciar al
+  árbol nuevo; el tramo de soak iniciado sobre el binario anterior queda
+  invalidado por este defecto visible y no puede contar para las 24 h finales.

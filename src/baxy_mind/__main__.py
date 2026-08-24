@@ -2511,15 +2511,8 @@ _SOCIAL_TURNS: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
 
 def _explicit_social_turn_decision(
     objective: str,
-    history: object = None,
 ) -> dict[str, object] | None:
     """Classify a standalone social act without routing it as an effect."""
-
-    # Una aclaración pendiente convierte cualquier respuesta en parte de ese
-    # intercambio. Ante la duda se devuelve el turno al modelo, que es
-    # exactamente el comportamiento previo.
-    if _history_has_pending_clarification(history):
-        return None
     assistant_preference = False
     folded = unicodedata.normalize("NFKD", objective.casefold())
     folded = "".join(
@@ -2595,31 +2588,11 @@ def _explicit_social_turn_decision(
     }
 
 
-def _history_has_pending_clarification(history: object) -> bool:
-    """Conservatively recognize the latest assistant question as pending."""
-
-    if not isinstance(history, list):
-        return False
-    for item in reversed(history):
-        if (
-            not isinstance(item, dict)
-            or item.get("role") != "assistant"
-            or not isinstance(item.get("content"), str)
-        ):
-            continue
-        content = str(item["content"]).strip()
-        return bool(content) and content.rstrip().endswith("?")
-    return False
-
-
 def _explicit_nonunderstanding_turn_decision(
     objective: str,
     history: object = None,
 ) -> dict[str, object] | None:
     """Classify only a standalone comprehension reaction outside clarification."""
-
-    if _history_has_pending_clarification(history):
-        return None
     folded = unicodedata.normalize("NFKD", objective.casefold())
     folded = "".join(
         character for character in folded if not unicodedata.combining(character)
@@ -2992,7 +2965,6 @@ def _closed_unsupported_request(objective: str) -> bool:
 
 def _explicit_stable_no_effect_turn_decision(
     objective: str,
-    history: object = None,
 ) -> dict[str, object] | None:
     """Close only unambiguous non-effect clauses before tool selection.
 
@@ -3000,8 +2972,9 @@ def _explicit_stable_no_effect_turn_decision(
     classifier grants no operation authority; it prevents an erroneous leaf
     proposal from turning a clearly conversational turn into a second, slow
     semantic clarification.  The patterns deliberately cover closed syntactic
-    envelopes rather than catalog nouns, and pending clarifications always go
-    back to the model with their dialogue context.
+    envelopes rather than catalog nouns.  Pending effect clarification is app
+    state, not something that can be inferred from question punctuation in
+    conversational history.
     """
 
     explicit_non_action = effect_intent.explicit_non_action_frame(objective)
@@ -3016,8 +2989,6 @@ def _explicit_stable_no_effect_turn_decision(
             "effect_verification": "not_applicable",
             "response_language": _explicit_response_language(objective),
         }
-    if _history_has_pending_clarification(history):
-        return None
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     if not folded:
         return None
@@ -5699,7 +5670,6 @@ def _prepare_turn_result(
         literal_recall_decision
         or _explicit_stable_no_effect_turn_decision(
             objective,
-            history,
         )
     )
     stable_no_effect_is_closed = (
@@ -5772,7 +5742,7 @@ def _prepare_turn_result(
             )
         )
         else catalog_unavailable_decision
-        or _explicit_social_turn_decision(objective, history)
+        or _explicit_social_turn_decision(objective)
         or _explicit_nonunderstanding_turn_decision(objective, history)
         or stable_no_effect_decision
     )

@@ -861,7 +861,7 @@ def test_standalone_social_act_is_deterministic_conversation(
     text: str,
     language: str,
 ) -> None:
-    decision = _explicit_social_turn_decision(text, [])
+    decision = _explicit_social_turn_decision(text)
 
     assert decision is not None
     assert decision["mode"] == "conversation"
@@ -903,7 +903,7 @@ def test_standalone_social_act_is_deterministic_conversation(
     ],
 )
 def test_social_shortcut_never_swallows_another_request(text: str) -> None:
-    assert _explicit_social_turn_decision(text, []) is None
+    assert _explicit_social_turn_decision(text) is None
 
 
 @pytest.mark.parametrize(
@@ -947,7 +947,7 @@ def test_social_shortcut_never_overrides_a_recognized_effect(text: str) -> None:
     "text",
     ["hola", "buenas tardes", "nos vemos", "gracias", "hi", "bye"],
 )
-def test_social_shortcut_defers_to_pending_clarification(text: str) -> None:
+def test_social_shortcut_is_not_captured_by_question_punctuation(text: str) -> None:
     history = [
         {
             "role": "assistant",
@@ -955,7 +955,12 @@ def test_social_shortcut_defers_to_pending_clarification(text: str) -> None:
         }
     ]
 
-    assert _explicit_social_turn_decision(text, history) is None
+    decision = _explicit_social_turn_decision(text)
+
+    assert history[-1]["content"].endswith("?")
+    assert decision is not None
+    assert decision["conversation_kind"] == "social"
+    assert decision["effect_operations"] == []
 
 
 @pytest.mark.parametrize(
@@ -999,7 +1004,7 @@ def test_nonunderstanding_shortcut_never_swallows_a_compound_request(
     assert _explicit_nonunderstanding_turn_decision(text) is None
 
 
-def test_nonunderstanding_defers_to_pending_clarification_context() -> None:
+def test_nonunderstanding_is_not_captured_by_question_punctuation() -> None:
     history = [
         {
             "role": "assistant",
@@ -1007,13 +1012,11 @@ def test_nonunderstanding_defers_to_pending_clarification_context() -> None:
         }
     ]
 
-    assert (
-        _explicit_nonunderstanding_turn_decision(
-            "No entendí",
-            history,
-        )
-        is None
-    )
+    decision = _explicit_nonunderstanding_turn_decision("No entendí", history)
+
+    assert decision is not None
+    assert decision["conversation_kind"] == "followup"
+    assert decision["effect_operations"] == []
 
 
 @pytest.mark.parametrize(
@@ -1046,17 +1049,18 @@ def test_elliptical_reaction_uses_non_question_assistant_context(
 
 
 @pytest.mark.parametrize("text", ["¿Qué?", "¿Por qué?", "What?", "Why?"])
-def test_elliptical_reaction_without_resolvable_context_is_not_closed(
+def test_elliptical_reaction_uses_assistant_question_as_context(
     text: str,
 ) -> None:
     assert _explicit_nonunderstanding_turn_decision(text, []) is None
-    assert (
-        _explicit_nonunderstanding_turn_decision(
-            text,
-            [{"role": "assistant", "content": "¿Qué aplicación quieres abrir?"}],
-        )
-        is None
+    decision = _explicit_nonunderstanding_turn_decision(
+        text,
+        [{"role": "assistant", "content": "¿Qué aplicación quieres abrir?"}],
     )
+
+    assert decision is not None
+    assert decision["conversation_kind"] == "followup"
+    assert decision["effect_operations"] == []
 
 
 def test_assistant_preference_question_is_conversation_not_a_task_action() -> None:
@@ -1229,7 +1233,7 @@ def test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions(
     assert _explicit_stable_no_effect_turn_decision(text) is None
 
 
-def test_explicit_stable_no_effect_turn_defers_to_pending_clarification() -> None:
+def test_stable_no_effect_turn_does_not_infer_state_from_question_history() -> None:
     history = [
         {
             "role": "assistant",
@@ -1237,26 +1241,17 @@ def test_explicit_stable_no_effect_turn_defers_to_pending_clarification() -> Non
         }
     ]
 
-    assert (
-        _explicit_stable_no_effect_turn_decision(
-            "Open YouTube on my phone.",
-            history,
-        )
-        is None
-    )
+    decision = _explicit_stable_no_effect_turn_decision("Open YouTube on my phone.")
+
+    assert history[-1]["content"].endswith("?")
+    assert decision is not None
+    assert decision["conversation_kind"] == "unsupported"
+    assert decision["effect_operations"] == []
 
 
-def test_explicit_non_action_frame_overrides_a_pending_effect_clarification() -> None:
-    history = [
-        {
-            "role": "assistant",
-            "content": "Which device do you mean?",
-        }
-    ]
-
+def test_explicit_non_action_frame_closes_without_effect() -> None:
     decision = _explicit_stable_no_effect_turn_decision(
         "I have a short question, just to chat: open Spotify",
-        history,
     )
 
     assert decision is not None
@@ -3685,13 +3680,22 @@ def test_explicit_social_turn_does_not_compute_unused_semantic_candidates() -> N
         @staticmethod
         def chat(*args: object, **kwargs: object) -> tuple[str, list[object]]:
             assert kwargs["response_language"] == "es"
-            return "De nada.", []
+            return "Hola.", []
 
     def encoder_should_not_run(_texts: object) -> None:
         raise AssertionError("social turns do not cross the E5 process")
 
     result = _prepare_turn_result(
-        {"id": "turn-social", "text": "Gracias"},
+        {
+            "id": "turn-social",
+            "text": "Hola.",
+            "history": [
+                {
+                    "role": "assistant",
+                    "content": "Sí, estoy aquí. ¿En qué puedo ayudarte?",
+                }
+            ],
+        },
         llm=SocialLlm(),
         planner_catalog=NoSemanticWork(),
         turn_evidence=NoEvidence(),
@@ -3700,7 +3704,7 @@ def test_explicit_social_turn_does_not_compute_unused_semantic_candidates() -> N
     )
 
     assert result["kind"] == "conversation"
-    assert result["reply"] == "De nada."
+    assert result["reply"] == "Hola."
 
 
 @pytest.mark.parametrize("deferred_language", ["es", None])

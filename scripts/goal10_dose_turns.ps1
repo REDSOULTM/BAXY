@@ -97,6 +97,25 @@ function Send-Text([Windows.Automation.AutomationElement]$Field, [string]$Text) 
     [Windows.Forms.SendKeys]::SendWait('{ENTER}')
 }
 
+function Get-LatestBaxyText([Diagnostics.Process]$Process) {
+    $Process.Refresh()
+    if ($Process.MainWindowHandle -eq [IntPtr]::Zero) { return $null }
+    $root = [Windows.Automation.AutomationElement]::FromHandle($Process.MainWindowHandle)
+    if ($null -eq $root) { return $null }
+    $condition = New-Object Windows.Automation.PropertyCondition(
+        [Windows.Automation.AutomationElement]::ControlTypeProperty,
+        [Windows.Automation.ControlType]::Text)
+    $texts = $root.FindAll([Windows.Automation.TreeScope]::Descendants, $condition)
+    for ($textIndex = 0; $textIndex -lt ($texts.Count - 1); $textIndex++) {
+        if ([string]$texts.Item($textIndex).Current.Name -ne 'BAXY') { continue }
+        $candidate = [string]$texts.Item($textIndex + 1).Current.Name
+        if (-not [string]::IsNullOrWhiteSpace($candidate) -and $candidate -notmatch 'desktop') {
+            return $candidate
+        }
+    }
+    return $null
+}
+
 function Find-Stage(
     [object[]]$Rows,
     [string]$Stage,
@@ -162,6 +181,17 @@ foreach ($text in $Turns) {
     $core = Find-Stage -Rows (Read-Trace) -Stage 'core.call.start' -AfterSequence $baseline -Id $turnId
     $visible = Find-Stage -Rows (Read-Trace) -Stage 'visible.text' -AfterSequence $baseline -Id $turnId
     $errorStage = Find-Stage -Rows (Read-Trace) -Stage 'turn.error' -AfterSequence $baseline -Id $turnId
+    if ($null -eq $visible) {
+        throw "Turno $index terminó sin texto visible aceptado: $text"
+    }
+    [void](Wait-Until -TimeoutSeconds 5 -Failure (
+        "Turno $index no llegó al DOM: $text") -Condition {
+            Find-Stage -Rows (Read-Trace) -Stage 'dom.applied' -AfterSequence ([long]$final.seq)
+        })
+    $visibleText = Wait-Until -TimeoutSeconds 5 -Failure (
+        "Turno $index no expuso la respuesta por UIA: $text") -Condition {
+            Get-LatestBaxyText -Process $app
+        }
     $results.Add([ordered]@{
         session = $SessionId
         index = $index
@@ -170,6 +200,7 @@ foreach ($text in $Turns) {
         submitted = $true
         coreOperation = if ($core) { [string]$core.detail } else { $null }
         visibleTextAccepted = $null -ne $visible
+        visibleText = [string]$visibleText
         finalMs = [double]$final.ms
         submitMs = [double]$submit.ms
         elapsedS = [Math]::Round(((Get-Date) - $started).TotalSeconds, 3)
