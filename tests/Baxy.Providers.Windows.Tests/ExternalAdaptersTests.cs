@@ -1966,6 +1966,45 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task StructuredWebSearchReturnsArticleHeadlinesForCurrentNews()
+    {
+        const string rss = """
+            <rss><channel><item>
+              <title>Neurohack 2026 impulsa tecnología para niños - Universidad de La Frontera</title>
+              <link>https://news.google.com/rss/articles/example?oc=5</link>
+              <pubDate>Mon, 24 Aug 2026 19:27:53 GMT</pubDate>
+            </item></channel></rss>
+            """;
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(
+            temporary.Path, new(false, false, "", "", "", "unused"));
+        var handler = new SequencedHttpHandler(rss);
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"noticias actuales de tecnologia y resume una","limit":5}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("google_news_rss_https"));
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("results")[0]
+                .GetProperty("title").GetString(),
+                Is.EqualTo("Neurohack 2026 impulsa tecnología para niños"));
+            Assert.That(receipt.Result?.GetProperty("results")[0]
+                .GetProperty("snippet").GetString(),
+                Is.EqualTo("Titular publicado por Universidad de La Frontera el "
+                    + "Mon, 24 Aug 2026 19:27:53 GMT."));
+            Assert.That(handler.Hosts, Is.EqualTo(new[] { "news.google.com" }));
+        });
+    }
+
+    [Test]
     public async Task StructuredWebSearchRejectsAValidButUnrelatedFeed()
     {
         const string rss = """

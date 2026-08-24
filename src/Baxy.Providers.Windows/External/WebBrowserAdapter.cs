@@ -338,6 +338,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 operation, query, currentWeatherLocation, cancellationToken)
                 .ConfigureAwait(false);
         }
+        string? currentNewsTopic = CurrentNewsTopic(query);
+        if (currentNewsTopic is not null)
+        {
+            return await SearchCurrentNewsAsync(
+                operation, query, currentNewsTopic, limit: Math.Clamp(
+                    ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20),
+                cancellationToken).ConfigureAwait(false);
+        }
         string[] queryTokens = SearchTokens(query);
         if (queryTokens.Length == 0)
         {
@@ -525,6 +533,90 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
+    private async ValueTask<ExternalCapabilityReceipt> SearchCurrentNewsAsync(
+        string operation,
+        string query,
+        string topic,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        Uri endpoint = new(
+            "https://news.google.com/rss/search?q="
+            + Uri.EscapeDataString(topic + " when:1d")
+            + "&hl=es-419&gl=CL&ceid=CL:es-419");
+        using Stream stream = await _http.GetStreamAsync(endpoint, cancellationToken)
+            .ConfigureAwait(false);
+        var settings = new XmlReaderSettings
+        {
+            Async = true,
+            DtdProcessing = DtdProcessing.Prohibit,
+            XmlResolver = null,
+            MaxCharactersInDocument = 2_000_000,
+        };
+        using XmlReader reader = XmlReader.Create(stream, settings);
+        var xml = new XmlDocument { XmlResolver = null };
+        xml.Load(reader);
+        var results = new List<(string Title, string Url, string Snippet)>();
+        foreach (XmlNode item in xml.GetElementsByTagName("item"))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (results.Count >= limit) break;
+            string combinedTitle = item.ChildNodes.Cast<XmlNode>()
+                .FirstOrDefault(static node => node.LocalName == "title")
+                ?.InnerText.Trim() ?? string.Empty;
+            string url = item.ChildNodes.Cast<XmlNode>()
+                .FirstOrDefault(static node => node.LocalName == "link")
+                ?.InnerText.Trim() ?? string.Empty;
+            string published = item.ChildNodes.Cast<XmlNode>()
+                .FirstOrDefault(static node => node.LocalName == "pubDate")
+                ?.InnerText.Trim() ?? string.Empty;
+            if (combinedTitle.Length is 0 or > 4_096
+                || !Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
+                || parsed.Scheme != Uri.UriSchemeHttps
+                || parsed.Host != "news.google.com")
+            {
+                continue;
+            }
+            int sourceSeparator = combinedTitle.LastIndexOf(" - ",
+                StringComparison.Ordinal);
+            string title = sourceSeparator > 0
+                ? combinedTitle[..sourceSeparator].Trim()
+                : combinedTitle;
+            string source = sourceSeparator > 0
+                ? combinedTitle[(sourceSeparator + 3)..].Trim()
+                : "Google News";
+            string snippet = string.IsNullOrWhiteSpace(published)
+                ? $"Titular publicado por {source}."
+                : $"Titular publicado por {source} el {published}.";
+            results.Add((title, parsed.AbsoluteUri, snippet));
+        }
+        if (results.Count == 0)
+        {
+            return ExternalJson.FailureBeforeEffect(
+                operation, "web_search_results_irrelevant");
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("query", query);
+            writer.WriteNumber("count", results.Count);
+            writer.WriteStartArray("results");
+            foreach ((string title, string url, string snippet) in results)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("title", title);
+                writer.WriteString("url", url);
+                writer.WriteString("snippet", snippet);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "google_news_rss_https");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
     private async Task<JsonDocument> ReadJsonAsync(
         Uri endpoint,
         CancellationToken cancellationToken)
@@ -554,6 +646,20 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
         string location = match.Groups["place"].Value.Trim(' ', '.', ',', '?', '!');
         return location.Length >= 2 ? location : null;
+    }
+
+    private static string? CurrentNewsTopic(string query)
+    {
+        Match match = Regex.Match(
+            query,
+            @"^(?:busca(?:r)?|consulta(?:r)?|search(?:\s+for)?|find)?\s*(?:noticias|news)\s+(?:actuales|recientes|latest|current)(?:\s+(?:de|sobre|about))?\s+(?<topic>[\p{L}\p{M}0-9 .,'-]{2,96}?)(?:\s+(?:y|and)\s+(?:resume|resumeme|summarize)\s+(?:una|one))?[\s?!.]*$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!match.Success)
+        {
+            return null;
+        }
+        string topic = match.Groups["topic"].Value.Trim(' ', '.', ',', '?', '!');
+        return topic.Length >= 2 ? topic : null;
     }
 
     private static bool TryReadDouble(

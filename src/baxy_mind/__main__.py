@@ -2709,7 +2709,9 @@ def _assistant_identity_or_capability_question(objective: str) -> bool:
                 r"[¿?¡!\s]*(?:quien\s+eres(?:\s+tu)?|who\s+are\s+you|"
                 r"what\s+(?:can|can\s*t|cannot)\s+you\s+do|"
                 r"que\s+(?:puedes|no\s+puedes)\s+hacer|"
-                r"cuales\s+son\s+tus\s+capacidades)"
+                r"cuales\s+son\s+tus\s+capacidades|"
+                r"(?:resume|resumeme)\s+en\s+una\s+frase\s+que\s+puedes\s+hacer|"
+                r"summarize\s+in\s+one\s+sentence\s+what\s+you\s+can\s+do)"
                 r"(?:\s+baxy)?[\s?!.]*"
             ),
             folded,
@@ -2760,15 +2762,30 @@ def _standalone_deictic_request(objective: str) -> bool:
     )
 
 
-def _general_factoid_prompt(objective: str) -> bool:
+def _animal_sound_question(objective: str) -> bool:
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     return (
         re.fullmatch(
             (
+                r"[¿?¡!\s]*(?:what\s+sound\s+does\s+(?:an?\s+|the\s+)?"
+                r"[a-z][a-z .'-]{0,48}\s+make|"
+                r"que\s+sonido\s+hace\s+(?:(?:un|una|el|la)\s+)?"
+                r"[a-z][a-z .'-]{0,48})[\s?!.]*"
+            ),
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _general_factoid_prompt(objective: str) -> bool:
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    return _animal_sound_question(objective) or (
+        re.fullmatch(
+            (
                 r"[¿?¡!\s]*(?:"
                 r"(?:please\s+)?tell\s+me\s+the\s+score\s+of\s+the\s+game|"
-                r"what\s+sound\s+does\s+(?:an?\s+|the\s+)?"
-                r"[a-z][a-z .'-]{0,48}\s+make|"
                 r"(?:(?:podrias|puedes|can\s+you|could\s+you)\s+)?"
                 r"(?:confirmar|confirm)\s+(?:si|whether)\s+"
                 r"[a-z][a-z .'-]{0,64}\s+(?:esta\s+casad[oa]|is\s+married)|"
@@ -3021,7 +3038,8 @@ def _explicit_stable_no_effect_turn_decision(
 
     definition = re.match(
         (
-            r"^[¿?¡!\s]*(?:que\s+es|que\s+son|what\s+(?:is|are|es)|what's|"
+            r"^[¿?¡!\s]*(?:que\s+es|que\s+son|explica(?:me)?\s+que\s+es|"
+            r"what\s+(?:is|are|es)|what's|"
             r"para\s+que\s+sirve|explain\s+what)\b"
         ),
         folded,
@@ -5804,6 +5822,7 @@ def _prepare_turn_result(
         or content_drafting
         or _assistant_identity_or_capability_question(objective)
         or _simple_arithmetic_question(objective)
+        or _animal_sound_question(objective)
     )
     stable_no_effect_is_closed = (
         authoritative_no_effect_is_closed

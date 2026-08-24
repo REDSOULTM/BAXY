@@ -1195,6 +1195,9 @@ def test_assistant_preference_question_is_conversation_not_a_task_action() -> No
         ("Que puedes hacer?", "knowledge", "es"),
         ("Cuanto es 17 por 23?", "knowledge", "es"),
         ("What is 17 times 23?", "knowledge", "en"),
+        ("Explica que es una nube en una frase.", "knowledge", "es"),
+        ("Que sonido hace un perro?", "knowledge", "es"),
+        ("Resume en una frase que puedes hacer.", "knowledge", "es"),
         ("Respóndeme sólo con un saludo breve.", "knowledge", "es"),
     ],
 )
@@ -1385,6 +1388,9 @@ def test_one_sentence_drafting_closes_before_model_routing() -> None:
         "Que puedes hacer?",
         "Cuanto es 17 por 23?",
         "What is 17 times 23?",
+        "Explica que es una nube en una frase.",
+        "Que sonido hace un perro?",
+        "Resume en una frase que puedes hacer.",
     ],
 )
 def test_closed_identity_and_arithmetic_never_authorize_web_search(text: str) -> None:

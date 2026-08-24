@@ -877,3 +877,20 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   autoridades HTTP; focales de búsqueda **5/5** y suite completa
   `Baxy.Providers.Windows.Tests` **453/453**, cero skips en el resumen. Falta
   comprobar la red real y leer la frase compuesta en el producto vivo.
+- Repetición física r14 auditada manualmente par por par: **10/15 aceptables**,
+  por tanto sesión inválida. Ya quedaron correctos identidad ES/EN, capacidad,
+  aritmética, hora web, clima con valores Open-Meteo, capital, fecha y los dos
+  textos ingleses. Fallaron: frase de lluvia pobre, nube con falsa incapacidad,
+  perro ejecutó `audio.status` y dijo «bocina», noticias devolvió portadas sin
+  resumir una, y el resumen de capacidades ejecutó `task.resolve.exact` y acabó
+  en un falso `No pude`.
+- Reparación posterior: `Explica que es…` se cierra como conocimiento;
+  preguntas ES/EN por sonido animal son no-efecto autoritativo (no pueden ser
+  `audio.status` ni web); y el sobre «Resume en una frase que puedes hacer» se
+  reconoce como capacidad del propio BAXY. Para noticias actuales, `web.search`
+  retira la instrucción de resumen de la consulta y usa RSS de Google News con
+  `when:1d`, proyectando titulares individuales, fuente y fecha en vez de
+  portadas genéricas. Focal web **6/6**, `test_turn_policy.py` **876/876** y
+  `Baxy.Providers.Windows.Tests` **454/454**, cero skips en los resúmenes.
+  Falta Fast/rebuild y repetir las 15; la frase de lluvia se reevalúa junto con
+  la nueva generación aislada y no se dará por buena sin lectura manual.
