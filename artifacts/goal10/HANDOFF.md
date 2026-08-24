@@ -914,3 +914,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   nuevas **19/19**; suites dueñas `test_turn_policy.py` **886/886** y
   `test_planner.py` **147/147 + 101 subtests**, cero skips. Falta Fast y una
   tanda física fresca 15/15 leída manualmente; ningún turno r13–r15 suma dosis.
+- Fast de `64c0d18` verde completo, 0 warnings/errores. Tanda física fresca r16
+  auditada manualmente: **14/15** respuestas correctas (saludo, identidad ES/EN,
+  capacidad simple y envuelta, lluvia, aritmética, nube física, hora, clima con
+  valores, capital, otoño, ladrido y fecha). Noticias actuales ejecutó
+  `web.search`, pero los tres intentos de redacción se perdieron y la UI publicó
+  el falso terminal «no pude redactar…». Por ese único fallo la sesión completa
+  es inválida y suma cero. Bloqueo vivo: capturar el defecto exacto de los tres
+  borradores del compositor con su auditoría local sin contenido, reparar y
+  repetir las quince; no se baja ningún validador.
