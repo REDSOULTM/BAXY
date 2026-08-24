@@ -4989,6 +4989,15 @@ class LlmRuntime:
             and bool(content)
             and (_normalized_dialogue_text(content) == _normalized_dialogue_text(text))
         )
+        prior_assistant_answers = {
+            _normalized_dialogue_text(item.get("content"))
+            for item in prior_messages
+            if item.get("role") == "assistant"
+            and _normalized_dialogue_text(item.get("content"))
+        }
+        is_history_echo = bool(content) and (
+            _normalized_dialogue_text(content) in prior_assistant_answers
+        )
         system_prompt_echo = echoes_system_message(content, payload["messages"])
         unsupported_contract_failure_reason = (
             _unsupported_answer_contract_failure(content, text)
@@ -5010,6 +5019,7 @@ class LlmRuntime:
         if (
             not content
             or is_echo
+            or is_history_echo
             or system_prompt_echo
             or unsupported_contract_failure
             or shaped_contract_failure
@@ -5148,6 +5158,7 @@ class LlmRuntime:
                 and _normalized_dialogue_text(final_content)
                 == _normalized_dialogue_text(text)
             )
+            or _normalized_dialogue_text(final_content) in prior_assistant_answers
             or echoes_system_message(
                 final_content,
                 final_messages,
@@ -5179,6 +5190,9 @@ class LlmRuntime:
                 == _normalized_dialogue_text(text)
                 else "system_echo"
                 if echoes_system_message(final_content, final_messages)
+                else "history_echo"
+                if _normalized_dialogue_text(final_content)
+                in prior_assistant_answers
                 else _unsupported_answer_contract_failure(final_content, text)
                 if presentation_shape is None and conversation_kind == "unsupported"
                 else "unsupported_language"

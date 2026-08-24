@@ -408,3 +408,12 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   model-authored que la precede; si no hay declaración o queda otra pregunta,
   el candidato se rechaza. Borradores de contenido y role-play quedan fuera de
   esa regla porque una pregunta puede ser parte del resultado solicitado.
+- `continuity-shape-clean-r3` cerró las preguntas: presencia quedó en «Sí,
+  aquí.» y capacidades en una declaración útil. El saludo, sin embargo, mostró
+  otra vez «Sí, aquí.». El volcado UIA confirmó la secuencia completa y descarta
+  una lectura atrasada: era un eco exacto del mensaje anterior del asistente.
+  La sesión tampoco cuenta. La validación general sólo comparaba contra el pedido
+  actual; el turno social permitía espejar a la persona, pero no distinguía ese
+  espejo legítimo de repetir la propia respuesta previa. Se conserva el espejo
+  social del usuario y se rechaza por separado cualquier eco del historial del
+  asistente; el retry ya existente no lleva ese historial.

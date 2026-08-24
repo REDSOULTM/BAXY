@@ -9561,6 +9561,35 @@ def test_social_chat_removes_only_generic_question_closing() -> None:
     assert len(payloads) == 1
 
 
+def test_social_chat_rewrites_previous_assistant_echo() -> None:
+    runtime = object.__new__(LlmRuntime)
+    payloads: list[dict[str, object]] = []
+
+    def post(payload: dict[str, object]) -> dict[str, object]:
+        payloads.append(payload)
+        content = (
+            "Sí, aquí. ¿Qué necesitas?"
+            if len(payloads) == 1
+            else json.dumps({"answer": "Hola."}, ensure_ascii=False)
+        )
+        return {"choices": [{"message": {"content": content}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+
+    answer, calls = runtime.chat(
+        "Hola.",
+        history=[{"role": "assistant", "content": "Sí, aquí."}],
+        temperature=0.0,
+        conversation_kind="social",
+        response_language="es",
+    )
+
+    assert answer == "Hola."
+    assert calls == []
+    assert len(payloads) == 2
+    assert "Sí, aquí." not in repr(payloads[1]["messages"])
+
+
 @pytest.mark.parametrize(
     ("answer", "expected"),
     [
