@@ -47,6 +47,7 @@ from baxy_mind.__main__ import (
     _retry_side_effect_free_turn,
     apply_compound_effect_conservation_veto,
     apply_conversation_effect_presentation,
+    apply_declarative_observation_effect_veto,
     apply_explicit_effect_contract,
     apply_information_question_effect_veto,
     apply_non_effect_conversation_classification,
@@ -76,6 +77,7 @@ from baxy_mind.llm import (
     _build_turn_reanalysis_payload,
     _compact_structured_grammar,
     _conversation_presentation_shape,
+    _direct_observation_address,
     _INVENTED_INFINITIVES,
     _reads_as_an_observation,
     _shaped_conversation_answer_violates_contract,
@@ -6987,6 +6989,128 @@ def test_information_question_cannot_authorize_a_mutating_effect() -> None:
     assert vetoed["mode"] == "conversation"
     assert vetoed["conversation_kind"] == "knowledge"
     assert vetoed["effect_operations"] == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Tengo el Bluetooth encendido",
+        "Estoy usando los altavoces",
+        "I have Bluetooth enabled",
+        "I see the app open",
+    ],
+)
+def test_declarative_observation_never_grants_effect_authority(text: str) -> None:
+    decision = validate_turn_decision(
+        {
+            "mode": "plan",
+            "operation": None,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": ["bluetooth.radio.set"],
+            "effect_verification": "disagreement",
+            "response_language": "es",
+        },
+        {"bluetooth.radio.set"},
+    )
+
+    vetoed = apply_declarative_observation_effect_veto(decision, text)
+
+    assert vetoed["mode"] == "conversation"
+    assert vetoed["conversation_kind"] == "followup"
+    assert vetoed["effect_operations"] == []
+
+
+def test_declarative_observation_veto_preserves_questions_and_explicit_requests() -> None:
+    decision = validate_turn_decision(
+        {
+            "mode": "action",
+            "operation": "bluetooth.radio.set",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": ["bluetooth.radio.set"],
+            "effect_verification": "grounding_required",
+            "response_language": "es",
+        },
+        {"bluetooth.radio.set"},
+    )
+    explicit = EffectIntent(("bluetooth.radio.set",))
+
+    assert (
+        apply_declarative_observation_effect_veto(
+            decision,
+            "¿Tengo el Bluetooth encendido?",
+        )
+        is decision
+    )
+    assert (
+        apply_declarative_observation_effect_veto(
+            decision,
+            "Tengo que encender Bluetooth",
+            explicit,
+        )
+        is decision
+    )
+
+
+def test_self_contained_observation_uses_direct_ack_even_with_welcome_history() -> None:
+    assert (
+        llm_module._conversation_presentation_shape(
+            "Tengo el Bluetooth encendido",
+            conversation_kind="followup",
+            has_history=True,
+        )
+        == "observation_ack"
+    )
+    assert _shaped_conversation_answer_violates_contract(
+        "El usuario menciona que tiene el Bluetooth encendido.",
+        "Tengo el Bluetooth encendido",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+    assert not _shaped_conversation_answer_violates_contract(
+        "Entiendo que tienes el Bluetooth encendido.",
+        "Tengo el Bluetooth encendido",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+    assert _direct_observation_address(
+        "El usuario ha confirmado que tiene el Bluetooth encendido.",
+        "observation_ack",
+    ) == "Mencionas que tienes el Bluetooth encendido."
+    assert _direct_observation_address(
+        "The user confirms that they have Bluetooth enabled.",
+        "observation_ack",
+    ) == "You mention that you have Bluetooth enabled."
+    assert not _shaped_conversation_answer_violates_contract(
+        "Mencionas que tienes el Bluetooth encendido.",
+        "Tengo el Bluetooth encendido",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+
+    runtime = object.__new__(LlmRuntime)
+    runtime._post = lambda _payload: {  # type: ignore[method-assign]
+        "choices": [
+            {
+                "message": {
+                    "content": (
+                        "El usuario ha confirmado que tiene el Bluetooth encendido."
+                    )
+                }
+            }
+        ]
+    }
+    reply, calls = runtime.chat(
+        "Tengo el Bluetooth encendido",
+        history=[{"role": "assistant", "content": "Hola."}],
+        conversation_kind="followup",
+        response_language="es",
+    )
+    assert reply == "Mencionas que tienes el Bluetooth encendido."
+    assert calls == []
 
 
 def test_information_question_veto_preserves_real_requests_and_read_only_queries() -> (

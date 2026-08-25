@@ -150,7 +150,8 @@ OBSERVATION_ACK_PRESENTATION_PROMPT = (
     "observación sin convertirla en un hecho comprobado, sin preguntar ni "
     "ofrecer otra acción. Habla directamente con la persona: por ejemplo, "
     "«Entiendo que observas que la GPU dejó de usarse» o «Mencionas que cerrar "
-    "Word podía perder cambios no guardados»."
+    "Word podía perder cambios no guardados». Nunca digas «el usuario», «la "
+    "persona», «the user» ni «the person»."
 )
 
 CONTENT_DRAFT_PRESENTATION_PROMPT = (
@@ -1761,8 +1762,13 @@ def _conversation_presentation_shape(
         folded,
     ):
         return "missing_context"
+    self_contained_first_person_observation = re.match(
+        r"(?:yo\s+)?(?:tengo|tenemos|estoy|estamos|veo|noto|observo|"
+        r"i\s+have|i\s+am|i\s+see|i\s+notice|i\s+observe)\b",
+        folded,
+    ) is not None
     if (
-        not has_history
+        (not has_history or self_contained_first_person_observation)
         and not any(marker in text for marker in ("?", "¿", "？"))
         and re.match(
             r"\s*(?:que|what|why|how|which|who|cuando|when|donde|where|"
@@ -1997,7 +2003,7 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_asserts_an_unread_machine_state(value, request=request):
         return True
-    if visible_reply_restates_the_request(value, request):
+    if shape != "observation_ack" and visible_reply_restates_the_request(value, request):
         return True
     if visible_reply_invents_a_spanish_infinitive(value):
         return True
@@ -2138,6 +2144,12 @@ def _shaped_conversation_answer_violates_contract(
             )
         )
     if shape == "observation_ack":
+        if re.search(
+            r"^(?:(?:el|la|este|esta)\s+(?:usuario|usuaria|persona)|"
+            r"(?:the|this|that)\s+(?:user|person))\b",
+            folded,
+        ):
+            return True
         request_folded = _policy_guard_text(request)
         if (
             re.search(
@@ -2158,6 +2170,51 @@ def _shaped_conversation_answer_violates_contract(
             is None
         )
     return False
+
+
+def _direct_observation_address(value: object, shape: str | None) -> str:
+    """Turn model-authored person metadiscourse into direct address."""
+
+    content = str(value or "").strip()
+    if shape != "observation_ack" or not content:
+        return content
+    spanish = re.match(
+        r"^(?:(?:el|la)\s+(?:usuario|usuaria|persona))\s+"
+        r"(?:menciona|indica|confirma|ha\s+confirmado)\s+que\s+(.+)$",
+        content,
+        re.IGNORECASE,
+    )
+    if spanish is not None:
+        clause = re.sub(
+            r"^(tiene|esta|observa|ve|nota)\b",
+            lambda match: {
+                "tiene": "tienes",
+                "esta": "estás",
+                "observa": "observas",
+                "ve": "ves",
+                "nota": "notas",
+            }[match.group(1).casefold()],
+            spanish.group(1),
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        return "Mencionas que " + clause
+    english = re.match(
+        r"^(?:(?:the|this|that)\s+(?:user|person))\s+"
+        r"(?:mentions?|indicates?|confirms?)\s+that\s+(.+)$",
+        content,
+        re.IGNORECASE,
+    )
+    if english is not None:
+        clause = re.sub(
+            r"^(?:they|he|she)\s+(?:have|has)\b",
+            "you have",
+            english.group(1),
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        return "You mention that " + clause
+    return content
 
 
 _UNSUPPORTED_ANCHOR_STOPWORDS = frozenset(
@@ -5031,6 +5088,7 @@ class LlmRuntime:
                 None,
                 "followup",
             }
+            and presentation_shape != "observation_ack"
         )
         if contextual_history:
             return (
@@ -5198,6 +5256,7 @@ class LlmRuntime:
             conversation_kind=conversation_kind,
             presentation_shape=presentation_shape,
         )
+        content = _direct_observation_address(content, presentation_shape)
         content = _without_unrequested_conversation_closing(
             content,
             conversation_kind=conversation_kind,
@@ -5286,6 +5345,14 @@ class LlmRuntime:
                             "sin responder la acción aparente ni hacer preguntas."
                         )
                         if conversation_kind == "unsupported_language"
+                        else (
+                            "Habla directamente con tú/you y reconoce la observación. "
+                            "Nunca digas el usuario, la persona, the user ni the person. "
+                            "Una sola oración declarativa, sin afirmar que verificaste el "
+                            "estado y sin ofrecer otra acción."
+                        )
+                        if shaped_contract_failure
+                        and presentation_shape == "observation_ack"
                         else (
                             "La respuesta debe ser una sola oración declarativa "
                             "que cumpla exactamente el contrato del primer mensaje "
@@ -5386,7 +5453,7 @@ class LlmRuntime:
         else:
             final_messages = payload["messages"]
         final_content = _without_unrequested_conversation_closing(
-            message.get("content"),
+            _direct_observation_address(message.get("content"), presentation_shape),
             conversation_kind=conversation_kind,
             shape=presentation_shape,
         )

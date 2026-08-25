@@ -1254,3 +1254,52 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
 - Próximo dueño: runner integral reanudable que conserve una fila y un veredicto
   por `message_id`. El gate exhaustivo heredado no basta: sólo llega a
   `turn.decide`/planner, registra `tools_executed: 0` y admite estados `review`.
+
+### Continuación 2026-08-25 — primer replay real del corpus observado
+
+- `05debb8` está en `origin/main`. Añade dos caminos separados y explícitamente
+  etiquetados: `run_observed_user_mind_replay.py` para diagnóstico semántico sin
+  afirmar ejecución, y `ObservedUserCorpusReplayTests` para atravesar shell, mente,
+  catálogo, Core y providers reales con una fila durable por ocurrencia.
+- El replay físico de los diez turnos de
+  `gemma4_local/sessions/12a4898d705c.json` ejerció memoria habilitada por una
+  operación real verificada. Cerró correctamente saludo, guardado explícito,
+  consentimiento para contexto no solicitado, recall y acuse social. La corrida
+  v9 completa está fuera de Git en
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-product-session-12a4898d705c.v9.jsonl`,
+  SHA-256 `ae3621afd2e21977be7501c48ece9ab435699e7604620900926a108e0998c840`.
+- El corpus destapó y se corrigieron familias, nunca literales de examen: petición
+  de recuerdo con marco necesidad/deseo; acuses sociales autónomos; cierre de app
+  con nombre explícito; investigación web embebida; preservación de proyecciones y
+  registros de memoria; y el error de misión que anidaba JSON como literal exigido.
+  El ejecutor conserva ahora el `ErrorCode` real del Core y el compositor lo ve en
+  prosa, sin exponer snake_case. `window_not_found` termina visible y honestamente
+  como «No pude encontrarlo.» en la corrida física v12 (7 turnos, 6,668 s para el
+  turno); `web_search_results_irrelevant` termina como fallo público verificable,
+  no como pérdida de composición.
+- Validación de la tanda: Python focal **2.409/2.409**, .NET focal **68/68**, replay
+  físico v9 **1/1** y v12 **1/1**, todos con cero skips. La compuerta
+  `scripts/test_source_quality.ps1` terminó verde en modo Fast: build Release con
+  0 advertencias y 0 errores.
+- El runner físico admite ahora `BAXY_GOAL10_OBSERVED_START` junto con el límite y
+  conserva en cada fila tanto el índice global del corpus como el índice dentro de
+  la partición. La fuente grande contiene 1.857 trazas independientes y puede
+  dividirse sin romper contexto; las 16 sesiones Gemma (90 turnos) deben seguir
+  ejecutándose completas para respetar sus fronteras.
+- La primera fila de esa fuente grande expuso un conflicto del oráculo heredado:
+  `tengo el bluetooth encendido` se etiquetó en 2025 como la operación prototipo
+  `bluetooth.manage`, retirada y sustituida por el catálogo tipado actual. Identidad
+  exige iniciativa sólo cuando se pide, así que una observación declarativa no puede
+  autorizar un efecto. Se añadió el veto general de observaciones y el compositor
+  produce ahora un acuse directo, sin respuesta fija ni literal del corpus.
+- La reproducción física final está en
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-probando-shard-0000-0001.v8.jsonl`,
+  SHA-256 `e8793bd469522edea425264f03d2281cb7be4cfdf4464715be11bbb7194b50f5`.
+  La ocurrencia global 685 respondió «Entiendo que tienes el bluetooth encendido.»,
+  registró cero operaciones y pasó **1/1** con cero skips. La suite Python focal
+  quedó en **904/904** y el build .NET en 0 advertencias y 0 errores.
+- El runner físico aún no es el veredicto integral: captura respuesta, trace y
+  journal, pero no adjudica las nueve dimensiones. Próximo dueño exacto: producir
+  el contrato adjudicado contra Identidad, con un ledger versionado para conflictos
+  del oráculo congelado, y persistir `pass`/`fail` individual; sólo entonces lanzar
+  las 1.947.

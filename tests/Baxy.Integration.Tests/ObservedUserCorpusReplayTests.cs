@@ -15,6 +15,7 @@ public sealed class ObservedUserCorpusReplayTests
     private const string MappingVariable = "BAXY_GOAL10_OBSERVED_MAPPING";
     private const string OutputVariable = "BAXY_GOAL10_OBSERVED_OUTPUT";
     private const string MaxCasesVariable = "BAXY_GOAL10_OBSERVED_MAX_CASES";
+    private const string StartVariable = "BAXY_GOAL10_OBSERVED_START";
     private const string SourceVariable = "BAXY_GOAL10_OBSERVED_SOURCE";
     private const string MemoryBaselineVariable = "BAXY_GOAL10_MEMORY_BASELINE";
 
@@ -33,9 +34,10 @@ public sealed class ObservedUserCorpusReplayTests
         string mappingPath = RequiredAbsoluteFile(MappingVariable);
         string outputPath = RequiredAbsoluteOutput(OutputVariable);
         int? maximum = OptionalPositiveInteger(MaxCasesVariable);
+        int start = OptionalNonnegativeInteger(StartVariable) ?? 0;
         string selectedSource = Environment.GetEnvironmentVariable(SourceVariable) ?? string.Empty;
         bool memoryEnabledAtStart = OptionalBoolean(MemoryBaselineVariable);
-        CorpusRow[] rows = ReadCorpus(corpusPath, selectedSource, maximum);
+        CorpusRow[] rows = ReadCorpus(corpusPath, selectedSource, start, maximum);
         Dictionary<string, JsonElement> mappings = ReadMappings(mappingPath);
         Assert.That(rows, Is.Not.Empty);
         Assert.That(
@@ -120,7 +122,8 @@ public sealed class ObservedUserCorpusReplayTests
                     new
                     {
                         schema = "baxy.goal10-observed-product-replay.v1",
-                        occurrence_index = index,
+                        occurrence_index = row.CorpusIndex,
+                        shard_index = index,
                         message_id = row.MessageId,
                         message = row.Text,
                         source = row.Source,
@@ -173,10 +176,12 @@ public sealed class ObservedUserCorpusReplayTests
     private static CorpusRow[] ReadCorpus(
         string path,
         string selectedSource,
+        int start,
         int? maximum)
     {
         IEnumerable<CorpusRow> rows = ReadJsonLines(path)
-            .Select(static value => new CorpusRow(
+            .Select(static (value, index) => new CorpusRow(
+                index,
                 TextProperty(value, "message_id"),
                 TextProperty(value, "text_literal"),
                 TextProperty(value, "source"),
@@ -186,6 +191,7 @@ public sealed class ObservedUserCorpusReplayTests
             .OrderBy(static row => row.Source, StringComparer.Ordinal)
             .ThenBy(static row => LocationOrdinal(row.SourceLocation))
             .ThenBy(static row => row.MessageId, StringComparer.Ordinal);
+        rows = rows.Skip(start);
         if (maximum is not null)
         {
             rows = rows.Take(maximum.Value);
@@ -408,6 +414,18 @@ public sealed class ObservedUserCorpusReplayTests
         return parsed;
     }
 
+    private static int? OptionalNonnegativeInteger(string name)
+    {
+        string value = Environment.GetEnvironmentVariable(name) ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+        Assert.That(int.TryParse(value, out int parsed), Is.True, $"{name} must be an integer.");
+        Assert.That(parsed, Is.GreaterThanOrEqualTo(0), $"{name} must be nonnegative.");
+        return parsed;
+    }
+
     private static bool OptionalBoolean(string name)
     {
         string value = Environment.GetEnvironmentVariable(name) ?? string.Empty;
@@ -444,6 +462,7 @@ public sealed class ObservedUserCorpusReplayTests
     }
 
     private sealed record CorpusRow(
+        int CorpusIndex,
         string MessageId,
         string Text,
         string Source,

@@ -278,6 +278,7 @@ _TURN_FAILURE_STAGE_BY_FRAME = {
     "decide_turn": "model_decision",
     "validate_turn_decision": "decision_validation",
     "apply_explicit_effect_contract": "explicit_contract",
+    "apply_declarative_observation_effect_veto": "declarative_observation",
     "apply_information_question_effect_veto": "information_question",
     "apply_operation_domain_grounding_veto": "domain_grounding",
     "apply_compound_effect_conservation_veto": "compound_conservation",
@@ -1473,6 +1474,48 @@ def apply_information_question_effect_veto(
             "operation": None,
             "question": "",
             "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+        }
+    )
+    return conversational
+
+
+def apply_declarative_observation_effect_veto(
+    decision: dict[str, object],
+    objective: str,
+    explicit_intent: EffectIntent | None = None,
+) -> dict[str, object]:
+    """A declarative observation never grants authority for an effect."""
+
+    if explicit_intent is not None or decision.get("mode") not in {"action", "plan"}:
+        return decision
+    operations = decision.get("effect_operations")
+    if not isinstance(operations, list) or not operations:
+        return decision
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    if any(marker in objective for marker in ("?", "¿", "？")):
+        return decision
+    if not (
+        _reads_as_an_observation(folded)
+        or re.search(
+            r"\b(?:estoy|estaba|estuve|tengo|tenia|veo|noto|observo|"
+            r"me aparece|me salio|dejo de|i am|i m|i was|i have|i ve|"
+            r"i did|i see|i notice|i observe|stopped)\b",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    ):
+        return decision
+    conversational = dict(decision)
+    conversational.update(
+        {
+            "mode": "conversation",
+            "operation": None,
+            "question": "",
+            "conversation_kind": "followup",
             "effect_count": "zero",
             "effect_operations": [],
             "effect_verification": "not_applicable",
@@ -6197,6 +6240,21 @@ def _prepare_turn_result(
         {tool.name for tool in shortlist},
     )
     turn_audit["stages"].append(_turn_audit_stage("explicit_contract", decision))
+    effects_before_declarative_veto = tuple(decision["effect_operations"])
+    decision = apply_declarative_observation_effect_veto(
+        decision,
+        objective,
+        explicit_intent,
+    )
+    if effects_before_declarative_veto and not decision["effect_operations"]:
+        intent_operations = []
+    decision = validate_turn_decision(
+        decision,
+        {tool.name for tool in shortlist},
+    )
+    turn_audit["stages"].append(
+        _turn_audit_stage("declarative_observation", decision)
+    )
     effects_before_information_veto = tuple(decision["effect_operations"])
     decision = apply_information_question_effect_veto(
         decision,
