@@ -2440,7 +2440,12 @@ public sealed class PlannerAppBoundaryTests
                 UserMessagePolicy.ModelResponseRejectionReason(
                     "La batería está al 97% y el equipo está en modo de espera.",
                     draft),
-                Is.EqualTo("reversed_battery_state"));
+                Is.EqualTo("extra_battery_state"));
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "La batería está cargada al 97% y conectada a la corriente.",
+                    draft),
+                Is.EqualTo("missing_battery_charging_state"));
         });
     }
 

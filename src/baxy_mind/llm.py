@@ -160,7 +160,8 @@ NO_ACTION_CONSTRAINT_PRESENTATION_PROMPT = (
     "Eres el redactor final de BAXY para una restricción de la persona, no para "
     "una acción ni una incapacidad del asistente. Confirma en primera persona, "
     "con una sola oración breve y declarativa en el idioma del mensaje, que no "
-    "realizarás la acción restringida. Conserva el objeto concreto nombrado. No "
+    "realizarás la acción restringida. Empieza con mayúscula. Conserva el objeto "
+    "concreto nombrado. No "
     "digas que no puedes. Usa el mismo verbo léxico del mensaje, conjugado en "
     "primera persona; no lo sustituyas por una acción relacionada. No preguntes, "
     "no ofrezcas alternativas y no ejecutes ni simules ningún efecto."
@@ -1093,6 +1094,7 @@ def validate_missing_argument_clarification(
     expected_fields: tuple[str, ...],
     *,
     objective: str = "",
+    operations: tuple[str, ...] = (),
 ) -> str:
     """Validate the closed clarification envelope before any text is displayed."""
 
@@ -1160,6 +1162,40 @@ def validate_missing_argument_clarification(
         ) is not None
         if known_direction and asks_direction:
             raise ValueError("la aclaración vuelve a pedir la dirección conocida")
+    if expected_fields == ("query",) and "media.play.query" in operations:
+        has_media_subject = re.search(
+            r"\b(?:cancion|musica|tema|pista|song|music|track)\b",
+            folded_question,
+        ) is not None
+        asks_which = re.search(
+            r"\b(?:que|cual|cuales|what|which)\b",
+            folded_question,
+        ) is not None
+        asks_selection = re.search(
+            r"\b(?:quieres|quiere|querrias|prefieres|escuchar|pongo|reproduzco|"
+            r"debo reproducir|want|would you like|prefer|listen|should i play|"
+            r"do i play)\b",
+            folded_question,
+        ) is not None
+        concise_selection = re.fullmatch(
+            r"(?:que|cual)\s+(?:cancion|musica|tema|pista|song|music|track)[?]",
+            folded_question,
+            re.IGNORECASE,
+        ) is not None
+        asks_definition = re.search(
+            r"\b(?:cual|que|what)\s+(?:es|is)\s+(?:una?|a)\s+"
+            r"(?:cancion|musica|song|music|track)\b",
+            folded_question,
+        ) is not None
+        if (
+            not has_media_subject
+            or not asks_which
+            or asks_definition
+            or not (asks_selection or concise_selection)
+        ):
+            raise ValueError(
+                "la aclaración multimedia no pide qué quiere reproducir"
+            )
     return question
 
 
@@ -2147,8 +2183,13 @@ def _shaped_conversation_answer_violates_contract(
         )
         request_family = no_action_constraint_family(str(request or ""))
         reply_family = no_action_constraint_family(content)
+        first_letter = next(
+            (character for character in content if character.isalpha()),
+            "",
+        )
         return (
             inability is not None
+            or not first_letter.isupper()
             or not request_family
             or reply_family != request_family
             or not _unsupported_answer_mentions_request(content, request)
@@ -3471,6 +3512,10 @@ def compose_visible_defect(
             return "reversed_battery"
         if re.search(r"\b(?:modo de espera|standby|sleep mode)\b", policy_text):
             return "extra_battery_state"
+        if battery.get("isCharging") is False and not says_not_charging:
+            return "missing_battery_charging_state"
+        if battery.get("isCharging") is True and not says_charging:
+            return "missing_battery_charging_state"
     mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
     if (
         mentions_mute
@@ -5541,7 +5586,7 @@ class LlmRuntime:
                             "Confirma la restricción con el mismo verbo léxico del "
                             "pedido, conjugado en primera persona. No lo sustituyas "
                             "por una acción relacionada, no digas que no puedes y no "
-                            "hagas preguntas."
+                            "hagas preguntas. Empieza con mayúscula."
                         )
                         if shaped_contract_failure
                         and presentation_shape == "no_action_constraint"
@@ -7356,6 +7401,7 @@ class LlmRuntime:
         label: str,
         expected_fields: tuple[str, ...],
         objective: str,
+        operations: tuple[str, ...] = (),
     ) -> str:
         """Decode one scoped question and retry once after semantic rejection."""
 
@@ -7368,6 +7414,7 @@ class LlmRuntime:
                     raw,
                     expected_fields,
                     objective=objective,
+                    operations=operations,
                 )
             except ValueError as error:
                 last_error = error
@@ -7577,7 +7624,10 @@ class LlmRuntime:
                         "y no repitas la opción descartada. No vuelvas a pedir "
                         "información ya explícita: por ejemplo, subir o bajar ya "
                         "fija la dirección. No pidas alternativas ni decisiones "
-                        "fuera de missing_information. En español, no pongas un "
+                        "fuera de missing_information. Para el campo query de "
+                        "reproducción, pregunta qué canción o música quiere "
+                        "escuchar; no preguntes qué es una canción. En español, "
+                        "no pongas un "
                         "imperativo voseante justo después de cuánto; redacta una "
                         "pregunta gramatical en segunda persona. No menciones "
                         "identificadores internos, operaciones, herramientas ni "
@@ -7614,6 +7664,7 @@ class LlmRuntime:
             "la aclaración explícita",
             missing_fields,
             objective,
+            operations,
         )
 
     def ground_plan_arguments(
@@ -8639,6 +8690,10 @@ class LlmRuntime:
             "reversed_battery": (
                 "isCharging=false means the battery is not charging. "
                 "isAcOnline=true only means plugged into power."
+            ),
+            "missing_battery_charging_state": (
+                "State explicitly whether the battery is charging, exactly as "
+                "isCharging says; chargePercent alone does not answer that."
             ),
             "extra_battery_state": "Do not add standby, sleep or any state absent from seen.",
             "reversed_polarity": "Failure. Do not say it is open or that you opened it.",

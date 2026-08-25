@@ -835,6 +835,12 @@ def test_battery_composition_keeps_charging_separate_from_ac_power() -> None:
         "está cargando la batería",
         facts,
     ) == "extra_battery_state"
+    assert compose_visible_defect(
+        "La batería está cargada al 97% y conectada a la corriente.",
+        "status",
+        "está cargando la batería",
+        facts,
+    ) == "missing_battery_charging_state"
 
 
 def test_verified_news_source_domain_is_not_mistaken_for_an_internal_code() -> None:

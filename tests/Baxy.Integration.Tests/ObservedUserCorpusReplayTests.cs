@@ -128,17 +128,6 @@ public sealed class ObservedUserCorpusReplayTests
                     .Skip(composeAuditRecords)
                     .ToArray();
                 string statusAfterResponse = viewModel.StatusDescription;
-                string cleanupResponse = string.Empty;
-                if (independentTrace
-                    && statusAfterResponse is (
-                        "awaiting_mission_resume" or "Esperando tu aclaración"))
-                {
-                    using var cleanupTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-                    cleanupResponse = await SubmitAsync(
-                        viewModel,
-                        "cancelar",
-                        cleanupTimeout.Token);
-                }
 
                 WriteDurableRow(
                     outputPath,
@@ -162,7 +151,7 @@ public sealed class ObservedUserCorpusReplayTests
                         raw_reply_audit = rawReplyAudit,
                         compose_audit = composeAudit,
                         journal_payloads = journal,
-                        cleanup_response = cleanupResponse,
+                        cleanup_response = string.Empty,
                         timing_seconds = turnTimer.Elapsed.TotalSeconds,
                         captured_at_utc = DateTimeOffset.UtcNow,
                         baseline_memory_enabled = memoryEnabledAtStart,

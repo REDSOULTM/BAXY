@@ -1346,3 +1346,47 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   **verde** en modo Fast, con build Release en 0 advertencias/0 errores. Próximo
   paso: commit/push de esta tanda y nueva muestra física de 25 filas para descubrir
   el siguiente defecto.
+
+### Continuación 2026-08-25 — segunda tanda del replay observado
+
+- La primera muestra de 25 sobre `7e7e1b1` quedó **diagnóstica e incompleta**:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-final-probando.part0000-r14.jsonl`
+  conserva 8 filas antes de que una proyección se cancelara; no es evidencia final.
+  Antes del corte reveló que «cargada al 97%» podía omitir si la batería estaba
+  cargando ahora. El contrato Python y la frontera visible .NET exigen desde esta
+  tanda verbalizar `isCharging` siempre que el provider lo entregue; porcentaje y
+  alimentación AC no lo sustituyen.
+- Repetición física de batería:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.battery-r16.jsonl`,
+  SHA-256 `34681cfc5889929a0bbbe98fb501fc7c38871e7f830e8eeaf67db2b9ad4e4b80`.
+  Las 2/2 filas dijeron explícitamente «no está cargando», conservaron corriente y
+  97%, ejecutaron `system.status` y terminaron `completed`; **1/1, 0 skips**.
+- «poné una canción» no nombra consulta reproducible. La evidencia heredada de
+  R29/R272 y el catálogo vivo demuestran que `media.play` fue sustituida por
+  `media.play.query` con query obligatoria: negar capacidad o adivinar Spotify era
+  incorrecto. El reconocedor cerrado acepta ahora sólo la forma genérica sin título
+  y pide `query`; una canción nombrada no se degrada. El validador semántico rechaza
+  preguntas definicionales o binarias. Evidencia física final:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.row0010-r19.jsonl`,
+  SHA-256 `b91f29dfffae0dd2b9bca30d168bf58921fa1734fb11492aacbd0a2ac089f853`;
+  respuesta «¿qué canción o música quieres escuchar?», `kind=clarify`, cero efecto,
+  cero journal y **1/1, 0 skips**. R17 (negación falsa) y R18 (pregunta antinatural)
+  quedan sólo como diagnósticos causales.
+- Nueve restricciones consecutivas conservaron cero autoridad pero la primera
+  corrida R21 comenzó toda respuesta con minúscula. El contrato model-authored de
+  `no_action_constraint` exige ahora mayúscula y reintenta si falta. Repetición de
+  cinco filas/tres familias:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.constraints-r22.jsonl`,
+  SHA-256 `915c97f866a3310175e403b8664b2ad6f1d10fc42aa78f8f6302556f4e529c84`;
+  5/5 respuestas naturales, cero journal, **1/1, 0 skips**.
+- El runner ya no envía un turno oculto «cancelar» tras una aclaración de una traza
+  independiente: la siguiente fila abre una sesión nueva y descarta explícitamente
+  la aclaración pendiente. Esto elimina una inferencia evitable y deja cada registro
+  limitado al turno que adjudica.
+- Cierre de tanda: Python dueño (`test_effect_intent.py`, `test_turn_policy.py`,
+  `test_goal06_voice.py`, `test_planner.py`) **2.604 pasadas + 101 subtests, 0
+  skips**; .NET afectado **79/79, 0 skips**. La primera pasada amplia detectó dos
+  usos no multimedia del campo genérico `query`; el validador quedó correctamente
+  ligado a la identidad `media.play.query` y los 7 focales pasaron antes de repetir
+  todo. `scripts/test_source_quality.ps1` terminó **verde** en modo Fast, con build
+  Release 0 advertencias/0 errores.

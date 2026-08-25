@@ -3881,6 +3881,17 @@ def test_relative_adjustment_clarification_only_requests_the_missing_amount(
     assert clarification.missing_fields == ("amount",)
 
 
+def test_bare_song_request_clarifies_the_query_without_authorizing_playback() -> None:
+    clarification = effect_intent_module.resolve_explicit_clarification_intent(
+        "poné una canción",
+        ("media.play.query",),
+    )
+
+    assert clarification is not None
+    assert clarification.operations == ("media.play.query",)
+    assert clarification.missing_fields == ("query",)
+
+
 def test_explicit_social_turn_does_not_compute_unused_semantic_candidates() -> None:
     catalog = PlannerCatalog(
         [
@@ -7195,6 +7206,12 @@ def test_negative_instruction_uses_a_no_action_acknowledgement(text: str) -> Non
         conversation_kind="unsupported",
     )
     assert _shaped_conversation_answer_violates_contract(
+        "no cierro Spotify.",
+        "no cierres Spotify",
+        "no_action_constraint",
+        conversation_kind="unsupported",
+    )
+    assert _shaped_conversation_answer_violates_contract(
         "No reproduciré el audio.",
         "no silencies el audio",
         "no_action_constraint",
@@ -9865,6 +9882,38 @@ def test_amount_clarification_rejects_invention_and_known_direction_reask(
             ("amount",),
             objective="subí el volumen",
         )
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Cuál es una canción?",
+        "¿Qué necesitas?",
+        "¿Quieres una canción?",
+    ],
+)
+def test_media_query_clarification_rejects_definition_or_binary_question(
+    question: str,
+) -> None:
+    with pytest.raises(ValueError, match="multimedia"):
+        llm_module.validate_missing_argument_clarification(
+            {"requested_fields": ["query"], "question": question},
+            ("query",),
+            objective="poné una canción",
+            operations=("media.play.query",),
+        )
+
+
+def test_media_query_clarification_accepts_the_missing_selection() -> None:
+    assert llm_module.validate_missing_argument_clarification(
+        {
+            "requested_fields": ["query"],
+            "question": "¿Qué canción quieres escuchar?",
+        },
+        ("query",),
+        objective="poné una canción",
+        operations=("media.play.query",),
+    ) == "¿Qué canción quieres escuchar?"
 
 
 def test_explicit_clarification_retries_one_semantically_invalid_question() -> None:

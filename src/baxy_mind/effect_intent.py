@@ -3142,9 +3142,15 @@ def resolve_explicit_clarification_intent(
             ),
         )
     incomplete_media_clause = any(
-        _head_is(_request_head(clause), r"(?:pon|pone|poneme|reproduce|play)")
-        and _has(clause, r"\b(?:musica|music)\b")
-        and len(clause.split()) <= 5
+        re.fullmatch(
+            r"(?:pon|pone|poneme|reproduce|play)\s+"
+            r"(?:(?:una?|la|some|a|the)\s+)?"
+            r"(?:musica|music|cancion|song|track)"
+            r"(?:\s*[,;]?\s*(?:por\s+favor|please))?[\s.!?]*",
+            clause,
+            re.IGNORECASE,
+        )
+        is not None
         for clause in _request_clauses(folded)
     )
     if (

@@ -250,9 +250,12 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (ContradictsStructuredBattery(draft.Source, modelText))
+            string? batteryRejection = StructuredBatteryRejectionReason(
+                draft.Source,
+                modelText);
+            if (batteryRejection is not null)
             {
-                return "reversed_battery_state";
+                return batteryRejection;
             }
             if (AddsGenericFollowUp(modelText))
             {
@@ -587,7 +590,9 @@ internal static class UserMessagePolicy
             foldedResult.Contains(FoldForPolicy(fact), StringComparison.Ordinal));
     }
 
-    private static bool ContradictsStructuredBattery(string source, string result)
+    private static string? StructuredBatteryRejectionReason(
+        string source,
+        string result)
     {
         if (!TryReadJson(source, out JsonElement root)
             || !root.TryGetProperty("observed", out JsonElement observed)
@@ -595,7 +600,7 @@ internal static class UserMessagePolicy
             || !observed.TryGetProperty("battery", out JsonElement battery)
             || battery.ValueKind != JsonValueKind.Object)
         {
-            return false;
+            return null;
         }
 
         string folded = FoldForPolicy(result);
@@ -609,18 +614,30 @@ internal static class UserMessagePolicy
             folded,
             @"\b(?:bateria|battery)\b.{0,48}\b(?:cargando|charging)\b",
             options);
-        if (battery.TryGetProperty("isCharging", out JsonElement charging)
-            && charging.ValueKind is JsonValueKind.True or JsonValueKind.False
+        bool hasCharging = battery.TryGetProperty(
+                "isCharging",
+                out JsonElement charging)
+            && charging.ValueKind is JsonValueKind.True or JsonValueKind.False;
+        if (hasCharging
             && (!charging.GetBoolean() && saysCharging && !saysNotCharging
                 || charging.GetBoolean() && saysNotCharging))
         {
-            return true;
+            return "reversed_battery_state";
         }
 
-        return Regex.IsMatch(
+        if (Regex.IsMatch(
             folded,
             @"\b(?:modo de espera|standby|sleep mode)\b",
-            options);
+            options))
+        {
+            return "extra_battery_state";
+        }
+
+        return hasCharging
+            && (!charging.GetBoolean() && !saysNotCharging
+                || charging.GetBoolean() && !saysCharging)
+            ? "missing_battery_charging_state"
+            : null;
     }
 
     private static bool PreservesBaxyFirstPerson(string source, string result)

@@ -5005,6 +5005,33 @@ def test_colloquial_spotify_request_preserves_missing_query_identity() -> None:
     assert intent.missing_fields == ("query",)
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Poné una canción.",
+        "Reproduce una canción, por favor.",
+        "Play a song please.",
+        "Pon música.",
+    ],
+)
+def test_bare_music_request_preserves_missing_query_identity(text: str) -> None:
+    intent = resolve_explicit_clarification_intent(text, {"media.play.query"})
+
+    assert intent is not None
+    assert intent.operations == ("media.play.query",)
+    assert intent.missing_fields == ("query",)
+
+
+def test_named_song_request_is_not_downgraded_to_clarification() -> None:
+    assert (
+        resolve_explicit_clarification_intent(
+            "Poné la canción Beat It.",
+            {"media.play.query"},
+        )
+        is None
+    )
+
+
 def test_relative_volume_without_amount_preserves_operation_identity() -> None:
     intent = resolve_explicit_clarification_intent(
         "Sube el volumen.",
