@@ -1387,7 +1387,9 @@ def test_one_sentence_drafting_closes_before_model_routing() -> None:
     [
         "Que puedes hacer?",
         "Cuanto es 17 por 23?",
+        "¿Cuánto es dos más dos?",
         "What is 17 times 23?",
+        "What is two plus two?",
         "Explica que es una nube en una frase.",
         "Que sonido hace un perro?",
         "Resume en una frase que puedes hacer.",

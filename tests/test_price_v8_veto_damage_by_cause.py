@@ -72,7 +72,7 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # replacement bytes; they do not rebind or rescore the old campaign.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "3c1172fcd6bcf9619f85390730332f18fda68208d87eaf0285ea386c4be73000"
+        "53f9a47bf13a414b7d92e7643f5fb86b54c66699d7f9b8bc70d38031563232cb"
     ),
     "src/baxy_mind/llm.py": (
         "6be818f58bfd38140ae3b2dc77e094f87212a73f99219387480372d2bae1b854"

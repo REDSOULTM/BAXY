@@ -184,6 +184,10 @@ public sealed class MainWindowShellContractTests
             Assert.That(host, Does.Contain(".HandleAsync"));
             Assert.That(host, Does.Contain("SurfacesAsync"));
             Assert.That(host, Does.Contain("[\"memory\"] = memoryCount"));
+            Assert.That(host, Does.Contain("[\"muteTts\"] = _viewModel.IsTextToSpeechMuted"));
+            Assert.That(host, Does.Contain("TextToSpeechPreferenceStore.Write"));
+            Assert.That(host, Does.Contain("_window.Dispatcher.CheckAccess()"));
+            Assert.That(host, Does.Contain("_window.Dispatcher.BeginInvoke"));
             Assert.That(host, Does.Not.Contain("[\"memory\"] = 0"));
             Assert.That(host, Does.Not.Contain("private_memory_requires_chat"));
             Assert.That(fieldUi, Does.Contain("polledSurfaces ?? stream.surfaces"));

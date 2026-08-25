@@ -30,6 +30,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
+    private bool _isTextToSpeechMuted;
     private bool _resumeWakeAfterDirect;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
@@ -74,6 +75,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _testTurnResolver = testTurnResolver;
         _mindClientFactory =
             mindClientFactory ?? (static () => new MindSidecarClient());
+        _isTextToSpeechMuted = TextToSpeechPreferenceStore.Read(
+            MemoryOperationProtector.ResolveDataRoot());
         Messages = new ObservableCollection<ConversationMessage>();
         _memoryPanel = new MemoryPanelBridge(
             () => _coreClient,
@@ -1377,6 +1380,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 OnPropertyChanged(nameof(VoiceModeLabel));
             }
         }
+    }
+
+    internal bool IsTextToSpeechMuted
+    {
+        get => _isTextToSpeechMuted;
+        set => SetField(ref _isTextToSpeechMuted, value);
     }
 
     public bool IsMicAvailable
@@ -3438,12 +3447,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 _ = CancelMessageSpeechAsync(mind, ShellTraceSink.TurnId);
             }
-            else
+            else if (!IsTextToSpeechMuted)
             {
                 _ = SpeakMessageAsync(
                     mind,
                     body,
                     ShellTraceSink.TurnId);
+            }
+            else
+            {
+                ShellTraceSink.Record(
+                    ShellTraceScopes.Turn,
+                    ShellTraceSink.TurnId,
+                    ShellTraceStages.VoiceSpeak,
+                    "muted");
             }
         }
     }

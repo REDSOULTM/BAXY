@@ -2725,7 +2725,15 @@ def _simple_arithmetic_question(objective: str) -> bool:
     """Recognize a closed numeric expression that grants no PC authority."""
 
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
-    number = r"[-+]?\d+(?:[.,]\d+)?"
+    digits = r"[-+]?\d+(?:[.,]\d+)?"
+    number_word = (
+        r"(?:cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|"
+        r"once|doce|trece|catorce|quince|dieciseis|diecisiete|dieciocho|"
+        r"diecinueve|veinte|zero|one|two|three|four|five|six|seven|eight|"
+        r"nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|"
+        r"seventeen|eighteen|nineteen|twenty)"
+    )
+    number = rf"(?:{digits}|{number_word})"
     operator = (
         r"(?:[+*/x×÷-]|mas|menos|por|entre|dividido\s+por|"
         r"multiplicado\s+por|plus|minus|times|over|divided\s+by|multiplied\s+by)"

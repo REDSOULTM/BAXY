@@ -1171,3 +1171,56 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `mute tts` y narración audible; repetición bypass de hora local; edición de
   memoria y badge exterior. La dosis amplia de uso real del dueño tampoco se
   sustituye con sondas sintéticas.
+
+### Continuación 2026-08-25 — verificación física del binario actual
+
+- La pestaña `voice` quedó físicamente visible con sus controles administrados.
+  Piper recorrió en la instancia real `accepted → dequeued → phonemes →
+  inference → generated → speaking → silent`; la reproducción de «Cuatro.»
+  permaneció hablando unos **3,75 s** según la traza. `mute tts` se ejerció desde
+  la UI, se reaplicó, sobrevivió al cierre y reapertura de ajustes y a un reinicio
+  completo de BAXY. El arranque en mute registró `voice.speak=muted`. Después se
+  restauró desde la misma UI y el estado final persistido es `tts-muted=false`.
+  El bridge nativo ahora persiste este ajuste en `tts-muted`; una prueba dueña
+  cubre ambos estados.
+- El texto real «¿Cuánto es dos más dos?» descubrió que el cierre local de
+  aritmética reconocía dígitos pero no palabras y por eso el binario previo había
+  intentado `web.search`. El reconocedor cerrado acepta ahora números ES/EN de
+  cero a veinte. La repetición física respondió exactamente **«Cuatro.»**, sin
+  operación web; la traza conserva `decision.ready=conversation`, respuesta
+  visible y la secuencia completa de Piper. La regresión incluye esa oración y
+  su equivalente inglés; `test_turn_policy.py` queda **888/888**.
+- Durante el primer reinicio del binario nuevo apareció una degradación real de
+  la mente: `InitializeMindAsync` notificó `PropertyChanged` fuera del hilo UI y
+  `FieldUiBridge.PostEnvelope` accedió a WebView2 antes de entrar al `try`,
+  produciendo `InvalidOperationException` de Dispatcher. Los callbacks de mensaje
+  y propiedad ahora se remiten al Dispatcher dueño, y el acceso a CoreWebView2
+  queda dentro de la frontera capturada. Tras relanzar, `startup.ready` llegó en
+  **19.104,808 ms**; durante todas las pruebas posteriores el fichero de fallo
+  conservó sin cambios su marca antigua `2026-08-25T04:55:39Z`, la mente siguió
+  disponible y las respuestas nuevas cerraron normalmente.
+- El panel de memoria quedó verificado de extremo a extremo en el binario actual:
+  alta sintética `goal10.physical_check=turquesa`, badge exterior **0 → 1**,
+  edición a `azul`, borrado exacto y badge **1 → 0**. La entrada de prueba fue
+  retirada; el estado final vuelve a cero y no se borró memoria ajena.
+- El bypass se activó físicamente desde `settings → agent`, y el fichero real
+  confirmó `bypass`. A las **01:04:42 -04:00**, «¿Qué hora es?» invocó el catálogo
+  `system.time` y BAXY respondió **«01:04.»**, coincidente con el reloj local; no
+  hubo confirmación ni efecto. Piper volvió a `silent`. La misma UI restauró al
+  terminar `confirmation-mode=normal`. Estado final: confirmación normal, TTS no
+  silenciado y memoria sintética limpia.
+- El cambio Python movió de nuevo el árbol vivo STT. Se resellaron sólo los dos
+  consumidores vivos sobre los mismos **358** ficheros, ahora SHA-256
+  `84b08807c40a58da950cd88458bb3411de8c68e827576a1092e6a322aa979eb7`;
+  el hash histórico de v17 sigue intacto. El soak de 24 horas continúa omitido
+  por instrucción explícita y no se reabre.
+- La Full posterior encontró tres sellos desfasados: los dos consumidores STT y
+  el inventario histórico R144 del programa actual. Los focales exactos quedaron
+  **3/3**. La primera repetición de Full se detuvo antes de probar código porque
+  la instancia física había ocultado la ventana pero conservado `Baxy` y
+  `baxy-core` bloqueando DLL de Release; se terminaron sólo esos dos PIDs de
+  prueba y se relanzó desde cero. Ejecución canónica final: build Release **0
+  advertencias/0 errores**; Contracts **60/60**, Integration **2.852 pasadas + 1
+  skip contado**, Kernel **137/137**, Providers **454/454**, Setup **477/477**;
+  Python **8.771 pasadas, 15 skips y 433 subtests** en 472,04 s. Resultado
+  terminal: `source_quality_gate_passed: mode=Full`.

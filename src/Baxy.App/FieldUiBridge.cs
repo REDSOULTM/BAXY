@@ -469,7 +469,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
         if (method == "PUT" && route == "/settings")
         {
-            return PutConfirmationMode(body);
+            return PutSettings(body);
         }
 
         if (method == "GET" && route == "/agent/system_prompt")
@@ -606,6 +606,16 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
     private void OnMessageAdded(ConversationMessage message)
     {
+        if (!_window.Dispatcher.CheckAccess())
+        {
+            if (!_disposed && !_window.Dispatcher.HasShutdownStarted)
+            {
+                _ = _window.Dispatcher.BeginInvoke(() => OnMessageAdded(message));
+            }
+
+            return;
+        }
+
         if (!message.IsUser)
         {
             ShellTraceSink.Record(
@@ -620,6 +630,20 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
     {
+        if (!_window.Dispatcher.CheckAccess())
+        {
+            if (!_disposed && !_window.Dispatcher.HasShutdownStarted)
+            {
+                string? propertyName = eventArgs.PropertyName;
+                _ = _window.Dispatcher.BeginInvoke(
+                    () => OnViewModelPropertyChanged(
+                        sender,
+                        new PropertyChangedEventArgs(propertyName)));
+            }
+
+            return;
+        }
+
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady)
             or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.HasStartupError))
@@ -913,6 +937,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             ["wakeWord"] = "Baxy",
             ["wakeWordEnabled"] = _viewModel.IsWakeListening,
             ["voiceEnabled"] = _viewModel.IsMicAvailable,
+            ["muteTts"] = _viewModel.IsTextToSpeechMuted,
             ["visionAlways"] = false,
             ["telemetry"] = false,
             ["confirmationPolicy"] = ConfirmationModeStore.Read(
@@ -922,7 +947,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         };
     }
 
-    private static FieldHttpResponse PutConfirmationMode(string? body)
+    private FieldHttpResponse PutSettings(string? body)
     {
         JsonNode? node;
         try
@@ -936,11 +961,25 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
         string? raw = node?["confirmationPolicy"]?.GetValue<string>();
         ConfirmationMode mode = ConfirmationModeStore.Parse(raw) ?? ConfirmationMode.Normal;
-        ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(), mode);
+        bool muted = _viewModel.IsTextToSpeechMuted;
+        if (node is JsonObject settings && settings.ContainsKey("muteTts"))
+        {
+            if (settings["muteTts"] is not JsonValue muteValue
+                || !muteValue.TryGetValue(out muted))
+            {
+                return Error("invalid_settings", 400);
+            }
+        }
+
+        string dataRoot = MemoryOperationProtector.ResolveDataRoot();
+        ConfirmationModeStore.Write(dataRoot, mode);
+        TextToSpeechPreferenceStore.Write(dataRoot, muted);
+        _viewModel.IsTextToSpeechMuted = muted;
         return Json(new JsonObject
         {
             ["ok"] = true,
             ["confirmationPolicy"] = mode == ConfirmationMode.Bypass ? "bypass" : "normal",
+            ["muteTts"] = muted,
         });
     }
 
@@ -1171,13 +1210,18 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
     private bool PostEnvelope(JsonObject envelope)
     {
-        if (_disposed || _webView.CoreWebView2 is null)
+        if (_disposed)
         {
             return false;
         }
 
         try
         {
+            if (_webView.CoreWebView2 is null)
+            {
+                return false;
+            }
+
             _webView.CoreWebView2.PostWebMessageAsJson(envelope.ToJsonString());
             return true;
         }
