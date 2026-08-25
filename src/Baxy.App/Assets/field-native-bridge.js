@@ -8,6 +8,7 @@
     'connection',
     'agent',
     'transcript',
+    'voice',
     'prompt',
     'about',
   ]);
@@ -253,7 +254,7 @@
     }
     const settingsBody = settingsPanel.querySelector('.settings-body');
     if (settingsBody) {
-      const readOnlyMessage = 'Configuración administrada por BAXY; el modo de confirmación es editable.';
+      const readOnlyMessage = 'Configuración administrada por BAXY; el modo de confirmación es editable y los controles de voz también.';
       if (settingsBody.getAttribute('aria-label') !== readOnlyMessage) {
         settingsBody.setAttribute('aria-label', readOnlyMessage);
       }

@@ -13,7 +13,7 @@ public sealed class MainWindowShellContractTests
 {
     private const string HistoricalCommit = "4a83f2d082d6b0fec8297e801b96a0da620b059e";
     private const string CurrentFieldTreeSha256 =
-        "8EA5476375A1743AC6D17B15FFD8EB9A4752AD1C811C4A225CE6ADA5A8CFE80C";
+        "D370E118A1AF485EF872F36540C36690AFED681725D1216CF3A6893A4EF5AFB4";
     private static readonly XNamespace XamlNamespace =
         "http://schemas.microsoft.com/winfx/2006/xaml";
 
@@ -170,10 +170,12 @@ public sealed class MainWindowShellContractTests
             Assert.That(script, Does.Contain("baxy_mind"));
             Assert.That(script, Does.Contain("managedSettingsTabs"));
             Assert.That(script, Does.Contain("'agent'"));
+            Assert.That(script, Does.Contain("'voice'"));
             Assert.That(script, Does.Contain("select[aria-label=\"confirmation policy\"]"));
             Assert.That(script, Does.Contain("label === 'apply'"));
             Assert.That(script, Does.Contain("diagnóstico local"));
             Assert.That(script, Does.Contain("el modo de confirmación es editable"));
+            Assert.That(script, Does.Contain("los controles de voz también"));
             Assert.That(host, Does.Contain("new MissionInput(text, MissionInputSource.Text)"));
             Assert.That(host, Does.Contain("SetWakeVoiceAsync"));
             Assert.That(host, Does.Contain("StartDirectVoiceAsync"));

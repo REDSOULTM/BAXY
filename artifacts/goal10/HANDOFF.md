@@ -1116,3 +1116,15 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   más el guard visible completo `test_turn_policy.py` **886/886** en **4,05 s**,
   cero skips, con build .NET aislado. Falta reproducción física después del soak;
   r30 sigue vivo con el binario anterior y el modo real queda en `normal`.
+- Al intentar usar la narración desde r30, ajustes sólo mostraba `connection`,
+  `agent`, `transcript`, `prompt` y `about`: el panel React sí tiene la pestaña
+  `voice` y sus controles reales (`enable voice`, feedback y `mute tts`), pero
+  `field-native-bridge.js` la filtraba. La capa nativa ahora expone `voice` junto a
+  las demás pestañas administradas; los toggles de voz existentes quedan usables,
+  mientras proveedor/modelo y los demás campos siguen bloqueados. El build + lint
+  de Field UI pasan. La clase dueña descubrió además que el sello del árbol Field
+  seguía apuntando al bundle anterior a los cambios ya publicados de memoria; se
+  reconstruyó el mismo bundle determinista y se actualizó el sello al hash real.
+  `MainWindowShellContractTests`: **33/33**, cero skips, build Release aislado.
+  Falta abrir `voice`, ejercer `mute tts` y oír una narración en el binario nuevo;
+  r30 se cerró de ajustes sin aplicar cambios y continúa el soak.
