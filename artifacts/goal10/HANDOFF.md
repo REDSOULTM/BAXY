@@ -1113,5 +1113,6 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   local, lo exige literalmente en todos los intentos y rechaza `00:19` cuando el
   valor verificado es `20:19`. La regresión exacta pasa **1/1**; suite Python dueña
   **162/162 + 101 subtests** y `NaturalSystemTimeViewModelEndToEndTests` **2/2**,
+  más el guard visible completo `test_turn_policy.py` **886/886** en **4,05 s**,
   cero skips, con build .NET aislado. Falta reproducción física después del soak;
   r30 sigue vivo con el binario anterior y el modo real queda en `normal`.
