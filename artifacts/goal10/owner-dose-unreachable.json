@@ -1,0 +1,53 @@
+{
+  "schema": "baxy.goal10-owner-dose-unreachable.v1",
+  "measuredAtUtc": "2026-08-25T05:49:36.8557021Z",
+  "branch": "goal-10",
+  "measuredTreeCommit": "444e6dffd1e9af7ab67b6cd4b708e3ac1bb46b14",
+  "criterion": {
+    "requiredOwnerNormalTurns": 200,
+    "requiredMinimumSessions": 3,
+    "requiredMostUsedCapabilities": 5,
+    "requiredRepetitionsPerCapability": 20,
+    "scriptedOrCorpusTurnsAllowed": false
+  },
+  "observed": {
+    "admissibleOwnerNormalTurns": 0,
+    "admissibleOwnerNormalSessions": 0,
+    "capabilitiesWithTwentyAdmissibleRepetitions": 0
+  },
+  "exclusions": [
+    {
+      "sessions": ["conversation-clean-r6", "social-correction-r2"],
+      "reason": "clean repair regressions explicitly recorded as agent probes"
+    },
+    {
+      "sessions": ["narration-r11"],
+      "reason": "owner described concurrent inputs as tests; the session later suffered a native mind crash"
+    },
+    {
+      "sessions": ["crash-r12c", "r13-r30"],
+      "reason": "synthetic, scripted or repair-verification campaigns"
+    },
+    {
+      "sessions": ["earlier-owner-sessions"],
+      "reason": "invalidated by visible dishonesty, unsolicited technical templates, false authority or another terminal product defect"
+    },
+    {
+      "source": "historical_messages.jsonl",
+      "reason": "historical corpus is evidence of breadth and is explicitly forbidden as owner-dose credit"
+    }
+  ],
+  "evidence": [
+    "documentacion/sprints/10_USO_DIARIO.md#criterios-de-cierre",
+    "artifacts/goal10/HANDOFF.md#continuación-conversación-separada-del-catálogo-y-sonda-uia-fiable",
+    "artifacts/goal10/HANDOFF.md#continuación-soak-iniciado-y-planner-dueño-verde",
+    "artifacts/goal10/HANDOFF.md#continuación-2026-08-25-runtime-de-voz-completo-y-compuerta-full-verde",
+    "artifacts/goal10/HANDOFF.md#continuación-2026-08-25-verificación-física-del-binario-actual"
+  ],
+  "unreachableBecause": "Only the owner can originate spontaneous normal-use requests. This agent can send scripted probes, but counting them would falsify provenance and violate the product invariants. No additional local implementation or automated measurement can create qualifying owner use.",
+  "terminalDisposition": "published_unreachable_without_external_owner_use",
+  "ownerOverride": {
+    "soak24Hours": "omitted_completely",
+    "dependentBeginningAndEndIdleMeasurement": "omitted_with_soak"
+  }
+}

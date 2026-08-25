@@ -1224,3 +1224,14 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   skip contado**, Kernel **137/137**, Providers **454/454**, Setup **477/477**;
   Python **8.771 pasadas, 15 skips y 433 subtests** en 472,04 s. Resultado
   terminal: `source_quality_gate_passed: mode=Full`.
+- Auditoría terminal de la dosis dueña publicada en
+  `artifacts/goal10/owner-dose-unreachable.json`: **0 turnos / 0 sesiones**
+  admisibles de uso normal. Todas las corridas disponibles son sondas,
+  regresiones, corpus o sesiones invalidadas; los turnos concurrentes del dueño
+  fueron descritos explícitamente como pruebas. Sólo el dueño puede originar 200
+  pedidos espontáneos normales y cinco repeticiones 20×; automatizarlos o
+  rebautizarlos falsearía su procedencia. Es un bloqueo externo al código y no
+  existe otro paso local capaz de producir esa evidencia. Se publica por la salida
+  terminal explícita del objetivo: criterio medido e inalcanzable. El soak y su
+  medición inicial/final dependiente permanecen omitidos completamente por orden
+  del dueño.
