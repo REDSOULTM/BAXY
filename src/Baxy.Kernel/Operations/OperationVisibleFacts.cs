@@ -12,6 +12,7 @@ namespace Baxy.Kernel.Operations;
 public static class OperationVisibleFacts
 {
     private const int MaximumObservedUtf8Bytes = 8_192;
+    private const int MaximumWireMessageCharacters = 4_096;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -61,13 +62,20 @@ public static class OperationVisibleFacts
                 {
                     payload["observed"] = Sanitize(JsonNode.Parse(raw));
                 }
-                catch (JsonException)
+                catch (Exception exception) when (exception is JsonException or ArgumentException)
                 {
                     // Observed payload stays omitted when it is not JSON.
                 }
             }
         }
 
+        string source = payload.ToJsonString(JsonOptions);
+        if (source.Length <= MaximumWireMessageCharacters)
+        {
+            return source;
+        }
+
+        payload.Remove("observed");
         return payload.ToJsonString(JsonOptions);
     }
 
@@ -103,9 +111,11 @@ public static class OperationVisibleFacts
             var clean = new JsonObject();
             foreach ((string key, JsonNode? value) in obj)
             {
-                if (key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
-                    or "hash" or "sha256" or "pid" or "processId" or "invocationId"
-                    or "requestId" or "missionId" or "token" or "recordId")
+                if (key is "id" or "noteId" or "deviceId" or "endpointId"
+                    or "endpointIdHash" or "targetId" or "hwnd" or "handle"
+                    or "windowHandle" or "fingerprint" or "hash" or "sha256"
+                    or "pid" or "processId" or "invocationId" or "requestId"
+                    or "missionId" or "token" or "recordId")
                 {
                     continue;
                 }

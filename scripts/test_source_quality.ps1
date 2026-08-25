@@ -720,6 +720,8 @@ function Invoke-SourceQualityGate {
         $previousPythonPath = Get-ProcessEnvironmentValue -Name 'PYTHONPATH'
         $previousDontWrite = Get-ProcessEnvironmentValue `
             -Name 'PYTHONDONTWRITEBYTECODE'
+        $previousPowerShellModulePath = Get-ProcessEnvironmentValue `
+            -Name 'PSModulePath'
         try {
             Set-ProcessEnvironmentValue `
                 -Name 'PYTHONPATH' `
@@ -727,6 +729,21 @@ function Invoke-SourceQualityGate {
             Set-ProcessEnvironmentValue `
                 -Name 'PYTHONDONTWRITEBYTECODE' `
                 -Value '1'
+            # Python launches Windows PowerShell directly in several source
+            # contract tests. A parent PowerShell 7 process can otherwise
+            # pass its Core-only module path through unchanged, preventing
+            # Windows PowerShell from auto-loading even built-in cmdlets such
+            # as Get-FileHash.
+            $windowsPowerShellModulePath = @(
+                (Join-Path ([Environment]::GetFolderPath('MyDocuments')) `
+                    'WindowsPowerShell\Modules')
+                (Join-Path $env:ProgramFiles 'WindowsPowerShell\Modules')
+                (Join-Path $env:SystemRoot `
+                    'System32\WindowsPowerShell\v1.0\Modules')
+            ) -join [IO.Path]::PathSeparator
+            Set-ProcessEnvironmentValue `
+                -Name 'PSModulePath' `
+                -Value $windowsPowerShellModulePath
             Invoke-Checked `
                 -Stage 'python-tests' `
                 -Executable $tools.Runtime.Path `
@@ -748,6 +765,9 @@ function Invoke-SourceQualityGate {
             Set-ProcessEnvironmentValue `
                 -Name 'PYTHONDONTWRITEBYTECODE' `
                 -Value $previousDontWrite
+            Set-ProcessEnvironmentValue `
+                -Name 'PSModulePath' `
+                -Value $previousPowerShellModulePath
         }
     }
 

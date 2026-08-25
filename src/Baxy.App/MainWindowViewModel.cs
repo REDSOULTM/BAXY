@@ -447,11 +447,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 "BAXY",
                 listenEnabled
                     ? (changed
-                        ? "Listo, te escucho. Dime «Baxy» cuando me necesites."
-                        : "No pude: la escucha permanente no está disponible.")
+                        ? TurnVisibleFacts.Status("wake_listening_enabled")
+                        : TurnVisibleFacts.Failure("wake_listening_unavailable"))
                     : (changed
-                        ? "Listo, ya no te escucho."
-                        : "No pude apagar la escucha."),
+                        ? TurnVisibleFacts.Status("wake_listening_disabled")
+                        : TurnVisibleFacts.Failure("wake_listening_disable_failed")),
                 isUser: false);
             return;
         }

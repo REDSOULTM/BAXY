@@ -67,12 +67,15 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # as intent_operations after the curated gate withdraws it.
 # Goal 04 moved it once more: protocol_fallback cannot publish an empty
 # clarify, and a model-authored recovery question stays a question.
+# Goals 06-10 subsequently replaced both programs again while keeping this
+# consumed V8 result historical.  These pins enumerate the current, known
+# replacement bytes; they do not rebind or rescore the old campaign.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "0bf2340a6967bcdea4aad4ca5c27943fe4b174700a8a97f0aaa358bd7c04ac59"
+        "3c1172fcd6bcf9619f85390730332f18fda68208d87eaf0285ea386c4be73000"
     ),
     "src/baxy_mind/llm.py": (
-        "558a9f5ab6af611c20acfa3b08f30da7e34cc45baf31d050250f8993a6299fc3"
+        "6be818f58bfd38140ae3b2dc77e094f87212a73f99219387480372d2bae1b854"
     ),
 }
 

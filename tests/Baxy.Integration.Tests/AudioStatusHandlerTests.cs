@@ -44,12 +44,11 @@ public sealed class AudioStatusHandlerTests
         });
     }
 
-    [TestCase(37, false, "activo")]
-    [TestCase(0, true, "silenciado")]
+    [TestCase(37, false)]
+    [TestCase(0, true)]
     public async Task VerifiedObservationIsProjectedWithoutRawEndpointIdentity(
         int volumePercent,
-        bool muted,
-        string expectedMuteState)
+        bool muted)
     {
         OperationInvocation invocation = Invocation("{}");
         var receipt = Success(invocation.InvocationId, volumePercent, muted);
@@ -60,13 +59,17 @@ public sealed class AudioStatusHandlerTests
             invocation,
             CancellationToken.None);
         JsonElement result = outcome.Result!.Value;
+        JsonElement facts = Facts(outcome);
+        JsonElement visibleState = facts.GetProperty("observed").GetProperty("state");
 
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Does.Contain($"{volumePercent} %"));
-            Assert.That(Message(outcome), Does.Contain(expectedMuteState));
+            Assert.That(visibleState.GetProperty("volumePercent").GetInt32(), Is.EqualTo(volumePercent));
+            Assert.That(visibleState.GetProperty("muted").GetBoolean(), Is.EqualTo(muted));
+            Assert.That(facts.GetRawText(), Does.Not.Contain(EndpointHash));
+            Assert.That(facts.GetProperty("observed").TryGetProperty("targetId", out _), Is.False);
             Assert.That(provider.LastStatusQuery?.InvocationId,
                 Is.EqualTo(invocation.InvocationId));
             Assert.That(result.GetProperty("operation").GetString(),
@@ -105,7 +108,7 @@ public sealed class AudioStatusHandlerTests
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.Verified, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo(AudioControlErrorCodes.NoDefaultOutput));
-            Assert.That(Message(outcome).ToLowerInvariant(), Does.Not.Contain("endpoint"));
+            Assert.That(Facts(outcome).GetRawText().ToLowerInvariant(), Does.Not.Contain("endpoint"));
         });
     }
 
@@ -149,8 +152,8 @@ public sealed class AudioStatusHandlerTests
         Guid.NewGuid().ToString("D"),
         JsonDocument.Parse(json).RootElement.Clone());
 
-    private static string Message(OperationOutcome outcome) =>
-        OperationOutcomeNarration.For(AudioOperationIds.Status, outcome);
+    private static JsonElement Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.AssertFacts(AudioOperationIds.Status, outcome);
 
     private sealed class StubProvider(
         Func<AudioStatusQuery, AudioStatusReceipt>? status = null) : IAudioControlProvider

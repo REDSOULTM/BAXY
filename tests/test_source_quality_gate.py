@@ -90,11 +90,12 @@ function Invoke-Checked {{
         [string[]]$Arguments,
         [string]$WorkingDirectory
     )
-    $global:QualityCalls.Add([pscustomobject]@{{
+        $global:QualityCalls.Add([pscustomobject]@{{
             stage = $Stage
             executable = $Executable
             arguments = @($Arguments)
             working_directory = $WorkingDirectory
+            ps_module_path = $env:PSModulePath
         }})
 }}
 Invoke-SourceQualityGate | Out-Null
@@ -172,6 +173,9 @@ def test_source_quality_gate_dispatches_non_mutating_checks(mode: str) -> None:
         assert "--no-build" in calls["dotnet-tests"]["arguments"]
         assert "-m:1" in calls["dotnet-tests"]["arguments"]
         assert "no:cacheprovider" in calls["python-tests"]["arguments"]
+        module_path = calls["python-tests"]["ps_module_path"].lower()
+        assert "windowspowershell\\modules" in module_path
+        assert "system32\\windowspowershell\\v1.0\\modules" in module_path
 
 
 @pytest.mark.skipif(POWERSHELL is None, reason="Windows PowerShell is unavailable")

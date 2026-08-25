@@ -116,7 +116,7 @@ public sealed class DurableRetryStoreTests
     }
 
     [Test]
-    public void UnknownOrCaseMismatchedFieldsFailClosed()
+    public void UnknownOrCaseMismatchedFieldsAreQuarantinedBeforeRecovery()
     {
         var registry = new RetryableOperationRegistry(_outboxPath);
         _ = registry.GetOrAdd(CreateRoutedOperation("Compras"));
@@ -126,17 +126,16 @@ public sealed class DurableRetryStoreTests
             _outboxPath,
             valid.Replace("\"version\"", "\"Version\"", StringComparison.Ordinal),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-        Assert.That(
-            () => _ = new RetryableOperationRegistry(_outboxPath),
-            Throws.InstanceOf<InvalidDataException>());
-
-        File.WriteAllText(
+        _ = AssertQuarantined(
             _outboxPath,
+            File.ReadAllBytes(_outboxPath));
+
+        string secondPath = Path.Combine(_root, "shell", "retry-outbox.second.json");
+        File.WriteAllText(
+            secondPath,
             valid[..^1] + ",\"unexpected\":true}",
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-        Assert.That(
-            () => _ = new RetryableOperationRegistry(_outboxPath),
-            Throws.InstanceOf<InvalidDataException>());
+        _ = AssertQuarantined(secondPath, File.ReadAllBytes(secondPath));
     }
 
     [Test]
@@ -152,16 +151,12 @@ public sealed class DurableRetryStoreTests
             .GetProperty("entries")[0]
             .GetProperty("invocationId")
             .GetString()!;
-        RetryableOperationRegistry? resumedRegistry = null;
+        RetryableOperationRegistry resumedRegistry = AssertQuarantined(_outboxPath, corrupted);
 
         Assert.Multiple(() =>
         {
             Assert.That(ContractValidator.IsCanonicalIdentifier(changedInvocationId), Is.True);
-            Assert.That(
-                () => resumedRegistry = new RetryableOperationRegistry(_outboxPath),
-                Throws.InstanceOf<InvalidDataException>());
-            Assert.That(resumedRegistry, Is.Null);
-            Assert.That(File.ReadAllBytes(_outboxPath), Is.EqualTo(corrupted));
+            Assert.That(resumedRegistry.SnapshotPendingOperations(), Is.Empty);
         });
     }
 
@@ -179,32 +174,27 @@ public sealed class DurableRetryStoreTests
             .GetProperty("arguments")
             .GetProperty("content")
             .GetString()!;
-        RetryableOperationRegistry? resumedRegistry = null;
+        RetryableOperationRegistry resumedRegistry = AssertQuarantined(_outboxPath, corrupted);
 
         Assert.Multiple(() =>
         {
             Assert.That(changedContent, Is.EqualTo("meche y pan"));
-            Assert.That(
-                () => resumedRegistry = new RetryableOperationRegistry(_outboxPath),
-                Throws.InstanceOf<InvalidDataException>());
-            Assert.That(resumedRegistry, Is.Null);
-            Assert.That(File.ReadAllBytes(_outboxPath), Is.EqualTo(corrupted));
+            Assert.That(resumedRegistry.SnapshotPendingOperations(), Is.Empty);
         });
     }
 
     [Test]
-    public void OversizedFileFailsBeforeItCanBeLoaded()
+    public void OversizedFileIsQuarantinedBeforeItCanBeLoaded()
     {
         Directory.CreateDirectory(Path.GetDirectoryName(_outboxPath)!);
         File.WriteAllBytes(_outboxPath, new byte[DurableRetryStore.MaximumFileBytes + 1]);
 
-        Assert.That(
-            () => _ = new RetryableOperationRegistry(_outboxPath),
-            Throws.InstanceOf<InvalidDataException>());
+        byte[] oversized = File.ReadAllBytes(_outboxPath);
+        _ = AssertQuarantined(_outboxPath, oversized);
     }
 
     [Test]
-    public void TooManyEntriesFailClosedBeforeAnyIdentifiersAreRestored()
+    public void TooManyEntriesAreQuarantinedBeforeAnyIdentifiersAreRestored()
     {
         var entries = new JsonArray();
         for (int index = 0; index <= DurableRetryStore.MaximumEntries; index++)
@@ -228,9 +218,7 @@ public sealed class DurableRetryStoreTests
             new JsonObject { ["version"] = 1, ["entries"] = entries }.ToJsonString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 
-        Assert.That(
-            () => _ = new RetryableOperationRegistry(_outboxPath),
-            Throws.InstanceOf<InvalidDataException>());
+        _ = AssertQuarantined(_outboxPath, File.ReadAllBytes(_outboxPath));
     }
 
     [Test]
@@ -545,7 +533,7 @@ public sealed class DurableRetryStoreTests
 
     [Test]
     [NonParallelizable]
-    public async Task CorruptDefaultOutboxLeavesTheShellUnavailable()
+    public async Task CorruptDefaultOutboxIsQuarantinedAndTheShellRecovers()
     {
         string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
         Environment.SetEnvironmentVariable("BAXY_DATA_DIR", _root);
@@ -562,10 +550,17 @@ public sealed class DurableRetryStoreTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(viewModel.IsReady, Is.False);
-                Assert.That(viewModel.HasStartupError, Is.True);
-                Assert.That(viewModel.StatusText, Is.EqualTo("No disponible"));
-                Assert.That(viewModel.CanSend, Is.False);
+                Assert.That(viewModel.IsReady, Is.True);
+                Assert.That(viewModel.HasStartupError, Is.False);
+                Assert.That(viewModel.StatusText, Is.EqualTo("Lista"));
+                Assert.That(File.Exists(_outboxPath), Is.False);
+                Assert.That(
+                    viewModel.Messages,
+                    Has.Some.Matches<ConversationMessage>(message =>
+                        !message.IsUser
+                        && message.Body.Contains(
+                            "durable_retry_unreadable",
+                            StringComparison.Ordinal)));
             });
         }
         finally
@@ -582,6 +577,26 @@ public sealed class DurableRetryStoreTests
                 ["title"] = title,
                 ["content"] = "leche y pan",
             });
+
+    private static RetryableOperationRegistry AssertQuarantined(
+        string path,
+        byte[] expectedContent)
+    {
+        var registry = new RetryableOperationRegistry(path);
+        string? quarantinePath = registry.UnreadableOutboxPath;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(quarantinePath, Is.Not.Null);
+            Assert.That(quarantinePath, Is.Not.EqualTo(path));
+            Assert.That(File.Exists(path), Is.False);
+            Assert.That(File.Exists(quarantinePath), Is.True);
+            Assert.That(File.ReadAllBytes(quarantinePath!), Is.EqualTo(expectedContent));
+            Assert.That(registry.SnapshotPendingOperations(), Is.Empty);
+        });
+
+        return registry;
+    }
 
     private static void FlipFirstByteAfterMarker(byte[] content, string marker)
     {

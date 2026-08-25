@@ -1128,3 +1128,46 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `MainWindowShellContractTests`: **33/33**, cero skips, build Release aislado.
   Falta abrir `voice`, ejercer `mute tts` y oír una narración en el binario nuevo;
   r30 se cerró de ajustes sin aplicar cambios y continúa el soak.
+
+### Continuación 2026-08-25 — runtime de voz completo y compuerta Full verde
+
+- Decisión explícita nueva del dueño: **omitir completamente el soak de 24 h**.
+  El tramo r30 interrumpido no es evidencia de cierre, no se reanuda y ya no es
+  un criterio pendiente. Tampoco cuentan como dosis sus turnos sintéticos.
+- La primera Full canónica de este tramo dejó .NET verde y Python en **3 fallos,
+  8.765 pasadas, 15 skips y 433 subtests**. Las tres causas se corrigieron sin
+  fallback: el catálogo anunciaba el ONNX de Piper sin su configuración, faltaba
+  el frontend eSpeak requerido para fonemizar y el test histórico R275 reconstruía
+  contra el runtime mutable actual en vez de verificar el artefacto sellado que
+  publicó la medición. R275 vuelve a leer ese artefacto y conserva su sello.
+- Se completó el asset oficial `es_MX-claude-high.onnx.json` desde
+  `rhasspy/piper-voices` commit
+  `0c9c5d340496a47205a799eb046aab69334a88e9` (SHA-256
+  `1afc81f703c0e4cb3b4d7c0dca096b8b54a98806807f0170cf5eb5557723c12d`) y
+  eSpeak NG 1.52.0 desde su MSI oficial (MSI SHA-256
+  `7f673c709ea5dd579d3b5ebb98688cc575328a6ab7438d2bc405b88cedaeafb9`),
+  desplegado de forma privada en `D:\BAXYRuntime\assets\espeak-ng`. El ejecutable
+  tiene SHA-256
+  `3080ec3822c1b266ef557c710bc79a97d20a7ab133a34bac308b81ab0afc733e`.
+  El catálogo tipado resuelve modelo, sidecar, ejecutable y datos; Piper no se
+  anuncia si falta cualquiera. La invocación portable usa `--path` al directorio
+  dueño de `espeak-ng-data`. Medición física: carga **2,129 s**, generación total
+  **2,502 s**, **50.688 muestras a 22.050 Hz**, pico **0,389**; focales de voz
+  **122 pasadas y 4 skips heredados**.
+- La segunda Full reveló únicamente que el sello vivo del árbol STT había quedado
+  atrás de estos cambios: **2 fallos, 8.767 pasadas, 15 skips y 433 subtests**.
+  Se resellaron los dos consumidores vivos sobre los **358** Python actuales con
+  SHA-256 `d41a548490d8c0a9de266d3e5b949b8bdc947f1c85d3413a4300730fff456838`;
+  el hash histórico de la campaña v17 consumida quedó intacto. Focal:
+  **12 pasadas y 1 skip heredado**.
+- Tercera ejecución canónica `scripts/test_source_quality.ps1 -Mode Full`:
+  **verde**. Build Release: 0 advertencias/0 errores. .NET: Contracts 60/60,
+  Integration **2.851 pasadas, 1 skip contado**, Kernel 137/137, Providers
+  454/454 y Setup 477/477. Python: **8.769 pasadas, 15 skips y 433 subtests**
+  en 441,38 s. Resultado terminal:
+  `source_quality_gate_passed: mode=Full`. La matriz regenerada por la prueba se
+  restauró; `git diff --check` queda limpio.
+- Siguen pendientes de verificación física en el binario actual: pestaña `voice`,
+  `mute tts` y narración audible; repetición bypass de hora local; edición de
+  memoria y badge exterior. La dosis amplia de uso real del dueño tampoco se
+  sustituye con sondas sintéticas.

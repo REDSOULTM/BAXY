@@ -2487,6 +2487,21 @@ def test_private_local_identity_and_creative_questions_do_not_become_web_queries
 @pytest.mark.parametrize(
     "text",
     [
+        "Which pieces of work refuse to sleep inside this box?",
+        "Cuéntame cómo anda de salud este aparato ahora.",
+        "Cuéntame how healthy anda este aparato right now.",
+    ],
+)
+def test_local_machine_paraphrases_do_not_become_public_web_queries(
+    text: str,
+) -> None:
+    assert operation_domain_is_grounded(text, "web.search") is False
+    assert resolve_explicit_effects(text, {"web.search"}) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
         "news from c. n. n.",
         "is it going to rain at one p. m. today",
     ],

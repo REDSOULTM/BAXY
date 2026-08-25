@@ -123,6 +123,17 @@ def test_product_tts_is_neural_spanish_not_system_sapi() -> None:
     assert "es_MX" in output.voice_name or "claude" in output.voice_name.casefold()
 
 
+def test_incomplete_piper_model_is_not_advertised_as_neural(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    model = tmp_path / "incomplete.onnx"
+    model.write_bytes(b"not-a-runtime")
+    monkeypatch.setenv("BAXY_NEURAL_TTS_MODEL", str(model))
+
+    assert resolve_neural_tts_model() is None
+
+
 def test_neural_speak_starts_and_cancel_stops_mid_utterance(tmp_path: Path) -> None:
     if resolve_neural_tts_model() is None:
         pytest.skip("neural TTS model is not on this machine")

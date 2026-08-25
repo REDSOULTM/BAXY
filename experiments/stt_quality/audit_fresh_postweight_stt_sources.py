@@ -28,7 +28,7 @@ SCHEMA = "baxy.stt-fresh-source-audit.v1"
 # consumed and can never be repeated, so its hash is now a historical record
 # kept inside its own receipt, not a live freeze. The tree had in fact already
 # moved past it before the request-completion repair landed: the roots below
-# hold 347 Python files against the 344 the v17 preflight recorded. Re-pinning
+# hold 358 Python files against the 344 the v17 preflight recorded. Re-pinning
 # is therefore a re-seal of an unmeasured expectation, never the reopening of
 # a consumed one. Any future physical campaign must re-seal against the tree it
 # will actually measure.
@@ -36,7 +36,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
     "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
 )
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "afcc0c14fadf9237ff81f2f9aff46acf78866fb3089638f38422528c5d044ef8"
+    "d41a548490d8c0a9de266d3e5b949b8bdc947f1c85d3413a4300730fff456838"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

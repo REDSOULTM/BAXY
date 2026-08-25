@@ -569,12 +569,18 @@ public sealed class CoreNotesEndToEndTests
                 NewId(),
                 "note.list",
                 Parse("{\"scope\":\"trashed\"}")));
+            using JsonDocument ambiguousFacts = JsonDocument.Parse(ambiguousTrash.Message);
 
             Assert.Multiple(() =>
             {
                 Assert.That(ambiguousTrash.Status, Is.EqualTo(OperationStatuses.Failed));
                 Assert.That(ambiguousTrash.ErrorCode, Is.EqualTo("note_ambiguous"));
-                Assert.That(ambiguousTrash.Message, Does.Contain("no hice cambios"));
+                Assert.That(
+                    ambiguousFacts.RootElement.GetProperty("polarity").GetString(),
+                    Is.EqualTo("failure"));
+                Assert.That(
+                    ambiguousFacts.RootElement.GetProperty("error").GetString(),
+                    Is.EqualTo("note_ambiguous"));
                 Assert.That(ambiguousTrash.Result, Is.Not.Null);
                 JsonElement[] candidates = ambiguousTrash.Result!.Value
                     .GetProperty("candidates")
@@ -697,6 +703,7 @@ public sealed class CoreNotesEndToEndTests
             NewId(),
             "note.read",
             Parse($"{{\"noteId\":\"{selectedId}\",\"expectedTitle\":{JsonSerializer.Serialize(selectedTitle)}}}")));
+        using JsonDocument staleFacts = JsonDocument.Parse(stale.Message);
 
         Assert.Multiple(() =>
         {
@@ -713,7 +720,12 @@ public sealed class CoreNotesEndToEndTests
                 Is.EqualTo(selectedRevision + 2));
             Assert.That(stale.Status, Is.EqualTo(OperationStatuses.Failed));
             Assert.That(stale.ErrorCode, Is.EqualTo("note_selection_stale"));
-            Assert.That(stale.Message, Does.Contain("no hice cambios"));
+            Assert.That(
+                staleFacts.RootElement.GetProperty("polarity").GetString(),
+                Is.EqualTo("failure"));
+            Assert.That(
+                staleFacts.RootElement.GetProperty("error").GetString(),
+                Is.EqualTo("note_selection_stale"));
             Assert.That(selectedRead.Result?.GetProperty("revision").GetInt64(),
                 Is.EqualTo(selectedRevision + 2));
             Assert.That(selectedRead.Result?.GetProperty("isTrashed").GetBoolean(), Is.False);
@@ -989,12 +1001,18 @@ public sealed class CoreNotesEndToEndTests
     {
         private readonly Process _process;
         private readonly Task<string> _stderr;
+        private readonly string _dataRoot;
 
-        private CoreSession(Process process, Task<string> stderr, ProtocolHello hello)
+        private CoreSession(
+            Process process,
+            Task<string> stderr,
+            ProtocolHello hello,
+            string dataRoot)
         {
             _process = process;
             _stderr = stderr;
             Hello = hello;
+            _dataRoot = dataRoot;
         }
 
         public ProtocolHello Hello { get; }
@@ -1012,7 +1030,7 @@ public sealed class CoreNotesEndToEndTests
             {
                 string helloLine = await ReadRequiredLineAsync(process).ConfigureAwait(false);
                 ProtocolHello hello = ProtocolJson.DeserializeHello(Encoding.UTF8.GetBytes(helloLine));
-                return new CoreSession(process, stderr, hello);
+                return new CoreSession(process, stderr, hello, dataRoot);
             }
             catch
             {
@@ -1127,7 +1145,11 @@ public sealed class CoreNotesEndToEndTests
             string stderr = await _stderr.ConfigureAwait(false);
             int exitCode = _process.ExitCode;
             _process.Dispose();
-            Assert.That(exitCode, Is.Zero, stderr);
+            string faultPath = Path.Combine(_dataRoot, "diagnostics", "last-core-fault.txt");
+            string diagnostic = File.Exists(faultPath)
+                ? stderr + Environment.NewLine + File.ReadAllText(faultPath)
+                : stderr;
+            Assert.That(exitCode, Is.Zero, diagnostic);
         }
 
         private static async Task<string> ReadRequiredLineAsync(Process process)

@@ -82,6 +82,7 @@ $assetNames = @(
     'stt_nemotron_streaming',
     'wake_manifest',
     'neural_tts_voice',
+    'espeak_ng',
     'vision_model',
     'mpv',
     'mpv_vulkan',

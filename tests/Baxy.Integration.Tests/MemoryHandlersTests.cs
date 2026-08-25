@@ -62,9 +62,8 @@ public sealed class MemoryHandlersTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True);
-            Assert.That(
-                Message(outcome),
-                Is.EqualTo("Completé y verifiqué la petición sobre la memoria local."));
+            JsonElement facts = Facts(outcome);
+            Assert.That(facts.TryGetProperty("observed", out _), Is.False);
             Assert.That(outcome.Result?.GetRawText(), Does.Not.Contain("enabled"));
             Assert.That(opened.Payload.GetProperty("enabled").GetBoolean(), Is.True);
             Assert.That(harness.Store.ConfigureRequests.Single().InvocationId,
@@ -158,7 +157,7 @@ public sealed class MemoryHandlersTests
                 Is.EqualTo(MemorySensitivity.Secret));
             Assert.That(lowRisk.ErrorCode, Is.EqualTo("invalid_arguments"));
             Assert.That(highRisk.ErrorCode, Is.EqualTo("invalid_arguments"));
-            Assert.That(Message(lowRisk), Does.Not.Contain(Canary));
+            Assert.That(Facts(lowRisk).GetRawText(), Does.Not.Contain(Canary));
         });
     }
 
@@ -225,7 +224,7 @@ public sealed class MemoryHandlersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(Message(outcome), Does.Not.Contain(Canary));
+            Assert.That(Facts(outcome).GetRawText(), Does.Not.Contain(Canary));
             Assert.That(outcome.Result?.GetRawText(), Does.Not.Contain(Canary));
             Assert.That(
                 opened.Payload.GetProperty("records")[0].GetProperty("value").GetString(),
@@ -327,7 +326,7 @@ public sealed class MemoryHandlersTests
         {
             Assert.That(first.Succeeded, Is.True);
             Assert.That(second.Succeeded, Is.True);
-            Assert.That(Message(first), Does.Not.Contain(Canary));
+            Assert.That(Facts(first).GetRawText(), Does.Not.Contain(Canary));
             Assert.That(first.Result?.GetRawText(), Does.Not.Contain(Canary));
             Assert.That(path, Does.Not.Contain(Canary));
             Assert.That(path, Does.StartWith(
@@ -503,12 +502,12 @@ public sealed class MemoryHandlersTests
             Assert.That(conflict.Succeeded, Is.False);
             Assert.That(conflict.ErrorCode, Is.EqualTo("memory_export_conflict"));
             Assert.That(conflict.Result, Is.Null);
-            Assert.That(Message(conflict), Does.Not.Contain(path));
+            Assert.That(Facts(conflict).GetRawText(), Does.Not.Contain(path));
             Assert.That(File.ReadAllText(path, Encoding.UTF8), Is.EqualTo(tampered));
             Assert.That(unsafeOutcome.Succeeded, Is.False);
             Assert.That(unsafeOutcome.ErrorCode, Is.EqualTo("memory_export_unavailable"));
             Assert.That(unsafeOutcome.Result, Is.Null);
-            Assert.That(Message(unsafeOutcome), Does.Not.Contain(unsafeHarness.DocumentsPath));
+            Assert.That(Facts(unsafeOutcome).GetRawText(), Does.Not.Contain(unsafeHarness.DocumentsPath));
             Assert.That(Directory.Exists(
                 Path.Combine(
                     unsafeHarness.DocumentsPath,
@@ -678,7 +677,7 @@ public sealed class MemoryHandlersTests
             Assert.That(versionOutcome.ErrorCode, Is.EqualTo("invalid_arguments"));
             Assert.That(recallOutcome.ErrorCode, Is.EqualTo("invalid_arguments"));
             Assert.That(bindingOutcome.ErrorCode, Is.EqualTo("memory_protection_failed"));
-            Assert.That(Message(bindingOutcome), Does.Not.Contain(Canary));
+            Assert.That(Facts(bindingOutcome).GetRawText(), Does.Not.Contain(Canary));
             Assert.That(harness.Store.TotalCalls, Is.Zero);
         });
     }
@@ -698,13 +697,13 @@ public sealed class MemoryHandlersTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("memory_conflict"));
-            Assert.That(Message(outcome), Does.Not.Contain(Canary));
+            Assert.That(Facts(outcome).GetRawText(), Does.Not.Contain(Canary));
             Assert.That(outcome.Result, Is.Null);
         });
     }
 
-    private static string Message(OperationOutcome outcome) =>
-        OperationOutcomeNarration.For(MemoryOperationIds.Status, outcome);
+    private static JsonElement Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.AssertFacts(MemoryOperationIds.Status, outcome);
 
     private static JsonObject SavePayload(
         JsonNode? value,

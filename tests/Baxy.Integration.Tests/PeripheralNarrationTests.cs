@@ -14,14 +14,16 @@ public sealed class PeripheralNarrationTests
             {"version":1,"devices":[{"deviceId":"usb_private","kind":"usb","name":"USB Camera","status":"OK"}],"authority":"windows_print_wia_usb_inventory"}
             """).RootElement.Clone();
 
-        string narration = OperationOutcomeNarration.For(
+        JsonElement facts = OperationOutcomeNarration.AssertFacts(
             "peripheral.list",
             OperationOutcome.Success(result));
+        JsonElement device = facts.GetProperty("observed").GetProperty("devices")[0];
 
         Assert.Multiple(() =>
         {
-            Assert.That(narration, Is.EqualTo("Periféricos conectados: USB Camera."));
-            Assert.That(narration, Does.Not.Contain("usb_private"));
+            Assert.That(device.GetProperty("name").GetString(), Is.EqualTo("USB Camera"));
+            Assert.That(device.TryGetProperty("deviceId", out _), Is.False);
+            Assert.That(facts.GetRawText(), Does.Not.Contain("usb_private"));
         });
     }
 
@@ -32,15 +34,20 @@ public sealed class PeripheralNarrationTests
             {"version":1,"devices":[{"deviceId":"mouse_private","kind":"mouse","name":"ELAN1203 (Dispositivo HID I2C)","status":"OK"}],"requestedKind":"mouse","authority":"windows_print_wia_usb_hid_inventory"}
             """).RootElement.Clone();
 
-        string narration = OperationOutcomeNarration.For(
+        JsonElement facts = OperationOutcomeNarration.AssertFacts(
             "peripheral.list",
             OperationOutcome.Success(result));
+        JsonElement observed = facts.GetProperty("observed");
+        JsonElement device = observed.GetProperty("devices")[0];
 
         Assert.Multiple(() =>
         {
-            Assert.That(narration, Is.EqualTo(
-                "Mouse y dispositivos apuntadores detectados: ELAN1203 (Dispositivo HID I2C)."));
-            Assert.That(narration, Does.Not.Contain("mouse_private"));
+            Assert.That(
+                device.GetProperty("name").GetString(),
+                Is.EqualTo("ELAN1203 (Dispositivo HID I2C)"));
+            Assert.That(observed.GetProperty("requestedKind").GetString(), Is.EqualTo("mouse"));
+            Assert.That(device.TryGetProperty("deviceId", out _), Is.False);
+            Assert.That(facts.GetRawText(), Does.Not.Contain("mouse_private"));
         });
     }
 }

@@ -78,7 +78,7 @@ public sealed class SystemStatusHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
             Assert.That(provider.CallCount, Is.Zero);
         });
     }
@@ -92,6 +92,7 @@ public sealed class SystemStatusHandlerTests
             Invocation("{}"),
             CancellationToken.None);
         JsonElement result = outcome.Result!.Value;
+        JsonElement facts = Facts(outcome);
 
         Assert.Multiple(() =>
         {
@@ -104,10 +105,9 @@ public sealed class SystemStatusHandlerTests
             Assert.That(result.GetProperty("os").GetProperty("isWorkstation").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("uptimeSeconds").GetInt64(), Is.EqualTo(5400));
             Assert.That(result.GetProperty("failures").GetArrayLength(), Is.Zero);
-            Assert.That(Message(outcome), Does.Contain("CPU de prueba"));
-            Assert.That(Message(outcome), Does.Contain("RAM"));
-            Assert.That(Message(outcome), Does.Contain("Windows 11 (versión interna 10.0)"));
-            Assert.That(Message(outcome).TrimStart(), Does.Not.StartWith("{"));
+            Assert.That(
+                facts.GetProperty("observed").GetProperty("cpu").GetProperty("model").GetString(),
+                Is.EqualTo("CPU de prueba"));
         });
     }
 
@@ -127,8 +127,10 @@ public sealed class SystemStatusHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True);
-            Assert.That(Message(outcome), Does.StartWith("Windows Server (versión interna 10.0)"));
-            Assert.That(Message(outcome), Does.Not.Contain("Windows 11"));
+            Assert.That(
+                Facts(outcome).GetProperty("observed").GetProperty("os")
+                    .GetProperty("isWorkstation").GetBoolean(),
+                Is.False);
         });
     }
 
@@ -154,8 +156,9 @@ public sealed class SystemStatusHandlerTests
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Result?.GetProperty("battery").GetProperty("isPresent").GetBoolean(), Is.False);
             Assert.That(outcome.Result?.GetProperty("failures").GetArrayLength(), Is.Zero);
-            Assert.That(Message(outcome), Does.Contain("no informa una batería instalada"));
-            Assert.That(Message(outcome), Does.Contain("conectado a corriente"));
+            JsonElement battery = Facts(outcome).GetProperty("observed").GetProperty("battery");
+            Assert.That(battery.GetProperty("isPresent").GetBoolean(), Is.False);
+            Assert.That(battery.GetProperty("isAcOnline").GetBoolean(), Is.True);
         });
     }
 
@@ -179,8 +182,9 @@ public sealed class SystemStatusHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True);
-            Assert.That(Message(outcome), Does.StartWith("Windows no confirmó si hay una batería"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Batería:"));
+            JsonElement battery = Facts(outcome).GetProperty("observed").GetProperty("battery");
+            Assert.That(battery.TryGetProperty("isPresent", out _), Is.False);
+            Assert.That(battery.GetProperty("isAcOnline").GetBoolean(), Is.True);
         });
     }
 
@@ -211,8 +215,10 @@ public sealed class SystemStatusHandlerTests
             Assert.That(result.GetProperty("battery").ValueKind, Is.EqualTo(JsonValueKind.Null));
             Assert.That(failure.GetProperty("scope").GetString(), Is.EqualTo("battery"));
             Assert.That(failure.GetProperty("errorCode").GetString(), Is.EqualTo("unsupported"));
-            Assert.That(Message(outcome), Does.Contain("No pude medir: batería."));
-            Assert.That(Message(outcome), Does.Not.Contain("unsupported"));
+            Assert.That(
+                Facts(outcome).GetProperty("observed").GetProperty("failures")[0]
+                    .GetProperty("scope").GetString(),
+                Is.EqualTo("battery"));
         });
     }
 
@@ -236,8 +242,7 @@ public sealed class SystemStatusHandlerTests
             Assert.That(outcome.Result?.GetProperty("scope").GetString(), Is.EqualTo("battery"));
             Assert.That(outcome.Result?.GetProperty("failures")[0].GetProperty("errorCode").GetString(),
                 Is.EqualTo("unsupported"));
-            Assert.That(Message(outcome), Does.Contain("No pude"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
         });
     }
 
@@ -298,7 +303,7 @@ public sealed class SystemStatusHandlerTests
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
             Assert.That(outcome.Result, Is.Null);
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
             Assert.That(provider.CallCount, Is.EqualTo(1));
         });
     }
@@ -444,8 +449,8 @@ public sealed class SystemStatusHandlerTests
             [new GpuAdapterStatus("GPU de prueba", 1, 1, GiB, 0, 2 * GiB, null, null, null)],
             [])));
 
-    private static string Message(OperationOutcome outcome) =>
-        OperationOutcomeNarration.For("system.status", outcome);
+    private static JsonElement Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.AssertFacts("system.status", outcome);
 
     private sealed class StubGpuProvider(GpuStatusSnapshot result) : IGpuStatusProvider
     {

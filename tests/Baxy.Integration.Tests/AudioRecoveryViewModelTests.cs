@@ -37,10 +37,13 @@ public sealed class AudioRecoveryViewModelTests
                     Is.EqualTo("Esperando comprobar el audio"));
                 Assert.That(viewModel.Messages, Has.Some.Matches<ConversationMessage>(message =>
                     !message.IsUser
-                    && message.Body.Contains("pendiente confirmar el volumen solicitado (101 %)",
+                    && message.Body.Contains("\"cause\":\"audio_volume_pending\"",
                         StringComparison.Ordinal)));
                 Assert.That(viewModel.Messages, Has.Some.Matches<ConversationMessage>(message =>
-                    message.Body.Contains("continuar / continue / retry", StringComparison.Ordinal)));
+                    message.Body.Contains("\"level\":101", StringComparison.Ordinal)
+                    && message.Body.Contains(
+                        "\"choices\":[\"continuar\",\"continue\",\"retry\"]",
+                        StringComparison.Ordinal)));
             });
 
             viewModel.Draft = "anota comprar leche";
@@ -52,8 +55,9 @@ public sealed class AudioRecoveryViewModelTests
             var noteStore = new LocalNoteStore(Path.Combine(root, "notes-store"));
             Assert.Multiple(() =>
             {
-                Assert.That(viewModel.Messages[^1].Body,
-                    Does.Contain("Primero debo reconciliar el ajuste de audio pendiente"));
+                Assert.That(
+                    viewModel.Messages[^1].Body,
+                    Does.Contain("\"cause\":\"pending_audio_reconcile\""));
                 Assert.That(noteStore.List(NoteListScope.All), Is.Empty);
                 Assert.That(afterBlockedAction, Has.Length.EqualTo(1));
                 Assert.That(afterBlockedAction[0].MissionId, Is.EqualTo(original.MissionId));
@@ -68,8 +72,9 @@ public sealed class AudioRecoveryViewModelTests
                 .ToArray();
             Assert.Multiple(() =>
             {
-                Assert.That(viewModel.Messages[^1].Body,
-                    Does.Contain("no iniciaré otra acción"));
+                Assert.That(
+                    viewModel.Messages[^1].Body,
+                    Does.Contain("\"cause\":\"pending_audio_reconcile\""));
                 Assert.That(afterDifferentAudio, Has.Length.EqualTo(1));
                 Assert.That(afterDifferentAudio[0].InvocationId,
                     Is.EqualTo(original.InvocationId));
@@ -83,8 +88,8 @@ public sealed class AudioRecoveryViewModelTests
                 .ToArray();
             Assert.Multiple(() =>
             {
-                Assert.That(viewModel.Messages[^1].Body,
-                    Does.Contain("entero entre 0 y 100"));
+                Assert.That(viewModel.Messages[^1].Body, Does.Contain("\"operation\":\"audio.volume\""));
+                Assert.That(viewModel.Messages[^1].Body, Does.Contain("\"error\":\"invalid_arguments\""));
                 Assert.That(afterTerminal, Is.Empty);
                 Assert.That(noteStore.List(NoteListScope.All), Is.Empty);
             });

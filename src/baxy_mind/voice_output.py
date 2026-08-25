@@ -343,16 +343,11 @@ class SapiSpeechOutput:
 
 
 def _espeak_exe() -> Path | None:
-    configured = (os.environ.get("BAXY_ESPEAK_EXE") or "").strip()
-    candidates = [
-        Path(configured) if configured else None,
-        Path(r"C:\Program Files\eSpeak NG\espeak-ng.exe"),
-        Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng.exe"),
-    ]
-    for candidate in candidates:
-        if candidate is not None and candidate.is_file():
-            return candidate
-    return None
+    try:
+        resolution = resolve_asset("espeak_ng")
+    except AssetDescriptorError:
+        return None
+    return resolution.path
 
 
 def _espeak_data_dir() -> Path | None:
@@ -361,15 +356,6 @@ def _espeak_data_dir() -> Path | None:
         data = exe.parent / "espeak-ng-data"
         if (data / "phontab").is_file():
             return data
-    configured = (os.environ.get("BAXY_ESPEAK_DATA") or "").strip()
-    candidates = [
-        Path(configured) if configured else None,
-        Path(r"C:\Program Files\eSpeak NG\espeak-ng-data"),
-        Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng-data"),
-    ]
-    for candidate in candidates:
-        if candidate is not None and (candidate / "phontab").is_file():
-            return candidate
     return None
 
 
@@ -407,6 +393,8 @@ class _PiperOnnxEngine:
         self._exe = _espeak_exe()
         if self._exe is None:
             raise FileNotFoundError("espeak_missing")
+        if _espeak_data_dir() is None:
+            raise FileNotFoundError("espeak_data_missing")
         options = cpu_session_options(
             ort,
             environment_name="BAXY_VOICE_TTS_THREADS",
@@ -427,7 +415,15 @@ class _PiperOnnxEngine:
         # the already-bounded utterance.
         with tempfile.TemporaryFile() as stdout:
             subprocess.run(
-                [str(self._exe), "-q", "-v", self._voice, "--ipa=3", text],
+                [
+                    str(self._exe),
+                    f"--path={self._exe.parent}",
+                    "-q",
+                    "-v",
+                    self._voice,
+                    "--ipa=3",
+                    text,
+                ],
                 check=True,
                 stdin=subprocess.DEVNULL,
                 stdout=stdout,
@@ -470,7 +466,8 @@ def resolve_neural_tts_model() -> Path | None:
     configured = (os.environ.get("BAXY_NEURAL_TTS_MODEL") or "").strip()
     if configured:
         candidate = Path(configured).expanduser()
-        return candidate if candidate.is_file() else None
+        config = candidate.with_suffix(".onnx.json")
+        return candidate if candidate.is_file() and config.is_file() else None
     try:
         resolution = resolve_asset("neural_tts_voice")
     except AssetDescriptorError:
@@ -485,9 +482,13 @@ def resolve_neural_tts_model() -> Path | None:
         if not directory.is_dir():
             continue
         direct = directory / "es_MX-claude-high.onnx"
-        if direct.is_file():
+        if direct.is_file() and direct.with_suffix(".onnx.json").is_file():
             return direct
-        onnx_files = sorted(directory.glob("*.onnx"))
+        onnx_files = sorted(
+            candidate
+            for candidate in directory.glob("*.onnx")
+            if candidate.with_suffix(".onnx.json").is_file()
+        )
         if len(onnx_files) == 1:
             return onnx_files[0]
     return None
@@ -752,7 +753,11 @@ def create_speech_output(
 ) -> NeuralSpeechOutput | SapiSpeechOutput:
     """Una sola salida viva: neural si el modelo está, SAPI si no."""
 
-    if resolve_neural_tts_model() is not None and _espeak_exe() is not None:
+    if (
+        resolve_neural_tts_model() is not None
+        and _espeak_exe() is not None
+        and _espeak_data_dir() is not None
+    ):
         return NeuralSpeechOutput(on_state, on_error, on_stage)
     return SapiSpeechOutput(on_state)
 

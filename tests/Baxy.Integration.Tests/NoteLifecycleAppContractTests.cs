@@ -55,7 +55,7 @@ public sealed class NoteLifecycleAppContractTests
     }
 
     [Test]
-    public void NoteReadProjectionShowsTitleAndContentWithoutJson()
+    public void NoteReadProjectionCarriesTitleAndContentAsBoundedFacts()
     {
         OperationResponse response = CompletedWithResult(
             """
@@ -65,17 +65,19 @@ public sealed class NoteLifecycleAppContractTests
         OperationResponseProjection projection = OperationResponseProjection.Create(
             response,
             "note.read");
+        using JsonDocument facts = JsonDocument.Parse(projection.Message);
+        JsonElement observed = facts.RootElement.GetProperty("observed");
 
         Assert.Multiple(() =>
         {
-            Assert.That(projection.Message, Is.EqualTo("Nota «Compras»:\nleche\npan"));
+            Assert.That(observed.GetProperty("title").GetString(), Is.EqualTo("Compras"));
+            Assert.That(observed.GetProperty("content").GetString(), Is.EqualTo("leche\npan"));
             Assert.That(projection.Message, Does.Not.Contain("noteId"));
-            Assert.That(projection.Message.TrimStart(), Does.Not.StartWith("{"));
         });
     }
 
     [Test]
-    public void EmptyNoteReadProjectionStatesThatTheNoteIsEmpty()
+    public void EmptyNoteReadProjectionPreservesTheObservedEmptyContent()
     {
         OperationResponse response = CompletedWithResult(
             """{"title":"Ideas","content":""}""");
@@ -84,11 +86,14 @@ public sealed class NoteLifecycleAppContractTests
             response,
             "note.read");
 
-        Assert.That(projection.Message, Is.EqualTo("La nota «Ideas» está vacía."));
+        using JsonDocument facts = JsonDocument.Parse(projection.Message);
+        Assert.That(
+            facts.RootElement.GetProperty("observed").GetProperty("content").GetString(),
+            Is.Empty);
     }
 
     [Test]
-    public void LongNoteReadProjectionIsExplicitlyTruncatedOnAUnicodeBoundary()
+    public void LongNoteReadProjectionDoesNotCrossTheBoundedFactsBoundary()
     {
         string content = string.Concat(Enumerable.Repeat("🙂", 20_000));
         string json = JsonSerializer.Serialize(new { title = "Emoji", content });
@@ -101,7 +106,8 @@ public sealed class NoteLifecycleAppContractTests
         Assert.Multiple(() =>
         {
             Assert.That(projection.Message.Length, Is.LessThanOrEqualTo(16_384));
-            Assert.That(projection.Message, Does.EndWith("[Contenido truncado en la vista.]"));
+            using JsonDocument facts = JsonDocument.Parse(projection.Message);
+            Assert.That(facts.RootElement.TryGetProperty("observed", out _), Is.False);
             Assert.DoesNotThrow(() => new UTF8Encoding(false, true).GetBytes(projection.Message));
         });
     }
@@ -122,16 +128,19 @@ public sealed class NoteLifecycleAppContractTests
     private static OperationResponse CompletedWithResult(string json)
     {
         using JsonDocument document = JsonDocument.Parse(json);
+        JsonElement result = document.RootElement.Clone();
         return new OperationResponse(
             ProtocolTypes.OperationResponse,
             Guid.NewGuid().ToString("D"),
             Guid.NewGuid().ToString("D"),
             Guid.NewGuid().ToString("D"),
             OperationStatuses.Completed,
-            "Encontré la nota.",
+            OperationVisibleFacts.FromOutcome(
+                "note.read",
+                OperationOutcome.Success(result)),
             true,
             false,
-            document.RootElement.Clone(),
+            result,
             null);
     }
 }

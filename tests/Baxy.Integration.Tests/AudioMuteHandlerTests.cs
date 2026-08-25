@@ -46,7 +46,7 @@ public sealed class AudioMuteHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
             Assert.That(provider.MuteCallCount, Is.Zero);
         });
     }
@@ -73,11 +73,10 @@ public sealed class AudioMuteHandlerTests
         });
     }
 
-    [TestCase(true, "Listo, silencié el audio del sistema.")]
-    [TestCase(false, "Listo, reactivé el audio del sistema.")]
+    [TestCase(true)]
+    [TestCase(false)]
     public async Task ExactVerifiedPostreadReturnsNaturalAndStructuredEvidence(
-        bool state,
-        string expectedMessage)
+        bool state)
     {
         OperationInvocation invocation = Invocation(
             state ? "{\"state\":true}" : "{\"state\":false}");
@@ -88,12 +87,14 @@ public sealed class AudioMuteHandlerTests
             invocation,
             CancellationToken.None);
         JsonElement result = outcome.Result!.Value;
+        JsonElement facts = Facts(outcome);
 
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Is.EqualTo(expectedMessage));
+            Assert.That(facts.GetRawText(), Does.Not.Contain(EndpointHash));
+            Assert.That(facts.GetProperty("observed").TryGetProperty("targetId", out _), Is.False);
             Assert.That(result.GetProperty("operation").GetString(),
                 Is.EqualTo(AudioOperationIds.Mute));
             Assert.That(result.GetProperty("endpointIdHash").GetString(),
@@ -107,11 +108,9 @@ public sealed class AudioMuteHandlerTests
         });
     }
 
-    [TestCase(true, "Listo, el audio del sistema ya estaba silenciado.")]
-    [TestCase(false, "Listo, el audio del sistema ya estaba activo.")]
-    public async Task VerifiedNoOpReportsExistingState(
-        bool state,
-        string expectedMessage)
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task VerifiedNoOpReportsExistingState(bool state)
     {
         OperationInvocation invocation = Invocation(
             state ? "{\"state\":true}" : "{\"state\":false}");
@@ -129,7 +128,9 @@ public sealed class AudioMuteHandlerTests
             invocation,
             CancellationToken.None);
 
-        Assert.That(Message(outcome), Is.EqualTo(expectedMessage));
+        Assert.That(
+            Facts(outcome).GetProperty("observed").GetProperty("applied").GetBoolean(),
+            Is.False);
     }
 
     [TestCase("invocation")]
@@ -186,7 +187,7 @@ public sealed class AudioMuteHandlerTests
             Assert.That(outcome.ErrorCode,
                 Is.EqualTo(AudioControlErrorCodes.VerificationFailed), defect);
             Assert.That(outcome.Result, Is.Null, defect);
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"), defect);
+            _ = Facts(outcome);
         });
     }
 
@@ -217,8 +218,7 @@ public sealed class AudioMuteHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo(AudioControlErrorCodes.NoDefaultOutput));
-            Assert.That(Message(outcome), Does.Contain("No encontré"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
         });
     }
 
@@ -253,15 +253,14 @@ public sealed class AudioMuteHandlerTests
             Assert.That(outcome.Retryable, Is.True);
             Assert.That(outcome.ErrorCode, Is.EqualTo(
                 AudioControlErrorCodes.ReconciliationRequired));
-            Assert.That(Message(outcome), Does.Contain("misma petición"));
+            Assert.That(Facts(outcome).GetProperty("pending").GetBoolean(), Is.True);
         });
     }
 
-    [TestCase(true, "Confirmé que el audio del sistema está silenciado tras recuperar el intento.")]
-    [TestCase(false, "Confirmé que el audio del sistema está activo tras recuperar el intento.")]
+    [TestCase(true)]
+    [TestCase(false)]
     public async Task ReconciledOrphanCanSucceedOnlyWithExactVerifiedPostread(
-        bool requested,
-        string expectedMessage)
+        bool requested)
     {
         OperationInvocation invocation = Invocation(
             $"{{\"state\":{requested.ToString().ToLowerInvariant()}}}");
@@ -282,7 +281,9 @@ public sealed class AudioMuteHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Result?.GetProperty("reconciled").GetBoolean(), Is.True);
-            Assert.That(Message(outcome), Is.EqualTo(expectedMessage));
+            Assert.That(
+                Facts(outcome).GetProperty("observed").GetProperty("reconciled").GetBoolean(),
+                Is.True);
         });
     }
 
@@ -312,8 +313,8 @@ public sealed class AudioMuteHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo(AudioControlErrorCodes.EndpointChanged));
-            Assert.That(Message(outcome), Does.Contain("pudo haber cambiado"));
-            Assert.That(Message(outcome), Does.Contain("no repetí"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(Facts(outcome).GetProperty("effectUncertain").GetBoolean(), Is.True);
         });
     }
 
@@ -357,8 +358,8 @@ public sealed class AudioMuteHandlerTests
 
     private static string NewId() => Guid.NewGuid().ToString("D");
 
-    private static string Message(OperationOutcome outcome) =>
-        OperationOutcomeNarration.For(AudioOperationIds.Mute, outcome);
+    private static JsonElement Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.AssertFacts(AudioOperationIds.Mute, outcome);
 
     private sealed class StubProvider : IAudioControlProvider
     {

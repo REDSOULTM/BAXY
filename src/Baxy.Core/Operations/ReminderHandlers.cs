@@ -165,7 +165,8 @@ internal sealed class ReminderHandler(
 
 internal static class ReminderResultJson
 {
-    public static JsonElement Record(LocalTaskRecord item) => Write(writer => WriteItem(writer, item));
+    public static JsonElement Record(LocalTaskRecord item) =>
+        Write(writer => WriteItem(writer, item), includeDocumentVersion: false);
     public static JsonElement Selection(LocalTaskRecord item) => Write(writer =>
     {
         writer.WriteString("reminderId", item.Id);
@@ -194,12 +195,21 @@ internal static class ReminderResultJson
         writer.WriteBoolean("deleted", item.Deleted);
         writer.WriteNumber("version", item.Version);
     }
-    private static JsonElement Write(Action<Utf8JsonWriter> body)
+    private static JsonElement Write(
+        Action<Utf8JsonWriter> body,
+        bool includeDocumentVersion = true)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1); body(writer); writer.WriteEndObject();
+            writer.WriteStartObject();
+            if (includeDocumentVersion)
+            {
+                writer.WriteNumber("version", 1);
+            }
+
+            body(writer);
+            writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return document.RootElement.Clone();

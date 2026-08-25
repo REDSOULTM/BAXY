@@ -120,6 +120,56 @@ def test_powershell_and_python_select_the_same_asset(
     assert Path(completed.stdout).resolve() == python_resolution.path
 
 
+@pytest.mark.skipif(os.name != "nt", reason="PowerShell resolver is Windows-only")
+def test_powershell_resolves_optional_directory_without_required_files(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    voice = tmp_path / "voice"
+    voice.mkdir()
+    descriptor = json.loads(DESCRIPTOR.read_text(encoding="utf-8"))
+    descriptor["assets"]["optional_fixture_directory"] = {
+        "kind": "directory",
+        "required": False,
+        "environment": "BAXY_OPTIONAL_FIXTURE_DIRECTORY",
+        "candidates": [str(tmp_path / "missing-default")],
+        "repair": "fixture",
+    }
+    descriptor_path = tmp_path / "assets.manifest.json"
+    descriptor_path.write_text(json.dumps(descriptor), encoding="utf-8")
+    override = tmp_path / "assets.local.json"
+    override.write_text(
+        json.dumps(
+            {
+                "schema": "baxy-assets-local-v1",
+                "assets": {"optional_fixture_directory": [str(voice)]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("BAXY_ASSETS_OVERRIDE", str(override))
+    command = (
+        ". .\\scripts\\asset_resolver.ps1; "
+        "$result=Resolve-BaxyAsset -Name 'optional_fixture_directory' "
+        f"-DescriptorPath '{descriptor_path}'; "
+        "[Console]::Out.Write($result.Path)"
+    )
+
+    completed = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", command],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=30,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert Path(completed.stdout).resolve() == voice.resolve()
+
+
 def test_active_runtime_has_no_machine_bound_baxy_path_literals() -> None:
     forbidden = ("D:\\\\BAXY", "C:\\\\Users\\\\usuario")
     offenders: list[str] = []

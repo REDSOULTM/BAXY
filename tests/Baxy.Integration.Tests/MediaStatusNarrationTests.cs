@@ -7,47 +7,51 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MediaStatusNarrationTests
 {
-    [TestCase("playing", "Está sonando «Billie Jean» de Michael Jackson.")]
-    [TestCase("paused", "Está en pausa «Billie Jean» de Michael Jackson.")]
-    public void VerifiedMediaStatusNamesTheObservedTitleArtistAndState(
-        string status,
-        string expected)
+    [TestCase("playing")]
+    [TestCase("paused")]
+    public void VerifiedMediaStatusCarriesObservedTitleArtistAndState(string status)
     {
         JsonElement result = JsonDocument.Parse($$"""
             {"version":1,"sourceAppUserModelId":"Spotify.exe","title":"Billie Jean","artist":"Michael Jackson","playbackStatus":"{{status}}","authority":"windows_smtc_current_session_read"}
             """).RootElement.Clone();
 
-        string narration = OperationOutcomeNarration.For(
+        JsonElement facts = OperationOutcomeNarration.AssertFacts(
             "media.status",
             OperationOutcome.Success(result));
+        JsonElement observed = facts.GetProperty("observed");
 
-        Assert.That(narration, Is.EqualTo(expected));
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("title").GetString(), Is.EqualTo("Billie Jean"));
+            Assert.That(observed.GetProperty("artist").GetString(), Is.EqualTo("Michael Jackson"));
+            Assert.That(observed.GetProperty("playbackStatus").GetString(), Is.EqualTo(status));
+        });
     }
 
     [Test]
     public void MissingMediaSessionIsReportedAsAnObservedAbsence()
     {
-        string narration = OperationOutcomeNarration.For(
+        JsonElement facts = OperationOutcomeNarration.AssertFacts(
             "media.status",
             OperationOutcome.Failure("media_session_not_found"));
 
-        Assert.That(
-            narration,
-            Is.EqualTo("No hay ninguna reproducción visible para Windows en este momento."));
+        Assert.That(facts.GetProperty("error").GetString(), Is.EqualTo("media_session_not_found"));
     }
 
-    [TestCase(8, "Listo, adelanté 8 segundos y verifiqué la posición.")]
-    [TestCase(-12, "Listo, retrocedí 12 segundos y verifiqué la posición.")]
-    public void VerifiedRelativeSeekNamesTheObservedDirection(int seconds, string expected)
+    [TestCase(8)]
+    [TestCase(-12)]
+    public void VerifiedRelativeSeekCarriesTheObservedDirection(int seconds)
     {
         JsonElement result = JsonDocument.Parse($$"""
             {"version":1,"requestedDeltaSeconds":{{seconds}},"previousPositionSeconds":20,"positionSeconds":28,"durationSeconds":180,"sourceAppUserModelId":"Browser","authority":"windows_smtc_timeline_postread"}
             """).RootElement.Clone();
 
+        JsonElement facts = OperationOutcomeNarration.AssertFacts(
+            "media.seek.relative",
+            OperationOutcome.Success(result));
+
         Assert.That(
-            OperationOutcomeNarration.For(
-                "media.seek.relative",
-                OperationOutcome.Success(result)),
-            Is.EqualTo(expected));
+            facts.GetProperty("observed").GetProperty("requestedDeltaSeconds").GetInt32(),
+            Is.EqualTo(seconds));
     }
 }

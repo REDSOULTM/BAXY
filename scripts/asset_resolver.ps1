@@ -200,7 +200,13 @@ function Resolve-BaxyAsset {
             Test-Path -LiteralPath $candidate -PathType Container
         }
         if ($valid -and $kind -ceq 'directory') {
-            foreach ($requiredFile in @($definition.required_files)) {
+            $requiredFilesProperty = $definition.PSObject.Properties['required_files']
+            $requiredFiles = if ($null -eq $requiredFilesProperty) {
+                @()
+            } else {
+                @($requiredFilesProperty.Value)
+            }
+            foreach ($requiredFile in $requiredFiles) {
                 if (-not (Test-Path -LiteralPath (Join-Path $candidate $requiredFile) -PathType Leaf)) {
                     $valid = $false
                     break

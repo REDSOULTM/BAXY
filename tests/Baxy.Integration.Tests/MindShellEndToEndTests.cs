@@ -157,6 +157,11 @@ public sealed class MindShellEndToEndTests
             string plan = await SubmitAsync(
                 viewModel,
                 "Dime la hora y revisa la CPU");
+            JsonElement timeFacts = ParseFacts(time);
+            JsonElement planFacts = ParseFacts(plan);
+            string[] planSteps = planFacts.GetProperty("steps").EnumerateArray()
+                .Select(static step => step.GetString() ?? string.Empty)
+                .ToArray();
 
             JsonElement[] trace = ReadTrace(tracePath);
             JsonElement[] turns = trace
@@ -165,13 +170,14 @@ public sealed class MindShellEndToEndTests
             Assert.Multiple(() =>
             {
                 Assert.That(turns, Has.Length.EqualTo(3));
-                Assert.That(time, Does.StartWith("La fecha local es "));
-                Assert.That(time, Does.Contain("la hora local es "));
+                Assert.That(timeFacts.GetProperty("operation").GetString(), Is.EqualTo("system.time"));
                 Assert.That(
-                    plan,
-                    Does.StartWith(
-                        "Completé y verifiqué los 2 pasos de la misión."));
-                Assert.That(plan, Does.Contain("CPU"));
+                    timeFacts.GetProperty("observed").GetProperty("localTime").GetString(),
+                    Is.Not.Empty);
+                Assert.That(planFacts.GetProperty("cause").GetString(), Is.EqualTo("mission_completed"));
+                Assert.That(planFacts.GetProperty("stepCount").GetInt32(), Is.EqualTo(2));
+                Assert.That(planSteps, Has.Some.Contains("\"operation\":\"system.time\""));
+                Assert.That(planSteps, Has.Some.Contains("\"operation\":\"system.status\""));
                 Assert.That(
                     turns.Select(static entry => Property(entry, "text")),
                     Is.EqualTo(new[]
@@ -237,6 +243,7 @@ public sealed class MindShellEndToEndTests
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
         {
             string answer = await SubmitAsync(viewModel, "Dime la hora actual");
+            JsonElement answerFacts = ParseFacts(answer);
 
             JsonElement[] trace = ReadTrace(tracePath);
             JsonElement decision = trace.Single(static entry =>
@@ -253,10 +260,10 @@ public sealed class MindShellEndToEndTests
                     trace,
                     Has.None.Matches<JsonElement>(static entry =>
                         Property(entry, "type") == "plan"));
-                Assert.That(answer, Does.StartWith("La fecha local es "));
-                Assert.That(answer, Does.Contain("la hora local es "));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("{"));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("["));
+                Assert.That(answerFacts.GetProperty("operation").GetString(), Is.EqualTo("system.time"));
+                Assert.That(
+                    answerFacts.GetProperty("observed").GetProperty("localTime").GetString(),
+                    Is.Not.Empty);
             });
             AssertOutboxEmpty(dataRoot);
         });
@@ -270,14 +277,17 @@ public sealed class MindShellEndToEndTests
             string prompt = await SubmitAsync(
                 viewModel,
                 "Navega Opera a https://example.com/");
+            JsonElement promptFacts = ParseFacts(prompt);
 
             JsonElement[] trace = ReadTrace(tracePath);
             Assert.Multiple(() =>
             {
-                Assert.That(prompt, Does.Contain("requiere tu confirmación"));
-                Assert.That(prompt, Does.Contain("confirmar / confirm"));
-                Assert.That(prompt, Does.Contain("cancelar / cancel"));
-                Assert.That(prompt, Does.Not.Contain("Navegué"));
+                Assert.That(promptFacts.GetProperty("kind").GetString(), Is.EqualTo("confirmation"));
+                Assert.That(promptFacts.GetProperty("cause").GetString(), Is.EqualTo("step_needs_confirmation"));
+                Assert.That(
+                    promptFacts.GetProperty("choices").EnumerateArray()
+                        .Select(static choice => choice.GetString()),
+                    Is.EqualTo(new[] { "confirmar", "confirm", "cancelar", "cancel" }));
                 Assert.That(
                     trace.Count(static entry =>
                         Property(entry, "type") == "arguments"
@@ -292,7 +302,9 @@ public sealed class MindShellEndToEndTests
             });
 
             string cancelled = await SubmitAsync(viewModel, "cancelar");
-            Assert.That(cancelled, Does.Contain("Cancelé"));
+            Assert.That(
+                ParseFacts(cancelled).GetProperty("cause").GetString(),
+                Is.EqualTo("mission_cancelled_partial"));
             AssertOutboxEmpty(dataRoot);
         });
     }
@@ -305,6 +317,10 @@ public sealed class MindShellEndToEndTests
             string answer = await SubmitAsync(
                 viewModel,
                 "Dime la hora y revisa la CPU");
+            JsonElement answerFacts = ParseFacts(answer);
+            string[] answerSteps = answerFacts.GetProperty("steps").EnumerateArray()
+                .Select(static step => step.GetString() ?? string.Empty)
+                .ToArray();
 
             JsonElement[] trace = ReadTrace(tracePath);
             JsonElement planRequest = trace.Single(static entry =>
@@ -326,13 +342,10 @@ public sealed class MindShellEndToEndTests
                     trace,
                     Has.None.Matches<JsonElement>(static entry =>
                         Property(entry, "type") == "arguments"));
-                Assert.That(
-                    answer,
-                    Does.StartWith("Completé y verifiqué los 2 pasos de la misión."));
-                Assert.That(answer, Does.Contain("La fecha local es "));
-                Assert.That(answer, Does.Contain("CPU"));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("{"));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("["));
+                Assert.That(answerFacts.GetProperty("cause").GetString(), Is.EqualTo("mission_completed"));
+                Assert.That(answerFacts.GetProperty("stepCount").GetInt32(), Is.EqualTo(2));
+                Assert.That(answerSteps, Has.Some.Contains("\"operation\":\"system.time\""));
+                Assert.That(answerSteps, Has.Some.Contains("\"operation\":\"system.status\""));
             });
             AssertOutboxEmpty(dataRoot);
         });
@@ -346,6 +359,7 @@ public sealed class MindShellEndToEndTests
             string answer = await SubmitAsync(
                 viewModel,
                 "Revisa el estado general");
+            JsonElement answerFacts = ParseFacts(answer);
 
             JsonElement[] trace = ReadTrace(tracePath);
             JsonElement planRequest = trace.Single(static entry =>
@@ -357,10 +371,8 @@ public sealed class MindShellEndToEndTests
                         "expectedOperations",
                         out _),
                     Is.False);
-                Assert.That(
-                    answer,
-                    Does.StartWith(
-                        "Completé y verifiqué los 2 pasos de la misión."));
+                Assert.That(answerFacts.GetProperty("cause").GetString(), Is.EqualTo("mission_completed"));
+                Assert.That(answerFacts.GetProperty("stepCount").GetInt32(), Is.EqualTo(2));
             });
             AssertOutboxEmpty(dataRoot);
         });
@@ -638,11 +650,34 @@ public sealed class MindShellEndToEndTests
         });
     }
 
-    private static JsonElement[] ReadTrace(string path) =>
-        File.ReadLines(path)
-            .Where(static line => !string.IsNullOrWhiteSpace(line))
-            .Select(static line => JsonDocument.Parse(line).RootElement.Clone())
-            .ToArray();
+    private static JsonElement[] ReadTrace(string path)
+    {
+        Exception? lastFailure = null;
+        for (int attempt = 0; attempt < 50; attempt++)
+        {
+            try
+            {
+                return File.ReadAllLines(path)
+                    .Where(static line => !string.IsNullOrWhiteSpace(line))
+                    .Select(static line => JsonDocument.Parse(line).RootElement.Clone())
+                    .ToArray();
+            }
+            catch (Exception exception) when (exception is IOException or JsonException)
+            {
+                lastFailure = exception;
+                Thread.Sleep(TimeSpan.FromMilliseconds(20));
+            }
+        }
+
+        throw new IOException("The mind contract trace stayed unavailable.", lastFailure);
+    }
+
+    private static JsonElement ParseFacts(string source)
+    {
+        Assert.That(UserMessagePolicy.IsStructuredFacts(source), Is.True);
+        using JsonDocument document = JsonDocument.Parse(source);
+        return document.RootElement.Clone();
+    }
 
     private static string? Property(JsonElement element, string name) =>
         element.TryGetProperty(name, out JsonElement value)

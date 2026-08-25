@@ -36,9 +36,12 @@ public sealed class ProcessListHandlerTests
             Assert.That(outcome.Result?.GetProperty("processes").GetArrayLength(), Is.EqualTo(2));
             Assert.That(provider.LastSort, Is.EqualTo(ProcessStatusSort.Memory));
             Assert.That(provider.LastLimit, Is.EqualTo(10));
-            Assert.That(
-                OperationOutcomeNarration.For("system.process.list", outcome),
-                Does.Contain("alpha (PID 101)"));
+            JsonElement facts = OperationOutcomeNarration.AssertFacts(
+                "system.process.list",
+                outcome);
+            JsonElement process = facts.GetProperty("observed").GetProperty("processes")[0];
+            Assert.That(process.GetProperty("name").GetString(), Is.EqualTo("alpha"));
+            Assert.That(process.TryGetProperty("pid", out _), Is.False);
         });
     }
 
@@ -82,9 +85,7 @@ public sealed class ProcessListHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("process_inventory_unavailable"));
-            Assert.That(
-                OperationOutcomeNarration.For("system.process.list", outcome),
-                Does.Not.StartWith("Listo"));
+            _ = OperationOutcomeNarration.AssertFacts("system.process.list", outcome);
         });
     }
 

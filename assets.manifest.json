@@ -104,6 +104,10 @@
       "kind": "directory",
       "required": false,
       "environment": "BAXY_NEURAL_TTS_DIR",
+      "required_files": [
+        "es_MX-claude-high.onnx",
+        "es_MX-claude-high.onnx.json"
+      ],
       "candidates": [
         "${BAXY_ASSETS_ROOT}\\voice\\baxy-es",
         "D:\\BAXYRuntime\\assets\\voice\\baxy-es",
@@ -111,6 +115,18 @@
         "${USERPROFILE}\\.gemma4\\models\\piper"
       ],
       "repair": "Declara una voz neural local compatible; la voz SAPI del sistema sigue siendo la degradación soportada."
+    },
+    "espeak_ng": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_ESPEAK_EXE",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\espeak-ng\\espeak-ng.exe",
+        "D:\\BAXYRuntime\\assets\\espeak-ng\\espeak-ng.exe",
+        "C:\\Program Files\\eSpeak NG\\espeak-ng.exe",
+        "C:\\Program Files (x86)\\eSpeak NG\\espeak-ng.exe"
+      ],
+      "repair": "Declara el ejecutable local de eSpeak NG con su directorio hermano espeak-ng-data; Piper lo usa sólo para fonemización local."
     },
     "vision_model": {
       "kind": "file",

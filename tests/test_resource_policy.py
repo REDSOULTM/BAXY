@@ -113,6 +113,9 @@ def test_piper_owns_a_non_spinning_bounded_session(tmp_path, monkeypatch) -> Non
     fake_ort.InferenceSession = _FakeInferenceSession
     monkeypatch.setitem(sys.modules, "onnxruntime", fake_ort)
     monkeypatch.setattr(voice_output, "_espeak_exe", lambda: tmp_path / "espeak.exe")
+    espeak_data = tmp_path / "espeak-ng-data"
+    espeak_data.mkdir()
+    (espeak_data / "phontab").write_bytes(b"fixture")
 
     model = tmp_path / "voice.onnx"
     model.write_bytes(b"not-loaded-by-the-fake")
@@ -147,6 +150,9 @@ def test_piper_phonemes_do_not_require_windows_pipe_reader_threads(
     fake_ort.InferenceSession = _FakeInferenceSession
     monkeypatch.setitem(sys.modules, "onnxruntime", fake_ort)
     monkeypatch.setattr(voice_output, "_espeak_exe", lambda: tmp_path / "espeak.exe")
+    espeak_data = tmp_path / "espeak-ng-data"
+    espeak_data.mkdir()
+    (espeak_data / "phontab").write_bytes(b"fixture")
 
     model = tmp_path / "voice.onnx"
     model.write_bytes(b"not-loaded-by-the-fake")
@@ -171,6 +177,7 @@ def test_piper_phonemes_do_not_require_windows_pipe_reader_threads(
     engine = voice_output._PiperOnnxEngine(model)  # noqa: SLF001
 
     assert engine._phonemes("hola") == "o la"  # noqa: SLF001
+    assert captured["args"][1] == f"--path={tmp_path}"
     kwargs = captured["kwargs"]
     assert isinstance(kwargs, dict)
     assert kwargs["stdout"] is not subprocess.PIPE

@@ -634,20 +634,17 @@ def test_runtime_reference_to_development_candidate_fails_closed(
         _verify_synthetic(synthetic_chain)
 
 
-def test_current_aggregate_chain_verifies_without_opening_any_corpus() -> None:
-    report = gate.build_gate_report(
-        root=ROOT,
-        preregistration_path=gate.DEFAULT_PREREGISTRATION,
-        evaluation_path=gate.DEFAULT_EVALUATION,
-        prior_rejection_path=gate.DEFAULT_PRIOR_REJECTION,
-        expected_preregistration_sha256=gate.DEFAULT_PREREGISTRATION_SHA256,
-        expected_evaluation_sha256=gate.DEFAULT_EVALUATION_SHA256,
-        expected_prior_rejection_sha256=gate.DEFAULT_PRIOR_REJECTION_SHA256,
-    )
-
-    assert report["status"] == "failed_no_runtime_promotion"
-    assert report["observed"]["supported_effect"]["selected"] == 12
-    assert report["observed"]["supported_effect"]["utterances"] == 2300
-    assert report["verifier"]["trainer_executed"] is False
-    assert report["verifier"]["corpus_or_holdout_opened"] is False
-    assert report["promotion_boundary"]["official_mtop_test_opened"] is False
+def test_historical_aggregate_chain_fails_closed_after_catalog_changes() -> None:
+    # Goal 07 extended ProductCatalog.cs after this development-only run was
+    # preregistered.  The verifier must reject that drift instead of silently
+    # rebinding the historical result to today's catalogue.
+    with pytest.raises(gate.VerificationError, match="file hash changed"):
+        gate.build_gate_report(
+            root=ROOT,
+            preregistration_path=gate.DEFAULT_PREREGISTRATION,
+            evaluation_path=gate.DEFAULT_EVALUATION,
+            prior_rejection_path=gate.DEFAULT_PRIOR_REJECTION,
+            expected_preregistration_sha256=gate.DEFAULT_PREREGISTRATION_SHA256,
+            expected_evaluation_sha256=gate.DEFAULT_EVALUATION_SHA256,
+            expected_prior_rejection_sha256=gate.DEFAULT_PRIOR_REJECTION_SHA256,
+        )

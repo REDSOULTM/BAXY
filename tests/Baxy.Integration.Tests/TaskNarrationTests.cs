@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Baxy.App;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using NUnit.Framework;
@@ -9,21 +8,22 @@ namespace Baxy.Integration.Tests;
 public sealed class TaskNarrationTests
 {
     [Test]
-    public void EmptyTaskListHasNaturalNontechnicalNarration()
+    public void EmptyTaskListCarriesItsVerifiedCountAsFacts()
     {
         OperationOutcome outcome = OperationOutcome.Success(
             JsonSerializer.SerializeToElement(
                 new TaskListResult([], 0, "tasks", 20),
                 CoreJsonContext.Default.TaskListResult));
 
-        string narration = OperationOutcomeNarration.For("task.list", outcome);
+        JsonElement facts = OperationOutcomeNarration.AssertFacts("task.list", outcome);
 
-        Assert.That(narration, Is.EqualTo("No encontré tareas en esa lista."));
-        Assert.That(UserMessagePolicy.IsSafe(narration), Is.True);
+        Assert.That(
+            facts.GetProperty("observed").GetProperty("count").GetInt32(),
+            Is.Zero);
     }
 
     [Test]
-    public void TaskCreationNamesTheVerifiedTaskNaturally()
+    public void TaskCreationCarriesTheVerifiedTitleWithoutItsOpaqueId()
     {
         OperationOutcome outcome = OperationOutcome.Success(
             JsonSerializer.SerializeToElement(
@@ -40,22 +40,23 @@ public sealed class TaskNarrationTests
                     1),
                 CoreJsonContext.Default.TaskResult));
 
-        string narration = OperationOutcomeNarration.For("task.create", outcome);
+        JsonElement facts = OperationOutcomeNarration.AssertFacts("task.create", outcome);
+        JsonElement observed = facts.GetProperty("observed");
 
-        Assert.That(narration, Is.EqualTo("Creé la tarea «Informe Q3»."));
-        Assert.That(UserMessagePolicy.IsSafe(narration), Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("title").GetString(), Is.EqualTo("Informe Q3"));
+            Assert.That(observed.TryGetProperty("id", out _), Is.False);
+        });
     }
 
     [Test]
-    public void TaskFailureHasNaturalNontechnicalNarration()
+    public void TaskFailureCarriesItsExactPolarityAndCauseAsFacts()
     {
-        string narration = OperationOutcomeNarration.For(
+        JsonElement facts = OperationOutcomeNarration.AssertFacts(
             "task.list",
             OperationOutcome.Failure("invalid_arguments"));
 
-        Assert.That(
-            narration,
-            Is.EqualTo("Los datos de la tarea no tienen el formato esperado."));
-        Assert.That(UserMessagePolicy.IsSafe(narration), Is.True);
+        Assert.That(facts.GetProperty("error").GetString(), Is.EqualTo("invalid_arguments"));
     }
 }

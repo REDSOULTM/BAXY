@@ -86,6 +86,7 @@ public sealed class GpuSystemStatusHandlerTests
             Invocation("{\"scope\":\"gpu_identity\"}"),
             CancellationToken.None);
         JsonElement adapter = outcome.Result!.Value.GetProperty("adapters")[0];
+        JsonElement facts = Facts(outcome);
 
         Assert.Multiple(() =>
         {
@@ -110,11 +111,9 @@ public sealed class GpuSystemStatusHandlerTests
             Assert.That(
                 adapter.GetProperty("sharedMemoryUsageBytes").ValueKind,
                 Is.EqualTo(JsonValueKind.Null));
-            Assert.That(Message(outcome), Does.Contain("GPU 1 — GPU de prueba"));
-            Assert.That(Message(outcome), Does.Contain("VRAM 8 GiB"));
-            Assert.That(Message(outcome), Does.Contain("RAM reservada para gráficos 256 MiB"));
-            Assert.That(Message(outcome), Does.Contain("límite de RAM compartida 16 GiB"));
-            Assert.That(Message(outcome), Does.Not.Contain("nvidia-smi"));
+            JsonElement visibleAdapter = facts.GetProperty("observed").GetProperty("adapters")[0];
+            Assert.That(visibleAdapter.GetProperty("name").GetString(), Is.EqualTo("GPU de prueba"));
+            Assert.That(visibleAdapter.TryGetProperty("deviceId", out _), Is.False);
         });
     }
 
@@ -161,18 +160,7 @@ public sealed class GpuSystemStatusHandlerTests
             Assert.That(failure.GetProperty("scope").GetString(), Is.EqualTo("gpu_usage"));
             Assert.That(failure.GetProperty("adapterIndex").GetInt32(), Is.EqualTo(1));
             Assert.That(failure.GetProperty("errorCode").GetString(), Is.EqualTo("unsupported"));
-            Assert.That(Message(outcome), Does.Contain("GPU 1 — RTX duplicada"));
-            Assert.That(Message(outcome), Does.Contain("GPU 2 — RTX duplicada"));
-            Assert.That(Message(outcome), Does.Contain("42.3 % de uso"));
-            Assert.That(Message(outcome), Does.Contain(
-                "memoria gráfica dedicada: 2 GiB en uso de 8 GiB"));
-            Assert.That(Message(outcome), Does.Contain(
-                "VRAM 8 GiB + RAM reservada 0 MiB"));
-            Assert.That(Message(outcome), Does.Contain(
-                "RAM compartida: 256 MiB en uso de un límite de 16 GiB"));
-            Assert.That(Message(outcome), Does.Contain("No pude medir el uso de GPU 2"));
-            Assert.That(Message(outcome), Does.Not.Contain("unsupported"));
-            Assert.That(Message(outcome), Does.Not.Contain("nvidia-smi"));
+            _ = Facts(outcome);
         });
     }
 
@@ -203,9 +191,7 @@ public sealed class GpuSystemStatusHandlerTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("system_status_unavailable"));
             Assert.That(failure.GetProperty("scope").GetString(), Is.EqualTo("gpu_usage"));
             Assert.That(failure.GetProperty("adapterIndex").ValueKind, Is.EqualTo(JsonValueKind.Null));
-            Assert.That(Message(outcome), Does.Contain("GPU 1 — GPU A"));
-            Assert.That(Message(outcome), Does.Contain("GPU 2 — GPU B"));
-            Assert.That(Message(outcome), Does.Not.Contain("unsupported"));
+            _ = Facts(outcome);
         });
     }
 
@@ -231,7 +217,7 @@ public sealed class GpuSystemStatusHandlerTests
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("system_status_unavailable"));
             Assert.That(failure.GetProperty("scope").GetString(), Is.EqualTo("gpu_identity"));
-            Assert.That(Message(outcome), Does.Contain("identificación verificable"));
+            _ = Facts(outcome);
         });
     }
 
@@ -464,8 +450,8 @@ public sealed class GpuSystemStatusHandlerTests
 
     private static string NewId() => Guid.NewGuid().ToString("D");
 
-    private static string Message(OperationOutcome outcome) =>
-        OperationOutcomeNarration.For("system.status", outcome);
+    private static JsonElement Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.AssertFacts("system.status", outcome);
 
     private sealed class StubSystemStatusProvider(
         Func<SystemStatusScope, SystemStatusSnapshot> result) : ISystemStatusProvider

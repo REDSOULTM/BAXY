@@ -22,7 +22,7 @@ internal static class WindowsAutostart
     {
         string command = CommandFor(executable);
         using RegistryKey key = Registry.CurrentUser.CreateSubKey(runKeyPath ?? RunKeyPath)
-            ?? throw new InvalidOperationException("No pude abrir el arranque de Windows.");
+            ?? throw new InvalidOperationException("windows_autostart_registry_unavailable");
         key.SetValue(ValueName, command, RegistryValueKind.String);
     }
 

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.App;
 using Baxy.Core.Operations;
@@ -27,6 +28,44 @@ public sealed class Goal06VisibleVoiceTests
             Assert.That(failure, Does.Contain("\"polarity\":\"failure\""));
             Assert.That(success, Does.Not.Contain("Listo"));
             Assert.That(failure, Does.Not.Contain("No pude"));
+        });
+    }
+
+    [Test]
+    public void OversizedObservedPayloadIsOmittedBeforeTheWireContract()
+    {
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            values = Enumerable.Repeat(new string('x', 200), 40).ToArray(),
+        });
+
+        string facts = ProductOperationNarrator.Instance.Narrate(
+            "note.list",
+            OperationOutcome.Success(result));
+        using JsonDocument document = JsonDocument.Parse(facts);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.Length, Is.LessThanOrEqualTo(4_096));
+            Assert.That(document.RootElement.TryGetProperty("observed", out _), Is.False);
+            Assert.That(document.RootElement.GetProperty("polarity").GetString(), Is.EqualTo("success"));
+        });
+    }
+
+    [Test]
+    public void DuplicateObservedPropertiesCannotCrashTheNarrationBoundary()
+    {
+        using JsonDocument duplicate = JsonDocument.Parse("{\"version\":1,\"version\":2}");
+
+        string facts = ProductOperationNarrator.Instance.Narrate(
+            "reminder.create",
+            OperationOutcome.Success(duplicate.RootElement.Clone()));
+        using JsonDocument document = JsonDocument.Parse(facts);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(document.RootElement.TryGetProperty("observed", out _), Is.False);
+            Assert.That(document.RootElement.GetProperty("polarity").GetString(), Is.EqualTo("success"));
         });
     }
 

@@ -554,11 +554,19 @@ def _public_fact_lookup_request(folded: str) -> bool:
         re.IGNORECASE,
     ) is not None:
         return False
+    if re.fullmatch(
+        r"(?:(?:que|what)\s+(?:es\s+lo\s+que\s+)?(?:no\s+)?"
+        r"(?:puedes|can\s+you)\s+(?:hacer|do)|"
+        r"(?:que|what)\s+(?:capacidades|capabilities)\s+(?:tienes|do\s+you\s+have))",
+        folded,
+        re.IGNORECASE,
+    ) is not None:
+        return False
     if _has(
         folded,
         (
             r"\b(?:pc|computer|computador|computadora|ordenador|maquina|machine|"
-            r"device|dispositivo|pantalla|screen|ventana|window|clipboard|"
+            r"device|dispositivo|aparato|cacharro|box|pantalla|screen|ventana|window|clipboard|"
             r"portapapeles|archivo|file|"
             r"carpeta|folder|"
             r"documento|document|descargas|downloads|escritorio|desktop|"
@@ -700,7 +708,8 @@ def _direct_current_time_request(folded: str) -> bool:
                 r"(?:(?:i\s+)?(?:need|want)\s+to\s+know\s+)?"
                 r"(?:the\s+)?time\s+(?:right\s+now|now)"
                 r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"
-                r"what\s+(?:time\s+is\s+it|is\s+the\s+time)(?:\s+right\s+now)?|"
+                r"what(?:'s|\s+s|\s+is)\s+the\s+time(?:\s+right\s+now)?|"
+                r"what\s+time\s+is\s+it(?:\s+right\s+now)?|"
                 r"(?:necesito|quiero)\s+saber\s+(?:la\s+)?hora\s+(?:ahora|actual)|"
                 r"(?:que|cual)\s+es\s+(?:la\s+)?hora\s+(?:ahora|actual)?|"
                 r"(?:que|cual)\s+(?:dia|fecha)\s+(?:es|tenemos)(?:\s+hoy)?"
@@ -2183,6 +2192,12 @@ def conversation_only_content_request(text: str) -> bool:
         r"^(?:por\s+favor\s+)?redactame\s+(?:un\s+)?(?:correo|email|mail)\b|"
         r"^(?:reescribe|reformula|refrasea|redacta|rewrite|rephrase)\b.{0,160}"
         r"\b(?:frase|oracion|sentence|phrase|texto|text)\b|"
+        r"^(?:(?:do\s+not|don't|no)\b.{0,80};\s*)?"
+        r"(?:explica|explain)\b.{0,128}\b(?:significa|means?)\b.{0,64}$|"
+        r"^(?:que\s+(?:quiere\s+decir|significa)|what\s+does)\b.{1,128}"
+        r"(?:mean|significa)?[\s.!?]*$|"
+        r"^(?:que|what)\s+(?:is\s+the\s+|diferencia\s+hay\s+|difference\s+hay\s+)"
+        r"(?:diferencia|difference)?\b.{0,160}\b(?:entre|between)\b.{1,128}$|"
         r"^(?:calcula|calculate|work\s+out)\b.{1,160}$|"
         r"^(?:dame|give\s+me|write|draft)\b.{0,96}"
         r"\b(?:receta|recipe)\b|"
@@ -12189,7 +12204,7 @@ def resolve_explicit_effects(
 ) -> EffectIntent | None:
     """Resolve a bounded sequence of clause-local, closed-catalog effects."""
 
-    if explicit_non_action_frame(text) or conversation_only_content_request(text):
+    if explicit_non_action_frame(text):
         return None
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     available = frozenset(available_operations)
@@ -12200,6 +12215,8 @@ def resolve_explicit_effects(
     alias_plan = exact_catalog_operation_plan(folded)
     if alias_plan is not None and set(alias_plan) <= available:
         return EffectIntent(alias_plan, tuple(folded for _ in alias_plan))
+    if conversation_only_content_request(text):
+        return None
     clauses = _request_clauses(folded)
     explicit_cardinality = _unresolved_explicit_cardinality(folded)
     if not folded or len(folded) > 16_384:
@@ -12282,6 +12299,21 @@ def resolve_explicit_effects(
         or _desired_music_query(folded) is not None
     ):
         return EffectIntent(("media.play.query",), (folded,))
+    if (
+        "system.status" in available
+        and _machine_status_scopes(folded) == frozenset(("os",))
+        and _is_direct_request(folded)
+        and _system_status_domain(folded)
+        and _machine_status_scopes_are_one_reading(folded)
+        and _machine_status_is_the_whole_clause(folded)
+        and not _volume_domain(folded)
+        and (
+            _has(folded, r"\b(?:como|health)\b")
+            or _has(folded, _MACHINE_STATUS_OBSERVATION)
+            or _head_is(_request_head(folded), _MACHINE_STATUS_OBSERVATION_HEAD)
+        )
+    ):
+        return EffectIntent(("system.status",), (folded,))
     if "web.search" in available and _public_live_lookup_request(folded):
         return EffectIntent(("web.search",), (folded,))
     if {

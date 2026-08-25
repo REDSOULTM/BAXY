@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import ast
-import importlib.util
+import json
 from pathlib import Path
 
 from sealed_evidence import assert_sealed
@@ -27,21 +27,14 @@ ARTIFACT = (
 ARTIFACT_SEAL = "5e819988a23ff12357581e557f2329932a1e2c3f87a00b7be8f394b583a8544c"
 
 
-def _module():
-    spec = importlib.util.spec_from_file_location("r275_preregistration", PREREGISTRATION)
-    assert spec and spec.loader
-    candidate = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(candidate)
-    return candidate
-
-
-def _sealed_report():
-    candidate = _module()
-    candidate.MEASUREMENT_OUTPUT = ROOT / "artifacts/audit/r276-output-must-be-absent.json"
-    return candidate.build()
+def _sealed_report() -> dict[str, object]:
+    return json.loads(ARTIFACT.read_text(encoding="utf-8"))
 
 
 def test_r275_seals_the_registered_no_dispatch_model_path_after_r274() -> None:
+    # R275 is a consumed preregistration. Its registered no-wake runtime was
+    # sealed by hash before R276; rebuilding it from today's product manifest
+    # would replace historical evidence with mutable machine state.
     report = _sealed_report()
 
     assert report["authority"] == "sealed_before_registered_local_model_start_or_product_turn"

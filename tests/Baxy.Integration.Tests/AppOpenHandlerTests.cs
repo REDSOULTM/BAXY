@@ -40,9 +40,9 @@ public sealed class AppOpenHandlerTests
         });
     }
 
-    [TestCase(false, "Listo, abrí Bloc de notas.")]
-    [TestCase(true, "Listo, enfoqué Bloc de notas.")]
-    public async Task VerifiedResultIsTheOnlySuccess(bool alreadyRunning, string expectedMessage)
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task VerifiedResultIsTheOnlySuccess(bool alreadyRunning)
     {
         OperationInvocation invocation = Invocation("{\"appId\":\"windows.notepad\"}");
         var handler = new AppOpenHandler(new StubProvider(Success(
@@ -57,7 +57,7 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Is.EqualTo(expectedMessage));
+            _ = Facts(outcome);
             Assert.That(outcome.Result?.GetProperty("appId").GetString(), Is.EqualTo(ApplicationIds.Notepad));
             Assert.That(outcome.Result?.GetProperty("processId").GetInt32(), Is.EqualTo(4242));
             Assert.That(outcome.Result?.GetProperty("windowHandle").GetInt64(), Is.EqualTo(73));
@@ -147,8 +147,8 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
-            Assert.That(Message(outcome), Does.Contain("puede haber quedado abierto"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(Facts(outcome).GetProperty("effectUncertain").GetBoolean(), Is.True);
         });
     }
 
@@ -184,7 +184,7 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.Verified, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
         });
     }
 
@@ -210,7 +210,7 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
+            _ = Facts(outcome);
         });
     }
 
@@ -244,12 +244,8 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
-            Assert.That(Message(outcome), Does.Contain("puede haber quedado abierto"));
-            Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
-            if (string.Equals(errorCode, "inventory_failed", StringComparison.Ordinal))
-            {
-                Assert.That(Message(outcome), Does.Contain("pudo haber comenzado"));
-            }
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(Facts(outcome).GetProperty("effectUncertain").GetBoolean(), Is.True);
         });
     }
 
@@ -330,7 +326,7 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Is.EqualTo("Listo, abrí Steam."));
+            _ = Facts(outcome);
             Assert.That(outcome.Result!.Value.GetProperty("appId").GetString(), Is.EqualTo("Steam"));
         });
     }
@@ -413,8 +409,8 @@ public sealed class AppOpenHandlerTests
             windowHandle,
             errorCode);
 
-    private static string Message(OperationOutcome outcome) =>
-        OperationOutcomeNarration.For("app.open", outcome);
+    private static JsonElement Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.AssertFacts("app.open", outcome);
 
     private sealed class StubProvider : IApplicationOpenProvider
     {
