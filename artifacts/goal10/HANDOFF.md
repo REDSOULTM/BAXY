@@ -1061,4 +1061,20 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   muestras. Regresión de reinicio **1/1** y `compileall` verdes. La instancia de
   sampler que corre desde las 23:45Z sigue usando el código anterior en memoria;
   el proceso que arranque después del reinicio leerá el JSON existente con el
-  código nuevo. Falta instalar y verificar el disparador de reanudación al logon.
+  código nuevo. Se registró la tarea temporal `BAXY Goal10 Soak Sampler`, estado
+  `Ready`, habilitada al logon de `REDPC\usuario`, ejecución limitada y
+  `MultipleInstances=IgnoreNew`; apunta al Python 3.12, script, output y working
+  directory absolutos de este repo. No se inició ahora, para no duplicar el
+  sampler vivo. Falta verificar que dispare tras el reinicio y retirarla al cerrar.
+- Al cerrar el panel después del alta física, la tarjeta exterior seguía mostrando
+  `0 pinned` aunque dentro había una entrada. No era retraso: `/surfaces` fijaba
+  `memory=0` y `App.tsx` priorizaba indefinidamente el snapshot inicial del stream
+  sobre el sondeo. El endpoint ahora obtiene el conteo del mismo `MemoryPanelBridge`
+  verificado (y falla explícitamente si no puede contarlo); el snapshot fijo del
+  socket se retiró y el sondeo verificado pasa a tener precedencia. `npm run build`
+  + `npm run lint` verdes. Build .NET completo aislado del binario vivo y contrato
+  focal **1/1**, cero skips; el primer intento aisló sólo `bin` y falló antes de
+  compilar por un `obj` incremental con el bundle viejo, y el segundo `ArtifactsPath`
+  aisló ambos y pasó. Falta verificar físicamente tras el soak. El transcript
+  visible seguía terminando en r30: no había respuestas nuevas del dueño pendientes
+  de revisión manual.

@@ -209,7 +209,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
         if (method == "GET" && route == "/surfaces")
         {
-            return Json(Surfaces());
+            return await SurfacesAsync().ConfigureAwait(true);
         }
 
         if (method == "GET" && route == "/voice/status")
@@ -544,14 +544,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable
             ["used"] = 0,
             ["budget"] = ContextSize(),
         });
-        PostSocketMessage(socketId, new JsonObject
-        {
-            ["type"] = "surfaces",
-            ["sessions"] = 1,
-            ["memory"] = 0,
-            ["triggers"] = 0,
-            ["tools"] = ProductCatalog.ToolDescriptors.Count,
-        });
         PostSocketMessage(socketId, SessionEvent());
         // Un socket que se reconecta recibe el estado actual, nunca fragmentos
         // ya publicados: la indicación se recalcula, no se reproduce.
@@ -839,10 +831,36 @@ internal sealed class FieldUiBridge : IAsyncDisposable
         }),
     };
 
-    private static JsonObject Surfaces() => new()
+    private async Task<FieldHttpResponse> SurfacesAsync()
+    {
+        FieldHttpResponse memory = await _viewModel.MemoryPanel.HandleAsync(
+                "GET",
+                "/memory",
+                null,
+                _lifetimeCancellation)
+            .ConfigureAwait(true);
+        if (memory.Status != 200)
+        {
+            return FieldHttpResponse.Json(
+                new JsonObject { ["error"] = "memory_count_unavailable" },
+                memory.Status);
+        }
+
+        JsonObject? payload = JsonNode.Parse(memory.Body) as JsonObject;
+        if (payload?["items"] is not JsonArray items)
+        {
+            return FieldHttpResponse.Json(
+                new JsonObject { ["error"] = "memory_count_invalid" },
+                502);
+        }
+
+        return Json(Surfaces(items.Count));
+    }
+
+    private static JsonObject Surfaces(int memoryCount) => new()
     {
         ["sessions"] = 1,
-        ["memory"] = 0,
+        ["memory"] = memoryCount,
         ["triggers"] = 0,
         ["tools"] = ProductCatalog.ToolDescriptors.Count,
     };

@@ -151,6 +151,8 @@ public sealed class MainWindowShellContractTests
             RepositoryPath("src", "Baxy.App", "Assets", "field-native-bridge.js"));
         string host = File.ReadAllText(
             RepositoryPath("src", "Baxy.App", "FieldUiBridge.cs"));
+        string fieldUi = File.ReadAllText(
+            RepositoryPath("src", "Baxy.FieldUi", "src", "App.tsx"));
         string window = File.ReadAllText(
             RepositoryPath("src", "Baxy.App", "MainWindow.xaml.cs"));
 
@@ -178,7 +180,11 @@ public sealed class MainWindowShellContractTests
             Assert.That(host, Does.Contain("direct_tool_execution_disabled"));
             Assert.That(host, Does.Contain("MemoryPanel"));
             Assert.That(host, Does.Contain(".HandleAsync"));
+            Assert.That(host, Does.Contain("SurfacesAsync"));
+            Assert.That(host, Does.Contain("[\"memory\"] = memoryCount"));
+            Assert.That(host, Does.Not.Contain("[\"memory\"] = 0"));
             Assert.That(host, Does.Not.Contain("private_memory_requires_chat"));
+            Assert.That(fieldUi, Does.Contain("polledSurfaces ?? stream.surfaces"));
             Assert.That(window, Does.Contain("SetVirtualHostNameToFolderMapping"));
             Assert.That(window, Does.Contain("External network disabled"));
             Assert.That(window, Does.Not.Contain("http://"));

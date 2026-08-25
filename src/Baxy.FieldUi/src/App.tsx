@@ -116,7 +116,9 @@ export default function App() {
     localStorage.setItem('field.surface', activeSurface);
   }, [activeSurface]);
 
-  // poll /surfaces every 5s for counts (WS event wins when present). Lifted here
+  // poll /surfaces every 5s for counts. The poll wins after its first verified
+  // response because the initial WS snapshot is not updated by panel mutations.
+  // Lifted here
   // from ActivityPanel so BOTH columns share the same live counts — the redesign
   // splits the four surfaces: triggers/tools on the left, sessions/memory on the
   // right.
@@ -134,7 +136,7 @@ export default function App() {
     const id = window.setInterval(fetchSurfaces, 5000);
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
-  const liveSurfaces = stream.surfaces ?? polledSurfaces;
+  const liveSurfaces = polledSurfaces ?? stream.surfaces;
 
   // vision_threshold warning: el banner aparece cuando llega el evento
   // del WS; visionDismissedAt guarda el image_count que el usuario ya
