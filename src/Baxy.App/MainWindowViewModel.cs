@@ -1600,6 +1600,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
+        // A new visible conversation is also a new conversational authority
+        // boundary.  Keeping an unfinished clarification here makes the first
+        // message of the new session answer the previous session implicitly.
+        _pendingMindClarificationObjective = null;
         Messages.Clear();
         AddMessage(
             "BAXY",

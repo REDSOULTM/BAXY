@@ -238,6 +238,38 @@ public sealed class MindShellEndToEndTests
     }
 
     [Test]
+    public async Task NewUiSessionDiscardsPendingTurnClarification()
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            Assert.That(
+                await SubmitAsync(viewModel, "Haz eso"),
+                Is.EqualTo("¿Qué acción concreta quieres que haga?"));
+            Assert.That(viewModel.StartNewUiSession(), Is.True);
+            Assert.That(
+                await SubmitAsync(viewModel, "mañana a las 9"),
+                Is.EqualTo("¿Puedes concretar lo que necesitas?"));
+
+            JsonElement[] turns = ReadTrace(tracePath)
+                .Where(static entry => Property(entry, "type") == "turn.decide")
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(turns, Has.Length.EqualTo(2));
+                Assert.That(
+                    turns.Select(static entry => Property(entry, "text")),
+                    Is.EqualTo(new[] { "Haz eso", "mañana a las 9" }));
+                Assert.That(
+                    turns,
+                    Has.None.Matches<JsonElement>(static entry =>
+                        Property(entry, "text")?.Contains(
+                            "Aclaración confiable del usuario",
+                            StringComparison.Ordinal) == true));
+            });
+        });
+    }
+
+    [Test]
     public async Task SafeArgumentFreeActionTraversesTurnDecisionAndRealCore()
     {
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>

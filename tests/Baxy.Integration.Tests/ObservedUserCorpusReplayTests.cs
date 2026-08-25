@@ -22,6 +22,9 @@ public sealed class ObservedUserCorpusReplayTests
     private static readonly string[] OwnedEnvironmentVariables =
     [
         "BAXY_DATA_DIR",
+        "BAXY_MIND_MESSAGE_COMPOSE_AUDIT_PATH",
+        "BAXY_MIND_RAW_REPLY_AUDIT_PATH",
+        "BAXY_MIND_TURN_AUDIT_PATH",
         "BAXY_VOICE_WAKE_ON_START",
     ];
 
@@ -47,8 +50,16 @@ public sealed class ObservedUserCorpusReplayTests
 
         string dataRoot = PrivateDataRootTestSupport.NewPath("goal10-observed-replay");
         string shellTracePath = Path.Combine(dataRoot, "shell-trace.jsonl");
+        string turnAuditPath = Path.Combine(dataRoot, "turn-audit.jsonl");
+        string rawReplyAuditPath = Path.Combine(dataRoot, "raw-reply-audit.jsonl");
+        string composeAuditPath = Path.Combine(dataRoot, "compose-audit.jsonl");
         using var environment = new EnvironmentVariableScope(OwnedEnvironmentVariables);
         Environment.SetEnvironmentVariable("BAXY_DATA_DIR", dataRoot);
+        Environment.SetEnvironmentVariable("BAXY_MIND_TURN_AUDIT_PATH", turnAuditPath);
+        Environment.SetEnvironmentVariable("BAXY_MIND_RAW_REPLY_AUDIT_PATH", rawReplyAuditPath);
+        Environment.SetEnvironmentVariable(
+            "BAXY_MIND_MESSAGE_COMPOSE_AUDIT_PATH",
+            composeAuditPath);
         Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
         Directory.CreateDirectory(dataRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
@@ -92,6 +103,9 @@ public sealed class ObservedUserCorpusReplayTests
 
                 long traceSequence = LastTraceSequence(shellTracePath);
                 int journalRecords = JournalPayloads(dataRoot).Length;
+                int turnAuditRecords = ReadJsonLines(turnAuditPath).Length;
+                int rawReplyAuditRecords = ReadJsonLines(rawReplyAuditPath).Length;
+                int composeAuditRecords = ReadJsonLines(composeAuditPath).Length;
                 var turnTimer = Stopwatch.StartNew();
                 using var turnTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(3));
                 string response = await SubmitAsync(
@@ -103,6 +117,15 @@ public sealed class ObservedUserCorpusReplayTests
                 JsonElement[] trace = ReadTraceAfter(shellTracePath, traceSequence);
                 JsonElement[] journal = JournalPayloads(dataRoot)
                     .Skip(journalRecords)
+                    .ToArray();
+                JsonElement[] turnAudit = ReadJsonLines(turnAuditPath)
+                    .Skip(turnAuditRecords)
+                    .ToArray();
+                JsonElement[] rawReplyAudit = ReadJsonLines(rawReplyAuditPath)
+                    .Skip(rawReplyAuditRecords)
+                    .ToArray();
+                JsonElement[] composeAudit = ReadJsonLines(composeAuditPath)
+                    .Skip(composeAuditRecords)
                     .ToArray();
                 string statusAfterResponse = viewModel.StatusDescription;
                 string cleanupResponse = string.Empty;
@@ -126,12 +149,18 @@ public sealed class ObservedUserCorpusReplayTests
                         shard_index = index,
                         message_id = row.MessageId,
                         message = row.Text,
+                        text_sha256 = row.TextSha256,
+                        @class = row.Class,
+                        language = row.Language,
                         source = row.Source,
                         source_location = row.SourceLocation,
                         expected_contract = mappings[row.MessageId],
                         response,
                         shell_status = statusAfterResponse,
                         shell_trace = trace,
+                        turn_audit = turnAudit,
+                        raw_reply_audit = rawReplyAudit,
+                        compose_audit = composeAudit,
                         journal_payloads = journal,
                         cleanup_response = cleanupResponse,
                         timing_seconds = turnTimer.Elapsed.TotalSeconds,
@@ -184,6 +213,9 @@ public sealed class ObservedUserCorpusReplayTests
                 index,
                 TextProperty(value, "message_id"),
                 TextProperty(value, "text_literal"),
+                TextProperty(value, "text_sha256"),
+                TextProperty(value, "class"),
+                TextProperty(value, "language"),
                 TextProperty(value, "source"),
                 TextProperty(value, "source_location")))
             .Where(row => string.IsNullOrEmpty(selectedSource)
@@ -465,6 +497,9 @@ public sealed class ObservedUserCorpusReplayTests
         int CorpusIndex,
         string MessageId,
         string Text,
+        string TextSha256,
+        string Class,
+        string Language,
         string Source,
         string SourceLocation);
 

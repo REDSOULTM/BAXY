@@ -78,6 +78,7 @@ from baxy_mind.llm import (
     _compact_structured_grammar,
     _conversation_presentation_shape,
     _direct_observation_address,
+    _explicit_contextual_followup,
     _INVENTED_INFINITIVES,
     _reads_as_an_observation,
     _shaped_conversation_answer_violates_contract,
@@ -3858,6 +3859,28 @@ def test_explicit_incomplete_effect_uses_only_model_authored_question() -> None:
     assert result["question"] == "¿Cuándo quieres que te lo recuerde?"
 
 
+@pytest.mark.parametrize(
+    ("user_request", "operation"),
+    [
+        ("subí el volumen", "audio.volume.adjust"),
+        ("bajá el brillo", "system.settings.adjust"),
+        ("raise the brightness", "system.settings.adjust"),
+    ],
+)
+def test_relative_adjustment_clarification_only_requests_the_missing_amount(
+    user_request: str,
+    operation: str,
+) -> None:
+    clarification = effect_intent_module.resolve_explicit_clarification_intent(
+        user_request,
+        (operation,),
+    )
+
+    assert clarification is not None
+    assert clarification.operations == (operation,)
+    assert clarification.missing_fields == ("amount",)
+
+
 def test_explicit_social_turn_does_not_compute_unused_semantic_candidates() -> None:
     catalog = PlannerCatalog(
         [
@@ -7084,6 +7107,21 @@ def test_self_contained_observation_uses_direct_ack_even_with_welcome_history() 
         "The user confirms that they have Bluetooth enabled.",
         "observation_ack",
     ) == "You mention that you have Bluetooth enabled."
+    assert _direct_observation_address(
+        "El brillo está al máximo.",
+        "observation_ack",
+        "Tengo el brillo al máximo",
+    ) == "Mencionas que el brillo está al máximo."
+    assert _direct_observation_address(
+        "Your Bluetooth is enabled.",
+        "observation_ack",
+        "I have Bluetooth enabled",
+    ) == "You mention that your Bluetooth is enabled."
+    assert _direct_observation_address(
+        "La GPU dejó de usarse.",
+        "observation_ack",
+        "Tengo el brillo al máximo",
+    ) == "La GPU dejó de usarse."
     assert not _shaped_conversation_answer_violates_contract(
         "Mencionas que tienes el Bluetooth encendido.",
         "Tengo el Bluetooth encendido",
@@ -7111,6 +7149,167 @@ def test_self_contained_observation_uses_direct_ack_even_with_welcome_history() 
     )
     assert reply == "Mencionas que tienes el Bluetooth encendido."
     assert calls == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "no subas el volumen",
+        "no abras Chrome",
+        "no cierres Spotify",
+        "no silencies el audio",
+        "do not close Spotify",
+    ],
+)
+def test_negative_instruction_uses_a_no_action_acknowledgement(text: str) -> None:
+    assert effect_intent_module.no_action_constraint_request(text)
+    shape = _conversation_presentation_shape(
+        text,
+        conversation_kind="unsupported",
+        has_history=True,
+    )
+
+    assert shape == "no_action_constraint"
+    assert _shaped_conversation_answer_violates_contract(
+        "No puedo abrir Chrome.",
+        "no abras Chrome",
+        shape,
+        conversation_kind="unsupported",
+    )
+    assert _shaped_conversation_answer_violates_contract(
+        "¿Quieres que consulte el estado del audio?",
+        "no silencies el audio",
+        shape,
+        conversation_kind="unsupported",
+    )
+    assert not _shaped_conversation_answer_violates_contract(
+        "Entendido, no abriré Chrome.",
+        "no abras Chrome",
+        shape,
+        conversation_kind="unsupported",
+    )
+    assert not _shaped_conversation_answer_violates_contract(
+        "No cierro Spotify.",
+        "no cierres Spotify",
+        "no_action_constraint",
+        conversation_kind="unsupported",
+    )
+    assert _shaped_conversation_answer_violates_contract(
+        "No reproduciré el audio.",
+        "no silencies el audio",
+        "no_action_constraint",
+        conversation_kind="unsupported",
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "no tengo Bluetooth",
+        "no hay ventanas abiertas?",
+        "I do not have Spotify installed",
+    ],
+)
+def test_negative_facts_are_not_instruction_constraints(text: str) -> None:
+    assert not effect_intent_module.no_action_constraint_request(text)
+
+
+def test_negative_instruction_recovery_never_invents_a_clarification() -> None:
+    class Runtime:
+        def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+            return "No cerraré Spotify.", []
+
+    result = _recover_failed_turn(
+        {"id": "constraint", "text": "no cierres Spotify", "history": []},
+        Runtime(),
+        attempts=2,
+        failure_kinds=("contract",),
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["question"] == ""
+    assert result["reply"] == "No cerraré Spotify."
+    assert result["effectOperations"] == []
+
+
+def test_capability_question_accepts_spanish_voseo() -> None:
+    decision = _explicit_stable_no_effect_turn_decision("que podes hacer")
+
+    assert decision is not None
+    assert decision["mode"] == "conversation"
+    assert decision["conversation_kind"] == "knowledge"
+    assert (
+        _conversation_presentation_shape(
+            "que podes hacer",
+            conversation_kind="knowledge",
+            has_history=True,
+        )
+        == "assistant_capability"
+    )
+    assert _shaped_conversation_answer_violates_contract(
+        "Sí, puedo explicar temas. ¿En qué puedo ayudarte?",
+        "que podes hacer",
+        "assistant_capability",
+        conversation_kind="knowledge",
+    )
+    assert not _shaped_conversation_answer_violates_contract(
+        "Puedo conversar, explicar y realizar tareas autorizadas en tu PC.",
+        "que podes hacer",
+        "assistant_capability",
+        conversation_kind="knowledge",
+    )
+
+
+def test_observation_ack_must_attribute_every_unread_state() -> None:
+    assert _shaped_conversation_answer_violates_contract(
+        "El brillo está al máximo.",
+        "tengo el brillo al máximo",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+    assert not _shaped_conversation_answer_violates_contract(
+        "Entiendo que observas que el brillo está al máximo.",
+        "tengo el brillo al máximo",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+    assert _shaped_conversation_answer_violates_contract(
+        "Entiendo que observas que la GPU dejó de usarse.",
+        "tengo el brillo al máximo",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+    assert _shaped_conversation_answer_violates_contract(
+        "Mencionas que el brillo está completamente activado.",
+        "tengo el brillo al máximo",
+        "observation_ack",
+        conversation_kind="followup",
+    )
+
+
+def test_self_contained_effect_refusal_is_not_presented_as_a_followup() -> None:
+    decision = validate_turn_decision(
+        {
+            "mode": "conversation",
+            "operation": None,
+            "question": "",
+            "conversation_kind": "followup",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es",
+        },
+        set(),
+    )
+
+    result = apply_non_effect_conversation_classification(
+        decision,
+        "listá las ventanas y enfocá la mejor",
+    )
+
+    assert result["conversation_kind"] == "unsupported"
+    assert not _explicit_contextual_followup("listá las ventanas y enfocá la mejor")
+    assert _explicit_contextual_followup("¿Por qué?")
 
 
 def test_information_question_veto_preserves_real_requests_and_read_only_queries() -> (
@@ -8306,6 +8505,60 @@ def test_a_retired_catalog_effect_can_never_be_presented_as_knowledge(
     # the fabrication got in.
     assert presented["conversation_kind"] == "knowledge"
     assert guarded["conversation_kind"] == "unsupported"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "tengo el bluetooth encendido",
+        "tengo el brillo al máximo",
+        "the screen brightness is at maximum",
+    ],
+)
+def test_a_retired_catalog_effect_still_acknowledges_a_user_observation(
+    text: str,
+) -> None:
+    decision = {
+        "mode": "conversation",
+        "operation": None,
+        "question": "",
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "response_language": "es",
+    }
+
+    result = apply_non_effect_conversation_classification(
+        decision,
+        text,
+        retired_catalog_effect=True,
+    )
+
+    assert result["conversation_kind"] == "followup"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["tengo el bluetooth encendido", "tengo el brillo al máximo"],
+)
+def test_authoritative_surface_does_not_turn_an_observation_into_unsupported(
+    text: str,
+) -> None:
+    decision = {
+        "mode": "conversation",
+        "operation": None,
+        "question": "",
+        "conversation_kind": "followup",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "response_language": "es",
+    }
+
+    result = apply_non_effect_conversation_classification(decision, text)
+
+    assert result["conversation_kind"] == "followup"
 
 
 def test_current_office_holder_question_stays_honestly_unsupported() -> None:
@@ -9570,6 +9823,81 @@ def test_explicit_clarification_is_model_authored_and_contract_closed() -> None:
     assert "¿A quién" not in repr(payload)
 
 
+def test_explicit_clarification_prompt_forbids_reasking_known_information() -> None:
+    runtime = object.__new__(LlmRuntime)
+    captured: dict[str, object] = {}
+
+    def response(payload: dict, _label: str) -> dict:
+        captured["payload"] = payload
+        return {
+            "requested_fields": ["amount"],
+            "question": "¿Cuánto quieres subir el volumen?",
+        }
+
+    runtime._post_schema_object = response  # type: ignore[method-assign]
+
+    assert runtime.formulate_explicit_clarification_question(
+        "subí el volumen",
+        ("audio.volume.adjust",),
+        ("amount",),
+    ) == "¿Cuánto quieres subir el volumen?"
+    payload = captured["payload"]
+    assert isinstance(payload, dict)
+    prompt = payload["messages"][0]["content"]
+    assert "información ya explícita" in prompt
+    assert "fuera de missing_information" in prompt
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Subí el volumen en 10%?",
+        "¿Cuánto y en qué dirección quieres subir el volumen?",
+        "¿cuánto bajá el brillo?",
+    ],
+)
+def test_amount_clarification_rejects_invention_and_known_direction_reask(
+    question: str,
+) -> None:
+    with pytest.raises(ValueError, match="aclaración"):
+        llm_module.validate_missing_argument_clarification(
+            {"requested_fields": ["amount"], "question": question},
+            ("amount",),
+            objective="subí el volumen",
+        )
+
+
+def test_explicit_clarification_retries_one_semantically_invalid_question() -> None:
+    runtime = object.__new__(LlmRuntime)
+    replies = iter(
+        [
+            {
+                "requested_fields": ["amount"],
+                "question": "¿Cuánto y en qué dirección quieres subir el volumen?",
+            },
+            {
+                "requested_fields": ["amount"],
+                "question": "¿Cuánto quieres subir el volumen?",
+            },
+        ]
+    )
+    payloads: list[dict] = []
+
+    def response(payload: dict, _label: str) -> dict:
+        payloads.append(payload)
+        return next(replies)
+
+    runtime._post_schema_object = response  # type: ignore[method-assign]
+
+    assert runtime.formulate_explicit_clarification_question(
+        "subí el volumen",
+        ("audio.volume.adjust",),
+        ("amount",),
+    ) == "¿Cuánto quieres subir el volumen?"
+    assert len(payloads) == 2
+    assert "respuesta anterior" in payloads[1]["messages"][-2]["content"]
+
+
 def test_explicit_clarification_rejects_incomplete_model_field_echo() -> None:
     runtime = object.__new__(LlmRuntime)
     runtime._post_schema_object = (  # type: ignore[method-assign]
@@ -9690,26 +10018,25 @@ def test_conversation_guard_abstains_and_followup_chat_anchors_context() -> None
     assert serialized.count("¿Por qué?") == 1
 
 
-def test_contextual_chat_rejects_internal_resolver_identity() -> None:
+def test_capability_question_with_history_does_not_enter_context_resolver() -> None:
     runtime = object.__new__(LlmRuntime)
-    labels: list[str] = []
-
-    def constrained(_payload: dict, label: str) -> dict:
-        labels.append(label)
-        if label == "la resolución semántica de continuidad":
-            leaked = (
-                "Mi nombre es Resolvedor semántico de referencias conversacionales."
-            )
-            return {"resolved_meaning": leaked, "direct_answer": leaked}
-        assert label == "la respuesta contextual directa"
-        return {
-            "answer": (
-                "Puedo conversar, explicar ideas y realizar las acciones locales "
-                "que estén disponibles."
-            )
-        }
-
-    runtime._post_schema_object = constrained  # type: ignore[method-assign]
+    runtime._post_schema_object = (  # type: ignore[method-assign]
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("a capability question is not a contextual reference")
+        )
+    )
+    runtime._post = lambda _payload: {  # type: ignore[method-assign]
+        "choices": [
+            {
+                "message": {
+                    "content": (
+                        "Puedo conversar, explicar y realizar tareas autorizadas "
+                        "en tu PC."
+                    )
+                }
+            }
+        ]
+    }
 
     reply, calls = runtime.chat(
         "¿Qué puedes hacer?",
@@ -9720,12 +10047,7 @@ def test_contextual_chat_rejects_internal_resolver_identity() -> None:
     )
 
     assert reply.startswith("Puedo conversar")
-    assert "Resolvedor" not in reply
     assert calls == []
-    assert labels == [
-        "la resolución semántica de continuidad",
-        "la respuesta contextual directa",
-    ]
 
 
 def test_followup_literal_recall_grounds_fact_without_exposing_it_to_model() -> None:

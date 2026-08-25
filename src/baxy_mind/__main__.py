@@ -1313,11 +1313,13 @@ def apply_non_effect_conversation_classification(
     objective: str,
     *,
     retired_catalog_effect: bool = False,
+    explicit_conversation_contract: bool = False,
 ) -> dict[str, object]:
     """Do not present a non-request observation as a missing capability."""
 
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     request_head = effect_intent._request_head(folded)
+    reads_as_narration = _reads_as_an_observation(folded)
     information_question = request_head in {
         "are",
         "como",
@@ -1337,6 +1339,17 @@ def apply_non_effect_conversation_classification(
         "who",
     }
     if (
+        not explicit_conversation_contract
+        and decision.get("mode") == "conversation"
+        and decision.get("conversation_kind") == "followup"
+        and not decision.get("effect_operations")
+        and effect_request_is_authoritative(objective)
+        and not reads_as_narration
+    ):
+        unsupported = dict(decision)
+        unsupported["conversation_kind"] = "unsupported"
+        return unsupported
+    if (
         decision.get("mode") == "conversation"
         and not decision.get("effect_operations")
         and (
@@ -1347,7 +1360,6 @@ def apply_non_effect_conversation_classification(
         unsupported = dict(decision)
         unsupported["conversation_kind"] = "unsupported"
         return unsupported
-    reads_as_narration = _reads_as_an_observation(folded)
     if (
         decision.get("mode") != "conversation"
         or decision.get("conversation_kind") != "unsupported"
@@ -1369,7 +1381,12 @@ def apply_non_effect_conversation_classification(
         # the explicit unsupported contract so presentation cannot hallucinate
         # a current fact merely because the clause is grammatical knowledge.
         return decision
-    if retired_catalog_effect:
+    declarative_observation = (
+        reads_as_narration
+        and not information_question
+        and not any(marker in objective for marker in ("?", "¿", "？"))
+    )
+    if retired_catalog_effect and not declarative_observation:
         # A veto retired an authenticated catalogue operation for this request,
         # which means the decider had said the answer needs an observation of
         # *this* machine. Relabelling it as knowledge invites the model to
@@ -1380,7 +1397,9 @@ def apply_non_effect_conversation_classification(
         # is the one thing BAXY may never do. The local model knows nothing
         # about this machine; it can only observe it. Keeping the unsupported
         # contract is the same reasoning as the guard above, and at least it
-        # asserts nothing nobody measured.
+        # asserts nothing nobody measured. A positive declarative observation
+        # is different: it reports what the person says and asks for no read, so
+        # it may be acknowledged without presenting the state as verified.
         return decision
     observation = (
         re.search(
@@ -2752,7 +2771,7 @@ def _assistant_identity_or_capability_question(objective: str) -> bool:
             (
                 r"[¿?¡!\s]*(?:quien\s+eres(?:\s+tu)?|who\s+are\s+you|"
                 r"what\s+(?:can|can\s*t|cannot)\s+you\s+do|"
-                r"que\s+(?:puedes|no\s+puedes)\s+hacer|"
+                r"que\s+(?:puedes|podes|no\s+(?:puedes|podes))\s+hacer|"
                 r"cuales\s+son\s+tus\s+capacidades|"
                 r"(?:resume|resumeme)\s+en\s+una\s+frase\s+que\s+puedes\s+hacer|"
                 r"summarize\s+in\s+one\s+sentence\s+what\s+you\s+can\s+do)"
@@ -4984,7 +5003,7 @@ def _explicit_arguments_from_evidence(
             return None
         up = bool(
             re.search(
-                r"\b(?:up|increase|raise|sube|subir|aumenta|aumentar|"
+                r"\b(?:up|increase|raise|sube|subi|subir|aumenta|aumentar|"
                 r"incrementa|incrementar)\b",
                 folded,
             )
@@ -5000,7 +5019,7 @@ def _explicit_arguments_from_evidence(
         adjustment = re.search(
             (
                 r"\b(?P<direction>"
-                r"up|increase|raise|sube|subir|aumenta|aumentar|"
+                r"up|increase|raise|sube|subi|subir|aumenta|aumentar|"
                 r"incrementa|incrementar|"
                 r"down|decrease|lower|baja|bajar|reduce|reducir"
                 r")\b(?:\s+\w+){0,3}\s+(?:volumen|volume)\b"
@@ -5020,6 +5039,7 @@ def _explicit_arguments_from_evidence(
                     "increase",
                     "raise",
                     "sube",
+                    "subi",
                     "subir",
                     "aumenta",
                     "aumentar",
@@ -5825,6 +5845,7 @@ def _prepare_turn_result(
     non_target_language = confident_non_target_language(objective)
     explicit_non_action = effect_intent.explicit_non_action_frame(objective)
     content_drafting = conversation_only_content_request(objective)
+    no_action_constraint = effect_intent.no_action_constraint_request(objective)
     explicit_clarification = (
         None
         if non_target_language is not None or content_drafting or explicit_non_action
@@ -5921,6 +5942,7 @@ def _prepare_turn_result(
         or _assistant_identity_or_capability_question(objective)
         or _simple_arithmetic_question(objective)
         or _animal_sound_question(objective)
+        or no_action_constraint
     )
     stable_no_effect_is_closed = (
         authoritative_no_effect_is_closed
@@ -6390,6 +6412,7 @@ def _prepare_turn_result(
             (effects_before_information_veto or effects_before_domain_grounding)
             and not decision["effect_operations"]
         ),
+        explicit_conversation_contract=(explicit_conversation_decision is not None),
     )
     decision = validate_turn_decision(
         decision,
@@ -6717,6 +6740,7 @@ def _recover_failed_turn(
             or conversation_only_content_request(objective)
             or _assistant_identity_or_capability_question(objective)
             or _simple_arithmetic_question(objective)
+            or effect_intent.no_action_constraint_request(objective)
         )
         if (
             closed_standalone_recovery

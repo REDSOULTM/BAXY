@@ -1303,3 +1303,46 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   el contrato adjudicado contra Identidad, con un ledger versionado para conflictos
   del oráculo congelado, y persistir `pass`/`fail` individual; sólo entonces lanzar
   las 1.947.
+
+### Continuación 2026-08-25 — honestidad conversacional en replay físico
+
+- La tanda corrige familias semánticas observadas, nunca literales del corpus:
+  restricciones explícitas de no actuar, identidad/capacidades con voseo,
+  observaciones declarativas, aclaraciones de magnitud con dirección ya conocida y
+  conservación de hechos estructurados al componer respuestas. El compositor y la
+  frontera visible rechazan ahora la inversión `isCharging=false` → «está cargando»
+  y cualquier estado de espera ausente; `isAcOnline=true` sólo autoriza decir que el
+  equipo está conectado a corriente.
+- `StartNewUiSession()` descarta también la aclaración pendiente. Esto elimina la
+  contaminación física entre filas independientes sin tocar la memoria durable ni
+  disfrazar continuidad dentro de una sesión. El replay captura por fila los audits
+  raw/final/compose, hash del texto, clase, idioma, trace y journal del provider.
+- Aclaraciones físicas (2 filas):
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.clarify-r5.jsonl`,
+  SHA-256 `c14adab853db4b0e8d0e2cc20d35ed2fd039709beac884369f739828abae0ced`.
+  «subí el volumen» y «bajá el brillo» preguntaron sólo cuánto, conservaron la
+  dirección, ejecutaron cero operaciones y la prueba cerró **1/1, 0 skips**.
+- Observaciones físicas (8 filas):
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.observations-r12.jsonl`,
+  SHA-256 `ac04cfc79d028a618077dbd1a4fe0c17ac9fdd007bed1d28ec5707f7d63a148`.
+  Bluetooth y brillo conservaron objeto+estado sin alegar verificación; la consulta
+  de ventana terminó con el estado real. Las dos filas de batería revelaron una
+  inversión factual y por eso esta corrida no certifica esa familia.
+- Repetición física dueña de batería (2 filas):
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.battery-r13.jsonl`,
+  SHA-256 `090cf70a00ab8ae537e55697dc4ce59ebe016bb0f540772615ad5a7da760513d`.
+  Ambas invocaron `system.status`, terminaron `completed`, observaron 97%,
+  `isCharging=false` e `isAcOnline=true`, y respondieron explícitamente que la
+  batería **no** cargaba pero sí estaba conectada. Prueba **1/1, 0 skips**.
+- La muestra amplia de 25 filas en
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-final-probando.part0000-r8.jsonl`
+  (SHA-256 `585e98b53c336f27107ba3604ae97130069b3f0d7a711ebff64960e8520020f1`)
+  queda marcada sólo como **diagnóstico anterior a estas correcciones**; no es
+  evidencia final y debe repetirse sobre el árbol comprometido.
+- Validación propietaria acumulada antes de la compuerta: Python
+  `test_turn_policy.py + test_goal06_voice.py + test_planner.py` **1.095 pasadas y
+  101 subtests, 0 skips**; .NET `MindShellEndToEndTests + PlannerAppBoundaryTests`
+  **79/79, 0 skips**; Ruff verde. `scripts/test_source_quality.ps1` terminó
+  **verde** en modo Fast, con build Release en 0 advertencias/0 errores. Próximo
+  paso: commit/push de esta tanda y nueva muestra física de 25 filas para descubrir
+  el siguiente defecto.

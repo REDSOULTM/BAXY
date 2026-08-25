@@ -807,6 +807,36 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
     ) == "wrong_language"
 
 
+def test_battery_composition_keeps_charging_separate_from_ac_power() -> None:
+    facts = {
+        "situation": (
+            '{"kind":"operation","operation":"system.status",'
+            '"polarity":"success","verified":true,"observed":{"battery":{'
+            '"isPresent":true,"chargePercent":97,"isCharging":false,'
+            '"isAcOnline":true}}}'
+        )
+    }
+
+    assert compose_visible_defect(
+        "La batería está cargando y conectada a la corriente.",
+        "status",
+        "está cargando la batería",
+        facts,
+    ) == "reversed_battery"
+    assert compose_visible_defect(
+        "La batería no está cargando; está conectada a la corriente.",
+        "status",
+        "está cargando la batería",
+        facts,
+    ) == ""
+    assert compose_visible_defect(
+        "La batería está al 97% y el equipo está en modo de espera.",
+        "status",
+        "está cargando la batería",
+        facts,
+    ) == "extra_battery_state"
+
+
 def test_verified_news_source_domain_is_not_mistaken_for_an_internal_code() -> None:
     facts = {
         "situation": (

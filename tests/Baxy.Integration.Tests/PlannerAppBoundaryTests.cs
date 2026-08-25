@@ -2413,6 +2413,38 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public void StructuredBatteryStateCannotReverseChargingOrInventStandby()
+    {
+        const string source =
+            "{\"kind\":\"operation\",\"operation\":\"system.status\","
+            + "\"polarity\":\"success\",\"observed\":{\"battery\":{"
+            + "\"isPresent\":true,\"chargePercent\":97,"
+            + "\"isCharging\":false,\"isAcOnline\":true}}}";
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            source,
+            UserMessageEvent.Status);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "La batería está cargando y conectada a la corriente.",
+                    draft),
+                Is.EqualTo("reversed_battery_state"));
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "La batería no está cargando; está conectada a la corriente.",
+                    draft),
+                Is.Null);
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "La batería está al 97% y el equipo está en modo de espera.",
+                    draft),
+                Is.EqualTo("reversed_battery_state"));
+        });
+    }
+
+    [Test]
     public void DurablePlanStateIsEncryptedValidatedAndResumable()
     {
         string root = Path.Combine(Path.GetTempPath(), $"baxy-plan-{Guid.NewGuid():N}");

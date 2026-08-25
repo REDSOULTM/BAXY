@@ -3164,7 +3164,7 @@ def resolve_explicit_clarification_intent(
         and (
             _head_is(
                 _request_head(folded),
-                r"(?:sube|subir|aumenta|aumentar|incrementa|incrementar|"
+                r"(?:sube|subi|subir|aumenta|aumentar|incrementa|incrementar|"
                 r"baja|bajar|reduce|reducir|raise|lower|increase|decrease)",
             )
             and _has(folded, r"\b(?:volumen|volume)\b")
@@ -3173,6 +3173,24 @@ def resolve_explicit_clarification_intent(
         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
     ):
         return ClarificationIntent(("audio.volume.adjust",), ("amount",))
+    if (
+        "system.settings.adjust" in available
+        and _head_is(
+            _request_head(folded),
+            r"(?:sube|subi|subir|aumenta|aumentar|incrementa|incrementar|"
+            r"baja|bajar|reduce|reducir|raise|lower|increase|decrease)",
+        )
+        and _has(
+            folded,
+            r"\b(?:brillo|brightness|luz\s+de\s+la\s+pantalla|"
+            r"screen\s+(?:light|brightness))\b",
+        )
+        and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+    ):
+        # Direction and setting are already literal in this closed shape.  The
+        # only missing argument is the magnitude; routing through the general
+        # extractor used to ask the user for the known direction again.
+        return ClarificationIntent(("system.settings.adjust",), ("amount",))
     if (
         {"memory.recall", "clipboard.write.text"} <= available
         and _head_is(_request_head(folded), r"(?:copy|copia|copiame)")
@@ -4371,6 +4389,75 @@ def _is_negative_effect_clause(text: str) -> bool:
         text,
         r"^[¿?¡!\s]*(?:no|nunca|jamas|never|don'?t|do\s+not)\b",
     )
+
+
+_NO_ACTION_CONSTRAINT_FAMILIES = (
+    ("open", r"abr(?:as|ir(?:e)?|o)|open"),
+    ("close", r"(?:cierr(?:es|o)|cerrar(?:e)?)|close"),
+    ("raise", r"sub(?:as|ir(?:e)?|o)|raise"),
+    ("lower", r"baj(?:es|ar(?:e)?|o)|lower"),
+    ("mute", r"silenci(?:es|ar(?:e)?|o)|mute"),
+    ("unmute", r"desilenci(?:es|ar(?:e)?|o)|unmute"),
+    ("enable", r"activ(?:es|ar(?:e)?|o)|enable"),
+    ("disable", r"desactiv(?:es|ar(?:e)?|o)|disable|turn\s+off"),
+    ("restart", r"reinici(?:es|ar(?:e)?|o)|restart"),
+    ("lock", r"bloque(?:es|ar(?:e)?|o)|lock"),
+    ("unlock", r"desbloque(?:es|ar(?:e)?|o)|unlock"),
+    ("install", r"instal(?:es|ar(?:e)?|o)|install"),
+    ("uninstall", r"desinstal(?:es|ar(?:e)?|o)|uninstall"),
+    ("buy", r"compr(?:es|ar(?:e)?|o)|buy"),
+    ("delete", r"(?:borr|elimin)(?:es|ar(?:e)?|o)|delete|remove"),
+    ("move", r"muev(?:as|o)|mover(?:e)?|move"),
+    ("rename", r"renombr(?:es|ar(?:e)?|o)|rename"),
+    ("copy", r"copi(?:es|ar(?:e)?|o)|copy"),
+    ("paste", r"peg(?:ues|ar(?:e)?|o)|paste"),
+    ("save", r"guard(?:es|ar(?:e)?|o)|save"),
+    ("send", r"(?:envi|mand)(?:es|ar(?:e)?|o)|send"),
+    ("write", r"escrib(?:as|ir(?:e)?|o)|write"),
+    ("play", r"reproduzcas|reproducir(?:e)?|play"),
+    ("pause", r"paus(?:es|ar(?:e)?|o)|pause"),
+    ("connect", r"conect(?:es|ar(?:e)?|o)|connect"),
+    ("disconnect", r"desconect(?:es|ar(?:e)?|o)|disconnect"),
+    ("change", r"cambi(?:es|ar(?:e)?|o)|change"),
+    ("adjust", r"ajust(?:es|ar(?:e)?|o)|adjust"),
+    ("touch", r"toqu(?:es|e)|tocar(?:e)?|touch"),
+)
+
+
+def no_action_constraint_family(text: str) -> str:
+    """Return the prohibited action family, without inferring any authority."""
+
+    folded = _strip_request_envelope(_fold(text))
+    spanish = re.search(
+        r"(?:^|\b)(?:no|nunca|jamas)\s+"
+        r"(?:(?:quiero|necesito)\s+que\s+)?(?:me\s+)?(?P<verb>[a-z]+)",
+        folded,
+        re.IGNORECASE,
+    )
+    english = re.search(
+        r"(?:^|\b)(?:(?:do\s+not|don'?t|never)\s+|"
+        r"i\s+(?:will\s+not|won'?t|(?:'|’)ll\s+not)\s+)"
+        r"(?P<verb>[a-z]+(?:\s+off)?)",
+        folded,
+        re.IGNORECASE,
+    )
+    verb = (
+        spanish.group("verb")
+        if spanish is not None
+        else english.group("verb")
+        if english is not None
+        else ""
+    )
+    for family, pattern in _NO_ACTION_CONSTRAINT_FAMILIES:
+        if re.fullmatch(pattern, verb, re.IGNORECASE) is not None:
+            return family
+    return ""
+
+
+def no_action_constraint_request(text: str) -> bool:
+    """Recognize a direct prohibition without treating negative facts as orders."""
+
+    return bool(no_action_constraint_family(text))
 
 
 def _is_social_clause(text: str) -> bool:
@@ -7147,7 +7234,8 @@ def _is_direct_request(text: str) -> bool:
         r"do(?=\s+i\s+have)|"
         r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
         r"establece|set|deja|dejar|put|leave|turn|"
-        r"sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce|increment|decrease|"
+        r"sube|subi|subir|baja|bajar|bajalo|subelo|aumenta|reduce|"
+        r"raise|lower|increase|increment|decrease|"
         r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
         r"pega|pegar|pegalo|pegala|paste|"
         r"trancame|tranca|bloqueame|bloquea|lock|"

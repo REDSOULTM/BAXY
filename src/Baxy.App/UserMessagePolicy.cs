@@ -250,6 +250,10 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
+            if (ContradictsStructuredBattery(draft.Source, modelText))
+            {
+                return "reversed_battery_state";
+            }
             if (AddsGenericFollowUp(modelText))
             {
                 return "generic_follow_up";
@@ -581,6 +585,42 @@ internal static class UserMessagePolicy
         string foldedResult = FoldForPolicy(result);
         return RequiredLiteralFacts(source).All(fact =>
             foldedResult.Contains(FoldForPolicy(fact), StringComparison.Ordinal));
+    }
+
+    private static bool ContradictsStructuredBattery(string source, string result)
+    {
+        if (!TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("observed", out JsonElement observed)
+            || observed.ValueKind != JsonValueKind.Object
+            || !observed.TryGetProperty("battery", out JsonElement battery)
+            || battery.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        string folded = FoldForPolicy(result);
+        const RegexOptions options =
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking;
+        bool saysNotCharging = Regex.IsMatch(
+            folded,
+            @"\b(?:bateria|battery)\b.{0,48}\b(?:no esta cargando|not charging|is not charging|isn t charging)\b",
+            options);
+        bool saysCharging = Regex.IsMatch(
+            folded,
+            @"\b(?:bateria|battery)\b.{0,48}\b(?:cargando|charging)\b",
+            options);
+        if (battery.TryGetProperty("isCharging", out JsonElement charging)
+            && charging.ValueKind is JsonValueKind.True or JsonValueKind.False
+            && (!charging.GetBoolean() && saysCharging && !saysNotCharging
+                || charging.GetBoolean() && saysNotCharging))
+        {
+            return true;
+        }
+
+        return Regex.IsMatch(
+            folded,
+            @"\b(?:modo de espera|standby|sleep mode)\b",
+            options);
     }
 
     private static bool PreservesBaxyFirstPerson(string source, string result)
