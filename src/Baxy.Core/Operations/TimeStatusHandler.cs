@@ -14,6 +14,8 @@ internal sealed class TimeStatusHandler(ITimeStatusProvider provider) : IOperati
     {
         TimeStatusSnapshot? snapshot = await provider.ReadVerifiedAsync(cancellationToken).ConfigureAwait(false);
         if (snapshot is null) return OperationOutcome.Failure("verification_failed");
+        DateTimeOffset localNow = snapshot.UtcNow.ToOffset(
+            TimeSpan.FromMinutes(snapshot.LocalUtcOffsetMinutes));
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
@@ -21,6 +23,7 @@ internal sealed class TimeStatusHandler(ITimeStatusProvider provider) : IOperati
             writer.WriteNumber("version", 1);
             writer.WriteString("utc", snapshot.UtcNow.ToString("O", CultureInfo.InvariantCulture));
             writer.WriteNumber("localUtcOffsetMinutes", snapshot.LocalUtcOffsetMinutes);
+            writer.WriteString("localTime", localNow.ToString("O", CultureInfo.InvariantCulture));
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);

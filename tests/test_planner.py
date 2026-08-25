@@ -3240,6 +3240,43 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             "too_many_sentences",
         )
 
+    def test_system_time_rejects_utc_clock_and_preserves_verified_local_clock(self):
+        runtime = object.__new__(LlmRuntime)
+        replies = iter(
+            [
+                "Listo, el tiempo local es 00:19.",
+                "La hora local es 20:19.",
+            ]
+        )
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {"choices": [{"message": {"content": next(replies)}}]}
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "Que hora es?",
+            "status",
+            {
+                "situation": {
+                    "kind": "operation",
+                    "operation": "system.time",
+                    "polarity": "success",
+                    "verified": True,
+                    "observed": {
+                        "utc": "2026-08-25T00:19:00+00:00",
+                        "localUtcOffsetMinutes": -240,
+                        "localTime": "2026-08-24T20:19:00-04:00",
+                    },
+                }
+            },
+        )
+
+        self.assertEqual(result, "La hora local es 20:19.")
+        self.assertEqual(len(seen), 2)
+        self.assertIn("Hechos: 20:19", seen[0]["messages"][1]["content"])
+
     def test_visible_message_rejects_unbalanced_spanish_punctuation(self):
         facts = {
             "situation": {

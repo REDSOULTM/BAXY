@@ -3332,7 +3332,21 @@ def compose_visible_defect(
         local = observed_dict.get("localTime")
         if isinstance(local, str) and local.strip():
             compact = local.strip().casefold()
-            if compact not in folded and compact.lstrip("0") not in folded:
+            clock_match = re.search(
+                r"T(?P<clock>\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?"
+                r"(?:Z|[+-]\d{2}:\d{2})$",
+                compact,
+                re.IGNORECASE,
+            )
+            clock = clock_match.group("clock") if clock_match is not None else ""
+            if (
+                compact not in folded
+                and compact.lstrip("0") not in folded
+                and not (
+                    clock
+                    and (clock in folded or clock.lstrip("0") in folded)
+                )
+            ):
                 return "missing_name"
         if "?" in stripped or "¿" in stripped:
             return "extra_claim"
@@ -7713,6 +7727,26 @@ class LlmRuntime:
             )
             is None
         )
+        observed_time = situation.get("observed")
+        local_time_value = (
+            observed_time.get("localTime")
+            if isinstance(observed_time, dict)
+            else None
+        )
+        local_clock_match = re.search(
+            r"T(?P<clock>\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$",
+            local_time_value or "",
+        )
+        local_clock = (
+            local_clock_match.group("clock")
+            if local_clock_match is not None
+            else ""
+        )
+        current_time_request = bool(
+            intent == "status"
+            and operation == "system.time"
+            and not current_date_request
+        )
         current_date_instruction = (
             "Responde sólo la fecha calendario observada en una oración breve y "
             "natural en el idioma del pedido. Usa «hoy» como máximo una vez; no "
@@ -7723,6 +7757,10 @@ class LlmRuntime:
             "Resume únicamente las mediciones presentes en seen, en hasta tres "
             "oraciones declarativas breves. No preguntes, no ofrezcas ayuda y no "
             "inventes cifras, estados ni componentes ausentes."
+        )
+        current_time_instruction = (
+            "Responde únicamente con la hora local observada en una oración breve. "
+            "No uses utc, no calcules otra hora, no preguntes y no ofrezcas ayuda."
         )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
@@ -7736,6 +7774,8 @@ class LlmRuntime:
             payload["messages"][1]["content"] += "\n" + news_summary_instruction
         elif current_date_request:
             payload["messages"][1]["content"] += "\n" + current_date_instruction
+        elif current_time_request:
+            payload["messages"][1]["content"] += "\n" + current_time_instruction
         elif system_status_request:
             payload["messages"][1]["content"] += "\n" + system_status_instruction
         elif intent == "clarification" or kind == "clarification":
@@ -7775,6 +7815,8 @@ class LlmRuntime:
             for value in (facts.get("requiredFacts") or [])
             if str(value).strip()
         ]
+        if current_time_request and local_clock and local_clock not in required_facts:
+            required_facts.append(local_clock)
         if news_summary_request:
             observed_news = situation.get("observed")
             news_results = (
@@ -8107,7 +8149,7 @@ class LlmRuntime:
             if not isinstance(local, str) or not local.strip():
                 return candidate
             blob = candidate or ""
-            token = local.strip()
+            token = local_clock or local.strip()
             alt = token.lstrip("0") or token
             if token not in blob and alt not in blob:
                 return candidate
@@ -8275,6 +8317,8 @@ class LlmRuntime:
             retry_user += "\n" + news_summary_instruction
         elif current_date_request:
             retry_user += "\n" + current_date_instruction
+        elif current_time_request:
+            retry_user += "\n" + current_time_instruction
         retry_system = (
             CPU_USER_MESSAGE_PROMPT
             if cause == "acting" or defect == "internal_code"
@@ -8323,6 +8367,8 @@ class LlmRuntime:
             third_user += "\n" + news_summary_instruction
         elif current_date_request:
             third_user += "\n" + current_date_instruction
+        elif current_time_request:
+            third_user += "\n" + current_time_instruction
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},

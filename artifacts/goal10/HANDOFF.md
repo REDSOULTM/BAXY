@@ -1099,3 +1099,19 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   Python dueño **161/161 + 101 subtests** y `PlannerAppBoundaryTests` **65/65**,
   cero skips, con build .NET aislado del ejecutable vivo. Falta repetir físicamente
   `system.status` tras el soak; el modo real permanece normal.
+- Bypass real se activó después en la ruta correcta y `Que hora es?` cruzó una
+  lectura catalogada sin efectos, pero la revisión manual la invalidó: a las
+  **20:19** locales (reloj visible de la app) respondió «Listo, el tiempo local es
+  **00:19**.» La configuración se restauró inmediatamente a `normal`. No cuenta
+  como validación de bypass: primero hay que localizar si `system.time` observó UTC
+  como local o si la composición cambió la hora, arreglar y repetir.
+- La traza del mismo turno confirma `core.call system.time` verificado y
+  `compose.end` limpio en **0,618 s**: no fue fallback ni timeout. El contrato sólo
+  entregaba `utc` + desfase y delegaba la conversión al modelo, que publicó UTC como
+  local. `TimeStatusHandler` entrega ahora también `localTime`, calculado de forma
+  determinista con el desfase observado; la mente extrae de ese campo el `HH:mm`
+  local, lo exige literalmente en todos los intentos y rechaza `00:19` cuando el
+  valor verificado es `20:19`. La regresión exacta pasa **1/1**; suite Python dueña
+  **162/162 + 101 subtests** y `NaturalSystemTimeViewModelEndToEndTests` **2/2**,
+  cero skips, con build .NET aislado. Falta reproducción física después del soak;
+  r30 sigue vivo con el binario anterior y el modo real queda en `normal`.

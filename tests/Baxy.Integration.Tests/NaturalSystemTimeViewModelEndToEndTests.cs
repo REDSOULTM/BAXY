@@ -66,6 +66,13 @@ public sealed class NaturalSystemTimeViewModelEndToEndTests
             DateTimeOffset utc = DateTimeOffset.Parse(
                 rootElement.GetProperty("observed").GetProperty("utc").GetString()!,
                 CultureInfo.InvariantCulture);
+            int localOffsetMinutes = rootElement
+                .GetProperty("observed")
+                .GetProperty("localUtcOffsetMinutes")
+                .GetInt32();
+            DateTimeOffset local = DateTimeOffset.Parse(
+                rootElement.GetProperty("observed").GetProperty("localTime").GetString()!,
+                CultureInfo.InvariantCulture);
             Assert.Multiple(() =>
             {
                 Assert.That(answer.IsUser, Is.False);
@@ -76,6 +83,8 @@ public sealed class NaturalSystemTimeViewModelEndToEndTests
                 Assert.That(
                     Math.Abs((utc - DateTimeOffset.UtcNow).TotalSeconds),
                     Is.LessThanOrEqualTo(5));
+                Assert.That(local.UtcDateTime, Is.EqualTo(utc.UtcDateTime));
+                Assert.That(local.Offset, Is.EqualTo(TimeSpan.FromMinutes(localOffsetMinutes)));
             });
         }
         finally
