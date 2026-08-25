@@ -21,6 +21,17 @@ Los artefactos canónicos son:
 - `artifacts/corpus_cutoff/extraction_report.json`: métricas y hashes;
 - `scripts/build_historical_corpus.py`: extracción reproducible.
 
+El corte privado de uso real para el Goal 10 no cambia esa autoridad. Lo proyecta
+con `scripts/build_observed_user_corpora.py` y publica sólo reglas, conteos y hashes
+en `tests/data/historical_observed_user_corpora.v1.json`. Sus dos JSONL locales son:
+
+- Nivel 1: 1.947 turnos observados del runtime BAXY/Gemma, 626 textos únicos;
+- Nivel 2: 808 misiones accionables observadas, 281 textos únicos.
+
+Los prompts de desarrollo `codex/` quedan fuera. Las repeticiones reales se
+conservan como frecuencia real. La igualdad de texto y contrato sirve para agrupar
+causas, pero cada ocurrencia exige replay y veredicto individual.
+
 ## Resultado de cobertura
 
 | Métrica | Resultado |

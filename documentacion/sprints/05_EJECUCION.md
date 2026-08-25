@@ -86,7 +86,7 @@ cierra con menos código del que encontró y el objetivo cumplido es mejor goal.
 
 **3. Sólo se arregla lo que bloquea.** Un fallo que impide usar BAXY o avanzar
 este goal se arregla. Una fragilidad teórica o un camino de error que nadie ha
-recorrido: una línea en `documentacion/APLAZADOS.md` y sigues. El goal 11 existe
+recorrido: una línea en `documentacion/APLAZADOS.md` y sigues. El Goal 10 existe
 para vaciar esa lista, así que nada se pierde por anotarlo.
 
 **4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Entre
@@ -260,7 +260,7 @@ topas con uno, ciérralo.
 
 No inventes el catálogo completo de fallos posibles ni construyas defensas para
 escenarios que nadie ha visto. Eso es una cadena de reparación sin final, es
-exactamente lo que la ley 2 prohíbe, y el goal 11 existe para lo que quede.
+exactamente lo que la ley 2 prohíbe, y el Goal 10 existe para lo que quede.
 
 ## Criterios de cierre
 

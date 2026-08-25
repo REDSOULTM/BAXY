@@ -59,18 +59,22 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | El uso diario | 200 turnos reales y 24 h encendido no le sacan un fallo de honestidad |
-| 11 | **La validación y el cierre** | Aguanta cuando algo va mal — producto terminado |
+| 10 | **La validación integral del producto** | Toda la identidad y cada uno de los 1.947 mensajes reales pasan con evaluación individual; la latencia se acerca al suelo del modelo |
+| 11 | **El cierre** | La evidencia del Goal 10 queda íntegra, coherente, documentada y publicada |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
 anteriores en esta máquina con piezas que ya funcionan. El 09 va casi al final por
 decisión del dueño —backend primero—, pero el 01 ya deja localizado lo que se
 hereda.
 
-**El 11 es distinto y por eso va aparte.** Del 01 al 10 está prohibido perseguir lo
-que *podría* fallar: van rápido a propósito. El 11 invierte esa regla y se dedica
-exactamente a eso — los caminos de error, las fragilidades, la regresión completa
-sobre el árbol final. Es donde se cobra la deuda que los diez fueron dejando.
+**El 10 es la única validación integral.** Reúne el uso real, el corpus histórico,
+la identidad completa, los caminos de error, la deuda y la regresión sobre un mismo
+árbol final. Cada una de las 1.947 respuestas recibe un veredicto individual; ningún
+promedio u oráculo agregado puede ocultar una respuesta incorrecta. El 11 sólo cierra
+y publica esa evidencia: no lanza una segunda validación.
+
+Ningún goal exige *soak*, 24 horas encendido ni otra espera prolongada. El uso
+continuado ocurre después de entregar el producto y no bloquea su cierre.
 
 ## Antes de nada: la identidad
 
@@ -118,9 +122,9 @@ el necesario. Nada de capa sobre capa, ni abstracciones para un segundo caso que
 existe, ni defensas para fallos que nadie ha visto. **Si se añade una capa, se
 retira la que sustituye, en el mismo goal.**
 
-**3. Sólo se arregla lo que bloquea** (goals 01–10). Lo demás, una línea en
-`documentacion/APLAZADOS.md` y adelante. El goal 11 existe para vaciar esa lista,
-así que nada se pierde por anotarlo.
+**3. Sólo se arregla lo que bloquea** (goals 01–09). Lo demás, una línea en
+`documentacion/APLAZADOS.md` y adelante. El Goal 10 cobra esa lista antes de
+validar el árbol final, así que nada se pierde por anotarlo.
 
 **4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Entre
 dos opciones que cumplen gana la más ligera —RAM, disco, CPU en reposo y arranque

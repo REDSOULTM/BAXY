@@ -9,7 +9,7 @@ verificación, la automatización de aplicaciones, la capa visual, el journal �
 pieza se cambia **una por una, sin reescribir el producto**.
 
 Este documento dice **dónde está cada costura, qué mide su cambio, y qué hay puesto
-hoy**. Cada goal que toca una pieza rellena su fila. El goal 11 no cierra con
+hoy**. Cada goal que toca una pieza rellena su fila. El Goal 10 no cierra con
 ninguna vacía.
 
 ## Esto va en dos niveles, y confundirlos es el error

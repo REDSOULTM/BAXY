@@ -1,10 +1,10 @@
 # Aplazados
 
-Lo que se vio de pasada durante los goals 01–10 y **no se persiguió**, porque
+Lo que se vio de pasada durante los goals 01–09 y **no se persiguió**, porque
 no bloqueaba: fragilidades teóricas, caminos de error que nadie ha recorrido,
 «esto podría fallar si…».
 
-No es una lista de pendientes que se ignora. Es la entrada del **goal 11**, que
+No es una lista de pendientes que se ignora. Es la entrada del **Goal 10**, que
 existe para vaciarla: cada línea acaba arreglada, medida y descartada, o
 declarada limitación ambiental con su degradado.
 

@@ -1,0 +1,160 @@
+{
+  "authority": {
+    "cutoff_utc": "2026-07-14T10:51:49.1612548Z",
+    "mapping_file_sha256": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+    "mapping_path": "tests/data/historical_message_mapping.jsonl",
+    "messages_file_sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+    "messages_path": "tests/data/historical_messages.jsonl"
+  },
+  "contract_consistency": {
+    "conflicting_unique_literals": 0,
+    "rule": "contract equality is diagnostic only; every real occurrence requires its own replay and verdict",
+    "unique_literals_checked": 626
+  },
+  "levels": {
+    "level_1_all_observed_product_turns": {
+      "bytes": 3264302,
+      "class_counts": {
+        "conversation_question": 1078,
+        "feedback_failure": 2,
+        "no_action_constraint": 56,
+        "preference": 3,
+        "user_mission": 808
+      },
+      "dedup_status_counts": {
+        "canonical_source": 356,
+        "duplicate": 1591
+      },
+      "file_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
+      "language_counts": {
+        "en": 47,
+        "es": 1053,
+        "other": 846,
+        "spanglish": 1
+      },
+      "message_ids_sha256": "8ad97576852530231d830690b9a6234f280c544c905eeed2f839ffc41e880357",
+      "operation_counts": {
+        "app.close": 9,
+        "app.open": 18,
+        "audio.mute": 67,
+        "audio.status": 14,
+        "audio.volume": 92,
+        "backup.manage": 1,
+        "bluetooth.manage": 10,
+        "browser.navigate": 3,
+        "calendar.manage": 5,
+        "capture.screenshot": 4,
+        "clipboard.manage": 8,
+        "game.install": 4,
+        "game.launch": 4,
+        "game.manage": 1,
+        "media.control": 17,
+        "media.play": 181,
+        "memory.recall": 2,
+        "memory.save": 5,
+        "message.send": 27,
+        "note.manage": 32,
+        "notification.manage": 45,
+        "office.document": 1,
+        "peripheral.manage": 4,
+        "reminder.create": 38,
+        "streaming.navigate": 74,
+        "system.settings": 45,
+        "system.status": 57,
+        "task.manage": 13,
+        "vision.describe": 31,
+        "web.search": 14,
+        "wifi.manage": 27,
+        "window.manage": 31
+      },
+      "path": "tests/data/historical_observed_product_turns.v1.jsonl",
+      "possible_chain_rows": 74,
+      "redacted_rows": 15,
+      "row_count": 1947,
+      "source_family_counts": {
+        "gemma4_local": 90,
+        "probando_gemma4": 1857
+      },
+      "unique_message_ids": 1947,
+      "unique_text_sha256": 626
+    },
+    "level_2_actionable_user_missions": {
+      "bytes": 1357416,
+      "class_counts": {
+        "user_mission": 808
+      },
+      "dedup_status_counts": {
+        "canonical_source": 166,
+        "duplicate": 642
+      },
+      "file_sha256": "3da27e544680285e40b0b493ebd9c1a72f2af9aa300e3d289e77c14103e252d2",
+      "language_counts": {
+        "en": 15,
+        "es": 441,
+        "other": 352
+      },
+      "message_ids_sha256": "a551b14c7fe9f9d1df6b9418efda07e2c061ab35fe140a5d4240494d8cebcff0",
+      "operation_counts": {
+        "app.close": 9,
+        "app.open": 18,
+        "audio.mute": 67,
+        "audio.status": 14,
+        "audio.volume": 92,
+        "backup.manage": 1,
+        "bluetooth.manage": 10,
+        "browser.navigate": 3,
+        "calendar.manage": 5,
+        "capture.screenshot": 4,
+        "clipboard.manage": 8,
+        "game.install": 4,
+        "game.launch": 4,
+        "game.manage": 1,
+        "media.control": 17,
+        "media.play": 181,
+        "memory.recall": 1,
+        "memory.save": 5,
+        "message.send": 27,
+        "note.manage": 32,
+        "notification.manage": 45,
+        "office.document": 1,
+        "peripheral.manage": 4,
+        "reminder.create": 38,
+        "streaming.navigate": 74,
+        "system.settings": 45,
+        "system.status": 57,
+        "task.manage": 13,
+        "vision.describe": 31,
+        "web.search": 13,
+        "wifi.manage": 27,
+        "window.manage": 31
+      },
+      "path": "tests/data/historical_observed_user_missions.v1.jsonl",
+      "possible_chain_rows": 74,
+      "redacted_rows": 0,
+      "row_count": 808,
+      "source_family_counts": {
+        "gemma4_local": 23,
+        "probando_gemma4": 785
+      },
+      "unique_message_ids": 808,
+      "unique_text_sha256": 281
+    }
+  },
+  "privacy": {
+    "classification": "private_local_project_data",
+    "generated_jsonl_versioned": false,
+    "publish_as_dataset": false
+  },
+  "schema_version": 1,
+  "scope": "private_observed_user_turns_addressed_to_baxy_or_gemma",
+  "selection": {
+    "duplicates": "preserved_as_real_occurrences",
+    "excluded_source_prefix": "codex/",
+    "included_source_prefixes": [
+      "probando_gemma4/",
+      "gemma4_local/"
+    ],
+    "level_2_class": "user_mission",
+    "origin": "observed_user"
+  }
+}

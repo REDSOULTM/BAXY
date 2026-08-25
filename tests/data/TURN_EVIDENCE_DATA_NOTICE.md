@@ -48,5 +48,12 @@ atribución CC BY anterior ni deben publicarse como un nuevo dataset. El
 manifiesto versionable conserva únicamente conteos, hashes y reglas de
 selección; los caches E5 se regeneran bajo `%LOCALAPPDATA%\BAXYRuntime`.
 
+Los dos cortes observados se regeneran con
+`scripts/build_observed_user_corpora.py`:
+`historical_observed_product_turns.v1.jsonl` conserva todos los turnos dirigidos
+al runtime BAXY/Gemma y `historical_observed_user_missions.v1.jsonl` conserva su
+subconjunto accionable. Ambos JSONL son privados e ignorados por Git; sólo
+`historical_observed_user_corpora.v1.json` publica conteos, hashes y reglas.
+
 Las modificaciones y selecciones descritas aquí no implican respaldo de BAXY
 por parte de Google, Amazon/Alexa, los autores de PRESTO, MASSIVE o SLURP.

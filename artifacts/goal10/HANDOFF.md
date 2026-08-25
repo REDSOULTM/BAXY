@@ -1235,3 +1235,22 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   terminal explícita del objetivo: criterio medido e inalcanzable. El soak y su
   medición inicial/final dependiente permanecen omitidos completamente por orden
   del dueño.
+
+### Reapertura 2026-08-25 — corpus observado congelado
+
+- El Goal 10 vigente sustituye la dosis espontánea como criterio integral por dos
+  niveles reproducibles. El handoff anterior sigue siendo evidencia física heredada,
+  pero no certifica el corpus nuevo y no se presenta como si lo hiciera.
+- `scripts/build_observed_user_corpora.py` se ejecutó con el Python dueño del runtime.
+  Resultado: Nivel 1 **1.947 ocurrencias / 626 textos únicos**, SHA-256 del JSONL
+  `06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085`; Nivel 2
+  **808 / 281**, SHA-256
+  `3da27e544680285e40b0b493ebd9c1a72f2af9aa300e3d289e77c14103e252d2`; mapping
+  único y **0 conflictos** entre literales idénticos.
+- Suite dueña: `python -m pytest tests/test_build_observed_user_corpora.py -q`
+  usando `%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1\Scripts\python.exe`:
+  **5/5 pasadas** en 6,71 s. Los Python globales 3.13 y 3.12 no tienen pytest;
+  eso no es un fallo del producto.
+- Próximo dueño: runner integral reanudable que conserve una fila y un veredicto
+  por `message_id`. El gate exhaustivo heredado no basta: sólo llega a
+  `turn.decide`/planner, registra `tools_executed: 0` y admite estados `review`.

@@ -118,6 +118,7 @@ casos antes.
 |---|---|---|
 | `freeze_historical_sources.py` | Output/privado | fija frontera de fuentes por commit/hash sin copiar contenido |
 | `build_historical_corpus.py` | Output/privado | extrae corpus trazable de mensajes y procedencia |
+| `build_observed_user_corpora.py` | Output/privado | proyecta los 1.947 turnos observados y sus 808 misiones; versiona sólo manifiesto, reglas y hashes |
 | `build_exhaustive_message_ledger.py` | Output/privado/alto costo | inventario completo de ocurrencias históricas |
 | `build_exhaustive_runtime_oracle.py` | Output/privado | oráculo independiente de resultados esperados |
 | `build_exhaustive_runtime_language_scope.py` | Output/privado | separa scope ES/EN/spanglish |

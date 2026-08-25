@@ -318,7 +318,8 @@ actual.
   semántica v3.
 - La genealogía Carter→BAXY, 22 auditorías decisivas y 36 modos de fallo
   estructurales están trazados. Sus regresiones aún deben implementarse.
-- El soak de 24 horas no está completado y queda para la última etapa.
+- Por decisión del dueño no hay *soak*, espera de 24 horas ni prueba prolongada como
+  puerta de entrega; la estabilidad se valida con escenarios acotados.
 - No existe validación física del perfil objetivo en una GPU real de 3 GiB, ni
   cobertura de temperatura, procesos o hardware GPU exhaustivo.
 - No existe todavía un corpus guiado completo de voz real.

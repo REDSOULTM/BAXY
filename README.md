@@ -49,8 +49,8 @@ goal 01.
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | El uso diario | BAXY se usa todos los días y no decepciona |
-| 11 | La validación y el cierre | Aguanta cuando algo va mal — producto terminado |
+| 10 | La validación integral | Cada mensaje pasa individualmente y la latencia se acerca al suelo del modelo |
+| 11 | El cierre | La evidencia queda coherente, documentada y publicada |
 
 Los once llevan dentro las mismas **cinco leyes**: heredar antes que construir,
 nada de sobreingeniería, arreglar sólo lo que bloquea, quedarse con la opción más
@@ -115,7 +115,7 @@ asistente.
   Se busca aquí **antes** de abrir cualquier línea de investigación.
 - [`documentacion/sprints/`](documentacion/sprints/) — los once prompts.
 - [`documentacion/APLAZADOS.md`](documentacion/APLAZADOS.md) — lo que los goals
-  01–10 ven y no persiguen; el 11 lo vacía.
+  01–09 ven y no persiguen; el Goal 10 lo vacía antes de validar.
 - [`documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md`](documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md)
   — qué se mide ahora y qué se difiere.
 - [`documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md`](documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md)

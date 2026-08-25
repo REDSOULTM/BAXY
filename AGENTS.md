@@ -37,8 +37,8 @@ cada goal.
 
 1. **Hereda primero, estado del arte después, construye al final.**
 2. **Nada de sobreingeniería.** Si añades una capa, retira la que sustituye.
-3. **Sólo se arregla lo que bloquea** (goals 01–10). Lo demás, una línea en
-   `documentacion/APLAZADOS.md`.
+3. **Sólo se arregla lo que bloquea** (goals 01–09). Lo demás, una línea en
+   `documentacion/APLAZADOS.md`; el Goal 10 cobra esa deuda antes de validar.
 4. **Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo.
 5. **Arquitectura modular.** Una responsabilidad por pieza, cero código muerto.
 

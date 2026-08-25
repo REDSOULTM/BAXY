@@ -1,4 +1,4 @@
-# Goal 11 — La validación y el cierre
+# Goal 11 — El cierre
 
 > **Esto es un goal, no una tarea.** Se lanza y corre hasta cumplirse. No pares a
 > mitad a pedir aprobación ni a preguntar: ante una duda, elige la opción más
@@ -30,11 +30,10 @@ Todo está en `documentacion/00_IDENTIDAD.md`, y **es lectura obligatoria antes 
 tocar nada**. No son preferencias: son decisiones tomadas por el dueño con los
 cuatro intentos anteriores del proyecto sobre la mesa.
 
-Aquí tiene además un uso extra: **la identidad es la lista de comprobación final**.
-Recórrela entera contra el producto terminado. Cada decisión que hay escrita ahí o
-está cumplida, o está declarada como limitación con su causa.
+La identidad ya fue recorrida decisión por decisión en el Goal 10. Aquí se conserva
+esa evidencia y se presenta sin reinterpretarla ni ejecutar una segunda validación.
 
-## Las cinco leyes, con una invertida
+## Las cinco leyes
 
 **1. Hereda primero, estado del arte después, construye al final.** Si algo sigue
 flojo, mira antes en [`biblioteca/00_INDICE.md`](../../biblioteca/00_INDICE.md)
@@ -43,16 +42,14 @@ fuera; construir es el último recurso. Que BAXY ya lo haga de una manera no es
 razón para conservarla. Pero es una pasada, no una persecución: este goal
 **cierra** el producto, no lo reabre.
 
-**2. Nada de sobreingeniería.** Sigue en pie, y aquí es la más importante de todas.
-Este goal persigue lo hipotético, y ése es exactamente el terreno donde se generan
-capas que nadie necesita. Cada defensa que escribas tiene que corresponder a algo
-que puede ocurrir de verdad y que rompe un invariante — no a un escenario que se te
-ocurrió.
+**2. Nada de sobreingeniería.** Sigue en pie, y aquí es especialmente simple: no
+construyas un segundo runner, otra matriz ni un nuevo formato de informe. Enlaza la
+evidencia dueña y escribe sólo lo necesario para que otro pueda entenderla.
 
-**3. Sólo se arregla lo que bloquea — ésta se invierte.** Los diez goals anteriores
-tenían prohibido perseguir lo que *podría* fallar. Iban rápido a propósito y todo lo
-que olía a fragilidad teórica se anotaba en `documentacion/APLAZADOS.md`. **Aquí se
-cobra esa deuda.**
+**3. Sólo se arregla lo que bloquea.** Los diez goals anteriores ya cobraron la
+deuda y validaron el producto. Este goal no reabre código por una idea nueva: una
+contradicción documental o evidencia ausente bloquea el cierre; lo demás pertenece
+a una tanda posterior de mantenimiento.
 
 **4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Y una
 defensa que dobla el consumo para cubrir un caso que ocurre una vez al año no es
@@ -88,9 +85,9 @@ antes que líneas. Lee rangos con `read_file`, no ficheros enteros. En la shell 
 existe `rg`**: es PowerShell, y `run_terminal_command` es para git, pytest, dotnet y
 procesos. Antes de abrir algo grande, mira el tamaño: `git ls-tree -r -l HEAD -- ruta`.
 
-**Lo que tarda, en segundo plano.** Corridas de medición, compuerta y builds Release se
-lanzan en segundo plano y sigues con trabajo independiente; recoges el resultado con
-`get_command_or_subagent_output`, sin sondear en bucle.
+**No repitas la validación.** Comprueba por hash y lectura acotada que la evidencia
+pertenece al árbol entregado. Si falta una medición, vuelve al Goal 10: no lances aquí
+una campaña parcial para rellenar el informe.
 
 **Sin subagentes.** `spawn_subagent` hereda tu modelo: paga otra vez contexto y
 razonamiento para devolverte un informe que además tienes que leer. Esto se resuelve en
@@ -109,53 +106,40 @@ commits sin publicar**, cinco goals de trabajo que vivían en un solo disco. Si 
 lo rechaza porque otra máquina empujó antes, `git pull --rebase origin main`, resuelves
 y vuelves a empujar; no lo dejes pendiente.
 
-**Verificas ejecutando, no navegando.** BAXY es un producto de escritorio y aquí no hay
-herramientas de navegador. Un cambio de interfaz se comprueba con `py main.py` y con
-sus pruebas, y dices qué no pudiste verificar.
+**No cambies el producto.** Este goal edita documentación y handoff. Cualquier cambio
+en `src`, `main.py` o comportamiento devuelve el trabajo al Goal 10 y exige cerrar de
+nuevo su validación integral.
 
 ---
 
 ## El objetivo
 
-**BAXY aguanta.** No sólo funciona cuando todo va bien: aguanta cuando algo va mal,
-y cuando algo va mal sigue sin mentir.
+**Cerrar BAXY sin volver a validarlo.** El Goal 10 ya recorrió identidad, corpus,
+operaciones, caminos de error, deuda, limpieza y regresión sobre un único árbol
+final. Este goal convierte esa evidencia en un estado de producto legible y
+publicado.
 
-Cuatro frentes, y el orden importa porque el primero paga el resto.
+Tres frentes:
 
-**1. La deuda aplazada.** Abre `documentacion/APLAZADOS.md` y resuélvelo. Cada
-entrada acaba en una de tres: arreglada, medida y descartada como irrelevante, o
-declarada limitación ambiental con su degradado honesto. Ninguna se queda en
-«pendiente».
+**1. Integridad del cierre.** Comprueba que el commit y los hashes citados por la
+evidencia del Goal 10 corresponden al árbol que se entrega y que todos sus criterios
+están marcados. Si no corresponden, el Goal 10 no terminó: vuelve a él. No ejecutes
+aquí otra campaña para sustituir una evidencia ausente.
 
-**2. Los caminos de error.** Ahora sí, deliberadamente: el modelo que no responde,
-el que devuelve basura, el provider que informa éxito sin actuar, el que se ejecuta
-dos veces, el timeout a media misión, el disco sin espacio, la sesión que se corta a
-la mitad. Que ninguno acabe en una afirmación falsa ni en una constante en pantalla
-— el estado terminal honesto es la respuesta correcta a todos ellos.
+**2. Documentación vigente.** Elimina contradicciones entre Identidad, arquitectura,
+guías, matriz de corpus, limitaciones y conducta entregada. No cambies la definición
+del producto para hacer coincidir un fallo: cualquier discrepancia de conducta
+reabre el Goal 10.
 
-**3. Regresión completa.** Los diez goals anteriores midieron cada uno lo suyo, en
-momentos distintos, sobre árboles distintos. Vuelve a medirlo todo junto sobre el
-árbol final: los cortes de exactitud, los tres ceros, la latencia, las misiones, la
-voz. Un goal pudo romper lo que otro cerró y nadie lo habría visto.
-
-**4. Lo que sobra.** Código muerto, dependencias que ya nadie usa, artefactos de
-experimentos cerrados, modelos descargados que no se promovieron, documentación que
-contradice al producto.
-
-Ese cuarto frente es la ley 2 cobrada al final, y es más importante de lo que
-parece: el proyecto se ha reescrito **cuatro veces** por acumulación, y el dueño
-puso ahí su línea roja — lo único que, si vuelve a pasar, significaría que este BAXY
-también falló es **que vuelva a apilarse**. Sal de este goal con menos código,
-menos capas y menos ficheros de los que encontraste. Si no puedes, di por qué.
+**3. Handoff y publicación.** Escribe un documento de cierre corto que enlace la
+evidencia completa, explique qué puede hacer BAXY, qué límites ambientales quedan y
+cómo se reproduce o mantiene. Deja el repositorio limpio y publicado.
 
 ## Cómo decides qué merece arreglo
 
-Aquí sí persigues lo hipotético, pero no todo lo hipotético merece código.
-
-Pregúntate qué pasa **si ocurre**: si el peor caso es que BAXY afirme algo falso,
-ejecute algo no pedido o suelte una constante, se arregla — eso rompe un invariante
-y no hay grado. Si el peor caso es que se vea feo o vaya lento en una esquina que
-nadie visita, se anota y se declara.
+Aquí no persigues hipótesis ni escribes defensas nuevas. Si descubres un defecto de
+producto, documenta el hallazgo y devuelve el trabajo al Goal 10; no lo arregles y
+lo declares cerrado sin repetir allí su validación integral.
 
 ## Limitaciones: nombrarlas es cerrarlas
 
@@ -173,20 +157,16 @@ limpia y el purge en cuenta desechable, y el certificado de firma.
 
 ## Criterios de cierre
 
-- [ ] `APLAZADOS.md` **vacío**: cada entrada arreglada, descartada con medición, o
-      declarada limitación ambiental con su degradado.
-- [ ] Los caminos de error recorridos a propósito, y ninguno acaba en afirmación
-      falsa ni en constante.
-- [ ] Regresión completa sobre el árbol final, todo medido junto y publicado.
-- [ ] Menos código, menos capas y menos ficheros que al empezar — o la explicación
-      de por qué no.
-- [ ] `00_IDENTIDAD.md` recorrida entera: cada decisión, cumplida o declarada.
-- [ ] **`03_COSTURAS.md` sin una sola fila vacía**: cada pieza con su medición, lo
-      elegido hoy y la fecha. Es lo que permite mejorar BAXY dentro de dos meses sin
-      reescribirlo.
-- [ ] Cero código muerto, cero implementaciones dobles de lo mismo, cero banderas
-      que guardan una versión anterior «por si acaso».
-- [ ] El documento de cierre escrito.
+- [ ] El árbol entregado coincide exactamente con el commit y los hashes certificados
+      por el Goal 10; todos sus criterios están cerrados y no se sustituyeron por una
+      segunda validación parcial.
+- [ ] Identidad, arquitectura, corpus, limitaciones y guías describen la conducta
+      certificada sin contradicciones ni instrucciones caducadas.
+- [ ] El documento de cierre enlaza la matriz de identidad, los 1.947 veredictos
+      individuales, las 808 misiones, los 2.036 casos adicionales, la compuerta Full,
+      las limitaciones y el procedimiento de reproducción.
+- [ ] No se modificó código de producto después del árbol validado. Si se modificó,
+      el Goal 10 se reabrió y volvió a cerrar antes de continuar.
 - [ ] **Publicado.** `git status --short` vacío y
       `git rev-list --count origin/main..main` en **0**: todo lo del goal está en
       `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por
@@ -201,10 +181,9 @@ limitaciones quedan nombradas una por una.
 Ese documento es lo que alguien lee para saber si puede confiar en el producto.
 Escríbelo para esa persona.
 
-La prueba final es ésta: dejar BAXY funcionando en una máquina, irse, volver **al
-día siguiente** —24 h, con un apagado y encendido de Windows por medio— y que siga
-sirviendo sin haber mentido ni una vez. La semana llega después de entregar, y no es
-una puerta: es el uso.
+No añadas una prueba temporal al cierre: ningún *soak*, espera de 24 horas, noche de
+ejecución ni requisito de uso prolongado forma parte de la entrega. El uso normal
+posterior aportará esa experiencia sin bloquear el producto.
 
 Publica el estado real. Un producto con tres limitaciones declaradas es entregable;
 uno con tres limitaciones ocultas, no.

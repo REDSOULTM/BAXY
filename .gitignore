@@ -140,6 +140,8 @@ data/exemplar_candidates.json
 # privados. Se regenera localmente; el holdout público y su manifiesto sí se
 # versionan.
 /tests/data/turn_evidence_runtime.v1.jsonl
+/tests/data/historical_observed_product_turns.v1.jsonl
+/tests/data/historical_observed_user_missions.v1.jsonl
 
 # Evidencia local regenerable de gates de comportamiento y cobertura.
 /artifacts/validation/
