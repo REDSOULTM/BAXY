@@ -2000,6 +2000,7 @@ def _curated_domain_is_grounded(
         )
     if operation in {
         "window.active",
+        "window.application.status",
         "window.focus",
         "window.maximize",
         "window.minimize",
@@ -7286,6 +7287,41 @@ def _is_direct_request(text: str) -> bool:
     )
 
 
+def _named_window_status_target(text: str) -> str | None:
+    """Extract the app literal only from a complete window-status question."""
+
+    text = text.strip(" ¿?¡!.")
+    request = _match(
+        text,
+        (
+            r"^(?:hay|existe)\s+(?:(?:alguna?|una?)\s+)?ventana\s+"
+            r"(?:de|para)\s+(?P<target>[a-z0-9][a-z0-9 ._+@-]{0,100}?)\s+"
+            r"(?:abierta|abierto|cerrada|cerrado|visible|corriendo)$|"
+            r"^(?:is|are)\s+there\s+(?:(?:an?|any)\s+)?"
+            r"(?:open|closed|visible|running)\s+"
+            r"(?P<target_en>[a-z0-9][a-z0-9 ._+@-]{0,100}?)\s+window$|"
+            r"^(?:comprueba|comprobar|verifica|verify|check)\s+"
+            r"(?:si|whether)\s+(?P<target_check>[a-z0-9]"
+            r"[a-z0-9 ._+@-]{0,100}?)\s+(?:currently\s+)?"
+            r"(?:tiene|has|have)\s+(?:(?:una?|an?)\s+)?"
+            r"(?:ventana|window)\s+(?:abierta|abierto|cerrada|cerrado|"
+            r"visible|corriendo|open|closed|running)"
+            r"(?:\s+without\s+opening\s+it)?$"
+        ),
+    )
+    if request is None:
+        return None
+    target = next(
+        (
+            request.group(name)
+            for name in ("target", "target_en", "target_check")
+            if request.group(name) is not None
+        ),
+        "",
+    ).strip()
+    return target or None
+
+
 def _strict_catalog_request(
     text: str,
     available_operations: frozenset[str],
@@ -7406,6 +7442,15 @@ def _strict_catalog_request(
         if not operations or not set(operations) <= available_operations:
             return None
         return EffectIntent(operations, evidence or tuple(text for _ in operations))
+
+    named_window_status = _named_window_status_target(text)
+    if named_window_status is not None:
+        resolved = intent(
+            "window.application.status",
+            evidence=(named_window_status,),
+        )
+        if resolved is not None:
+            return resolved
 
     if (
         not deferred_effect

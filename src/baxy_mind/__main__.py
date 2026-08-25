@@ -4407,6 +4407,23 @@ def _explicit_arguments_from_evidence(
     if operation == "window.resolve":
         return _explicit_window_process_arguments(evidence)
 
+    if operation == "window.application.status":
+        name = effect_intent._named_window_status_target(folded)
+        if name is None and re.fullmatch(
+            r"[a-z0-9][a-z0-9 ._+@-]{0,100}",
+            folded,
+        ) and not re.search(
+            r"\b(?:hay|existe|tengo|tiene|ventana|window|abierta|abierto|"
+            r"cerrada|cerrado|visible|corriendo|open|closed|running|"
+            r"check|verify|comprueba|verifica|whether|is|are|has|have)\b",
+            folded,
+        ):
+            # Explicit effect detection preserves the named app as the
+            # operation-local evidence fragment. Accept that literal here,
+            # but never reinterpret a sentence or state claim as an app name.
+            name = folded
+        return {"name": name} if name is not None else None
+
     if operation == "input.visible.click":
         label = effect_intent._visible_click_label(folded, allow_navigate=True)
         return {"label": label} if label is not None else None
@@ -5123,6 +5140,7 @@ def _ground_explicit_arguments(
         "game.launch",
         "media.control",
         "media.play.query",
+        "window.application.status",
     }:
         # Core's verified installed application/game snapshots own identity
         # canonicalization. Requiring a canonical display name or opaque AppID

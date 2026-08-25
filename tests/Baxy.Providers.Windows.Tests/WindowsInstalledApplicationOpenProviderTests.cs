@@ -154,6 +154,39 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     [Test]
+    public async Task ExactDuplicateWindowStatusAggregatesUniqueVisibleWindowsWithoutLaunching()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Steam", "Valve.Steam.Client"),
+            new("Steam", @"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Steam\steam.exe"),
+            new("Steam Support Center", "http://support.steampowered.com/"),
+        ];
+        var platform = new FakePlatform(catalog)
+        {
+            InventoryResolver = static entry => entry.Name == "Steam"
+                ? [Observation(foreground: false)]
+                : [],
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationWindowStatusResult result = await provider.GetWindowStatusAsync(
+            "Steam", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Installed, Is.True);
+            Assert.That(result.HasVisibleWindow, Is.True);
+            Assert.That(result.VisibleWindowCount, Is.EqualTo(1));
+            Assert.That(result.DisplayName, Is.EqualTo("Steam"));
+            Assert.That(platform.InventoryCalls, Is.EqualTo(2));
+            Assert.That(platform.ActivateCalls, Is.Zero);
+            Assert.That(platform.FocusCalls, Is.Zero);
+        });
+    }
+
+    [Test]
     public async Task ExistingVisibleApplicationIsFocusedWithoutASecondActivation()
     {
         var platform = new FakePlatform(Catalog)
@@ -392,6 +425,12 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public IReadOnlyList<InstalledApplicationObservation> Observations { get; set; } = [];
 
+        public Func<
+            InstalledApplicationEntry,
+            IReadOnlyList<InstalledApplicationObservation>>
+            ? InventoryResolver
+        { get; init; }
+
         public InstalledApplicationObservation? ObservationAfterActivation { get; init; }
 
         public bool FocusRequiresDelay { get; init; }
@@ -401,6 +440,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public int FocusCalls { get; private set; }
 
         public int DelayCalls { get; private set; }
+
+        public int InventoryCalls { get; private set; }
 
         public Exception? CatalogFailure { get; init; }
 
@@ -418,7 +459,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         }
 
         public IReadOnlyList<InstalledApplicationObservation> Inventory(
-            InstalledApplicationEntry entry) => Observations;
+            InstalledApplicationEntry entry)
+        {
+            InventoryCalls++;
+            return InventoryResolver?.Invoke(entry) ?? Observations;
+        }
 
         public bool Activate(InstalledApplicationEntry entry)
         {

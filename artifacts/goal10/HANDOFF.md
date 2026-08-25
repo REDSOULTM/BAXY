@@ -1390,3 +1390,40 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   ligado a la identidad `media.play.query` y los 7 focales pasaron antes de repetir
   todo. `scripts/test_source_quality.ps1` terminó **verde** en modo Fast, con build
   Release 0 advertencias/0 errores.
+
+### Continuación 2026-08-25 — estado de ventanas nombradas verificado
+
+- La adjudicación manual del tramo observó un defecto que el texto plausible
+  ocultaba: «hay alguna ventana de steam abierta» usaba `window.active` y negaba
+  todas las ventanas de Steam a partir de observar sólo el foreground. El skill
+  vigente de control de Windows y el catálogo asignan esa pregunta a
+  `window.application.status`; `window.active` sólo prueba la ventana activa.
+- El reconocedor cerrado autoriza ahora `window.application.status` únicamente para
+  preguntas completas de estado sobre una app nombrada. La misma gramática preserva
+  sólo el nombre como evidencia para los argumentos; una declaración como «Tengo una
+  ventana de Steam abierta» sigue sin ganar autoridad.
+- R23 fue la sonda causal que aún eligió `window.active`. R24 ya eligió la operación
+  correcta pero terminó honestamente en `app_ambiguous`:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.window-status-r24.jsonl`,
+  SHA-256 `976ce6326711704992ca4abd2b27d5422dda5eb06686cd57b2c19b235bf2f5a6`.
+  R25 y R26 repitieron el mismo fallo mientras se aislaba argumento frente a
+  provider; son diagnósticos no finales, SHA-256
+  `f9cafff76a5f89125d86ca116fe7f5dd4bb91ccce46f4a0a3e9cf233e651600a` y
+  `e7d63d87b8841922a982f3a9cc3961389b239a3f85763d36fc97e58f959344b0`.
+- La causa física final estaba en `Get-StartApps`: esta máquina publica dos entradas
+  exactas `Steam` (`Valve.Steam.Client` y el acceso clásico al ejecutable). Para una
+  lectura, eso no es una elección ambigua: el provider agrega todas las identidades
+  con nombre exacto y cuenta HWND visibles únicos, sin abrir ni enfocar. Las
+  coincidencias parciales genuinas como `Visual` continúan en `app_ambiguous`.
+- Evidencia física final (2 ocurrencias):
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.window-status-r27.jsonl`,
+  SHA-256 `95fb9e722e0878d7b40433254942e8fb5cf299beabcf45ff299dde22bc8314aa`.
+  Ambas ejecutaron `window.application.status`, terminaron `completed`,
+  `verified=true`, observaron `displayName=Steam`, `hasVisibleWindow=true` y un HWND
+  visible único, y respondieron «Hay una ventana de Steam abierta.»; prueba física
+  **1/1, 0 skips**.
+- Regresión propietaria antes de Fast: Python `test_effect_intent.py +
+  test_turn_policy.py` **2.446/2.446, 0 skips**; provider Windows focal **26/26, 0
+  skips**. `scripts/test_source_quality.ps1` terminó **verde** en modo Fast, con
+  build Release 0 advertencias/0 errores. Falta comprometer/publicar esta tanda y
+  retomar el adjudicador integral de nueve dimensiones.

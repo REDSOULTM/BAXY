@@ -1322,6 +1322,36 @@ def test_authenticated_desired_app_state_is_an_exact_open_effect(text: str) -> N
 @pytest.mark.parametrize(
     "text",
     [
+        "¿Hay alguna ventana de Steam abierta?",
+        "Is there an open Steam window?",
+        "Comprueba si Steam tiene una ventana visible.",
+    ],
+)
+def test_named_window_status_uses_the_application_snapshot(text: str) -> None:
+    result = resolve_explicit_effects(
+        text,
+        AVAILABLE | {"window.application.status", "window.active"},
+        ("Steam", "Paint"),
+    )
+
+    assert result is not None
+    assert result.operations == ("window.application.status",)
+
+
+def test_declarative_named_window_state_does_not_gain_read_authority() -> None:
+    assert (
+        resolve_explicit_effects(
+            "Tengo una ventana de Steam abierta.",
+            AVAILABLE | {"window.application.status"},
+            ("Steam",),
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
         "I needed you to open Spotify",
         "I need you not to open Spotify",
         "Get Spotify running tomorrow",

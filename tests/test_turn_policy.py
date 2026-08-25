@@ -1762,6 +1762,52 @@ def test_named_close_process_is_grounded_without_requesting_an_internal_id(
 
 
 @pytest.mark.parametrize(
+    ("evidence", "expected_name"),
+    [
+        ("hay alguna ventana de Steam abierta", "steam"),
+        ("Is there an open Visual Studio Code window?", "visual studio code"),
+        ("check whether Spotify has a window visible", "spotify"),
+    ],
+)
+def test_named_application_window_status_grounds_only_the_app_literal(
+    evidence: str,
+    expected_name: str,
+) -> None:
+    schema = {
+        "type": "object",
+        "properties": {"name": {"type": "string", "minLength": 1}},
+        "required": ["name"],
+        "additionalProperties": False,
+    }
+
+    assert _explicit_arguments_from_evidence(
+        "window.application.status",
+        evidence,
+    ) == {"name": expected_name}
+    assert _ground_explicit_arguments(
+        "window.application.status",
+        evidence,
+        schema,
+    ) == {"name": expected_name}
+
+    assert _ground_explicit_arguments(
+        "window.application.status",
+        expected_name,
+        schema,
+    ) == {"name": expected_name}
+
+
+def test_declarative_window_status_does_not_gain_argument_authority() -> None:
+    assert (
+        _explicit_arguments_from_evidence(
+            "window.application.status",
+            "Tengo una ventana de Steam abierta.",
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
     ("evidence", "level"),
     [
         ("Set the volume to seventy five percent", 75),

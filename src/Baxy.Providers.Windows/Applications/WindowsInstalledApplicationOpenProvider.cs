@@ -426,6 +426,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
+        InstalledApplicationEntry[] exactEntries = applicationName switch
+        {
+            ApplicationIds.Notepad or ApplicationIds.Calculator => [],
+            _ => catalog
+                .Where(InstalledApplicationResolver.IsUsable)
+                .Where(entry => InstalledApplicationResolver.Normalize(entry.Name)
+                    == InstalledApplicationResolver.Normalize(applicationName))
+                .DistinctBy(
+                    static entry => (
+                        InstalledApplicationResolver.Normalize(entry.Name),
+                        entry.AppUserModelId),
+                    EqualityComparer<(string, string)>.Default)
+                .ToArray(),
+        };
         InstalledApplicationResolution resolution = applicationName switch
         {
             ApplicationIds.Notepad => InstalledApplicationResolver.ResolveAppId(
@@ -434,33 +448,42 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 "Microsoft.WindowsCalculator", catalog),
             _ => InstalledApplicationResolver.Resolve(applicationName, catalog),
         };
-        if (resolution.Ambiguous)
+        if (resolution.Ambiguous && exactEntries.Length == 0)
         {
             return new(applicationName, null, false, false, 0, false,
                 ApplicationOpenErrorCodes.ApplicationAmbiguous);
         }
-        if (resolution.Entry is null)
+        if (resolution.Entry is null && exactEntries.Length == 0)
         {
             return new(applicationName, null, false, false, 0, true, null);
         }
 
-        IReadOnlyList<InstalledApplicationObservation> observations;
+        InstalledApplicationEntry[] entries = exactEntries.Length > 0
+            ? exactEntries
+            : [resolution.Entry!];
+        var observations = new List<InstalledApplicationObservation>();
         try
         {
-            observations = _platform.Inventory(resolution.Entry);
+            foreach (InstalledApplicationEntry entry in entries)
+            {
+                observations.AddRange(_platform.Inventory(entry));
+            }
         }
         catch (Exception exception) when (exception is InvalidOperationException
             or System.ComponentModel.Win32Exception)
         {
-            return new(applicationName, resolution.Entry.Name, true, false, 0, false,
+            return new(applicationName, entries[0].Name, true, false, 0, false,
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        int visibleWindowCount = observations.Count(static observation =>
-            observation.Visible && observation.WindowHandle != 0);
+        int visibleWindowCount = observations
+            .Where(static observation => observation.Visible && observation.WindowHandle != 0)
+            .Select(static observation => observation.WindowHandle)
+            .Distinct()
+            .Count();
         return new(
             applicationName,
-            resolution.Entry.Name,
+            entries[0].Name,
             Installed: true,
             HasVisibleWindow: visibleWindowCount > 0,
             VisibleWindowCount: visibleWindowCount,
