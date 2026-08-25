@@ -158,7 +158,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool dense = partialMission
             || requiredFactCount >= 8
             || requiredFactCharacters >= 512;
-        bool verifiedNewsSummary = IsVerifiedNewsSummary(facts);
+        bool verifiedDenseObservation = RequiresDenseMessageCompositionBudget(facts);
         if (cpuFallback)
         {
             return dense
@@ -166,12 +166,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 : CpuMessageCompositionRequestTimeout;
         }
 
-        return dense || verifiedNewsSummary
+        return dense || verifiedDenseObservation
             ? DenseMessageCompositionRequestTimeout
             : MessageCompositionRequestTimeout;
     }
 
-    private static bool IsVerifiedNewsSummary(JsonObject facts)
+    private static bool RequiresDenseMessageCompositionBudget(JsonObject facts)
     {
         if (facts["situation"]?.GetValue<string>() is not { Length: > 0 } source)
         {
@@ -181,10 +181,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         try
         {
             JsonNode? situation = JsonNode.Parse(source);
-            return string.Equals(
-                    situation?["operation"]?.GetValue<string>(),
-                    "web.search",
-                    StringComparison.Ordinal)
+            string? operation = situation?["operation"]?.GetValue<string>();
+            if (string.Equals(operation, "system.status", StringComparison.Ordinal))
+            {
+                return string.Equals(
+                        situation?["polarity"]?.GetValue<string>(),
+                        "success",
+                        StringComparison.Ordinal)
+                    && situation?["observed"] is JsonObject;
+            }
+
+            return string.Equals(operation, "web.search", StringComparison.Ordinal)
                 && string.Equals(
                     situation?["observed"]?["authority"]?.GetValue<string>(),
                     "google_news_rss_https",

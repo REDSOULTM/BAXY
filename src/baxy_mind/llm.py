@@ -3060,6 +3060,7 @@ def compose_visible_defect(
     kind = str(situation.get("kind") or intent).strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()
     operation = str(situation.get("operation") or "").strip().lower()
+    system_status_request = intent == "status" and operation == "system.status"
     observed_blob = json.dumps(
         situation.get("observed") or {}, ensure_ascii=False
     ).casefold()
@@ -3069,7 +3070,15 @@ def compose_visible_defect(
         and dotted_tokens
         and all(token.casefold() in observed_blob for token in dotted_tokens)
     )
-    if _SNAKE_CODE.search(stripped) is not None or (
+    snake_tokens = _SNAKE_CODE.findall(stripped)
+    grounded_snake_tokens = bool(
+        snake_tokens
+        and all(
+            token.casefold() in json.dumps(situation, ensure_ascii=False).casefold()
+            for token in snake_tokens
+        )
+    )
+    if (snake_tokens and not grounded_snake_tokens) or (
         dotted_tokens and not grounded_public_sources
     ):
         return "internal_code"
@@ -3144,7 +3153,7 @@ def compose_visible_defect(
     ) is None:
         return "missing_uncertainty"
     if cause == "composition_lost_verified_facts" and re.search(
-        r"\b(?:redact\w*|formul\w*|expres\w*|word\w*|phras\w*|render\w*)\b",
+        r"\b(?:redact\w*|formul\w*|expres\w*|present\w*|word\w*|phras\w*|render\w*)\b",
         folded,
     ) is None:
         return "missing_composition_loss"
@@ -3194,7 +3203,9 @@ def compose_visible_defect(
             return "clarification_not_a_question"
         if stripped.count("¿") > 1 or stripped.count("?") > 1:
             return "too_many_sentences"
-    if not facts.get("partialMission") and re.search(
+    if system_status_request and ("?" in stripped or "¿" in stripped):
+        return "status_question"
+    if not facts.get("partialMission") and not system_status_request and re.search(
         r"[.!][\"']?\s+[A-Z¿]", stripped
     ):
         return "too_many_sentences"
@@ -7671,6 +7682,7 @@ class LlmRuntime:
         kind = str(situation.get("kind") or intent).strip().lower()
         polarity = str(situation.get("polarity") or "").strip().lower()
         operation = str(situation.get("operation") or "").strip()
+        system_status_request = intent == "status" and operation == "system.status"
         news_summary_request = bool(
             intent == "status"
             and operation == "web.search"
@@ -7707,6 +7719,11 @@ class LlmRuntime:
             "hagas preguntas, no saludes, no empieces con «Listo» y no menciones "
             "campos, códigos ni la hora."
         )
+        system_status_instruction = (
+            "Resume únicamente las mediciones presentes en seen, en hasta tres "
+            "oraciones declarativas breves. No preguntes, no ofrezcas ayuda y no "
+            "inventes cifras, estados ni componentes ausentes."
+        )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
                 "\nGreet briefly, masculine, no apps."
@@ -7719,6 +7736,8 @@ class LlmRuntime:
             payload["messages"][1]["content"] += "\n" + news_summary_instruction
         elif current_date_request:
             payload["messages"][1]["content"] += "\n" + current_date_instruction
+        elif system_status_request:
+            payload["messages"][1]["content"] += "\n" + system_status_instruction
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
                 "\nAsk one short question that disambiguates. Do not guess."
@@ -8213,6 +8232,7 @@ class LlmRuntime:
             ),
             "clarification_not_a_question": "Una pregunta.",
             "too_many_sentences": "Una sola frase.",
+            "status_question": "Resultado declarativo. No hagas preguntas.",
             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
             "missing_name": "Include names and numbers from seen.",
             "missing_state": "abierto/open, no el imperativo.",

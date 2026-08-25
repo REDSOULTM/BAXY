@@ -1078,3 +1078,24 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   aisló ambos y pasó. Falta verificar físicamente tras el soak. El transcript
   visible seguía terminando en r30: no había respuestas nuevas del dueño pendientes
   de revisión manual.
+- El primer intento de activar bypass escribió la ruta predeterminada, pero r30
+  heredó `BAXY_DATA_DIR=...\dev-mente-v2`; su fichero real siguió diciendo
+  `normal`. Por tanto ambos turnos fueron en **normal** y bypass aún no cuenta.
+  Revisión manual: `Cuanto es 9 por 8?` respondió **`72.`**, correcto. El turno
+  catalogado `Dime el estado actual del sistema.` fue **inválido**: publicó «No
+  pude: no pude redactar el mensaje porque no pude asegurar que el resultado
+  verificado se mantenga intacto sin perder sus hechos.» La traza lo acota:
+  `core.call system.status` completó verificado, el primer borrador fue rechazado
+  sólo como `too_many_sentences` y `compose.end=no_response` llegó **6,28 s** más
+  tarde al agotarse los 5 s durante la reescritura. `system.status` recibe ahora
+  instrucción propia (sólo `seen`, hasta tres oraciones declarativas), permite el
+  resumen multi-oración sin relajar otros estados y usa el presupuesto GPU denso
+  de 10 s. Focales iniciales **1/1 Python + 1/1 .NET**. La clase .NET completa
+  destapó dos contratos antiguos rojos que también afectaban uso: «presentar» no
+  contaba como explicación honesta de composición y claves de memoria con guion
+  bajo se rechazaban aunque aparecieran literalmente en los hechos. Ambos guards
+  aceptan ahora sólo verbos de formulación válidos y sólo códigos con guion bajo
+  fundamentados en la fuente; los no observados siguen rechazados. Resultado final:
+  Python dueño **161/161 + 101 subtests** y `PlannerAppBoundaryTests` **65/65**,
+  cero skips, con build .NET aislado del ejecutable vivo. Falta repetir físicamente
+  `system.status` tras el soak; el modo real permanece normal.

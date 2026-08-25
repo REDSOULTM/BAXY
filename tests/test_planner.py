@@ -3150,6 +3150,95 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             ),
             "",
         )
+        self.assertEqual(
+            compose_visible_defect(
+                "No pude presentar el resultado verificado sin perder sus hechos.",
+                "error",
+                "abre Steam",
+                facts,
+            ),
+            "",
+        )
+
+    def test_visible_message_allows_only_grounded_snake_case_facts(self):
+        facts = {
+            "situation": {
+                "kind": "status",
+                "polarity": "success",
+                "steps": ["response_style: technical_and_brief"],
+            }
+        }
+
+        self.assertEqual(
+            compose_visible_defect(
+                "Encontré response_style: technical_and_brief.",
+                "status",
+                "qué recuerdas",
+                facts,
+            ),
+            "",
+        )
+        self.assertEqual(
+            compose_visible_defect(
+                "Encontré internal_code: hidden.",
+                "status",
+                "qué recuerdas",
+                facts,
+            ),
+            "internal_code",
+        )
+
+    def test_system_status_accepts_compact_verified_multi_sentence_summary(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": "CPU: 28 %. RAM: 25,5 GB en uso.",
+                        }
+                    }
+                ]
+            }
+
+        runtime._post = fake_post
+        facts = {
+            "situation": {
+                "kind": "operation",
+                "operation": "system.status",
+                "polarity": "success",
+                "verified": True,
+                "observed": {
+                    "cpu": {"usagePercent": 28},
+                    "memory": {"usedGiB": 25.5},
+                },
+            }
+        }
+
+        result = runtime.compose_user_message(
+            "Dime el estado actual del sistema.",
+            "status",
+            facts,
+        )
+
+        self.assertEqual(result, "CPU: 28 %. RAM: 25,5 GB en uso.")
+        self.assertEqual(len(seen), 1)
+        self.assertIn(
+            "hasta tres oraciones declarativas",
+            seen[0]["messages"][1]["content"],
+        )
+        self.assertEqual(
+            compose_visible_defect(
+                "Primera medición. Segunda medición.",
+                "status",
+                "revisa esto",
+                {"situation": {"kind": "status", "polarity": "success"}},
+            ),
+            "too_many_sentences",
+        )
 
     def test_visible_message_rejects_unbalanced_spanish_punctuation(self):
         facts = {

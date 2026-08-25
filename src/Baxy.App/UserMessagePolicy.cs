@@ -212,10 +212,7 @@ internal static class UserMessagePolicy
         {
             return "unbalanced_punctuation";
         }
-        if (Regex.IsMatch(
-                modelText,
-                @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",
-                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        if (ContainsUngroundedInternalCode(modelText, draft.Source))
         {
             return "internal_code";
         }
@@ -232,7 +229,7 @@ internal static class UserMessagePolicy
             if (RequiresCompositionLossDisclosure(draft.Source)
                 && !Regex.IsMatch(
                     FoldForPolicy(modelText),
-                    @"\b(?:redact\w*|formul\w*|expres\w*|word\w*|phras\w*|render\w*)\b",
+                    @"\b(?:redact\w*|formul\w*|expres\w*|present\w*|word\w*|phras\w*|render\w*)\b",
                     RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
             {
                 return "missing_composition_loss";
@@ -334,6 +331,22 @@ internal static class UserMessagePolicy
             folded,
             @"[,;:]\s*(?:(?:(?:al|del|el|la|este|esta|ese|esa)\s+|(?:a|de|para)\s+(?:el|la|este|esta|ese|esa)\s+)(?:usuario|usuaria|persona)|(?:the|this|that)\s+(?:user|person|requester))\b[^.!?\r\n]{0,80}\b(?:le gustaria|le interesa|quiere|quisiera|desea|prefiere|pidio|ha pedido|pregunto|dijo|saludo|solicito|menciono|would like|wants|asked|said|greeted|requested|mentioned|prefers|has asked)\b",
             options);
+    }
+
+    private static bool ContainsUngroundedInternalCode(string modelText, string source)
+    {
+        foreach (Match match in Regex.Matches(
+                     modelText,
+                     @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",
+                     RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            if (!source.Contains(match.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static string WithDiagnosticCode(string text, UserMessageDraft draft)

@@ -335,6 +335,12 @@ public sealed class PlannerAppBoundaryTests
                 {"kind":"operation","operation":"web.search","polarity":"success","observed":{"authority":"google_news_rss_https"}}
                 """,
         };
+        var verifiedSystemStatus = new JsonObject
+        {
+            ["situation"] = """
+                {"kind":"operation","operation":"system.status","polarity":"success","observed":{"cpu":{"usagePercent":28}}}
+                """,
+        };
 
         Assert.Multiple(() =>
         {
@@ -354,6 +360,9 @@ public sealed class PlannerAppBoundaryTests
                 MindSidecarClient.SelectMessageCompositionTimeout(verifiedNews),
                 Is.EqualTo(TimeSpan.FromSeconds(10)));
             Assert.That(
+                MindSidecarClient.SelectMessageCompositionTimeout(verifiedSystemStatus),
+                Is.EqualTo(TimeSpan.FromSeconds(10)));
+            Assert.That(
                 MindSidecarClient.SelectMessageCompositionTimeout(
                     ordinary,
                     cpuFallback: true),
@@ -366,6 +375,11 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 MindSidecarClient.SelectMessageCompositionTimeout(
                     verifiedNews,
+                    cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(60)));
+            Assert.That(
+                MindSidecarClient.SelectMessageCompositionTimeout(
+                    verifiedSystemStatus,
                     cpuFallback: true),
                 Is.EqualTo(TimeSpan.FromSeconds(60)));
         });
