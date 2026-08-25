@@ -1,0 +1,12 @@
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\bin\Baxy.Contracts\release\Baxy.Contracts.deps.json
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\bin\Baxy.Contracts\release\Baxy.Contracts.dll
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\bin\Baxy.Contracts\release\Baxy.Contracts.pdb
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.AssemblyInfoInputs.cache
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.AssemblyInfo.cs
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.csproj.CoreCompileInputs.cache
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.sourcelink.json
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.dll
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\refint\Baxy.Contracts.dll
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\Baxy.Contracts.pdb
+C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\.codex-build\goal10-integration\obj\Baxy.Contracts\release\ref\Baxy.Contracts.dll

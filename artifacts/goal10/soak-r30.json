@@ -1,11 +1,11 @@
 {
   "started_at": "2026-08-24T23:45:14.919011+00:00",
-  "measured_at": "2026-08-24T23:46:15.538242+00:00",
-  "elapsed_s": 61.3,
-  "samples": 2,
-  "rss_mb": 281.5,
-  "peak_rss_mb": 281.5,
-  "min_rss_mb": 281.0,
+  "measured_at": "2026-08-25T02:11:05.409918+00:00",
+  "elapsed_s": 8750.5,
+  "samples": 145,
+  "rss_mb": 216.9,
+  "peak_rss_mb": 282.4,
+  "min_rss_mb": 0.0,
   "initial": {
     "measured_at": "2026-08-24T23:45:14.919011+00:00",
     "baxy_processes": [
@@ -25,25 +25,39 @@
     "pid": 43892
   },
   "latest": {
-    "measured_at": "2026-08-24T23:46:15.538242+00:00",
+    "measured_at": "2026-08-25T02:11:05.409918+00:00",
     "baxy_processes": [
       {
-        "Id": 47876,
+        "Id": 26044,
         "Path": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
-        "WorkingSet": 295211008,
-        "PrivateMemory": 257716224
+        "WorkingSet": 227426304,
+        "PrivateMemory": 154218496
       }
     ],
-    "rss_mb": 281.5,
+    "rss_mb": 216.9,
     "gpu": {
       "llama_server_running": true,
-      "nvidia_smi_memory_mib": "7082, 16380"
+      "nvidia_smi_memory_mib": "4099, 16380"
     },
     "always_on_listen": true,
-    "pid": 43892
+    "pid": 11960,
+    "windows_booted_at": "2026-08-25T02:08:13.5000000Z"
   },
   "gpu": {
     "llama_server_running": true,
-    "nvidia_smi_memory_mib": "7082, 16380"
-  }
+    "nvidia_smi_memory_mib": "4099, 16380"
+  },
+  "sampler_sessions": [
+    {
+      "started_at": "2026-08-24T23:45:14.919011+00:00",
+      "pid": 43892,
+      "windows_booted_at": null,
+      "migrated_from_legacy_state": true
+    },
+    {
+      "started_at": "2026-08-25T02:09:00.999188+00:00",
+      "pid": 11960,
+      "windows_booted_at": "2026-08-25T02:08:13.5000000Z"
+    }
+  ]
 }

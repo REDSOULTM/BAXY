@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "i0ZsvXgRBW4=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\src\\Baxy.App\\Baxy.App.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\usuario\\.nuget\\packages\\microsoft.web.webview2\\1.0.4078.44\\microsoft.web.webview2.1.0.4078.44.nupkg.sha512",
+    "C:\\Users\\usuario\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.57\\microsoft.windows.sdk.net.ref.10.0.19041.57.nupkg.sha512"
+  ],
+  "logs": []
+}

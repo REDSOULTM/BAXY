@@ -1,6 +1,6 @@
 {
   "schema": "baxy.goal05-execution-matrix.v1",
-  "measuredAtUtc": "2026-08-21T22:34:17.3161273+00:00",
+  "measuredAtUtc": "2026-08-25T00:37:13.4898927+00:00",
   "catalogOperations": 170,
   "observed": 82,
   "unverifiable": 88,
@@ -21,7 +21,7 @@
       "verified": true,
       "errorCode": null,
       "effectMayHaveOccurred": false,
-      "messageStartsListo": true
+      "messageStartsListo": false
     },
     {
       "operation": "note.create",
@@ -44,11 +44,11 @@
     {
       "operation": "app.open",
       "round": 1,
-      "status": "completed",
-      "verified": true,
-      "errorCode": null,
-      "effectMayHaveOccurred": false,
-      "messageStartsListo": true
+      "status": "failed",
+      "verified": false,
+      "errorCode": "verification_failed",
+      "effectMayHaveOccurred": true,
+      "messageStartsListo": false
     },
     {
       "operation": "app.status",
@@ -156,7 +156,7 @@
       "verified": true,
       "errorCode": null,
       "effectMayHaveOccurred": false,
-      "messageStartsListo": true
+      "messageStartsListo": false
     },
     {
       "operation": "note.create",
@@ -179,11 +179,11 @@
     {
       "operation": "app.open",
       "round": 2,
-      "status": "completed",
-      "verified": true,
-      "errorCode": null,
-      "effectMayHaveOccurred": false,
-      "messageStartsListo": true
+      "status": "failed",
+      "verified": false,
+      "errorCode": "verification_failed",
+      "effectMayHaveOccurred": true,
+      "messageStartsListo": false
     },
     {
       "operation": "app.status",
@@ -312,24 +312,6 @@
       "messageStartsListo": false
     },
     {
-      "operation": "window.resolve",
-      "round": 0,
-      "status": "completed",
-      "verified": true,
-      "errorCode": null,
-      "effectMayHaveOccurred": false,
-      "messageStartsListo": false
-    },
-    {
-      "operation": "app.close",
-      "round": 0,
-      "status": "completed",
-      "verified": true,
-      "errorCode": null,
-      "effectMayHaveOccurred": false,
-      "messageStartsListo": true
-    },
-    {
       "operation": "clipboard.read.text",
       "round": 0,
       "status": "completed",
@@ -372,7 +354,7 @@
       "verified": true,
       "errorCode": null,
       "effectMayHaveOccurred": false,
-      "messageStartsListo": true
+      "messageStartsListo": false
     },
     {
       "operation": "clipboard.write.text",
