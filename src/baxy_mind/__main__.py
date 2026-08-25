@@ -2487,14 +2487,15 @@ def _social_turn_pattern(parts: dict[str, str]) -> str:
     """Compose one language's closed social envelope."""
 
     greeting = parts["greeting"]
+    acknowledgement = parts["acknowledgement"]
     core = (
         rf"(?:{greeting}(?:{_SOCIAL_SEPARATOR}{greeting})?"
-        rf"|{parts['farewell']}|{parts['gratitude']})"
+        rf"|{parts['farewell']}|{parts['gratitude']}|{acknowledgement})"
     )
     wellbeing = parts["wellbeing"]
     return (
         r"[¿?¡!\s]*"
-        rf"(?:{parts['acknowledgement']}{_SOCIAL_SEPARATOR})?"
+        rf"(?:{acknowledgement}{_SOCIAL_SEPARATOR})?"
         rf"(?:{core}"
         rf"(?:{_SOCIAL_SEPARATOR}{_SOCIAL_VOCATIVE})?"
         rf"(?:{_SOCIAL_SEPARATOR}{wellbeing})?"
@@ -4256,6 +4257,49 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
     return arguments
 
 
+def _explicit_window_process_arguments(evidence: str) -> dict[str, object] | None:
+    """Preserve one process name explicitly targeted by a close request."""
+
+    compact = " ".join(evidence.split()).strip()
+    patterns = (
+        (
+            r"^(?:(?:necesito|quiero|quisiera)\s+que\s+)?"
+            r"(?:cierra|cierre|cierres|cerrar)\s+"
+            r"(?:(?:la|una)\s+)?(?:ventana\s+(?:de|del)\s+)?"
+            r"(?P<process>.+?)\s*[.!?]*$"
+        ),
+        (
+            r"^(?:(?:i\s+)?(?:need|want|would\s+like)\s+(?:you\s+)?to\s+)?"
+            r"close\s+(?:(?:the|a)\s+)?(?P<process>.+?)"
+            r"(?:\s+window)?\s*[.!?]*$"
+        ),
+    )
+    match = next(
+        (
+            found
+            for pattern in patterns
+            if (found := re.fullmatch(pattern, compact, re.IGNORECASE)) is not None
+        ),
+        None,
+    )
+    if match is None:
+        return None
+    process = match.group("process").strip(" \t\r\n,;:.!?")
+    process_folded = effect_intent._fold(process)
+    if (
+        not process
+        or len(process.encode("utf-8")) > 260
+        or re.fullmatch(
+            r"(?:(?:la|the)\s+)?(?:ventana\s+)?(?:activa|actual|active|current)|"
+            r"(?:lo|la|it|this|that)",
+            process_folded,
+        )
+        is not None
+    ):
+        return None
+    return {"process": process}
+
+
 def _explicit_arguments_from_evidence(
     operation: str,
     evidence: str,
@@ -4297,6 +4341,9 @@ def _explicit_arguments_from_evidence(
     if operation == "app.open":
         app_id = resolve_application_catalog_app_id(evidence, application_names)
         return {"appId": app_id} if app_id is not None else None
+
+    if operation == "window.resolve":
+        return _explicit_window_process_arguments(evidence)
 
     if operation == "input.visible.click":
         label = effect_intent._visible_click_label(folded, allow_navigate=True)

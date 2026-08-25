@@ -1570,7 +1570,11 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex FavoriteColorSavePattern();
 
     [GeneratedRegex(
-        "^(?:recuerda(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
+        "^(?:recuerda(?:[ ]+que)?[ ]+me[ ]+llamo|"
+        + "(?:quiero|quisiera|necesito)[ ]+que[ ]+me[ ]+recuerdes[ ]+como|"
+        + "remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as|"
+        + "(?:i[ ]+want|i[ ]+need|i['’]d[ ]+like)[ ]+you[ ]+to[ ]+remember[ ]+me[ ]+as)"
+        + "[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex NameSavePattern();
 

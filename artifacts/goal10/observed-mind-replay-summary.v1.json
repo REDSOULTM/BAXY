@@ -1,0 +1,27 @@
+{
+  "completed_occurrences": 10,
+  "decision_kind_counts": {
+    "action": 1,
+    "clarify": 3,
+    "conversation": 6
+  },
+  "duplicate_message_ids": 0,
+  "expected_occurrences": 1947,
+  "generated_at_utc": "2026-08-25T08:25:20.596202+00:00",
+  "latency_seconds": {
+    "maximum": 7.469,
+    "p50": 3.468,
+    "p95": 5.297
+  },
+  "private_output_sha256": "1ea86d0007d3b776c90cdf667c7ad00f34a838670a49d0c855791fb3152bed2c",
+  "runtime_fingerprint": "277680ec7a4fcc5114bbd990be7041c11f1ad2956288df0e949070ab38e7db10",
+  "schema": "baxy.goal10-observed-mind-replay-summary.v1",
+  "scope": "diagnostic semantic replay; not integral acceptance",
+  "source_cases_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
+  "source_mapping_sha256": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+  "structural_verdict_counts": {
+    "fail": 4,
+    "pass": 6
+  },
+  "unique_message_ids": 10
+}

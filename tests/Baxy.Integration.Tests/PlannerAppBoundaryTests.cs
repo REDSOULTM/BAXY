@@ -449,7 +449,7 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(source, Does.Contain("mission_failed"));
             Assert.That(source, Does.Contain("Bloc de notas"));
             Assert.That(source, Does.Contain("35 %"));
-            Assert.That(UserMessagePolicy.RequiredLiteralFacts(source), Has.Count.EqualTo(4));
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(source), Has.Count.EqualTo(3));
             Assert.That(UserMessagePolicy.IsSafe(source), Is.True);
             Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
@@ -461,6 +461,71 @@ public sealed class PlannerAppBoundaryTests
                     "No pude completar el paso 4.",
                     draft),
                 Is.EqualTo("missing_literal_fact"));
+        });
+    }
+
+    [Test]
+    public void MissionFailureProjectsTheCoreErrorWithoutExposingItsCodeAsRequiredProse()
+    {
+        string source = MissionNarration.CreateFailureMessage(
+            [],
+            TurnVisibleFacts.Failure(
+                "window_not_found",
+                new JsonObject { ["step"] = 1 }));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source, Does.Contain("\"reason\":\"window_not_found\""));
+            Assert.That(source, Does.Not.Contain("\\\"cause\\\""));
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(source), Is.Empty);
+        });
+    }
+
+    [Test]
+    public void SingleMemoryRecordCompositionUsesTheQuestionAsContextAndPreservesItsValue()
+    {
+        const string source =
+            "{\"kind\":\"status\",\"cause\":\"memory_records\",\"records\":[{\"label\":\"name\",\"value\":\"red\"}]}";
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                UserMessagePolicy.RequiredLiteralFacts(source),
+                Is.EqualTo(new[] { "red" }));
+            Assert.That(
+                UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "Listo, el nombre es BAXY.",
+                    draft),
+                Is.Null);
+            Assert.That(
+                UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "Te llamas red.",
+                    draft),
+                Is.EqualTo("Te llamas red."));
+        });
+    }
+
+    [Test]
+    public void MultipleMemoryRecordsMustPreserveEverySafeProjectedLabelAndValue()
+    {
+        const string source =
+            "{\"kind\":\"status\",\"cause\":\"memory_records\",\"records\":[{\"label\":\"name\",\"value\":\"red\"},{\"label\":\"city\",\"value\":\"Lima\"}]}";
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                UserMessagePolicy.RequiredLiteralFacts(source),
+                Is.EqualTo(new[] { "name", "red", "city", "Lima" }));
+            Assert.That(
+                UserMessagePolicy.AcceptModelAuthoredResponse("Te llamas red.", draft),
+                Is.Null);
+            Assert.That(
+                UserMessagePolicy.AcceptModelAuthoredResponse(
+                    "Recuerdos: name: red; city: Lima.",
+                    draft),
+                Is.EqualTo("Recuerdos: name: red; city: Lima."));
         });
     }
 

@@ -7102,6 +7102,14 @@ _MACHINE_STATUS_OBSERVATION_HEAD = (
 def _is_direct_request(text: str) -> bool:
     """Require a request speech act before granting deterministic authority."""
 
+    if _has(
+        text,
+        r"\b(?:puedes|podrias|can\s+you|could\s+you)\s+"
+        r"(?:consulta|consultar|consult|investiga|investigar|investigate|"
+        r"research|look\s+on|averigua)\b",
+    ):
+        return True
+
     request_head = (
         rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_MUTE_VERB}|"
         r"haz|hacer|hazme|haceme|hace|toma|tomar|fotografia|fotografiar|"
@@ -7120,7 +7128,7 @@ def _is_direct_request(text: str) -> bool:
         r"senala|point\s+out|indaga|hunt\s+through|"
         r"senalame|echale\s+un\s+vistazo|have\s+a\s+look|look\s+at|"
         r"pull\s+up|pasame|sacame|take\s+stock|inventory|"
-        r"quisiera|i\s+would\s+like|reune|gather|repasa|"
+        r"quisiera|i\s+would\s+like|i['’]?d\s+like|reune|gather|repasa|"
         r"pon\s+a\s+la\s+vista|bring\b.{0,48}\binto\s+view|"
         r"bring\s+me\s+up\s+to\s+date|dejame|armame|track\s+down|"
         r"a\s+ver\s+si|run\s+(?:this|a\s+quick)\s+check|"
@@ -8871,10 +8879,10 @@ def _strict_catalog_request(
             return resolved
 
     if (
-        request_observation
-        and _has(
+        _has(
             text,
-            r"^(?:consulta|consultar|consult|investiga|investigar|investigate|"
+            r"(?:^|\b(?:puedes|podrias|can\s+you|could\s+you)\s+)"
+            r"(?:consulta|consultar|consult|investiga|investigar|investigate|"
             r"research|look\s+on|averigua)\b",
         )
         and _has(
@@ -9936,6 +9944,17 @@ def _review_application_and_window_effects(
 ) -> None:
     """Append authenticated application and foreground-window effects."""
 
+    close_request = _match(
+        folded,
+        (
+            r"^[¿?¡!\s]*(?:(?:necesito|quiero|quisiera)\s+que\s+|"
+            r"(?:i\s+need|i\s+want|i['’]?d\s+like)\s+you\s+to\s+)?"
+            r"(?P<body>(?:cierra|cerra|cerrar|cierres|close)\b.+)$"
+        ),
+    )
+    close_text = close_request.group("body") if close_request is not None else folded
+    close_head = _request_head(close_text)
+
     authenticated_open_list = _authenticated_application_list(
         folded,
         application_names,
@@ -9990,13 +10009,16 @@ def _review_application_and_window_effects(
             matches.append((continued_application.start("app"), 0, "app.open"))
 
     if (
-        _head_is(head, r"(?:cierra|cerra|cerrar|close|cierralo|cierrala)")
+        _head_is(
+            close_head,
+            r"(?:cierra|cerra|cerrar|cierres|close|cierralo|cierrala)",
+        )
         and (
             (
-                _has(folded, r"\b(?:cierra|cerra|cerrar|close)\b")
+                _has(close_text, r"\b(?:cierra|cerra|cerrar|cierres|close)\b")
                 and _has(
-                    folded,
-                    rf"^[¿?¡!\s]*(?:cierra|cerra|cerrar|close)\s+"
+                    close_text,
+                    rf"^[¿?¡!\s]*(?:cierra|cerra|cerrar|cierres|close)\s+"
                     rf"(?:(?:la|the)\s+)?(?:(?:ventana|window)\s+(?:de|of)\s+)?"
                     rf"(?:{_KNOWN_APPLICATION})"
                     r"(?:\s+(?:ventana|window|aplicacion|application|app))?"
@@ -10007,8 +10029,8 @@ def _review_application_and_window_effects(
                 )
             )
             or _has(
-                folded,
-                r"^[¿?¡!\s]*(?:cierra|cerra|cerrar|close)\s+"
+                close_text,
+                r"^[¿?¡!\s]*(?:cierra|cerra|cerrar|cierres|close)\s+"
                 r"(?:(?:la|the)\s+)?(?:"
                 r"(?:ventana|window)\s+(?:activa|active|actual|current)|"
                 r"(?:active|current)\s+window"
@@ -10017,7 +10039,7 @@ def _review_application_and_window_effects(
             or (
                 context_open_application
                 and _has(
-                    folded,
+                    close_text,
                     r"^(?:cierralo|cierrala|close it)[\s?!.]*$",
                 )
             )
@@ -10030,7 +10052,7 @@ def _review_application_and_window_effects(
             matches,
             folded,
             "app.close",
-            r"\b(?:cierra|cerra|cerrar|close|cierralo|cierrala)\b",
+            r"\b(?:cierra|cerra|cerrar|cierres|close|cierralo|cierrala)\b",
         )
 
     for pattern, operation in (

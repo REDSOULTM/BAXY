@@ -2837,6 +2837,35 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertIn("mantén la primera persona", prompt)
         self.assertIn("no agregues una pregunta genérica", prompt)
 
+    def test_plain_verified_projection_reaches_the_composer_as_observed_evidence(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {
+                "choices": [
+                    {"message": {"content": "Listo, guardé el dato en la memoria local."}}
+                ]
+            }
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "Recuérdame como Sol",
+            "status",
+            {
+                "situation": "Guardé el dato en la memoria local.",
+                "requiredActions": ["guardé"],
+            },
+        )
+
+        self.assertEqual(result, "Listo, guardé el dato en la memoria local.")
+        self.assertEqual(len(seen), 1)
+        self.assertIn(
+            "Guardé el dato en la memoria local.",
+            seen[0]["messages"][1]["content"],
+        )
+
     def test_current_news_summary_contract_survives_every_compose_attempt(self):
         runtime = object.__new__(LlmRuntime)
         seen = []

@@ -834,6 +834,8 @@ def test_standalone_gratitude_is_deterministic_social_conversation(
         # Agradecimiento con acuse cerrado por delante o vocativo por detrás.
         ("Perfecto, gracias", "es"),
         ("Muy bien gracias", "es"),
+        ("Perfecto", "es"),
+        ("Muy bien.", "es"),
         ("gracias baxy", "es"),
         ("gracias baxy, sos un capo", "es"),
         # El inglés se toma de la rama que coincide, no de un contador de
@@ -853,6 +855,8 @@ def test_standalone_gratitude_is_deterministic_social_conversation(
         ("see you later", "en"),
         ("good night", "en"),
         ("perfect, thanks", "en"),
+        ("Perfect.", "en"),
+        ("Awesome", "en"),
         ("thanks, you're awesome", "en"),
         ("mi dia fue extremadamente duro", "es"),
         ("my day was extremely hard", "en"),
@@ -1734,6 +1738,24 @@ def test_explicit_arguments_are_bound_to_each_effect_fragment(
     expected: dict[str, object],
 ) -> None:
     assert _explicit_arguments_from_evidence(operation, evidence) == expected
+
+
+@pytest.mark.parametrize(
+    ("evidence", "expected"),
+    [
+        ("Necesito que cierres whatsapp", {"process": "whatsapp"}),
+        ("Cierra la ventana de Bloc de notas.", {"process": "Bloc de notas"}),
+        ("I need you to close WhatsApp", {"process": "WhatsApp"}),
+        ("Close the Notepad window", {"process": "Notepad"}),
+        ("cierra la ventana activa", None),
+        ("close it", None),
+    ],
+)
+def test_named_close_process_is_grounded_without_requesting_an_internal_id(
+    evidence: str,
+    expected: dict[str, object] | None,
+) -> None:
+    assert _explicit_arguments_from_evidence("window.resolve", evidence) == expected
 
 
 @pytest.mark.parametrize(

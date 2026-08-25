@@ -10,6 +10,7 @@ from baxy_mind.llm import (
     NARRATOR_PROMPT,
     SYSTEM_PROMPT,
     USER_MESSAGE_PROMPT,
+    _compose_situation_payload,
     _compose_shape_instruction,
     compose_visible_defect,
     visible_reply_invents_a_spanish_infinitive,
@@ -69,6 +70,89 @@ def test_shape_instruction_is_not_the_published_sentence() -> None:
     )
     assert "The window is closed." not in close
     assert "Name the window" not in close
+
+    memory_projection = _compose_shape_instruction(
+        {"observed": {"statement": "Guardé el dato en la memoria local."}},
+        "es",
+        "recuérdame como Sol",
+    )
+    assert "full observed action and its object" in memory_projection
+
+    records = [{"label": "name", "value": "red"}]
+    memory_records = _compose_shape_instruction(
+        {"kind": "status", "polarity": "success", "records": records},
+        "es",
+        "cómo me llamo",
+    )
+    assert "one memory value" in memory_records
+    assert "internal field label" in memory_records
+
+
+def test_compose_payload_preserves_safe_memory_pairings_and_neutral_consent_cause() -> None:
+    records = [{"label": "name", "value": "red"}]
+    payload = _compose_situation_payload(
+        {
+            "kind": "status",
+            "polarity": "success",
+            "cause": "memory_records",
+            "records": records,
+        },
+        "es",
+        "cómo me llamo",
+    )
+    assert payload["records"] == records
+    assert payload["cause"] == "listed memories"
+
+    consent = _compose_situation_payload(
+        {
+            "kind": "clarification",
+            "polarity": "pending",
+            "cause": "context_not_saved",
+        },
+        "es",
+        "me llamo red",
+    )
+    assert "local memory" in consent["cause"]
+    assert "context_not_saved" not in json.dumps(consent)
+
+
+def test_compose_payload_translates_verified_core_failure_without_exposing_code() -> None:
+    payload = _compose_situation_payload(
+        {
+            "kind": "failure",
+            "polarity": "failure",
+            "cause": "mission_failed",
+            "reason": "window_not_found",
+        },
+        "es",
+        "cierra WhatsApp",
+    )
+
+    assert payload["reason"] == "there is no matching visible window"
+    assert "window_not_found" not in json.dumps(payload)
+
+    assert compose_visible_defect(
+        "No pude: no hay una ventana está cerrada.",
+        "error",
+        "cierra WhatsApp",
+        {
+            "situation": (
+                '{"kind":"failure","polarity":"failure",'
+                '"cause":"mission_failed","reason":"window_not_found"}'
+            )
+        },
+    ) == "invented"
+    assert compose_visible_defect(
+        "No pude: no pude encontrarlo.",
+        "error",
+        "cierra WhatsApp",
+        {
+            "situation": (
+                '{"kind":"failure","polarity":"failure",'
+                '"cause":"mission_failed","reason":"window_not_found"}'
+            )
+        },
+    ) == "invented"
 
 
 def test_compose_payload_does_not_contain_published_sentences() -> None:

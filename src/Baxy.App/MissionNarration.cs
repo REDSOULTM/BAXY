@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Baxy.App;
@@ -57,7 +58,7 @@ internal static class MissionNarration
             {
                 ["stepCount"] = completedMessages.Count,
                 ["steps"] = steps,
-                ["reason"] = reason.Trim(),
+                ["reason"] = NormalizeFailureReason(reason),
             });
     }
 
@@ -102,5 +103,31 @@ internal static class MissionNarration
             message.Split(
                 ['\r', '\n'],
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+    }
+
+    private static string NormalizeFailureReason(string reason)
+    {
+        string trimmed = reason.Trim();
+        try
+        {
+            if (JsonNode.Parse(trimmed) is JsonObject facts)
+            {
+                foreach (string key in new[] { "error", "cause" })
+                {
+                    if (facts[key] is JsonValue value
+                        && value.TryGetValue(out string? code)
+                        && !string.IsNullOrWhiteSpace(code))
+                    {
+                        return code.Trim();
+                    }
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            // A plain person-facing reason remains valid input.
+        }
+
+        return trimmed;
     }
 }

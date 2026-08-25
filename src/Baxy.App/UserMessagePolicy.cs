@@ -671,12 +671,50 @@ internal static class UserMessagePolicy
             if (root.TryGetProperty(key, out JsonElement value)
                 && value.GetString() is { Length: > 0 } text)
             {
-                facts.Add(text);
+                if (key != "reason" || !IsMachineFailureCode(text))
+                {
+                    facts.Add(text);
+                }
             }
         }
 
-        return facts.Take(20).ToArray();
+        if (root.TryGetProperty("records", out JsonElement records)
+            && records.ValueKind == JsonValueKind.Array)
+        {
+            JsonElement[] projectedRecords = records.EnumerateArray().Take(20).ToArray();
+            bool labelsDisambiguateMultipleRecords = projectedRecords.Length > 1;
+            foreach (JsonElement record in projectedRecords)
+            {
+                if (record.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+
+                foreach (string key in labelsDisambiguateMultipleRecords
+                    ? new[] { "label", "value" }
+                    : new[] { "value" })
+                {
+                    if (record.TryGetProperty(key, out JsonElement property)
+                        && property.ValueKind == JsonValueKind.String
+                        && property.GetString() is { Length: > 0 } text)
+                    {
+                        facts.Add(text);
+                    }
+                }
+            }
+        }
+
+        return facts
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(40)
+            .ToArray();
     }
+
+    private static bool IsMachineFailureCode(string text) =>
+        Regex.IsMatch(
+            text,
+            @"^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool RequiresUncertainty(string source)
     {

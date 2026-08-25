@@ -244,6 +244,34 @@ def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
 
 
 @pytest.mark.parametrize(
+    "text",
+    [
+        (
+            "Muy bien, sabes, me falla mucho whatsapp, puedes investigar en "
+            "internet porqeu suele fallar?"
+        ),
+        "WhatsApp keeps failing; can you investigate online why that happens?",
+    ],
+)
+def test_embedded_explicit_public_research_request_routes_to_web_search(text: str) -> None:
+    result = resolve_explicit_effects(text, {"web.search", "network.port.list"})
+
+    assert result is not None
+    assert result.operations == ("web.search",)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "No puedes investigar en internet por qué falla WhatsApp.",
+        "Don't investigate online why WhatsApp fails.",
+    ],
+)
+def test_negated_public_research_never_routes_to_web_search(text: str) -> None:
+    assert resolve_explicit_effects(text, {"web.search"}) is None
+
+
+@pytest.mark.parametrize(
     ("text", "operation"),
     [
         ("Busca el archivo informe en Descargas", "filesystem.search"),
@@ -4333,6 +4361,48 @@ def test_complete_general_requests_do_not_degrade_to_clarification(
 
     assert result is not None
     assert result.operations == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "application"),
+    [
+        ("Necesito que cierres whatsapp", "WhatsApp"),
+        ("Quisiera que cierres Spotify.", "Spotify"),
+        ("I need you to close Spotify.", "Spotify"),
+        ("I'd like you to close WhatsApp.", "WhatsApp"),
+    ],
+)
+def test_bounded_need_and_desire_frames_preserve_direct_app_close_authority(
+    text: str,
+    application: str,
+) -> None:
+    result = resolve_explicit_effects(
+        text,
+        AVAILABLE | {"app.close"},
+        (application,),
+    )
+
+    assert result is not None
+    assert result.operations == ("app.close",)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "No necesito que cierres WhatsApp.",
+        "I don't need you to close Spotify.",
+        "Necesito saber por qué se cierra WhatsApp.",
+    ],
+)
+def test_bounded_app_close_frames_do_not_invent_authority(text: str) -> None:
+    assert (
+        resolve_explicit_effects(
+            text,
+            AVAILABLE | {"app.close"},
+            ("WhatsApp", "Spotify"),
+        )
+        is None
+    )
 
 
 @pytest.mark.parametrize(

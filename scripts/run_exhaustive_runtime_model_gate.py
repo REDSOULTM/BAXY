@@ -333,6 +333,8 @@ class MindClient:
             reply = self._next(remaining)
             if reply.get("id") == request_id:
                 reply_type = str(reply.get("type") or "")
+                if reply_type == "turn.signal":
+                    continue
                 if reply_type == "error":
                     raise RuntimeError(
                         "mind request failed: "

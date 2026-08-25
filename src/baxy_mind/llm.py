@@ -2840,6 +2840,11 @@ _CAUSE_FACT = {
         "I could not safely word the verified result without losing its facts"
     ),
     "app_not_found": "not found",
+    "window_not_found": "there is no matching visible window",
+    "web_search_results_irrelevant": (
+        "the public search returned no results relevant enough to verify"
+    ),
+    "step_failed": "a mission step did not complete",
     "mission_failed": "mission unfinished",
     "mission_recovery_uncertain_effect": (
         "the previous effect may already have happened and real state must be checked "
@@ -2854,6 +2859,10 @@ _CAUSE_FACT = {
     "memory_none": "no matching memories",
     "note_choice": "choose a note",
     "memory_records": "listed memories",
+    "context_not_saved": (
+        "the person stated personal context but did not ask to save it; ask whether "
+        "to save it in local memory"
+    ),
 }
 
 
@@ -2867,6 +2876,12 @@ def _situation_from_facts(facts: dict) -> dict:
         except json.JSONDecodeError:
             return {}
         return parsed if isinstance(parsed, dict) else {}
+    if isinstance(raw, str) and raw.strip():
+        # Plain projections are verified person-facing evidence, not the final
+        # answer. Preserve their meaning in the model input instead of reducing
+        # them to an action verb with no object (for example ``guardé`` without
+        # the fact that a memory record was saved).
+        return {"observed": {"statement": raw.strip()}}
     return {}
 
 
@@ -2885,7 +2900,7 @@ def _compose_situation_payload(situation: dict, language: str, user_text: str = 
     cause_key = str(situation.get("cause") or "").strip().lower()
     skip_steps = cause_key == "mission_failed"
     skip_kind = cause_key == "acting"
-    for key in ("kind", "polarity", "target", "steps", "stepCount"):
+    for key in ("kind", "polarity", "target", "steps", "stepCount", "records"):
         if skip_steps and key in {"steps", "stepCount"}:
             continue
         if skip_kind and key in {"kind", "polarity"}:
@@ -2949,7 +2964,16 @@ def _app_is_feminine(name: str) -> bool:
 def _compose_shape_instruction(situation: dict, language: str, user_text: str) -> str:
     """Describe what to name. Never the sentence the person should read."""
 
-    if str(situation.get("polarity") or "").strip().lower() != "success":
+    observed = situation.get("observed")
+    observed_statement = (
+        str(observed.get("statement") or "").strip()
+        if isinstance(observed, dict)
+        else ""
+    )
+    if (
+        str(situation.get("polarity") or "").strip().lower() != "success"
+        and not observed_statement
+    ):
         return ""
     kind = str(situation.get("kind") or "").strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()
@@ -2959,14 +2983,26 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     steps = situation.get("steps")
     if cause == "mission_completed" and isinstance(steps, list) and len(steps) >= 2:
         bits.append("Mention every step once.")
-    observed = situation.get("observed")
     if isinstance(observed, dict):
+        if observed_statement:
+            bits.append("Preserve the full observed action and its object; do not make it vague.")
         if isinstance(observed.get("app"), str) and observed["app"].strip():
             bits.append("Name observed.app. State open, closed or playing from the facts.")
         if "level" in observed:
             bits.append("Name the volume number.")
         if "muted" in observed:
             bits.append("Name mute state.")
+    records = situation.get("records")
+    if isinstance(records, list) and records:
+        if len(records) == 1:
+            bits.append(
+                "Answer the person's question with the one memory value; do not expose "
+                "its internal field label."
+            )
+        else:
+            bits.append(
+                "Name each memory label with its paired value; keep every pairing unchanged."
+            )
     if language == "en" and bits:
         bits.append("English only.")
     return " ".join(bits)
@@ -3104,6 +3140,8 @@ def compose_visible_defect(
         return "invented"
     if re.search(r"\b(\w+)(?:\s*[,;:]\s*|\s+)\1\b", folded):
         return "invented"
+    if re.match(r"^\s*no pude\s*:\s*no pude\b", folded):
+        return "invented"
     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
         return "copied_instruction"
     if re.search(
@@ -3123,6 +3161,8 @@ def compose_visible_defect(
     if re.search(r"(?m)^[a-z]{8,}$", folded):
         return "invented"
     if re.search(r"ventana[a-záéíóúñ]{2,}|window[a-z]{2,}", folded):
+        return "invented"
+    if re.search(r"\bno hay (?:una|ninguna) ventana est[aá]\b", folded):
         return "invented"
     if re.search(r"\bproviders?\b", folded) and "provider" not in (user_text or "").casefold():
         return "internal_code"
@@ -7896,6 +7936,7 @@ class LlmRuntime:
             and not news_summary_request
             and len(required_facts) > 1
             and (not required_actions or required_actions == ["verifiqué"])
+            and not isinstance(situation.get("records"), list)
         ):
             situation = str(facts.get("situation") or "").strip()
             header = situation.splitlines()[0].strip() if situation else ""
@@ -8176,6 +8217,16 @@ class LlmRuntime:
                 rest = rest[0].upper() + rest[1:]
             return rest if publishable(rest) else candidate
 
+        def failure_dedup_clip(candidate: str) -> str:
+            trial = re.sub(
+                r"^\s*no pude\s*:\s*no pude\b",
+                "No pude",
+                (candidate or "").strip(),
+                count=1,
+                flags=re.IGNORECASE,
+            )
+            return trial if trial != candidate and publishable(trial) else candidate
+
         def close_clip(candidate: str) -> str:
             if publishable(candidate):
                 return candidate
@@ -8218,7 +8269,11 @@ class LlmRuntime:
         text = _strip_prompt_labels(
             (response["choices"][0]["message"].get("content") or "").strip()
         )
-        text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(text)))))
+        text = close_clip(
+            failure_dedup_clip(
+                drop_request_verb(time_clip(title_clip(acting_clip(text))))
+            )
+        )
         if publishable(text):
             return text
         if (
@@ -8333,7 +8388,11 @@ class LlmRuntime:
         retry_text = _strip_prompt_labels(
             (retry["choices"][0]["message"].get("content") or "").strip()
         )
-        retry_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(retry_text)))))
+        retry_text = close_clip(
+            failure_dedup_clip(
+                drop_request_verb(time_clip(title_clip(acting_clip(retry_text))))
+            )
+        )
         if publishable(retry_text):
             return retry_text
         retry_defect = (
@@ -8377,7 +8436,11 @@ class LlmRuntime:
         third_text = _strip_prompt_labels(
             (third["choices"][0]["message"].get("content") or "").strip()
         )
-        third_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(third_text)))))
+        third_text = close_clip(
+            failure_dedup_clip(
+                drop_request_verb(time_clip(title_clip(acting_clip(third_text))))
+            )
+        )
         if publishable(third_text):
             return third_text
         third_defect = (

@@ -50,6 +50,40 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
+    [TestCase("Quiero que me recuerdes como red", "red")]
+    [TestCase("Necesito que me recuerdes como Alicia", "Alicia")]
+    [TestCase("I want you to remember me as Jordan", "Jordan")]
+    [TestCase("I'd like you to remember me as Renée", "Renée")]
+    public void ExplicitRememberMeAsRequestsRouteANameSave(string text, string expectedName)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.save"));
+            Assert.That(
+                result.Operation?.PrivateArguments["selector"]?.GetValue<string>(),
+                Is.EqualTo("name"));
+            Assert.That(
+                result.Operation?.PrivateArguments["value"]?.GetValue<string>(),
+                Is.EqualTo(expectedName));
+        });
+    }
+
+    [TestCase("No quiero que me recuerdes como red")]
+    [TestCase("I don't want you to remember me as Jordan")]
+    public void NegatedRememberMeAsRequestsNeverPersist(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.Not.EqualTo(MemoryParseOutcome.Route));
+            Assert.That(result.Operation, Is.Null);
+        });
+    }
+
     [TestCase("what do you know about me")]
     [TestCase("que tienes guardado sobre mi")]
     [TestCase("cosa ricordi di me")]

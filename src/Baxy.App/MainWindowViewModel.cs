@@ -602,7 +602,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     AddMessage(
                         "BAXY",
                         TurnVisibleFacts.Clarification("context_not_saved"),
-                        isUser: false);
+                        isUser: false,
+                        messageEvent: UserMessageEvent.Clarification);
                     return;
                 case MemoryParseOutcome.SessionContextOnly:
                     AddMessage(
@@ -2511,7 +2512,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             FinishMindPlanWithFailure(
                 execution,
                 TurnVisibleFacts.Failure(
-                    "step_failed",
+                    response.ErrorCode ?? "step_failed",
                     new JsonObject { ["step"] = execution.NextIndex + 1 }));
             return;
         }
