@@ -1648,10 +1648,12 @@ en el runner. **No es 1.947/1.947 pass.** Siguiente shard: 900.
 ### Continuación 2026-08-26 — cobertura 1.947/1.947 capturada
 
 Merge privado `observed-product-replay.v2.jsonl`
-SHA-256 `58c73862521a9a6e90050ceb34064b000e0797648850f05d3f843cfdcbc9607f`.
-**1.947 filas, 1.947 `message_id` distintos, 0 vacíos, 0 JSON visible.**
-731 `No pude: no responde.` (compose muerto a mitad de shard) y 45
-`composition_lost`. Eso **no es** 1.947 pass. Resumen versionable:
+SHA-256 `d6e7db3ec461fe6a3810ff22d1127bb9b2db357073ea1b6ae49ad82252f556c1`
+(rejugó 400–900). **1.947 filas, 1.947 `message_id` distintos, 0 vacíos, 0 JSON.**
+651 `No pude: no responde.` y 50 `composition_lost`. Shards sanos (0 no_responde):
+100–200, 200–400, 400–500, 600–700. Eso **no es** 1.947 pass. El compose vacío
+es el cuello: hay que rejuglar los shards sucios y hacer que un fallo de
+compose no se coma el turno. Resumen:
 `artifacts/goal10/observed-replay-summary.v1.json`.
 
 Hay que rejuglar los shards con sidecar degradado (400–800, 800–1200,
