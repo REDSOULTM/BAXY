@@ -79,6 +79,18 @@ public sealed class PlannerAppBoundaryTests
                     "composition_lost_verified_facts",
                     """{"kind":"operation","operation":"input.visible.click","polarity":"failure","verified":false,"succeeded":false,"error":"visible_click_no_receipt","effectUncertain":true}"""),
                 Is.EqualTo("No pude: no vi el control."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    TurnVisibleFacts.Failure("visible_click_no_receipt")),
+                Is.EqualTo("No pude: no vi el control."));
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "No pude: no pude formular el resultado.",
+                    UserMessagePolicy.Create(
+                        """{"kind":"operation","operation":"input.visible.click","polarity":"failure","verified":false,"succeeded":false,"error":"visible_click_no_receipt"}""",
+                        UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted))),
+                Is.EqualTo("composition_lost_verified_facts"));
         });
     }
 

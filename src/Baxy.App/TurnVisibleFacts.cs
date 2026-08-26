@@ -136,7 +136,10 @@ internal static class TurnVisibleFacts
         string? polarity = ReadString(root, "polarity");
         string? cause = ReadString(root, "cause");
         string? operation = ReadString(root, "operation");
-        string? error = ReadString(root, "error");
+        string? error = ReadString(root, "error")
+            ?? (cause is "opened" or "focused" or "mission_completed" or "mission_failed"
+                ? null
+                : cause);
         bool uncertain = root.TryGetProperty("effectUncertain", out JsonElement uncertainNode)
             && uncertainNode.ValueKind is JsonValueKind.True;
         bool success = string.Equals(polarity, "success", StringComparison.Ordinal)

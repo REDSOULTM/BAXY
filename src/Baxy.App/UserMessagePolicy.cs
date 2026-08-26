@@ -211,6 +211,13 @@ internal static class UserMessagePolicy
         {
             return "no_response";
         }
+        if (IsStructuredFacts(draft.Source)
+            && draft.Intent is "status" or "error"
+            && (FoldForPolicy(modelText).Contains("no pude formular el resultado", StringComparison.Ordinal)
+                || FoldForPolicy(modelText).Contains("redactar una frase verificable", StringComparison.Ordinal)))
+        {
+            return "composition_lost_verified_facts";
+        }
         if (IsStructuredFacts(modelText))
         {
             return "structured_facts_not_prose";
