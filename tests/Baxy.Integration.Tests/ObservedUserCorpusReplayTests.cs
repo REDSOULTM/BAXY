@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Baxy.App;
@@ -140,7 +141,9 @@ public sealed class ObservedUserCorpusReplayTests
                         shard_index = index,
                         message_id = row.MessageId,
                         message = row.Text,
-                        text_sha256 = row.TextSha256,
+                        text_sha256 = Sha256(row.Text),
+                        source_text_sha256 = row.SourceTextSha256,
+                        redacted = row.Redacted,
                         @class = row.Class,
                         language = row.Language,
                         source = row.Source,
@@ -210,6 +213,7 @@ public sealed class ObservedUserCorpusReplayTests
                 TextProperty(value, "message_id"),
                 TextProperty(value, "text_literal"),
                 TextProperty(value, "text_sha256"),
+                BooleanProperty(value, "redacted"),
                 TextProperty(value, "class"),
                 TextProperty(value, "language"),
                 TextProperty(value, "source"),
@@ -423,13 +427,14 @@ public sealed class ObservedUserCorpusReplayTests
                     : [];
             })
             .ToArray();
-        if (operations.Length == 0)
+        string[] journalOperations = journal
+            .Where(static payload => TextProperty(payload, "phase") == "started")
+            .Select(static payload => TextProperty(payload, "operation"))
+            .Where(static operation => !string.IsNullOrWhiteSpace(operation))
+            .ToArray();
+        if (journalOperations.Length > 0)
         {
-            operations = journal
-                .Where(static payload => TextProperty(payload, "phase") == "started")
-                .Select(static payload => TextProperty(payload, "operation"))
-                .Where(static operation => !string.IsNullOrWhiteSpace(operation))
-                .ToArray();
+            operations = journalOperations;
         }
 
         return operations
@@ -461,6 +466,13 @@ public sealed class ObservedUserCorpusReplayTests
         && property.ValueKind == JsonValueKind.String
             ? property.GetString() ?? string.Empty
             : string.Empty;
+
+    private static bool BooleanProperty(JsonElement value, string name) =>
+        value.TryGetProperty(name, out JsonElement property)
+        && property.ValueKind == JsonValueKind.True;
+
+    private static string Sha256(string value) =>
+        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
 
     private static string RequiredAbsoluteFile(string name)
     {
@@ -540,7 +552,8 @@ public sealed class ObservedUserCorpusReplayTests
         int CorpusIndex,
         string MessageId,
         string Text,
-        string TextSha256,
+        string SourceTextSha256,
+        bool Redacted,
         string Class,
         string Language,
         string Source,

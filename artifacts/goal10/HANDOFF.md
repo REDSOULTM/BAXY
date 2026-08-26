@@ -1475,3 +1475,36 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   certifica todavía las 1.947. Próximo dueño: auditar las 626 variantes de contrato
   congeladas contra Identidad/catálogo, completar el ledger y ejecutar una primera
   tanda v2 representativa antes de la campaña completa.
+
+### Continuación 2026-08-25 — contrato actual independiente antes del replay
+
+- El adjudicador distingue ya efectos pedidos de operaciones auxiliares autorizadas
+  (`allowed_support_operations`). El journal debe demostrar riesgo, confirmación,
+  verificación y terminalidad tanto del efecto pedido como de cualquier soporte
+  realmente invocado; una dependencia lícita como `window.resolve` no se confunde
+  con el resultado solicitado y una operación extra continúa fallando.
+- `scripts/build_observed_current_contracts.py` construye la autoridad independiente
+  **antes** de ejecutar el producto. Exige una revisión binaria por cada literal
+  único, liga texto, contrato histórico y catálogo tipado actual, rechaza operaciones
+  retiradas, conflictos, duplicados, faltantes y `unreviewed`, y sólo después proyecta
+  los 626 contratos aprobados sobre las 1.947 ocurrencias. Mensajes y revisiones
+  exactas permanecen fuera del repositorio; el resumen versionable sólo contiene
+  hashes y conteos.
+- El corpus histórico calcula su hash antes de sanear secretos, correo, teléfono o
+  `%USERPROFILE%`. Para las 15 filas redactadas se preservan por separado el hash
+  privado original (`source_text_sha256`) y el hash del literal que BAXY recibe
+  realmente (`text_sha256`/`replay_text_sha256`). Los no redactados siguen exigiendo
+  igualdad exacta. Así no se recupera ni se inventa contenido privado y toda revisión
+  queda ligada al input físico exacto.
+- Plantilla privada integral generada en
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-current-contract-review-template.v1.jsonl`:
+  **1.947 ocurrencias, 626 textos únicos**, SHA-256
+  `745a1a57a9a508dda0e1301788ebdf3b3ee95c42d15b5daf0507c5c646768012`.
+  Aún contiene `verdict=unreviewed`: es inventario de trabajo, no evidencia de pase.
+- El cambio actualiza el hash de la adjudicación privada del smoke a
+  `cb9c90257d78343f50f22000feb43ba02d099516e3684061bf43b85e624e4561`;
+  el resultado continúa **2/2 pass** y 2/0 en las nueve dimensiones. Pruebas Python
+  focales **17/17, 0 skips**; contrato .NET **1/1, 0 skips**;
+  `scripts/test_source_quality.ps1` **verde** en modo Fast, build Release con 0
+  advertencias y 0 errores. Próximo dueño: completar y validar las 626 revisiones
+  actuales antes de usar la proyección de 1.947 como mapping del replay.

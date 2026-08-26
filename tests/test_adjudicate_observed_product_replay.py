@@ -227,3 +227,55 @@ def test_normal_sensitive_operation_requires_confirmation_challenge() -> None:
 
     assert checks["confirmation"]["verdict"] == "fail"
     assert "challenge" in checks["confirmation"]["reason"]
+
+
+def test_verified_catalog_support_operation_is_not_an_unrequested_effect() -> None:
+    effect = "app.close"
+    support = "window.resolve"
+    row = action_row()
+    row["expected_contract"] = {
+        "acceptance_test_id": "hist_app_close",
+        "operations": [effect],
+        "allowed_support_operations": [support, "window.active"],
+        "denied_operations": [],
+    }
+    row["turn_audit"] = final_audit("action", [effect])
+    row["catalog_evidence"] = [
+        {
+            "operation": support,
+            "risk": "read_only",
+            "verifier_contract_id": "window.resolve.snapshot.v1",
+        },
+        {
+            "operation": effect,
+            "risk": "work_loss",
+            "verifier_contract_id": "app.close.postread.v1",
+        },
+    ]
+    row["confirmation_mode"] = "bypass"
+    row["journal_payloads"] = [
+        {"phase": "started", "operation": support, "invocationId": "support"},
+        {
+            "phase": "completed",
+            "operation": support,
+            "invocationId": "support",
+            "response": {"status": "completed", "verified": True, "errorCode": None},
+        },
+        {"phase": "started", "operation": effect, "invocationId": "effect"},
+        {
+            "phase": "completed",
+            "operation": effect,
+            "invocationId": "effect",
+            "response": {"status": "completed", "verified": True, "errorCode": None},
+        },
+    ]
+
+    checks = mechanical_checks(row, row["expected_contract"])
+
+    assert {dimension: check["verdict"] for dimension, check in checks.items()} == {
+        "requested_action": "pass",
+        "risk": "pass",
+        "confirmation": "pass",
+        "verification": "pass",
+        "terminal": "pass",
+    }

@@ -149,6 +149,7 @@ def load_corrections(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
             "provider_roles",
             "verification",
             "natural_response",
+            "allowed_support_operations",
         }
         unknown = set(replacement) - allowed
         if unknown:
@@ -276,6 +277,10 @@ def _terminal_responses(completed: list[dict[str, Any]]) -> list[dict[str, Any]]
 
 def mechanical_checks(row: dict[str, Any], contract: dict[str, Any]) -> dict[str, dict[str, Any]]:
     expected = _string_list(contract.get("operations") or [], "contract.operations")
+    support = _string_list(
+        contract.get("allowed_support_operations") or [],
+        "contract.allowed_support_operations",
+    )
     denied = set(_string_list(contract.get("denied_operations") or [], "contract.denied_operations"))
     actual, final_kind = _audit_operations(row)
     started, completed = _journal(row)
@@ -291,14 +296,19 @@ def mechanical_checks(row: dict[str, Any], contract: dict[str, Any]) -> dict[str
         requested_failures.append("final effect operations differ from the corrected contract")
     if expected and not started_operations:
         requested_failures.append("requested operation never reached the journal")
-    if any(operation not in expected for operation in started_operations):
+    if any(operation not in expected + support for operation in started_operations):
         requested_failures.append("journal contains an operation outside the corrected contract")
     if not expected and (started or completed):
         requested_failures.append("a no-effect contract produced journal authority")
     checks["requested_action"] = _check(
         "fail" if requested_failures else "pass",
         "; ".join(requested_failures) if requested_failures else "audit and journal match the corrected requested operation sequence",
-        [f"expected={expected}", f"audit={actual}", f"journal_started={started_operations}"],
+        [
+            f"expected_effects={expected}",
+            f"allowed_support={support}",
+            f"audit={actual}",
+            f"journal_started={started_operations}",
+        ],
     )
 
     catalog = row.get("catalog_evidence")
@@ -318,8 +328,9 @@ def mechanical_checks(row: dict[str, Any], contract: dict[str, Any]) -> dict[str
             break
         catalog_operations.append(operation)
         catalog_risks.append(risk)
-    if expected and catalog_operations != expected:
-        catalog_failure = catalog_failure or "catalog evidence does not cover the corrected operation sequence"
+    risk_operations = started_operations or actual
+    if catalog_operations != risk_operations:
+        catalog_failure = catalog_failure or "catalog evidence does not cover every selected or journaled operation"
     if any(risk not in KNOWN_RISKS for risk in catalog_risks):
         catalog_failure = catalog_failure or "catalog evidence contains an unknown risk"
     if not expected and catalog_operations:
@@ -340,7 +351,7 @@ def mechanical_checks(row: dict[str, Any], contract: dict[str, Any]) -> dict[str
     if expected:
         if mode not in {"normal", "bypass"}:
             confirmation_failure = "confirmation mode was not captured"
-        elif not catalog_risks or len(catalog_risks) != len(expected):
+        elif not catalog_risks or len(catalog_risks) != len(risk_operations):
             confirmation_failure = "confirmation cannot be assessed without complete catalog risk evidence"
         else:
             requires = any(risk in CONFIRMATION_RISKS for risk in catalog_risks)
@@ -371,16 +382,26 @@ def mechanical_checks(row: dict[str, Any], contract: dict[str, Any]) -> dict[str
         and item["response"].get("status") == "completed"
         and item["response"].get("verified") is True
     ]
-    verified_completions = [response for _, response in verified_pairs]
     verified_operations = [str(item.get("operation") or "") for item, _ in verified_pairs]
-    if expected and verified_operations != expected:
+    verified_effects = [operation for operation in verified_operations if operation in expected]
+    invoked_support = [operation for operation in started_operations if operation in support]
+    unverified_support = [
+        operation for operation in dict.fromkeys(invoked_support) if operation not in verified_operations
+    ]
+    if expected and verified_effects != expected:
         verification_failure = "not every requested operation has a completed verified postcondition"
+    elif unverified_support:
+        verification_failure = "a support operation lacks a completed verified postcondition"
     if not expected and responses:
         verification_failure = "no-effect row contains operation responses"
     checks["verification"] = _check(
         "fail" if verification_failure else "pass",
         verification_failure or "every requested operation has a completed verified postcondition",
-        [f"verified_operations={verified_operations}", f"expected={expected}"],
+        [
+            f"verified_effects={verified_effects}",
+            f"expected_effects={expected}",
+            f"unverified_support={unverified_support}",
+        ],
     )
 
     terminal_failure = ""
@@ -392,7 +413,7 @@ def mechanical_checks(row: dict[str, Any], contract: dict[str, Any]) -> dict[str
         terminal_failure = "journal has duplicate or missing started invocation IDs"
     elif sorted(started_ids) != sorted(completed_ids):
         terminal_failure = "journal has a dangling or foreign terminal invocation"
-    elif expected and len(verified_completions) != len(expected):
+    elif expected and (verified_effects != expected or unverified_support):
         terminal_failure = "requested mission did not reach an honest completed verified terminal"
     elif not expected and final_kind not in {"conversation", "clarify"}:
         terminal_failure = "no-effect row has no terminal conversation or clarification kind"
@@ -452,6 +473,7 @@ def adjudicate_rows(
                 "message": message,
                 "response": response,
                 "text_sha256": row["text_sha256"],
+                "source_text_sha256": row.get("source_text_sha256", row["text_sha256"]),
                 "response_sha256": text_sha256(response),
                 "contract": contract,
                 "contract_correction": deepcopy(correction),
