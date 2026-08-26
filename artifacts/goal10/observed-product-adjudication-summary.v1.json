@@ -3,46 +3,46 @@
   "corrections_sha256": "ef1c1aa44699f8b523a964dc260b750bb87d0a4bdbf00feabceb0a8f95c96d92",
   "dimension_verdict_counts": {
     "confirmation": {
-      "fail": 504,
-      "pass": 1443
+      "fail": 281,
+      "pass": 1666
     },
     "honesty": {
-      "fail": 191,
-      "pass": 1756
+      "fail": 122,
+      "pass": 1825
     },
     "language": {
-      "fail": 21,
-      "pass": 1926
+      "fail": 14,
+      "pass": 1933
     },
     "naturalness": {
       "pass": 1947
     },
     "pertinence": {
-      "fail": 191,
-      "pass": 1756
+      "fail": 289,
+      "pass": 1658
     },
     "requested_action": {
-      "fail": 860,
-      "pass": 1087
+      "fail": 742,
+      "pass": 1205
     },
     "risk": {
-      "fail": 159,
-      "pass": 1788
+      "fail": 158,
+      "pass": 1789
     },
     "terminal": {
-      "fail": 1014,
-      "pass": 933
+      "fail": 870,
+      "pass": 1077
     },
     "verification": {
-      "fail": 903,
-      "pass": 1044
+      "fail": 759,
+      "pass": 1188
     }
   },
-  "private_output_sha256": "11678f7e3b89865453fd4d6a00a6c57b4dc883dfbc926fad4ec643311b5c6e06",
+  "private_output_sha256": "f5b6c22bffa76818289e4af5114ed8a599cc0ae14f646c89a6b934951f55f9ca",
   "replay_inputs": [
     {
       "file": "observed-product-replay.v2.jsonl",
-      "sha256": "7d30748ebc8e9711cbcdb51cebabfdba0d4ed6bc9c0ba4b4edc8b60ba574a53b"
+      "sha256": "477e8de2940fe8c48ac6e440631b1a2bf63d00259f71e32bdb1ae4c85cbf335e"
     }
   ],
   "row_count": 1947,
@@ -50,11 +50,11 @@
   "semantic_review_inputs": [
     {
       "file": "observed-semantic-review.v2.jsonl",
-      "sha256": "53eaa8bcd7d75626733484f29df7776522ec69fe306bb4b95cb68c54c8f139ce"
+      "sha256": "bc46c40c0300feda4f605c4e354110d257cd62c377869230063f6899548cc5ab"
     }
   ],
   "verdict_counts": {
-    "fail": 1128,
-    "pass": 819
+    "fail": 970,
+    "pass": 977
   }
 }

@@ -1726,4 +1726,32 @@ visible aunque el primer plano falle. r88 skip 919 n=25: 5/5 «abrí la
 calculadora» `verified=true alreadyRunning=true` «Listo, la calculadora está
 abierta.»; «Suma 2 más 2» ejecuta `app.open`+`input.text.type` verificados.
 SHA-256 `3263cc287ec7d8e338f7952397b5c9466a2941e86894ea9ef79bb71683573ef6`.
-Remake 1.947 en shards r90 en curso.
+Remake 1.947 en shards r90 cerrado.
+
+### Continuación 2026-08-26 — remake r90 y adjudicación 977/1947
+
+19 shards r90, sidecar fresco, árbol con verificación UWP de Calculadora.
+Merge privado `observed-product-replay.v2.jsonl` SHA-256
+`477e8de2940fe8c48ac6e440631b1a2bf63d00259f71e32bdb1ae4c85cbf335e`.
+1.947 únicos, 0 vacíos, 2 `no_responde` («abre este.»), 287
+«No pude: no pude formular el resultado.». Ledger:
+`artifacts/goal10/observed-replay-campaign.v1.json`.
+
+Semantic reviews `observed-semantic-review.v2.jsonl` SHA-256
+`bc46c40c0300feda4f605c4e354110d257cd62c377869230063f6899548cc5ab`.
+Adjudicación privada `observed-product-adjudication.v2.jsonl` SHA-256
+`f5b6c22bffa76818289e4af5114ed8a599cc0ae14f646c89a6b934951f55f9ca`.
+Resumen versionable:
+`artifacts/goal10/observed-product-adjudication-summary.v1.json`.
+
+**977 pass / 970 fail. No es 1.947/1.947.** Naturalidad 1.947/1.947.
+Mecánica: acción pedida 742 fail, verificación 759, terminal 870,
+confirmación 281 (catálogo incompleto), riesgo 158. Semántica:
+pertinencia 289, honestidad 122, idioma 14.
+
+«abrí la calculadora» ya verifica (r88). El last-resort de compose
+perdido sigue publicando «formular el resultado» sobre hechos
+verificados (volumen, recordatorio, cierre, Spotify). «apretá el 5»
+sigue yendo a `input.visible.click` y el contrato pide
+`input.text.type`. Siguiente: narrar los hechos verificados en
+last-resort y teclear el dígito de calculadora.
