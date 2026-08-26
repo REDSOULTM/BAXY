@@ -1755,3 +1755,22 @@ verificados (volumen, recordatorio, cierre, Spotify). «apretá el 5»
 sigue yendo a `input.visible.click` y el contrato pide
 `input.text.type`. Siguiente: narrar los hechos verificados en
 last-resort y teclear el dígito de calculadora.
+
+### Continuación 2026-08-26 — last-resort de hechos y remake r91 1099/1947
+
+Last-resort nombra el hecho verificado (volumen, recordatorio, cierre,
+reproducción) o la causa persona-facing. La política rechaza la disculpa
+«formular el resultado» sobre JSON. «apretá el 5» entra por
+`input.text.type`; «abrí la calculadora y apretá el 5» abre y teclea.
+
+Remake r91, merge SHA-256
+`a76e397d8dde7736d087cca36cf181e3166f1fc0a8f91ce9e8732b260e5f9e0e`.
+1.947 únicos, 0 vacíos, 1 `no_responde`, 157 formular (eran 287).
+Semantic `d93d75d1c75f50348e309e86af51ceab9a23242022fd7aeef67537f9d2b7d4b5`.
+Adjudicación `27b7b7860a665d8cb0a0514f0e1a1fc7e51e70ce09bdd1c3e752b353c509d01e`.
+
+**1099 pass / 848 fail. No es 1.947/1.947.** Honestidad 24 fail (era 122).
+Naturalidad 1947/1947. Mecánica: acción 693, verificación 703, terminal
+819, confirmación 271. Top restante: «en Discord apretá silenciar» (63),
+click sin recibo, contratos vacíos (219), alarmas, Spotify/Netflix
+nombrados, catálogo de riesgo.
