@@ -165,7 +165,13 @@ internal static class UserMessagePolicy
     internal static bool IsStructuredFacts(string source)
     {
         ReadOnlySpan<char> trimmed = source.AsSpan().Trim();
-        return trimmed.Length >= 2 && trimmed[0] == '{' && trimmed[^1] == '}';
+        if (trimmed.Length >= 2 && trimmed[0] == '{' && trimmed[^1] == '}')
+        {
+            return true;
+        }
+
+        return source.Contains("{\"kind\":", StringComparison.Ordinal)
+            || source.Contains("\"polarity\":\"", StringComparison.Ordinal);
     }
 
     public static UserMessageDraft Create(

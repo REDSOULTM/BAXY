@@ -29,6 +29,7 @@ public sealed class ObservedUserCorpusReplayTests
         "BAXY_MIND_RAW_REPLY_AUDIT_PATH",
         "BAXY_MIND_TURN_AUDIT_PATH",
         "BAXY_VOICE_WAKE_ON_START",
+        "BAXY_CONFIRMATION_MODE",
     ];
 
     [Test]
@@ -64,6 +65,7 @@ public sealed class ObservedUserCorpusReplayTests
             "BAXY_MIND_MESSAGE_COMPOSE_AUDIT_PATH",
             composeAuditPath);
         Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
+        Environment.SetEnvironmentVariable("BAXY_CONFIRMATION_MODE", "bypass");
         Directory.CreateDirectory(dataRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
         File.Delete(outputPath);
@@ -79,6 +81,7 @@ public sealed class ObservedUserCorpusReplayTests
             using var startupTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             await viewModel.InitializeAsync(startupTimeout.Token);
             await WaitForMindAsync(viewModel, startupTimeout.Token);
+            ConfirmationModeStore.Write(dataRoot, ConfirmationMode.Bypass);
             if (memoryEnabledAtStart)
             {
                 await PrepareEnabledMemoryBaselineAsync(
@@ -269,12 +272,38 @@ public sealed class ObservedUserCorpusReplayTests
             viewModel.CanSend,
             Is.True,
             "The shell must accept the next observed turn instead of returning silently.");
-        await viewModel.SubmitAsync(CancellationToken.None);
-        if (!viewModel.Messages.Skip(previousCount).Any(static message => !message.IsUser))
+        await viewModel.SubmitAsync(cancellationToken);
+        if (!viewModel.Messages.Skip(previousCount).Any(static message => message.IsUser))
         {
             Assert.Fail(
-                "The turn returned without visible BAXY text. status="
+                "SubmitAsync accepted the draft but did not record the user turn. ready="
+                + viewModel.IsReady
+                + " busy="
+                + viewModel.IsBusy
+                + " status="
                 + viewModel.StatusDescription);
+        }
+        using var projectionTimeout = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken);
+        projectionTimeout.CancelAfter(TimeSpan.FromSeconds(60));
+        try
+        {
+            while (!viewModel.Messages
+                .Skip(previousCount)
+                .Any(static message => !message.IsUser))
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(20), projectionTimeout.Token);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Assert.Fail(
+                "Timed out waiting for BAXY text. status="
+                + viewModel.StatusDescription
+                + " compose="
+                + viewModel.LastMessageCompositionFailure
+                + " busy="
+                + viewModel.IsBusy);
         }
         ConversationMessage[] added = viewModel.Messages.Skip(previousCount).ToArray();
         Assert.Multiple(() =>

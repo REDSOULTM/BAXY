@@ -89,6 +89,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 () =>
                 {
                     LastMessageCompositionFailure = failure;
+                    AddMessageCore(
+                        "BAXY",
+                        TurnVisibleFacts.LastResortFailureProse(failure),
+                        isUser: false);
                     RestorePresentationState();
                 }),
             OnModelMessageQueued);

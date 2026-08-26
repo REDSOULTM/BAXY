@@ -28,6 +28,20 @@ internal static class TurnVisibleFacts
     internal static string Failure(string cause, JsonObject? extra = null) =>
         Event("failure", cause, extra);
 
+    internal static string LastResortFailureProse(string? cause)
+    {
+        // Only when the composer produced no text after its bounded retries.
+        // The live prompt already names these causes; silence is the worse lie.
+        string key = (cause ?? "").Trim().ToLowerInvariant();
+        return key switch
+        {
+            "no_response" or "provider_down" or "composer_request_failed"
+                or "composer_unavailable" => "No pude: no responde.",
+            "timeout" => "No pude: se agotó el tiempo.",
+            _ => "No pude: no pude formular el resultado.",
+        };
+    }
+
     internal static string Status(string cause, JsonObject? extra = null) =>
         Event("status", cause, extra);
 

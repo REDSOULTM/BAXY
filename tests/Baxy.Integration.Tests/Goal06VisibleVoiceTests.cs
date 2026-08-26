@@ -28,6 +28,10 @@ public sealed class Goal06VisibleVoiceTests
             Assert.That(failure, Does.Contain("\"polarity\":\"failure\""));
             Assert.That(success, Does.Not.Contain("Listo"));
             Assert.That(failure, Does.Not.Contain("No pude"));
+            Assert.That(
+                UserMessagePolicy.IsStructuredFacts(
+                    "Listo, completé 2 pasos.\n{\"kind\":\"operation\",\"polarity\":\"success\"}"),
+                Is.True);
         });
     }
 

@@ -1578,3 +1578,31 @@ Pruebas dueñas: `test_goal10_daily_use_surfaces…` + CASES + close voseo + com
 memory_disabled + `WindowSelector` **177 pytest + 4 NUnit**. Replay físico r36–r38
 aún no cierra: un freeze de 3 min en el sidecar tras matar corridas anteriores no
 es un pase. Siguiente: una fila IP en frío con llama limpio, luego las seis juntas.
+
+### Continuación 2026-08-26 — muestra v2 de 6 filas en bypass
+
+- El runner físico ahora espera input-ready, espera 60 s la proyección asíncrona
+  (NUnit no tiene dispatcher WPF) y, si la cola de composición agota 3 intentos,
+  publica un último recurso visible en vez de silencio. Confirmado: sin eso IP
+  dejaba `status=awaiting_mission_resume compose=no_response` y cero texto.
+- Las 1.947 se corren en **bypass**. Identidad pide los dos modos; el normal se
+  comprueba en la matriz, no fila a fila: `network.ip.list` es
+  `PrivacySensitive` y el compose de confirmación devolvía vacío. Decisión
+  anotada: no se baja el riesgo del catálogo (test Goal 05 lo sella).
+- Memoria: `BAXY_GOAL10_MEMORY_BASELINE=1` para que `memory.save` no muera en
+  `memory_disabled`.
+- r48 SHA-256 `18d259d97820111f59fed6a35420a2280432a1989ef09788b164d02dbfe2b3de`,
+  6/6 texto visible, 0 JSON en pantalla:
+
+  | Pedido | Respuesta | Journal |
+  |---|---|---|
+  | abrí la calculadora | Listo, la calculadora está abierta. | `app.open` |
+  | poné el brillo al 80 | Listo, el brillo está al 80%. | `system.settings.set` |
+  | cerrá la calculadora | composition_lost (cierre verificado) | `window.resolve`+`app.close` |
+  | cuál es mi ip | Mi IP es 100.64.0.11. | `network.ip.list` |
+  | acordate que… azul | Guardé el dato en la memoria local. | `memory.save` |
+  | cierra steam | No pude encontrarlo. (Steam ya cerrado) | `window.resolve` |
+
+- Queda: prosa de misión de cierre de 2 pasos (hechos sí, frase no) y cierre
+  ya-ausente como postcondición verificada, no `window_not_found`. Siguiente:
+  muestra de 25 y campaña 1.947 en shards.
