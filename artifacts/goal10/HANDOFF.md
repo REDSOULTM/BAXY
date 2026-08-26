@@ -1709,3 +1709,10 @@ Click voseo también entra; un «el 5» verificó «Listo, el 5 fue apretado.».
 Arreglo dueño: compose estructurado ya no llama a la disculpa-modelo que
 tira los hechos; last-resort nombra `displayName` verificado; una ventana
 visible ya-abierta se verifica aunque Windows niegue el primer plano.
+
+r86/r87 (skip 919, n=25): **0 `no_responde`**. «abrí la calculadora» sigue
+`verification_failed` (UWP `MainModule` / testhost); la frase ya no miente
+«no responde», es «No pude: no pude formular el resultado.». Discord Win32
+sí: «Listo, Discord ya está abierto.» Adjudicación r84+r87: 125 filas,
+**37 pass / 88 fail**. Resumen:
+`artifacts/goal10/observed-product-adjudication-r84-r87-summary.v1.json`.

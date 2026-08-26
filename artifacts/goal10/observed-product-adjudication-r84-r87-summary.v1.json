@@ -1,0 +1,64 @@
+{
+  "corrected_row_count": 0,
+  "corrections_sha256": "ef1c1aa44699f8b523a964dc260b750bb87d0a4bdbf00feabceb0a8f95c96d92",
+  "dimension_verdict_counts": {
+    "confirmation": {
+      "fail": 24,
+      "pass": 101
+    },
+    "honesty": {
+      "fail": 35,
+      "pass": 90
+    },
+    "language": {
+      "fail": 2,
+      "pass": 123
+    },
+    "naturalness": {
+      "pass": 125
+    },
+    "pertinence": {
+      "fail": 35,
+      "pass": 90
+    },
+    "requested_action": {
+      "fail": 61,
+      "pass": 64
+    },
+    "risk": {
+      "fail": 13,
+      "pass": 112
+    },
+    "terminal": {
+      "fail": 79,
+      "pass": 46
+    },
+    "verification": {
+      "fail": 74,
+      "pass": 51
+    }
+  },
+  "private_output_sha256": "ac23d5e6f0913720a351cabbe89abd35dffe82d2c001b258c11d66b5ec77e61d",
+  "replay_inputs": [
+    {
+      "file": "observed-shard-0763-0863-r84.jsonl",
+      "sha256": "562ffcf5fc9ec64b247c6bd740d5d9732af83b36188bea5e5f9b3ca90020d076"
+    },
+    {
+      "file": "observed-shard-0919-0944-r87.jsonl",
+      "sha256": "42923497df6ceddbfcba384f806e0ec5ef427752b374575974b900a6108133e9"
+    }
+  ],
+  "row_count": 125,
+  "schema": "baxy.goal10-observed-product-adjudication-summary.v1",
+  "semantic_review_inputs": [
+    {
+      "file": "observed-semantic-review-r84-r87.jsonl",
+      "sha256": "6788c9952ce892d15c1440b1fe7f7d8d5bb469f5fd04f57070e0e18edba3a374"
+    }
+  ],
+  "verdict_counts": {
+    "fail": 88,
+    "pass": 37
+  }
+}
