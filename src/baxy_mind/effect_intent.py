@@ -751,6 +751,25 @@ def _direct_calculator_arithmetic_request(folded: str) -> tuple[str, str] | None
     return request.group("app"), typed
 
 
+_CALCULATOR_DIGIT_PRESS = re.compile(
+    r"\b(?:apreta|aprieta|pulsa|presiona|press|toca)\s+"
+    r"(?:el\s+|the\s+|la\s+)?(?P<key>[0-9])\b",
+    re.IGNORECASE,
+)
+_CALCULATOR_OPEN_AND_PRESS = re.compile(
+    r"\b(?:abri|abre|abrir|open)\b.{0,80}\b(?:calculadora|calculator|calc)\b"
+    r".{0,40}\b(?:y|and)\b.{0,40}\b(?:apreta|aprieta|pulsa|presiona|press|toca)\b",
+    re.IGNORECASE,
+)
+
+
+def _direct_calculator_digit_press(folded: str) -> str | None:
+    """Recognize «apretá el 5» as a keystroke, not a visible-control click."""
+
+    request = _CALCULATOR_DIGIT_PRESS.search(folded)
+    return None if request is None else request.group("key")
+
+
 def _direct_voseo_open_request(folded: str) -> bool:
     """Recognize «me abrís/abres X» as an open request, not a capability quiz."""
 
@@ -12636,6 +12655,18 @@ def resolve_explicit_effects(
         calculator_math = _direct_calculator_arithmetic_request(folded)
         if calculator_math is not None:
             return EffectIntent(("app.open", "input.text.type"), calculator_math)
+    calculator_digit = _direct_calculator_digit_press(folded)
+    if calculator_digit is not None:
+        if (
+            {"app.open", "input.text.type"} <= available
+            and _CALCULATOR_OPEN_AND_PRESS.search(folded) is not None
+        ):
+            return EffectIntent(
+                ("app.open", "input.text.type"),
+                ("calculadora", calculator_digit),
+            )
+        if "input.text.type" in available:
+            return EffectIntent(("input.text.type",), (calculator_digit,))
     if "app.open" in available and _direct_voseo_open_request(folded):
         return EffectIntent(("app.open",), (folded,))
     if "calendar.event.list" in available and _relative_calendar_read_request(folded):

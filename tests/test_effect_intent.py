@@ -242,6 +242,8 @@ def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
         ("me abrís la calculadora", ("app.open",)),
         ("Suma 2 más 2 en la Calculadora", ("app.open", "input.text.type")),
         ("multiplicá 6 por 7 en la calc", ("app.open", "input.text.type")),
+        ("en la calculadora apretá el 5", ("input.text.type",)),
+        ("abrí la calculadora y apretá el 5", ("app.open", "input.text.type")),
     ],
 )
 def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
@@ -279,12 +281,37 @@ def test_calculator_arithmetic_types_the_verified_keystrokes() -> None:
 
 
 @pytest.mark.parametrize(
+    ("text", "expected", "evidence"),
+    [
+        ("apretá el 5", ("input.text.type",), ("5",)),
+        ("en la calculadora apretá el 5", ("input.text.type",), ("5",)),
+        ("apretá el 5 en la calculadora", ("input.text.type",), ("5",)),
+        (
+            "abrí la calculadora y apretá el 5",
+            ("app.open", "input.text.type"),
+            ("calculadora", "5"),
+        ),
+    ],
+)
+def test_calculator_digit_press_types_the_keystroke(
+    text: str,
+    expected: tuple[str, ...],
+    evidence: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(
+        text,
+        {"app.open", "input.text.type", "input.visible.click", "input.key.press"},
+    )
+
+    assert result == EffectIntent(expected, evidence)
+
+
+@pytest.mark.parametrize(
     ("text", "label"),
     [
         ("en Discord apretá silenciar", "silenciar"),
         ("apretá enviar en WhatsApp", "enviar"),
         ("hace click en el boton rojo", "rojo"),
-        ("en la calculadora apretá el 5", "5"),
     ],
 )
 def test_voseo_visible_click_keeps_the_control_label(text: str, label: str) -> None:
@@ -899,7 +926,8 @@ CASES = [
     ("en Discord apretá silenciar", ("input.visible.click",)),
     ("apretá enviar en WhatsApp", ("input.visible.click",)),
     ("hace click en el boton rojo", ("input.visible.click",)),
-    ("en la calculadora apretá el 5", ("input.visible.click",)),
+    ("en la calculadora apretá el 5", ("input.text.type",)),
+    ("abrí la calculadora y apretá el 5", ("app.open", "input.text.type")),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}

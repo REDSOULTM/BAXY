@@ -59,6 +59,26 @@ public sealed class PlannerAppBoundaryTests
                             },
                         })),
                 Is.EqualTo("Listo, Calculadora está abierta."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"audio.volume","polarity":"success","verified":true,"succeeded":true,"observed":{"final":{"volumePercent":30,"muted":false}}}"""),
+                Is.EqualTo("Listo, el volumen está al 30."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"reminder.create","polarity":"success","verified":true,"succeeded":true,"observed":{"title":"tomar agua"}}"""),
+                Is.EqualTo("Listo, te aviso tomar agua."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"app.close","polarity":"success","verified":true,"succeeded":true,"observed":{"windowClosed":true}}"""),
+                Is.EqualTo("Listo, cerré la ventana."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"input.visible.click","polarity":"failure","verified":false,"succeeded":false,"error":"visible_click_no_receipt","effectUncertain":true}"""),
+                Is.EqualTo("No pude: no vi el control."));
         });
     }
 
