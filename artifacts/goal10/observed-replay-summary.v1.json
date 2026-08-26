@@ -1,16 +1,16 @@
 {
   "schema": "baxy.goal10-observed-replay-summary.v1",
   "private_output": "observed-product-replay.v2.jsonl",
-  "private_output_sha256": "869c69b44017f4afb24a4159bd6112acb5e5d02c7cd5345f8a6b45fb808f1869",
+  "private_output_sha256": "56dd3e08f0b3cc2c60940bf7be4f2535676aa12fbbb8f46f5f9790aae1b5b3f5",
   "row_count": 1947,
   "unique_message_ids": 1947,
   "empty_responses": 0,
   "no_responde": 3,
-  "composition_lost": 60,
+  "composition_lost": 59,
   "json_leak": 0,
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
   "mapping_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
-  "commit": "9aa4c42",
-  "note": "r93 overlay on click shards. 0 empty, 3 no_responde, 60 formular. Adjudication 1037 pass / 910 fail. Not 1947/1947. Click: 18 verified, 36 ambiguous, 35 not_found."
+  "commit": "39474c8",
+  "note": "r94 overlay. 0 empty, 3 no_responde, 59 formular. Adjudication 1081 pass / 866 fail. Not 1947/1947. Click fails 36 (not_found + red button). Empty-ops 242 still the largest family."
 }

@@ -1854,3 +1854,15 @@ familia vacía 243 (`reminder`/`media.play`/alarms).
 Si hay varios controles con el mismo nombre, se elige el único con
 `TogglePattern`. Humo en Spotify: `ok=true toggled=true` dos veces
 (ida y vuelta). Remake r94 de los 10 shards de click.
+
+### Continuación 2026-08-26 — r94 merge 1081/1947
+
+Merge SHA-256
+`56dd3e08f0b3cc2c60940bf7be4f2535676aa12fbbb8f46f5f9790aae1b5b3f5`.
+1.947 únicos, 0 vacíos, 3 `no_responde`, 59 formular.
+Adjudicación `baaddab922db2dc9fb750ba2940a6982916384b2501062edb82b1655d4956a94`.
+Semantic `83a8955cf478fa17fe3115c967fac4524f6f73bfc933d13df14c63b7069d2d65`.
+
+**1081 pass / 866 fail. No es 1.947/1.947.** Click 99→36 (16 not_found,
+14 botón rojo, 4 clarify). Ambiguo 0. Siguiente: vacíos 242,
+`app.open` 65, `media.play.query` 55.

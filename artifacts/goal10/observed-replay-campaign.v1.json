@@ -1,13 +1,13 @@
 {
   "schema": "baxy.goal10-observed-replay-campaign.v1",
-  "runtime": "r93 click NameProperty/C#5 overlay on r92",
+  "runtime": "r94 TogglePattern disambiguation overlay on r93/r92",
   "corpus": "historical_observed_product_turns.v1.jsonl",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
   "mapping_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "private_dir": "%LOCALAPPDATA%\\\\BAXYRuntime\\\\goal10\\\\",
   "merge_file": "observed-product-replay.v2.jsonl",
-  "merge_sha256": "869c69b44017f4afb24a4159bd6112acb5e5d02c7cd5345f8a6b45fb808f1869",
+  "merge_sha256": "56dd3e08f0b3cc2c60940bf7be4f2535676aa12fbbb8f46f5f9790aae1b5b3f5",
   "shards": [
     {
       "name": "0000-0100-r92",
@@ -326,6 +326,116 @@
       "json_leak": 0,
       "no_responde": 0,
       "formular": 4,
+      "used_in_merge": true
+    },
+    {
+      "name": "0400-0500-r94",
+      "private_file": "observed-shard-0400-0500-r94.jsonl",
+      "sha256": "7774eb7ea931c6f349f2129ab2eba0cc0a7517121093ab319accc84709af8d64",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 4,
+      "used_in_merge": true
+    },
+    {
+      "name": "0600-0700-r94",
+      "private_file": "observed-shard-0600-0700-r94.jsonl",
+      "sha256": "85082f61b419b4d1c260a2b55c3a55cb1f403ba7bd908c0643199e210d81381e",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 0,
+      "used_in_merge": true
+    },
+    {
+      "name": "0700-0800-r94",
+      "private_file": "observed-shard-0700-0800-r94.jsonl",
+      "sha256": "b8f804c52d7cbfb58b133d31bb89ffaf54a13c0fefc8d788888031c1c82ad7fa",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "0800-0900-r94",
+      "private_file": "observed-shard-0800-0900-r94.jsonl",
+      "sha256": "77e694f13ce29e93b06c57155095a938a073e09c11cc94364c4e57ddb99f8f18",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 2,
+      "used_in_merge": true
+    },
+    {
+      "name": "0900-1000-r94",
+      "private_file": "observed-shard-0900-1000-r94.jsonl",
+      "sha256": "80b6a9668493ce359e43efac3a44984938e6d2314554edc7002b52c2fb4532d0",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 2,
+      "used_in_merge": true
+    },
+    {
+      "name": "1000-1100-r94",
+      "private_file": "observed-shard-1000-1100-r94.jsonl",
+      "sha256": "cec1c450a8909bab3335584a32cea37ea57a8d1ab2569b6d8622afe7fb75abef",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 3,
+      "used_in_merge": true
+    },
+    {
+      "name": "1100-1200-r94",
+      "private_file": "observed-shard-1100-1200-r94.jsonl",
+      "sha256": "b9a681f69b37b15df7bf59048420994b6314aa6b0d5db330dc75dbf369244c78",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 3,
+      "used_in_merge": true
+    },
+    {
+      "name": "1200-1300-r94",
+      "private_file": "observed-shard-1200-1300-r94.jsonl",
+      "sha256": "5bc670f19083854fee76cc497d0b8fdd33ca451d7e9081483976b426d6fd05b7",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 8,
+      "used_in_merge": true
+    },
+    {
+      "name": "1300-1400-r94",
+      "private_file": "observed-shard-1300-1400-r94.jsonl",
+      "sha256": "87e8f7e476df82ff9eb2454e78361be82d164c4333eff5c5a502c3cb196aa5b5",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "1800-1947-r94",
+      "private_file": "observed-shard-1800-1947-r94.jsonl",
+      "sha256": "3bd5e70d084e804ed7aa815d16115b28a45f26f5f7e4ed84a811bdc4853642b0",
+      "visible_rows": 147,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 5,
       "used_in_merge": true
     }
   ]
