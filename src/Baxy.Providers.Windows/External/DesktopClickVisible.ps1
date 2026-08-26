@@ -108,11 +108,19 @@ function Get-WindowProcessName([IntPtr]$hwnd){
 function Test-ReplayHostProcess([string]$name){
   return $name -match '^(?i:testhost|Baxy|baxy-core)$'
 }
+function Test-ClickTargetProcess([string]$name){
+  return $name -match '^(?i:Discord|WhatsApp|Telegram|Slack|Spotify|CalculatorApp|Notepad|ApplicationFrameHost)$'
+}
 function Find-NamedControlsAcrossWindows([string[]]$aliases,[IntPtr]$skip){
   $found=@()
+  $scanned=0
   foreach($top in [BaxyVisibleClickNative]::TopVisibleWindows()){
     if($top -eq $skip){ continue }
-    if(Test-ReplayHostProcess (Get-WindowProcessName $top)){ continue }
+    $proc=Get-WindowProcessName $top
+    if(Test-ReplayHostProcess $proc){ continue }
+    if(-not (Test-ClickTargetProcess $proc)){ continue }
+    $scanned++
+    if($scanned -gt 8){ break }
     try {
       $root=[System.Windows.Automation.AutomationElement]::FromHandle($top)
       if($null -eq $root){ continue }
