@@ -140,6 +140,20 @@ function Find-NamedControls($root,[string[]]$aliases){
   }
   return $matches
 }
+function Select-PreferredNamedControl($items){
+  if($null -eq $items -or $items.Count -le 1){ return $items }
+  $toggles=@()
+  foreach($el in $items){
+    try {
+      $pattern=$null
+      if($el.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){
+        $toggles+=@($el)
+      }
+    } catch [System.Windows.Automation.ElementNotAvailableException] {}
+  }
+  if($toggles.Count -eq 1){ return $toggles }
+  return $items
+}
 function Find-NamedControlsAcrossWindows([string[]]$aliases,[IntPtr]$skip){
   $found=@()
   $scanned=0
@@ -202,6 +216,7 @@ try {
     try { if($null -ne $root){ $rootName=$root.Current.Name } } catch {}
     Emit $false $false 'visible_button_not_found' $rootName '' $false $false $false 'uia';exit 3
   }
+  $matches=@(Select-PreferredNamedControl $matches)
   if($matches.Count -ne 1){Emit $false $false 'visible_button_ambiguous' '' '' $false $false $false 'uia';exit 4}
   $button=$matches[0];$name=$button.Current.Name;$identity=Get-ControlIdentity $button
   $beforeToggle=Get-ToggleState $button

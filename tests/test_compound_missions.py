@@ -148,6 +148,7 @@ def test_visible_click_cascade_source_has_no_app_names() -> None:
     assert "NameProperty" in script
     assert "TogglePattern" in script
     assert "toggled" in script
+    assert "Select-PreferredNamedControl" in script
     adapter = files[1].read_text(encoding="utf-8")
     ocr_index = adapter.index("_ocr")
     vision_index = adapter.index("_vision")

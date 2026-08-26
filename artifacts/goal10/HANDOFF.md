@@ -1848,3 +1848,9 @@ Semantic `0bba38dbc9abefac0434a65e160b2678b83596281467ffce4a3278fe4257df38`.
 81 fail (36 ambiguo, 35 not_found, 14 botón rojo). Journal del click
 en 88/99. Siguiente dueño: desambiguar `Silenciar` duplicado, o
 familia vacía 243 (`reminder`/`media.play`/alarms).
+
+### Continuación 2026-08-26 — preferir TogglePattern si el nombre choca
+
+Si hay varios controles con el mismo nombre, se elige el único con
+`TogglePattern`. Humo en Spotify: `ok=true toggled=true` dos veces
+(ida y vuelta). Remake r94 de los 10 shards de click.
