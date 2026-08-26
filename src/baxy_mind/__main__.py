@@ -4607,6 +4607,9 @@ def _explicit_arguments_from_evidence(
         keystroke = evidence.strip()
         if re.fullmatch(r"[0-9+\-*/=.,]{1,32}", keystroke):
             return {"text": keystroke}
+        digit = effect_intent._direct_calculator_digit_press(effect_intent._fold(evidence))
+        if digit is not None:
+            return {"text": digit}
         quoted = re.search(
             r"[\"“](?P<text>[^\"”]{1,4096})[\"”]",
             evidence,

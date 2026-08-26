@@ -137,6 +137,7 @@ internal static class TurnVisibleFacts
         string? cause = ReadString(root, "cause");
         string? operation = ReadString(root, "operation");
         string? error = ReadString(root, "error")
+            ?? ReadString(root, "reason")
             ?? (cause is "opened" or "focused" or "mission_completed" or "mission_failed"
                 ? null
                 : cause);

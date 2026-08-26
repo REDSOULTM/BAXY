@@ -85,6 +85,13 @@ public sealed class PlannerAppBoundaryTests
                     TurnVisibleFacts.Failure("visible_click_no_receipt")),
                 Is.EqualTo("No pude: no vi el control."));
             Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    MissionNarration.CreateFailureMessage(
+                        [],
+                        TurnVisibleFacts.Failure("visible_click_no_receipt"))),
+                Is.EqualTo("No pude: no vi el control."));
+            Assert.That(
                 UserMessagePolicy.ModelResponseRejectionReason(
                     "No pude: no pude formular el resultado.",
                     UserMessagePolicy.Create(
