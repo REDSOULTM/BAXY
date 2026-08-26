@@ -1625,3 +1625,22 @@ es un pase. Siguiente: una fila IP en frío con llama limpio, luego las seis jun
      actual espera `app.open` por contexto de sesión). Ledger, no runtime.
 - `03_COSTURAS.md`: rellenadas memoria, bandeja y arranque con medición y fecha
   2026-08-26.
+
+### Continuación 2026-08-26 — campaña física en shards
+
+Privado bajo `%LOCALAPPDATA%\BAXYRuntime\goal10\`. Ledger
+`artifacts/goal10/observed-replay-campaign.v1.json`.
+
+| Shard | n | empty | no_responde | action_missing | wall |
+|---|---:|---:|---:|---:|---|
+| 0–100 r50 | 100 | 0 | (18 miss) | 18 | 8m24s |
+| 100–200 r51 | 100 | 0 | 0 | 17 | 3m |
+| 200–400 r52 | 200 | 0 | 0 | 48 | 8m |
+| 400–800 r53 | 400 | 0 | 174 | 219 | 33m degradado |
+| 800–900 r54 | 100 | 0 | 69 | 85 | 11m degradado |
+
+Límite práctico: shards de **100**, y reiniciar el sidecar cada uno. Un shard
+de 400 mata llama a mitad. Familias vivas: prosa de cierre compuesto,
+ya-ausente, `me abrís`/`wifi.status`/`mostrame el brillo` (cerradas en
+`668a738`, aún no rejugadas). Steam open exact-dup `92670a3`. Bypass + memoria
+en el runner. **No es 1.947/1.947 pass.** Siguiente shard: 900.

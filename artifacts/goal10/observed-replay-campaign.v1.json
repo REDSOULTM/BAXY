@@ -32,6 +32,48 @@
       "open_clarify": 4,
       "avg_seconds": 4.71,
       "wall_seconds": 504
+    },
+    {
+      "name": "0100-0200-r51",
+      "start": 100,
+      "count": 100,
+      "private_file": "observed-shard-0100-0200-r51.jsonl",
+      "sha256": "7ad0fb0cbfe3a87d20e2eb5740244537f4ed6d1b3cb2fd7b01a10755840f5b50",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "action_rows_missing_expected_ops": 17,
+      "avg_seconds": 1.28,
+      "wall_seconds": 180
+    },
+    {
+      "name": "0200-0400-r52",
+      "start": 200,
+      "count": 200,
+      "private_file": "observed-shard-0200-0400-r52.jsonl",
+      "sha256": "275e8ae03261f643cd66178b6e87a0ffee1ba13bdf067fb12d2d2d31f40b397d",
+      "visible_rows": 200,
+      "empty": 0,
+      "json_leak": 0,
+      "action_rows_missing_expected_ops": 48,
+      "composition_lost": 10,
+      "avg_seconds": 1.99,
+      "wall_seconds": 483
+    },
+    {
+      "name": "0400-0800-r53",
+      "start": 400,
+      "count": 400,
+      "private_file": "observed-shard-0400-0800-r53.jsonl",
+      "sha256": "78b9169acaad1edcc7956dc8e35b1a58fb9329ee59310abf6c4cea7ac84224ca",
+      "visible_rows": 400,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 174,
+      "action_rows_missing_expected_ops": 219,
+      "note": "sidecar degraded mid-shard; rerun in 100-row pieces",
+      "avg_seconds": 4.55,
+      "wall_seconds": 1979
     }
   ]
 }
