@@ -1825,3 +1825,13 @@ El click sigue sin poder verificar mute/enviar/rojo hasta que haya
 un control enabled. Dueños: `VisibleClickAcceptsAToggledControlPostread`,
 `VisibleClickEmptyStdoutIsFailureBeforeEffect`,
 `test_visible_click_script_emits_json_under_windows_powershell`.
+
+### Continuación 2026-08-26 — remake r93 de shards con click
+
+Los 99 click fails viven en los shards **ordenados** r92 0400, 0600,
+0700, 0800, 0900, 1000, 1100, 1200, 1300, 1800 — no en
+`occurrence_index//100`. r93 en curso (`remake_all_r93.py`).
+0400-r93 ya journaliza: 6/9 `Silenciar` verified, 3
+`visible_button_not_found`, 0 formular. Faltan 1000 y 1300 en la
+primera lista; `watch_r93_missing.py` los lanza al terminar.
+Merge: `merge_observed_v2.py` pisa r92 con esos r93.
