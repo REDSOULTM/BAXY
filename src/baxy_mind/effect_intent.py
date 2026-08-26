@@ -720,6 +720,37 @@ def _direct_local_ip_request(folded: str) -> bool:
     )
 
 
+def _direct_calculator_arithmetic_request(folded: str) -> tuple[str, str] | None:
+    """Recognize arithmetic to type into Calculator, not a capability denial."""
+
+    request = re.fullmatch(
+        r"(?:(?P<op>suma|sumar|add|multiplica|multiplicar|multiply)\s+)?"
+        r"(?P<a>\d{1,8})\s*"
+        r"(?P<join>mas|\+|plus|por|x|\*|times)\s*"
+        r"(?P<b>\d{1,8})"
+        r"\s+en\s+(?:la\s+|the\s+)?(?P<app>calculadora|calculator|calc)"
+        r"[\s.!?]*",
+        folded,
+        re.IGNORECASE,
+    )
+    if request is None:
+        return None
+    join = request.group("join").lower()
+    op = (request.group("op") or "").lower()
+    if join in {"por", "x", "*", "times"} or op in {
+        "multiplica",
+        "multiplicar",
+        "multiply",
+    }:
+        symbol = "*"
+    elif join in {"mas", "+", "plus"} or op in {"suma", "sumar", "add"}:
+        symbol = "+"
+    else:
+        return None
+    typed = f"{request.group('a')}{symbol}{request.group('b')}="
+    return request.group("app"), typed
+
+
 def _direct_voseo_open_request(folded: str) -> bool:
     """Recognize «me abrís/abres X» as an open request, not a capability quiz."""
 
@@ -12591,6 +12622,10 @@ def resolve_explicit_effects(
         return EffectIntent(("system.settings.status",), (folded,))
     if "wifi.status" in available and _direct_wifi_status_request(folded):
         return EffectIntent(("wifi.status",), (folded,))
+    if {"app.open", "input.text.type"} <= available:
+        calculator_math = _direct_calculator_arithmetic_request(folded)
+        if calculator_math is not None:
+            return EffectIntent(("app.open", "input.text.type"), calculator_math)
     if "app.open" in available and _direct_voseo_open_request(folded):
         return EffectIntent(("app.open",), (folded,))
     if "calendar.event.list" in available and _relative_calendar_read_request(folded):

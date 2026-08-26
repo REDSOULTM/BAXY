@@ -4604,6 +4604,9 @@ def _explicit_arguments_from_evidence(
         return {"query": query} if query and len(query.encode("utf-8")) <= 512 else None
 
     if operation == "input.text.type":
+        keystroke = evidence.strip()
+        if re.fullmatch(r"[0-9+\-*/=.,]{1,32}", keystroke):
+            return {"text": keystroke}
         quoted = re.search(
             r"[\"“](?P<text>[^\"”]{1,4096})[\"”]",
             evidence,

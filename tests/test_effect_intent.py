@@ -240,6 +240,8 @@ def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
         ("mostrame el brillo", ("system.settings.status",)),
         ("decime si el wifi está prendido", ("wifi.status",)),
         ("me abrís la calculadora", ("app.open",)),
+        ("Suma 2 más 2 en la Calculadora", ("app.open", "input.text.type")),
+        ("multiplicá 6 por 7 en la calc", ("app.open", "input.text.type")),
     ],
 )
 def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
@@ -256,11 +258,24 @@ def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
             "system.settings.status",
             "wifi.status",
             "app.open",
+            "input.text.type",
         },
     )
 
     assert result is not None
     assert result.operations == expected
+
+
+def test_calculator_arithmetic_types_the_verified_keystrokes() -> None:
+    result = resolve_explicit_effects(
+        "Suma 2 más 2 en la Calculadora",
+        {"app.open", "input.text.type", "system.status"},
+    )
+
+    assert result == EffectIntent(
+        ("app.open", "input.text.type"),
+        ("calculadora", "2+2="),
+    )
 
 
 @pytest.mark.parametrize(
@@ -861,6 +876,8 @@ CASES = [
     ("me abrís la calculadora", ("app.open",)),
     ("mostrame el brillo", ("system.settings.status",)),
     ("decime si el wifi está prendido", ("wifi.status",)),
+    ("Suma 2 más 2 en la Calculadora", ("app.open", "input.text.type")),
+    ("multiplicá 6 por 7 en la calc", ("app.open", "input.text.type")),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}
