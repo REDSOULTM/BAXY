@@ -205,6 +205,12 @@ internal static class UserMessagePolicy
         {
             return "no_response";
         }
+        if (IsStructuredFacts(draft.Source)
+            && draft.Intent is "status" or "error"
+            && FoldForPolicy(modelText).Contains("no pude: no responde", StringComparison.Ordinal))
+        {
+            return "no_response";
+        }
         if (IsStructuredFacts(modelText))
         {
             return "structured_facts_not_prose";

@@ -268,6 +268,37 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     [Test]
+    public async Task PackagedVisibleApplicationWithoutWin32PathIsReused()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations =
+            [
+                new(
+                    ProcessId: 77,
+                    ProcessCreationTimeUtcTicks: DateTime.UtcNow.Ticks,
+                    ExecutablePath: "",
+                    WindowHandle: 91,
+                    Visible: true,
+                    Foreground: true),
+            ],
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            Request("Steam"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(platform.ActivateCalls, Is.Zero);
+        });
+    }
+
+    [Test]
     public async Task ExistingVisibleApplicationIsVerifiedWhenForegroundStealIsRefused()
     {
         var platform = new FakePlatform(Catalog)

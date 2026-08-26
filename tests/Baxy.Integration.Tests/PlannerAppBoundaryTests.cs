@@ -619,6 +619,20 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public void StructuredErrorFactsRejectNoResponseAsAVerifiedOutcome()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Failure("verification_failed"),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "No pude: no responde.",
+                draft),
+            Is.EqualTo("no_response"));
+    }
+
+    [Test]
     public async Task StructuredVerifiedFactsSkipModelAuthoredRecovery()
     {
         string facts = TurnVisibleFacts.Status(

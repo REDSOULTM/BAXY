@@ -566,7 +566,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         IReadOnlyList<InstalledApplicationObservation>? baseline = null)
     {
         IEnumerable<InstalledApplicationObservation> candidates = observations
-            .Where(static item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath));
+            .Where(static item =>
+                item.Visible
+                && item.WindowHandle != 0
+                && (item.ExecutablePath.Length == 0
+                    || Path.IsPathFullyQualified(item.ExecutablePath)));
         if (baseline is not null)
         {
             InstalledApplicationObservation? created = candidates
