@@ -286,15 +286,14 @@ def no_effect_decision(value: str) -> Decision | None:
         return action("task.list", "task_inventory")
     if contains(value, "que tengo agendado"):
         return action("calendar.event.list", "calendar_inventory")
-    if value in {
-        "avisame en 30 minutos",
-        "avisame en una hora",
-        "recuerdame comprar pilas",
-        "recuerdame comprar pilas manana",
-        "remind me to buy batteries tomorrow",
-    }:
-        return clarify("reminder_time_or_title_missing")
-    if contains(value, "recordame", "avisame", "despertame"):
+    if contains(
+        value,
+        "recordame",
+        "recuerdame",
+        "avisame",
+        "despertame",
+        "remind me",
+    ):
         return action("reminder.create", "reminder_create")
     if contains(value, "acordate que", "guarda que", "quiero que me recuerdes"):
         return action("memory.save", "explicit_memory_save")
@@ -533,6 +532,9 @@ def legacy_decision(value: str, operations: list[str], text_hash: str) -> Decisi
             "bohemian rhapsody",
             "rock",
             "musica tranqui",
+            "spotify",
+            "cancion",
+            "musica",
         )
         if contains(value, *query_markers):
             return action("media.play.query", "named_media_query")
@@ -550,8 +552,6 @@ def legacy_decision(value: str, operations: list[str], text_hash: str) -> Decisi
     if operations == ["audio.mute"]:
         return action("audio.mute", "output_mute")
     if operations == ["reminder.create"]:
-        if value in {"avisame en 30 minutos", "avisame en una hora"}:
-            return clarify("reminder_title_missing")
         return action("reminder.create", "reminder_create")
     if operations == ["streaming.navigate"]:
         return action("streaming.navigate", "streaming_destination")

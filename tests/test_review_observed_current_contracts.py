@@ -40,6 +40,26 @@ def test_independent_semantics_override_stale_historical_labels() -> None:
     assert screen.support == ("capture.screenshot",)
 
 
+def test_timed_reminder_without_a_named_title_is_still_reminder_create() -> None:
+    timed = decide(variant("avisame en una hora", "reminder.create"))
+    titled = decide(variant("recuerdame comprar pilas manana", "reminder.create"))
+
+    assert timed.kind == "action"
+    assert timed.operations == ("reminder.create",)
+    assert titled.kind == "action"
+    assert titled.operations == ("reminder.create",)
+
+
+def test_generic_spotify_play_is_a_media_query_not_a_missing_title() -> None:
+    song = decide(variant("tocá una canción en Spotify", "media.play"))
+    music = decide(variant("pon música en spotify", "media.play"))
+
+    assert song.kind == "action"
+    assert song.operations == ("media.play.query",)
+    assert music.kind == "action"
+    assert music.operations == ("media.play.query",)
+
+
 def test_implicit_memory_requires_consent_but_explicit_memory_is_actionable() -> None:
     implicit = decide(variant("Mi nombre es Albeda Kegis.", "memory.save"))
     explicit = decide(variant("Recuerda que me llamo Reta.", "memory.save"))
@@ -72,8 +92,8 @@ def test_frozen_inventory_has_exact_binary_coverage_and_only_current_operations(
     assert len(reviews) == 626
     assert len({row["text_sha256"] for row in reviews}) == 626
     assert Counter(row["contract"]["kind"] for row in reviews) == {
-        "action": 367,
-        "clarify": 86,
+        "action": 383,
+        "clarify": 70,
         "conversation": 173,
     }
     assert all(row["verdict"] == "pass" for row in reviews)

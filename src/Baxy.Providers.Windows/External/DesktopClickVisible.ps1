@@ -21,6 +21,7 @@ public static class BaxyVisibleClickNative {
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
   [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
   [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint procId);
+  public static uint ProcessIdOf(IntPtr hwnd) { GetWindowThreadProcessId(hwnd, out uint procId); return procId; }
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
   public static IntPtr LargestVisible(IntPtr hwnd) {
@@ -36,6 +37,11 @@ public static class BaxyVisibleClickNative {
       return true;
     },IntPtr.Zero);
     return best;
+  }
+  public static IntPtr[] TopVisibleWindows() {
+    var list=new List<IntPtr>();
+    EnumWindows((top,unused)=>{ if(IsWindowVisible(top)) list.Add(top); return true; },IntPtr.Zero);
+    return list.ToArray();
   }
   public static IntPtr[] FindVisibleButtons(string[] labels) {
     var matches=new List<IntPtr>();
@@ -94,6 +100,28 @@ function Test-Selected($el){
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return $false
 }
+function Get-WindowProcessName([IntPtr]$hwnd){
+  $procId=[BaxyVisibleClickNative]::ProcessIdOf($hwnd)
+  if($procId -le 0){ return '' }
+  try { return (Get-Process -Id $procId -ErrorAction Stop).ProcessName } catch { return '' }
+}
+function Test-ReplayHostProcess([string]$name){
+  return $name -match '^(?i:testhost|Baxy|baxy-core)$'
+}
+function Find-NamedControlsAcrossWindows([string[]]$aliases,[IntPtr]$skip){
+  $found=@()
+  foreach($top in [BaxyVisibleClickNative]::TopVisibleWindows()){
+    if($top -eq $skip){ continue }
+    if(Test-ReplayHostProcess (Get-WindowProcessName $top)){ continue }
+    try {
+      $root=[System.Windows.Automation.AutomationElement]::FromHandle($top)
+      if($null -eq $root){ continue }
+      $hits=@(Find-NamedControls $root $aliases)
+      if($hits.Count -gt 0){ $found += $hits; if($found.Count -gt 1){ break } }
+    } catch {}
+  }
+  return $found
+}
 function Find-NamedControls($root,[string[]]$aliases){
   $matches=@()
   if($null -eq $root){ return $matches }
@@ -116,17 +144,27 @@ try {
   elseif($label -match '^(?i:validate|valider)$'){$aliases=@('Validate','Valider')}
   elseif($label -match '^(?i:biblioteca|library)$'){$aliases=@('Biblioteca','Library')}
   elseif($label -match '^(?i:configuracion|settings)$'){$aliases=@('Configuracion','Settings')}
+  elseif($label -match '^(?i:silenciar|mute)$'){$aliases=@('Silenciar','Mute','Deafen')}
+  elseif($label -match '^(?i:enviar|send)$'){$aliases=@('Enviar','Send')}
   $hwnd=[BaxyVisibleClickNative]::GetForegroundWindow()
   if($hwnd -eq [IntPtr]::Zero){Emit $false $false 'active_window_not_found' '' '' $false $false 'uia';exit 2}
   $hwnd=[BaxyVisibleClickNative]::LargestVisible($hwnd)
-  Start-Sleep -Milliseconds 500
-  $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
-  $tree=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-  if($tree.Count -eq 0){
-    Start-Sleep -Milliseconds 400
+  $hostForeground=Test-ReplayHostProcess (Get-WindowProcessName $hwnd)
+  $matches=@()
+  $root=$null
+  if(-not $hostForeground){
+    Start-Sleep -Milliseconds 500
     $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
+    $tree=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
+    if($tree.Count -eq 0){
+      Start-Sleep -Milliseconds 400
+      $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
+    }
+    $matches=@(Find-NamedControls $root $aliases)
   }
-  $matches=@(Find-NamedControls $root $aliases)
+  if($matches.Count -eq 0){
+    $matches=@(Find-NamedControlsAcrossWindows $aliases $hwnd)
+  }
   if($matches.Count -eq 0){
     $native=@([BaxyVisibleClickNative]::FindVisibleButtons([string[]]$aliases))
     if($native.Count -gt 1){Emit $false $false 'visible_button_ambiguous' '' '' $false $false 'uia';exit 4}
@@ -138,7 +176,9 @@ try {
       if(-not $absentOrDisabled){Emit $false $true 'visible_button_postread_unchanged' $name $identity $false $false 'uia';exit 6}
       Emit $true $true '' $name $identity $true $false 'uia';exit 0
     }
-    Emit $false $false 'visible_button_not_found' $root.Current.Name '' $false $false 'uia';exit 3
+    $rootName=''
+    try { if($null -ne $root){ $rootName=$root.Current.Name } } catch {}
+    Emit $false $false 'visible_button_not_found' $rootName '' $false $false 'uia';exit 3
   }
   if($matches.Count -ne 1){Emit $false $false 'visible_button_ambiguous' '' '' $false $false 'uia';exit 4}
   $button=$matches[0];$name=$button.Current.Name;$identity=($button.GetRuntimeId() -join '.')

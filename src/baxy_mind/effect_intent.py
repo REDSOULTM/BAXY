@@ -770,17 +770,22 @@ def _direct_calculator_digit_press(folded: str) -> str | None:
     return None if request is None else request.group("key")
 
 
-def _direct_voseo_open_request(folded: str) -> bool:
-    """Recognize «me abrís/abres X» as an open request, not a capability quiz."""
+def _direct_voseo_open_request(folded: str) -> str | None:
+    """Recognize «me abrís/abres X» as an open request, not a capability quiz.
 
-    return (
-        re.fullmatch(
-            r"me\s+(?:abris|abres)\s+(?:(?:el|la|los|las|the)\s+)?\S.{0,80}",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
+    Evidence is the application span so catalog grounding can resolve it.
+    """
+
+    request = re.fullmatch(
+        r"me\s+(?:abris|abres)\s+(?:(?:el|la|los|las|the)\s+)?(?P<app>\S.{0,80}?)"
+        r"[\s.!?]*",
+        folded,
+        re.IGNORECASE,
     )
+    if request is None:
+        return None
+    app = request.group("app").strip(" \t\"'`")
+    return app or None
 
 
 def _direct_wifi_status_request(folded: str) -> bool:
@@ -12667,8 +12672,9 @@ def resolve_explicit_effects(
             )
         if "input.text.type" in available:
             return EffectIntent(("input.text.type",), (calculator_digit,))
-    if "app.open" in available and _direct_voseo_open_request(folded):
-        return EffectIntent(("app.open",), (folded,))
+    voseo_open = _direct_voseo_open_request(folded)
+    if "app.open" in available and voseo_open is not None:
+        return EffectIntent(("app.open",), (voseo_open,))
     if "calendar.event.list" in available and _relative_calendar_read_request(folded):
         return EffectIntent(("calendar.event.list",), (folded,))
     if "media.play.query" in available and (

@@ -1,8 +1,8 @@
 {
   "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
   "contract_kind_counts": {
-    "action": 1188,
-    "clarify": 247,
+    "action": 1267,
+    "clarify": 168,
     "conversation": 512
   },
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
@@ -38,7 +38,7 @@
     "input.text.type": 149,
     "input.visible.click": 99,
     "media.control": 28,
-    "media.play.query": 14,
+    "media.play.query": 61,
     "media.play.youtube": 12,
     "media.status": 2,
     "memory.recall": 2,
@@ -53,7 +53,7 @@
     "notification.schedule": 43,
     "ocr.read": 7,
     "package.install.prepare": 9,
-    "reminder.create": 33,
+    "reminder.create": 65,
     "streaming.navigate": 7,
     "streaming.play.named": 22,
     "system.power": 2,
@@ -74,11 +74,11 @@
     "window.maximize": 8,
     "window.minimize": 3
   },
-  "private_output_sha256": "9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779",
+  "private_output_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
   "review_inputs": [
     {
       "file": "observed-current-contract-review.v1.jsonl",
-      "sha256": "9e807ac8da44edd73bb113f4c932001cbce08e1131b566b99af8ee332143bcca"
+      "sha256": "78d603430e00d9394f23418f0b979d7f10869dce99e077714a402ddca89b4ab3"
     }
   ],
   "schema": "baxy.goal10-observed-current-contracts-summary.v1",

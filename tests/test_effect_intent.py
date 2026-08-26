@@ -280,6 +280,15 @@ def test_calculator_arithmetic_types_the_verified_keystrokes() -> None:
     )
 
 
+def test_voseo_open_evidence_is_the_application_span() -> None:
+    result = resolve_explicit_effects(
+        "me abrís la calculadora",
+        {"app.open", "system.status"},
+    )
+
+    assert result == EffectIntent(("app.open",), ("calculadora",))
+
+
 @pytest.mark.parametrize(
     ("text", "expected", "evidence"),
     [
