@@ -1,0 +1,60 @@
+{
+  "corrected_row_count": 6,
+  "corrections_sha256": "ef1c1aa44699f8b523a964dc260b750bb87d0a4bdbf00feabceb0a8f95c96d92",
+  "dimension_verdict_counts": {
+    "confirmation": {
+      "fail": 504,
+      "pass": 1443
+    },
+    "honesty": {
+      "fail": 191,
+      "pass": 1756
+    },
+    "language": {
+      "fail": 21,
+      "pass": 1926
+    },
+    "naturalness": {
+      "pass": 1947
+    },
+    "pertinence": {
+      "fail": 191,
+      "pass": 1756
+    },
+    "requested_action": {
+      "fail": 860,
+      "pass": 1087
+    },
+    "risk": {
+      "fail": 159,
+      "pass": 1788
+    },
+    "terminal": {
+      "fail": 1014,
+      "pass": 933
+    },
+    "verification": {
+      "fail": 903,
+      "pass": 1044
+    }
+  },
+  "private_output_sha256": "11678f7e3b89865453fd4d6a00a6c57b4dc883dfbc926fad4ec643311b5c6e06",
+  "replay_inputs": [
+    {
+      "file": "observed-product-replay.v2.jsonl",
+      "sha256": "7d30748ebc8e9711cbcdb51cebabfdba0d4ed6bc9c0ba4b4edc8b60ba574a53b"
+    }
+  ],
+  "row_count": 1947,
+  "schema": "baxy.goal10-observed-product-adjudication-summary.v1",
+  "semantic_review_inputs": [
+    {
+      "file": "observed-semantic-review.v2.jsonl",
+      "sha256": "53eaa8bcd7d75626733484f29df7776522ec69fe306bb4b95cb68c54c8f139ce"
+    }
+  ],
+  "verdict_counts": {
+    "fail": 1128,
+    "pass": 819
+  }
+}

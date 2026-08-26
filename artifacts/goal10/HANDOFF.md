@@ -1673,3 +1673,26 @@ SHA-256 `7d30748ebc8e9711cbcdb51cebabfdba0d4ed6bc9c0ba4b4edc8b60ba574a53b`:
 1.947 pass.** Familias restantes del last-resort: `abrí la calculadora` (25),
 Spotify play (10), bloc de notas (6), título Netflix (6). Adjudicar sobre este
 merge; esas 73 fallan hasta que el compose de hecho verificado deje de morir.
+
+### Continuación 2026-08-26 — adjudicación 1.947 sobre el merge r70–r83
+
+Revisión semántica privada
+`observed-semantic-review.v2.jsonl` SHA-256
+`53eaa8bcd7d75626733484f29df7776522ec69fe306bb4b95cb68c54c8f139ce`.
+Adjudicación privada `observed-product-adjudication.v2.jsonl` SHA-256
+`11678f7e3b89865453fd4d6a00a6c57b4dc883dfbc926fad4ec643311b5c6e06`.
+Resumen versionable:
+`artifacts/goal10/observed-product-adjudication-summary.v1.json`.
+
+**819 pass / 1.128 fail. No es 1.947/1.947.** Naturalidad 1.947/1.947.
+Last-resort y prosa perdida: honestidad 191 fail, pertinencia 191.
+Mecánica: acción pedida 860, verificación 903, terminal 1.014,
+confirmación 504 (catálogo incompleto), riesgo 159.
+
+596 acciones del contrato nunca llegaron al journal. Familias top:
+`app.open`+`input.text.type` (100, «Suma 2 más 2 en la Calculadora»),
+`input.visible.click` (99, Discord/WhatsApp/calculadora), `app.open` (61),
+`input.text.type` (48), `notification.schedule` (29). Los shards 100–400
+guardianes son anteriores a voseo/wifi/brillo: hay que rejuglarlos. El
+last-resort de calculadora es `app.open` `verification_failed` con
+`effectMayHaveOccurred` cuando la ventana ya estaba abierta.
