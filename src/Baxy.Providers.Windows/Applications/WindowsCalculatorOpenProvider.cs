@@ -41,18 +41,18 @@ public sealed class WindowsCalculatorOpenProvider : IApplicationOpenProvider
         }
         if (selected is null) return Failure(request, ApplicationOpenErrorCodes.VerificationFailed, !reused);
         _platform.RequestForeground(selected.WindowHandle);
-        CalculatorSnapshot? ObserveForeground() =>
+        CalculatorSnapshot? Observe(bool requireForeground) =>
             _platform.Inventory().FirstOrDefault(candidate =>
                 candidate.ProcessId == selected.ProcessId
                 && candidate.CreationTimeUtcTicks == selected.CreationTimeUtcTicks
                 && candidate.WindowHandle == selected.WindowHandle
                 && candidate.Visible
-                && candidate.Foreground);
-        CalculatorSnapshot? verified = ObserveForeground();
+                && (!requireForeground || candidate.Foreground));
+        CalculatorSnapshot? verified = Observe(requireForeground: true);
         if (verified is null)
         {
             await _platform.DelayAsync(Delay, cancellationToken).ConfigureAwait(false);
-            verified = ObserveForeground();
+            verified = Observe(requireForeground: true) ?? Observe(requireForeground: false);
         }
         if (verified is null) return Failure(request, ApplicationOpenErrorCodes.VerificationFailed, !reused);
         string executable = Path.Combine(Environment.SystemDirectory, "calc.exe");
@@ -69,6 +69,14 @@ public sealed class WindowsCalculatorOpenProvider : IApplicationOpenProvider
         effect, false, "Calculadora", false, null, null, error,
         new ApplicationLaunchReceipt(request.InvocationId, request.ApplicationId,
             effect, false, null, null, null, null, null, null, error));
+
+    internal static bool IsCalculatorWindowTitle(string title)
+    {
+        string normalized = InstalledApplicationResolver.Normalize(title);
+        return normalized is "calculadora" or "calculator"
+            || normalized.StartsWith("calculadora ", StringComparison.Ordinal)
+            || normalized.StartsWith("calculator ", StringComparison.Ordinal);
+    }
 }
 
 internal sealed record CalculatorSnapshot(
@@ -86,18 +94,59 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
 {
     public IReadOnlyList<CalculatorSnapshot> Inventory()
     {
-        Process[] processes = Process.GetProcessesByName("CalculatorApp");
-        try
+        // CalculatorApp.MainWindowHandle is 0; the visible UWP chrome lives on
+        // ApplicationFrameHost with title Calculadora/Calculator.
+        var found = new List<CalculatorSnapshot>();
+        EnumWindowsProc callback = (window, _) =>
         {
-            return processes.Select(process =>
+            if (!IsWindowVisible(window))
             {
-                process.Refresh(); nint window = process.MainWindowHandle;
-                return new CalculatorSnapshot(process.Id, process.StartTime.ToUniversalTime().Ticks,
-                    window.ToInt64(), window != 0 && IsWindowVisible(window),
-                    window != 0 && GetForegroundWindow() == window);
-            }).ToArray();
+                return true;
+            }
+
+            int length = GetWindowTextLength(window);
+            if (length <= 0)
+            {
+                return true;
+            }
+
+            string title = ReadWindowTitle(window, length);
+            if (!WindowsCalculatorOpenProvider.IsCalculatorWindowTitle(title))
+            {
+                return true;
+            }
+
+            GetWindowThreadProcessId(window, out uint processId);
+            try
+            {
+                using var process = Process.GetProcessById(unchecked((int)processId));
+                found.Add(new CalculatorSnapshot(
+                    process.Id,
+                    process.StartTime.ToUniversalTime().Ticks,
+                    window.ToInt64(),
+                    Visible: true,
+                    Foreground: GetForegroundWindow() == window));
+            }
+            catch (Exception exception) when (exception is ArgumentException
+                or InvalidOperationException
+                or System.ComponentModel.Win32Exception)
+            {
+            }
+
+            return true;
+        };
+        _ = EnumWindows(callback, 0);
+        return found;
+    }
+
+    private static unsafe string ReadWindowTitle(nint window, int length)
+    {
+        char[] title = new char[length + 1];
+        fixed (char* buffer = title)
+        {
+            int written = GetWindowText(window, buffer, title.Length);
+            return written > 0 ? new string(buffer, 0, written) : string.Empty;
         }
-        finally { foreach (Process process in processes) process.Dispose(); }
     }
 
     public bool Launch()
@@ -106,8 +155,7 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
         if (!File.Exists(executable)) return false;
         using Process? process = Process.Start(new ProcessStartInfo(executable)
         {
-            UseShellExecute = false,
-            CreateNoWindow = true,
+            UseShellExecute = true,
         });
         return process is not null;
     }
@@ -120,6 +168,25 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
 
     public async ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>
         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowTextLengthW")]
+    private static partial int GetWindowTextLength(nint window);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
+    private static unsafe partial int GetWindowText(
+        nint window,
+        char* text,
+        int maxCount);
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
 
     [LibraryImport("user32.dll")] private static partial nint GetForegroundWindow();
     [LibraryImport("user32.dll")]
