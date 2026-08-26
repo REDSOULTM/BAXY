@@ -1716,3 +1716,14 @@ r86/r87 (skip 919, n=25): **0 `no_responde`**. «abrí la calculadora» sigue
 sí: «Listo, Discord ya está abierto.» Adjudicación r84+r87: 125 filas,
 **37 pass / 88 fail**. Resumen:
 `artifacts/goal10/observed-product-adjudication-r84-r87-summary.v1.json`.
+
+### Continuación 2026-08-26 — Calculadora UWP por título ApplicationFrameHost
+
+`CalculatorApp.MainWindowHandle` es 0; la ventana visible es
+`ApplicationFrameHost` titulada «Calculadora». El provider dedicado ahora
+inventaría por ese título, lanza `calc.exe` con el shell, y verifica ventana
+visible aunque el primer plano falle. r88 skip 919 n=25: 5/5 «abrí la
+calculadora» `verified=true alreadyRunning=true` «Listo, la calculadora está
+abierta.»; «Suma 2 más 2» ejecuta `app.open`+`input.text.type` verificados.
+SHA-256 `3263cc287ec7d8e338f7952397b5c9466a2941e86894ea9ef79bb71683573ef6`.
+Remake 1.947 en shards r90 en curso.
