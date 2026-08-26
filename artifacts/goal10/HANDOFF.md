@@ -1644,3 +1644,15 @@ de 400 mata llama a mitad. Familias vivas: prosa de cierre compuesto,
 ya-ausente, `me abrís`/`wifi.status`/`mostrame el brillo` (cerradas en
 `668a738`, aún no rejugadas). Steam open exact-dup `92670a3`. Bypass + memoria
 en el runner. **No es 1.947/1.947 pass.** Siguiente shard: 900.
+
+### Continuación 2026-08-26 — cobertura 1.947/1.947 capturada
+
+Merge privado `observed-product-replay.v2.jsonl`
+SHA-256 `58c73862521a9a6e90050ceb34064b000e0797648850f05d3f843cfdcbc9607f`.
+**1.947 filas, 1.947 `message_id` distintos, 0 vacíos, 0 JSON visible.**
+731 `No pude: no responde.` (compose muerto a mitad de shard) y 45
+`composition_lost`. Eso **no es** 1.947 pass. Resumen versionable:
+`artifacts/goal10/observed-replay-summary.v1.json`.
+
+Hay que rejuglar los shards con sidecar degradado (400–800, 800–1200,
+1500–1600, 1700–1800) en tandas de 100. Después, adjudicar.

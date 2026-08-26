@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.goal10-observed-replay-summary.v1",
+  "private_output": "observed-product-replay.v2.jsonl",
+  "private_output_sha256": "58c73862521a9a6e90050ceb34064b000e0797648850f05d3f843cfdcbc9607f",
+  "row_count": 1947,
+  "unique_message_ids": 1947,
+  "empty_responses": 0,
+  "no_responde": 731,
+  "composition_lost": 45,
+  "json_leak": 0,
+  "replay_schema": "baxy.goal10-observed-product-replay.v2",
+  "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
+  "mapping_sha256": "9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779",
+  "note": "Coverage of 1947/1947 message_ids. 731 no_responde rows are sidecar-compose failures and must be rerun; this is not 1947 pass."
+}
