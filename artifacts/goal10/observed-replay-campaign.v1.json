@@ -1,18 +1,16 @@
 {
   "schema": "baxy.goal10-observed-replay-campaign.v1",
-  "runtime": "detached remake r92, click process-limited, voseo evidence, reminder/spotify contracts, catalog intent fallback on later shards",
+  "runtime": "r93 click NameProperty/C#5 overlay on r92",
   "corpus": "historical_observed_product_turns.v1.jsonl",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
   "mapping_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "private_dir": "%LOCALAPPDATA%\\\\BAXYRuntime\\\\goal10\\\\",
   "merge_file": "observed-product-replay.v2.jsonl",
-  "merge_sha256": "1b4a76819fad1ca83fff0cf0af9a604d1968e331f8de8fe390f1406d825ea8b3",
+  "merge_sha256": "869c69b44017f4afb24a4159bd6112acb5e5d02c7cd5345f8a6b45fb808f1869",
   "shards": [
     {
       "name": "0000-0100-r92",
-      "start": 0,
-      "count": 100,
       "private_file": "observed-shard-0000-0100-r92.jsonl",
       "sha256": "a0e09237ef01cb98e57bffaeebd1a6f59875778e2c3925dc519296603c7c982e",
       "visible_rows": 100,
@@ -24,8 +22,6 @@
     },
     {
       "name": "0100-0200-r92",
-      "start": 100,
-      "count": 100,
       "private_file": "observed-shard-0100-0200-r92.jsonl",
       "sha256": "60271ba89627598e7a958fae0c9e2954bb40e6985c01a8ab5ec4f8b77fab5463",
       "visible_rows": 100,
@@ -37,8 +33,6 @@
     },
     {
       "name": "0200-0300-r92",
-      "start": 200,
-      "count": 100,
       "private_file": "observed-shard-0200-0300-r92.jsonl",
       "sha256": "a71f73b31a2bdce91813fc500d7b8f2be02f7a5c89676692338249068d343b2d",
       "visible_rows": 100,
@@ -50,8 +44,6 @@
     },
     {
       "name": "0300-0400-r92",
-      "start": 300,
-      "count": 100,
       "private_file": "observed-shard-0300-0400-r92.jsonl",
       "sha256": "688fb6b41cd05eefbff2c7e4213af1a188dc21d8b85192257b9d6250f8b6226e",
       "visible_rows": 100,
@@ -63,8 +55,6 @@
     },
     {
       "name": "0400-0500-r92",
-      "start": 400,
-      "count": 100,
       "private_file": "observed-shard-0400-0500-r92.jsonl",
       "sha256": "d11a4b91dbb6ba20559a75b4928a169e2d9434d29f87a1cfcba9744fde1601ea",
       "visible_rows": 100,
@@ -76,8 +66,6 @@
     },
     {
       "name": "0500-0600-r92",
-      "start": 500,
-      "count": 100,
       "private_file": "observed-shard-0500-0600-r92.jsonl",
       "sha256": "3f47685164a6c85a73dedfca4c37522ed557260dd7c466c3adb3ab81b3ec8429",
       "visible_rows": 100,
@@ -89,8 +77,6 @@
     },
     {
       "name": "0600-0700-r92",
-      "start": 600,
-      "count": 100,
       "private_file": "observed-shard-0600-0700-r92.jsonl",
       "sha256": "255d24fcd36eec9aa88f4cf0585e02d04e74bc9f387dfb479f890680af812626",
       "visible_rows": 100,
@@ -102,8 +88,6 @@
     },
     {
       "name": "0700-0800-r92",
-      "start": 700,
-      "count": 100,
       "private_file": "observed-shard-0700-0800-r92.jsonl",
       "sha256": "c06fc211db9e20d1f1f5b19c79683286d87b5582b73e3d6cd0e048f8679d94ff",
       "visible_rows": 100,
@@ -115,8 +99,6 @@
     },
     {
       "name": "0800-0900-r92",
-      "start": 800,
-      "count": 100,
       "private_file": "observed-shard-0800-0900-r92.jsonl",
       "sha256": "a44ab06bbc19d503cc60f2feef906947096d1fa84ea10a5d65a68efe56d68623",
       "visible_rows": 100,
@@ -128,8 +110,6 @@
     },
     {
       "name": "0900-1000-r92",
-      "start": 900,
-      "count": 100,
       "private_file": "observed-shard-0900-1000-r92.jsonl",
       "sha256": "a056342456cfdc9e629d37bcc66dc72e257115f6e150b2be0c4ba491ea11839e",
       "visible_rows": 100,
@@ -141,8 +121,6 @@
     },
     {
       "name": "1000-1100-r92",
-      "start": 1000,
-      "count": 100,
       "private_file": "observed-shard-1000-1100-r92.jsonl",
       "sha256": "1b8a09bdaa48f61291b13fd993d0ea9e299301ca0fbeda48a85f9fe0352b684a",
       "visible_rows": 100,
@@ -154,8 +132,6 @@
     },
     {
       "name": "1100-1200-r92",
-      "start": 1100,
-      "count": 100,
       "private_file": "observed-shard-1100-1200-r92.jsonl",
       "sha256": "4c69b89d2cd1d2e5b60a2df501b10163c92e0c32c494025ab2856f18cbfca12d",
       "visible_rows": 100,
@@ -167,8 +143,6 @@
     },
     {
       "name": "1200-1300-r92",
-      "start": 1200,
-      "count": 100,
       "private_file": "observed-shard-1200-1300-r92.jsonl",
       "sha256": "6df096bbb8bcef4d943ed254f554aa98eeb2e72ca292a4cf7ddf621d722e8691",
       "visible_rows": 100,
@@ -180,8 +154,6 @@
     },
     {
       "name": "1300-1400-r92",
-      "start": 1300,
-      "count": 100,
       "private_file": "observed-shard-1300-1400-r92.jsonl",
       "sha256": "724d687fb7ce7c4d6ca2facda66ce3f2854a4d1bcb9f042520f49a4ca559372b",
       "visible_rows": 100,
@@ -193,8 +165,6 @@
     },
     {
       "name": "1400-1500-r92",
-      "start": 1400,
-      "count": 100,
       "private_file": "observed-shard-1400-1500-r92.jsonl",
       "sha256": "fb2ef0da8c10f461050468f8ae20c1f1b3d048096e27a101fb02df01fc2b975e",
       "visible_rows": 100,
@@ -206,8 +176,6 @@
     },
     {
       "name": "1500-1600-r92",
-      "start": 1500,
-      "count": 100,
       "private_file": "observed-shard-1500-1600-r92.jsonl",
       "sha256": "c751715a05d804e3525610c8b400233154c23409d2aeaef35019989c67207a89",
       "visible_rows": 100,
@@ -219,8 +187,6 @@
     },
     {
       "name": "1600-1700-r92",
-      "start": 1600,
-      "count": 100,
       "private_file": "observed-shard-1600-1700-r92.jsonl",
       "sha256": "6126095023287b75a3e0b3be95bf5deb38eaed7fa5121cd40c1ddbd5c1cda6d4",
       "visible_rows": 100,
@@ -232,8 +198,6 @@
     },
     {
       "name": "1700-1800-r92",
-      "start": 1700,
-      "count": 100,
       "private_file": "observed-shard-1700-1800-r92.jsonl",
       "sha256": "f142729154a9014263f7a3bd0a0151d0d4b816f2c3639b7e94e55ea6d04e5335",
       "visible_rows": 100,
@@ -245,8 +209,6 @@
     },
     {
       "name": "1800-1947-r92",
-      "start": 1800,
-      "count": 147,
       "private_file": "observed-shard-1800-1947-r92.jsonl",
       "sha256": "4ee311391e53f8a6cfb95ad121784cfe608b37a34be0db979710519b4a8f533a",
       "visible_rows": 147,
@@ -254,6 +216,116 @@
       "json_leak": 0,
       "no_responde": 0,
       "formular": 12,
+      "used_in_merge": true
+    },
+    {
+      "name": "0400-0500-r93",
+      "private_file": "observed-shard-0400-0500-r93.jsonl",
+      "sha256": "a7e38a5cfa6d080d91f326d5721cea4c82ef51fcd33f531b3f2e20cfc92f8c70",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 3,
+      "used_in_merge": true
+    },
+    {
+      "name": "0600-0700-r93",
+      "private_file": "observed-shard-0600-0700-r93.jsonl",
+      "sha256": "cd5ca168cf92e92518ae0a01c28f2bca9af4df7b7f97be0c44584858e5447378",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 0,
+      "used_in_merge": true
+    },
+    {
+      "name": "0700-0800-r93",
+      "private_file": "observed-shard-0700-0800-r93.jsonl",
+      "sha256": "3326c84ac7d77a13bcf5f1394b9af75e7296ba677fe840659ff9225bfac4de86",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 0,
+      "used_in_merge": true
+    },
+    {
+      "name": "0800-0900-r93",
+      "private_file": "observed-shard-0800-0900-r93.jsonl",
+      "sha256": "16e79443dcce8d2b10a0364b6d8cc663f216f73ba778a2f77781c7be117ac501",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 3,
+      "used_in_merge": true
+    },
+    {
+      "name": "0900-1000-r93",
+      "private_file": "observed-shard-0900-1000-r93.jsonl",
+      "sha256": "2be1362062a6d901bb6fc8a2893109b7548cc9dcbcbce4a939442206f51fc581",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 3,
+      "used_in_merge": true
+    },
+    {
+      "name": "1000-1100-r93",
+      "private_file": "observed-shard-1000-1100-r93.jsonl",
+      "sha256": "c0bb54177df0f9b615084aba26fbea1ad858763a7184d85f2c6a47f6ec5425dc",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 8,
+      "used_in_merge": true
+    },
+    {
+      "name": "1100-1200-r93",
+      "private_file": "observed-shard-1100-1200-r93.jsonl",
+      "sha256": "126d9d79b52d17e9e4aa4b5f333767602615c878a005d38f76b08f9f44cb8d87",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "1200-1300-r93",
+      "private_file": "observed-shard-1200-1300-r93.jsonl",
+      "sha256": "d5ef4bf49aa109766622dc00cebfaee0d8ed42c01584e35821edcea9983883c6",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 7,
+      "used_in_merge": true
+    },
+    {
+      "name": "1300-1400-r93",
+      "private_file": "observed-shard-1300-1400-r93.jsonl",
+      "sha256": "cd78fe1f62b804f2301ed60e148f65d54407ac03eec3159492b4a3a31181620a",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "1800-1947-r93",
+      "private_file": "observed-shard-1800-1947-r93.jsonl",
+      "sha256": "60071b379b0f0c8d4a02c0d1bd14580fbb5af4f6f708243a6175d94931067a80",
+      "visible_rows": 147,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 4,
       "used_in_merge": true
     }
   ]

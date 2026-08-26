@@ -1835,3 +1835,16 @@ Los 99 click fails viven en los shards **ordenados** r92 0400, 0600,
 `visible_button_not_found`, 0 formular. Faltan 1000 y 1300 en la
 primera lista; `watch_r93_missing.py` los lanza al terminar.
 Merge: `merge_observed_v2.py` pisa r92 con esos r93.
+
+### Continuación 2026-08-26 — r93 merge 1037/1947
+
+Merge SHA-256
+`869c69b44017f4afb24a4159bd6112acb5e5d02c7cd5345f8a6b45fb808f1869`.
+1.947 únicos, 0 vacíos, 3 `no_responde`, 60 formular (antes 154).
+Adjudicación `f75e93ca117a2398dd53addc44a67231a50de0cf82f5fab399181a59fc8dcbe7`.
+Semantic `0bba38dbc9abefac0434a65e160b2678b83596281467ffce4a3278fe4257df38`.
+
+**1037 pass / 910 fail. No es 1.947/1.947.** Click: 18 verified,
+81 fail (36 ambiguo, 35 not_found, 14 botón rojo). Journal del click
+en 88/99. Siguiente dueño: desambiguar `Silenciar` duplicado, o
+familia vacía 243 (`reminder`/`media.play`/alarms).
