@@ -214,6 +214,34 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     [Test]
+    public void ExactDuplicateDisplayNamePicksALaunchableIdentityWithoutTreatingPartialNamesAsEquals()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Steam", "Valve.Steam.Client"),
+            new("Steam", @"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Steam\steam.exe"),
+            new("Steam Support Center", "http://support.steampowered.com/"),
+            new("Visual Studio", "VisualStudio"),
+            new("Visual Studio Code", "VisualStudioCode"),
+        ];
+
+        InstalledApplicationResolution steam = InstalledApplicationResolver.ResolveForLaunch(
+            "Steam",
+            catalog);
+        InstalledApplicationResolution visual = InstalledApplicationResolver.ResolveForLaunch(
+            "Visual",
+            catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steam.Ambiguous, Is.False);
+            Assert.That(steam.Entry?.AppUserModelId, Is.EqualTo("Valve.Steam.Client"));
+            Assert.That(visual.Ambiguous, Is.True);
+            Assert.That(visual.Entry, Is.Null);
+        });
+    }
+
+    [Test]
     public async Task AbsentApplicationIsActivatedAndIndependentlyFocused()
     {
         var platform = new FakePlatform(Catalog)

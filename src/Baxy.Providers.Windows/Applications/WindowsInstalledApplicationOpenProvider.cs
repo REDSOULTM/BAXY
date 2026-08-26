@@ -65,7 +65,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             ApplicationIds.Calculator => InstalledApplicationResolver.ResolveAppId(
                 "Microsoft.WindowsCalculator",
                 catalog),
-            _ => InstalledApplicationResolver.Resolve(request.ApplicationId, catalog),
+            _ => InstalledApplicationResolver.ResolveForLaunch(request.ApplicationId, catalog),
         };
         if (resolution.Entry is null)
         {
@@ -741,6 +741,38 @@ internal static class InstalledApplicationResolver
         }
 
         return new InstalledApplicationResolution(ranked[0].Entry, false);
+    }
+
+    internal static InstalledApplicationResolution ResolveForLaunch(
+        string query,
+        IReadOnlyList<InstalledApplicationEntry> catalog)
+    {
+        InstalledApplicationResolution resolved = Resolve(query, catalog);
+        if (!resolved.Ambiguous)
+        {
+            return resolved;
+        }
+
+        string normalizedQuery = Normalize(query);
+        InstalledApplicationEntry[] exact = catalog
+            .Where(static item => IsUsable(item))
+            .Where(item => Normalize(item.Name) == normalizedQuery)
+            .DistinctBy(static item => item.AppUserModelId, StringComparer.Ordinal)
+            .OrderBy(static item => item.AppUserModelId, StringComparer.Ordinal)
+            .ToArray();
+        if (exact.Length == 0)
+        {
+            return resolved;
+        }
+
+        InstalledApplicationEntry[] notPath = exact
+            .Where(static item => item.AppUserModelId.IndexOf('\\') < 0
+                && !item.AppUserModelId.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+                && !item.AppUserModelId.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        return new InstalledApplicationResolution(
+            notPath.Length > 0 ? notPath[0] : exact[0],
+            false);
     }
 
     internal static string Normalize(string value)
