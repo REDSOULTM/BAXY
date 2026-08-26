@@ -1508,3 +1508,40 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   `scripts/test_source_quality.ps1` **verde** en modo Fast, build Release con 0
   advertencias y 0 errores. Próximo dueño: completar y validar las 626 revisiones
   actuales antes de usar la proyección de 1.947 como mapping del replay.
+
+### Continuación 2026-08-25 — 626 contratos actuales aprobados y proyectados
+
+- `scripts/review_observed_current_contracts.py` materializa la revisión
+  independiente del producto. No consulta router, modelo ni salida de BAXY: toma el
+  significado del literal congelado, Identidad y las 174 operaciones del catálogo
+  tipado actual. Cada decisión conserva una regla explicable, sólo puede ser
+  `action`, `clarify` o `conversation`, y la salida exacta sigue siendo privada.
+- Se leyeron las 626 variantes completas y después se reauditaron por contrato y por
+  contexto. Resultado único: **367 action, 86 clarify, 173 conversation**, cero
+  fallback y cero operación fuera del catálogo. El único override contextual es
+  «Abrelo» dentro de una sesión que inmediatamente antes cerró WhatsApp; las trazas
+  `probando_gemma4` continúan tratándose como casos independientes, tal como exige el
+  runner.
+- Correcciones importantes respecto del mapping heredado: lectura literal de
+  pantalla usa `ocr.read` + `capture.screenshot`, no visión genérica; declaraciones
+  implícitas de nombre/preferencia piden consentimiento antes de `memory.save`;
+  Bluetooth/brillo/ventanas declarativos no reciben autoridad; el micrófono de
+  Discord no se degrada a silenciar todo Windows; apagar la radio Wi-Fi no se finge
+  con sólo desconectar; títulos Disney/Prime no se atribuyen al único player cerrado
+  de Netflix; recordatorios sin hora o título y música sin consulta preguntan el dato
+  faltante; operaciones retiradas se sustituyen sólo cuando el catálogo actual
+  conserva la conducta exacta.
+- Revisión privada:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-current-contract-review.v1.jsonl`,
+  SHA-256 `9e807ac8da44edd73bb113f4c932001cbce08e1131b566b99af8ee332143bcca`.
+  Mapping privado proyectado 1:1:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-current-contract-mapping.v1.jsonl`,
+  **1.947/1.947 ocurrencias**, SHA-256
+  `9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779`.
+  El resumen sin mensajes está en
+  `artifacts/goal10/observed-current-contracts-summary.v1.json`.
+- Validación: pruebas focales de revisor + builder + adjudicador **21/21, 0 skips**;
+  `scripts/test_source_quality.ps1` **verde** en modo Fast, con build Release 0
+  advertencias y 0 errores. Próximo dueño: usar este mapping en una muestra física
+  v2 representativa; cualquier divergencia es defecto del producto o, con evidencia,
+  una corrección explícita del contrato, nunca una edición oportunista por respuesta.
