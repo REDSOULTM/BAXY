@@ -145,7 +145,43 @@ def test_visible_click_cascade_source_has_no_app_names() -> None:
     script = files[0].read_text(encoding="utf-8")
     assert "Start-Sleep -Milliseconds 400" in script
     assert "SelectionItemPattern" in script
+    assert "NameProperty" in script
+    assert "TogglePattern" in script
+    assert "toggled" in script
     adapter = files[1].read_text(encoding="utf-8")
     ocr_index = adapter.index("_ocr")
     vision_index = adapter.index("_vision")
     assert ocr_index < vision_index
+
+
+def test_visible_click_script_emits_json_under_windows_powershell() -> None:
+    import base64
+    import json
+    import subprocess
+
+    script = REPO / "src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1"
+    label = base64.b64encode(b"zzznocontrol").decode("ascii")
+    completed = subprocess.run(
+        [
+            "powershell.exe",
+            "-NoProfile",
+            "-NonInteractive",
+            "-STA",
+            "-File",
+            str(script),
+            "-LabelBase64",
+            label,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+    line = next((item for item in completed.stdout.splitlines() if item.strip()), "")
+    assert line, completed.stderr
+    payload = json.loads(line)
+    assert payload.get("ok") is False
+    assert payload.get("error") in {
+        "visible_button_not_found",
+        "active_window_not_found",
+    }

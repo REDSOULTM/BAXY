@@ -1806,3 +1806,22 @@ Semantic `fba3a7f8c6f78f9bfff66df74b154fd53ea8ffefbd7af7490dca39ebeefcb34d`.
 El mapping que pasó reminders/Spotify a acción baja pases de clarify
 vacío. Siguiente dueño: click Discord/WhatsApp (99), `app.open` (65),
 `media.play.query` (52), `reminder.create` (35).
+
+### Continuación 2026-08-26 — click: C# 5, NameProperty, toggle, no Cross previo
+
+r92 click: 99 fallos. 21 journal `visible_click_no_receipt` (~1 s),
+78 Core en 2 ms sin journal (replay del invocationId porque
+`Cross()` antes del script marcaba efecto ambiguo). Causa raíz del
+stdout vacío: `DesktopClickVisible.ps1` compilaba C# 7 (`out uint`)
+con `powershell.exe` 5.1 y `Add-Type` moría antes del `try`.
+La búsqueda `FindAll` de todo el árbol y los nombres de app (Discord)
+rompían el dueño `test_visible_click_cascade_source_has_no_app_names`.
+
+Arreglo: C# 5; búsqueda por NameProperty; postread ToggleState;
+stdout vacío = fallo antes de efecto; last-resort cubre
+`visible_button_not_found` y familia. Medido en este escritorio:
+Discord corre sin HWND visible; Spotify expone `Silenciar` disabled.
+El click sigue sin poder verificar mute/enviar/rojo hasta que haya
+un control enabled. Dueños: `VisibleClickAcceptsAToggledControlPostread`,
+`VisibleClickEmptyStdoutIsFailureBeforeEffect`,
+`test_visible_click_script_emits_json_under_windows_powershell`.

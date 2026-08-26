@@ -111,7 +111,6 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
-            effectBoundary.Cross(cancellationToken);
             ExternalProcessResult process = await _runner.RunAsync(
                 "powershell.exe",
                 ["-NoProfile", "-NonInteractive", "-STA", "-File", _script, "-LabelBase64", encoded],
@@ -142,7 +141,9 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
             && selectedValue.ValueKind == JsonValueKind.True;
         bool surface = root.TryGetProperty("surfaceChanged", out JsonElement surfaceValue)
             && surfaceValue.ValueKind == JsonValueKind.True;
-        return dismissed || selected || surface;
+        bool toggled = root.TryGetProperty("toggled", out JsonElement toggledValue)
+            && toggledValue.ValueKind == JsonValueKind.True;
+        return dismissed || selected || surface || toggled;
     }
 
     private static ExternalCapabilityReceipt ReceiptFromScript(

@@ -87,6 +87,11 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 TurnVisibleFacts.LastResortProse(
                     "composition_lost_verified_facts",
+                    TurnVisibleFacts.Failure("visible_button_not_found")),
+                Is.EqualTo("No pude: no vi el control."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
                     MissionNarration.CreateFailureMessage(
                         [],
                         TurnVisibleFacts.Failure("visible_click_no_receipt"))),

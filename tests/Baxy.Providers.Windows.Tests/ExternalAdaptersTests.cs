@@ -1189,6 +1189,54 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task VisibleClickAcceptsAToggledControlPostread()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
+            "\"error\":\"\",\"name\":\"Mute\",\"controlIdentity\":\"1.2.3\"," +
+            "\"absentOrDisabled\":false,\"selected\":false,\"toggled\":true," +
+            "\"surfaceChanged\":false," +
+            "\"cascadeStage\":\"uia\",\"authority\":\"windows_uia_invoke_postread\"}");
+        var adapter = new WindowsVisibleControlAdapter(runner, script);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"silenciar"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.Result?.GetProperty("toggled").GetBoolean(), Is.True);
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickEmptyStdoutIsFailureBeforeEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new CapturingProcessRunner("");
+        var adapter = new WindowsVisibleControlAdapter(runner, script);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"silenciar"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_no_receipt"));
+        });
+    }
+
+    [Test]
     public async Task VisibleClickCascadeSkipsOcrAndVisionWhenUiaFindsTheControl()
     {
         using TemporaryDirectory temporary = new();

@@ -341,7 +341,16 @@ internal static class TurnVisibleFacts
 
     private static string? FailureProse(string? error, string? name, bool uncertain)
     {
-        if (string.Equals(error, "visible_click_no_receipt", StringComparison.Ordinal))
+        if (error is "visible_click_no_receipt"
+            or "visible_button_not_found"
+            or "visible_button_uia_failed"
+            or "visible_button_not_invokable"
+            or "visible_click_receipt_invalid"
+            or "visible_click_postread_invalid"
+            or "visible_button_postread_unchanged"
+            or "visible_click_argument_invalid"
+            or "active_window_not_found"
+            or "visible_button_ambiguous")
         {
             return "No pude: no vi el control.";
         }
