@@ -241,7 +241,20 @@ def _final_audit(row: dict[str, Any]) -> dict[str, Any] | None:
     if not isinstance(audits, list):
         return None
     finals = [item for item in audits if isinstance(item, dict) and item.get("phase") == "final"]
-    return finals[0] if len(finals) == 1 else None
+    if len(finals) == 1:
+        return finals[0]
+    if finals:
+        return None
+    recoveries = [
+        item
+        for item in audits
+        if isinstance(item, dict)
+        and item.get("phase") == "recovery"
+        and isinstance(item.get("final"), dict)
+        and isinstance(item["final"].get("kind"), str)
+        and item["final"]["kind"]
+    ]
+    return recoveries[-1] if recoveries else None
 
 
 def _audit_operations(row: dict[str, Any]) -> tuple[list[str], str | None]:

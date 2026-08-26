@@ -464,9 +464,12 @@ public sealed class ObservedUserCorpusReplayTests
             {
                 JsonElement final = audit.GetProperty("final");
                 string[] effects = ReadOperationNames(final, "effect_operations");
-                return effects.Length > 0
-                    ? effects
-                    : ReadOperationNames(final, "intent_operations");
+                if (effects.Length > 0)
+                    return effects;
+                string kind = TextProperty(final, "kind");
+                if (kind is "action" or "plan")
+                    return ReadOperationNames(final, "intent_operations");
+                return [];
             })
             .ToArray();
         string[] journalOperations = journal

@@ -2537,6 +2537,27 @@ def test_market_direction_queries_ground_web_search(text: str) -> None:
     assert result.operations == ("web.search",)
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "quién es Lionel Messi",
+        "cuál es la capital de francia",
+        "cuántos planetas hay en el sistema solar",
+        "qué ventanas tengo abiertas",
+        "cuántos monitores tengo",
+        "qué resolución tengo",
+        "qué sabés hacer",
+        "cuánto es 100 dividido 4",
+        "qué me escribió mamá",
+    ],
+)
+def test_stable_knowledge_and_local_machine_questions_are_not_web_search(
+    text: str,
+) -> None:
+    assert resolve_explicit_effects(text, {"web.search"}) is None
+    assert operation_domain_is_grounded(text, "web.search") is False
+
+
 def test_named_market_price_query_is_a_deterministic_public_lookup() -> None:
     text = "averigüe el precio de las acciones de microsoft en nasdaq"
 
@@ -2615,16 +2636,9 @@ def test_authenticated_play_game_phrase_resolves_exact_installed_title() -> None
         "What is ping?",
     ],
 )
-def test_public_fact_questions_resolve_to_verified_web_lookup(text: str) -> None:
-    assert operation_domain_is_grounded(text, "web.search") is True
-
-    result = resolve_explicit_effects(text, {"web.search"})
-
-    assert result is not None
-    assert result.operations == ("web.search",)
-    assert result.evidence == (
-        _strip_request_envelope(_fold(text)),
-    )
+def test_public_fact_questions_stay_in_conversation(text: str) -> None:
+    assert resolve_explicit_effects(text, {"web.search"}) is None
+    assert operation_domain_is_grounded(text, "web.search") is False
 
 
 @pytest.mark.parametrize(

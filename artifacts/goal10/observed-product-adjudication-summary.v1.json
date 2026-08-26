@@ -30,15 +30,15 @@
       "pass": 1656
     },
     "terminal": {
-      "fail": 750,
-      "pass": 1197
+      "fail": 706,
+      "pass": 1241
     },
     "verification": {
       "fail": 663,
       "pass": 1284
     }
   },
-  "private_output_sha256": "baaddab922db2dc9fb750ba2940a6982916384b2501062edb82b1655d4956a94",
+  "private_output_sha256": "2e2d806421a8e65f9a24e26f26a8bc00ebd05b851b9be0ed4164c077a22c296c",
   "replay_inputs": [
     {
       "file": "observed-product-replay.v2.jsonl",
@@ -54,7 +54,7 @@
     }
   ],
   "verdict_counts": {
-    "fail": 866,
-    "pass": 1081
+    "fail": 822,
+    "pass": 1125
   }
 }

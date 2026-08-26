@@ -2798,7 +2798,8 @@ def _simple_arithmetic_question(objective: str) -> bool:
     )
     number = rf"(?:{digits}|{number_word})"
     operator = (
-        r"(?:[+*/x×÷-]|mas|menos|por|entre|dividido\s+por|"
+        r"(?:[+*/x×÷-]|mas|menos|por|entre|dividido(?:\s+por)?|"
+        r"raiz(?:\s+cuadrada)?\s+de|square\s+root\s+of|"
         r"multiplicado\s+por|plus|minus|times|over|divided\s+by|multiplied\s+by)"
     )
     return (
@@ -5954,7 +5955,7 @@ def _prepare_turn_result(
         resolved_explicit_intent
         if resolved_explicit_intent is not None
         and resolved_explicit_intent.operations == ("web.search",)
-        and effect_intent._public_verified_lookup_request(
+        and effect_intent._public_live_lookup_request(
             effect_intent._strip_request_envelope(effect_intent._fold(objective))
         )
         else None

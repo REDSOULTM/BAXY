@@ -252,6 +252,26 @@ def test_bypass_confirmation_scores_when_only_intent_operations_were_selected() 
     assert "never reached the journal" in checks["requested_action"]["reason"]
 
 
+def test_recovery_clarification_is_a_no_effect_terminal() -> None:
+    row = no_effect_row()
+    row["response"] = "¿Cómo puedo ayudarte hoy?"
+    row["turn_audit"] = [
+        {
+            "phase": "recovery",
+            "final": {
+                "kind": "clarify",
+                "effect_operations": [],
+                "intent_operations": [],
+            },
+        }
+    ]
+    checks = mechanical_checks(row, row["expected_contract"])
+
+    assert checks["terminal"]["verdict"] == "pass"
+    assert checks["requested_action"]["verdict"] == "pass"
+    assert checks["risk"]["verdict"] == "pass"
+
+
 def test_normal_sensitive_operation_requires_confirmation_challenge() -> None:
     row = action_row()
     row["catalog_evidence"][0]["risk"] = "privacy_sensitive"

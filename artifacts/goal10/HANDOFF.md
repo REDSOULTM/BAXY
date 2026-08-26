@@ -1866,3 +1866,11 @@ Semantic `83a8955cf478fa17fe3115c967fac4524f6f73bfc933d13df14c63b7069d2d65`.
 **1081 pass / 866 fail. No es 1.947/1.947.** Click 99→36 (16 not_found,
 14 botón rojo, 4 clarify). Ambiguo 0. Siguiente: vacíos 242,
 `app.open` 65, `media.play.query` 55.
+
+### Continuación 2026-08-26 — no-effect: no buscar trivia, recovery final
+
+Los 242 vacíos eran: trivia→`web.search`, `phase=recovery` sin `final`,
+y catálogo cayendo a `intent` en clarify. El auditor ahora lee recovery
+como terminal: **1125 pass / 822 fail** sobre el merge r94 (SHA replay
+`56dd3e08`). Trivia ya no es efecto explícito. Catálogo de captura no
+inventa autoridad en clarify/conversation. Remake r95 de shards sucios.

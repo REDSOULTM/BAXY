@@ -543,6 +543,7 @@ def _public_fact_lookup_request(folded: str) -> bool:
         (
             r"\b(?:mi|mis|mio|mia|mios|mias|my|mine|our|ours|nuestro|"
             r"nuestra|nuestros|nuestras|tu|tus|tuyo|tuya|you|your|yours)\b|"
+            r"\b(?:mama|mamá|papa|papá|mom|dad|madre|padre)\b|"
             r"\b(?:bax[yi]|asistente|assistant)\b"
         ),
     ):
@@ -556,7 +557,7 @@ def _public_fact_lookup_request(folded: str) -> bool:
         return False
     if re.fullmatch(
         r"(?:(?:que|what)\s+(?:es\s+lo\s+que\s+)?(?:no\s+)?"
-        r"(?:puedes|can\s+you)\s+(?:hacer|do)|"
+        r"(?:puedes|podes|sabes|can\s+you)\s+(?:hacer|do)|"
         r"(?:que|what)\s+(?:capacidades|capabilities)\s+(?:tienes|do\s+you\s+have))",
         folded,
         re.IGNORECASE,
@@ -566,7 +567,10 @@ def _public_fact_lookup_request(folded: str) -> bool:
         folded,
         (
             r"\b(?:pc|computer|computador|computadora|ordenador|maquina|machine|"
-            r"device|dispositivo|aparato|cacharro|box|pantalla|screen|ventana|window|clipboard|"
+            r"device|dispositivo|aparato|cacharro|box|pantalla|screen|"
+            r"ventanas?|windows?|monitores?|monitor|brillo|brightness|"
+            r"resolucion|resolution|hz|"
+            r"clipboard|"
             r"portapapeles|archivo|file|"
             r"carpeta|folder|"
             r"documento|document|descargas|downloads|escritorio|desktop|"
@@ -1488,7 +1492,7 @@ def _curated_domain_is_grounded(
             _location_recommendation_request(folded)
             or _public_route_lookup_request(folded)
             or _public_calendar_fact_lookup_request(folded)
-            or _public_verified_lookup_request(folded)
+            or _public_live_lookup_request(folded)
             or _public_commerce_lookup_request(folded)
             or (
                 _has(
@@ -13147,7 +13151,7 @@ def resolve_explicit_effects(
         len(clauses) == 1
         and "web.search" in available
         and (
-            _public_verified_lookup_request(folded)
+            _public_live_lookup_request(folded)
             or _public_route_lookup_request(folded)
             or _public_calendar_fact_lookup_request(folded)
         )
