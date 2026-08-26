@@ -1606,3 +1606,22 @@ es un pase. Siguiente: una fila IP en frío con llama limpio, luego las seis jun
 - Queda: prosa de misión de cierre de 2 pasos (hechos sí, frase no) y cierre
   ya-ausente como postcondición verificada, no `window_not_found`. Siguiente:
   muestra de 25 y campaña 1.947 en shards.
+
+### Continuación 2026-08-26 — muestra representativa 25
+
+- Runner **1/1**, 25/25 `message_id` distintos, 0 vacíos, 0 JSON visible.
+  SHA-256 `17219788b7067d79274595d14f105dc25acc635321529856024198fb8596fea9`.
+  ~4 s/turno caliente; 1.947 ≈ 2,2 h en un hilo.
+- Bien: hola, memory.save/recall/consentimiento, WhatsApp open, volumen 10,
+  web.search honesto sin resultados.
+- Familias nuevas (no literales):
+  1. `app.open` Steam pregunta «¿Quieres que abra Steam?» — dos entradas
+     exactas en Get-StartApps; la agregación de Goal 10 es de lectura, no de
+     open.
+  2. Misión `window.resolve`+`app.close` / `browser.navigate.named` ejecuta y
+     pierde la frase (`composition_lost`).
+  3. Cierre ya-ausente → `window_not_found` / «No pude encontrarlo.»
+  4. «Abrelo» en traza independiente aclara (correcto en producto; el mapping
+     actual espera `app.open` por contexto de sesión). Ledger, no runtime.
+- `03_COSTURAS.md`: rellenadas memoria, bandeja y arranque con medición y fecha
+  2026-08-26.
