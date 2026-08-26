@@ -279,6 +279,24 @@ def test_calculator_arithmetic_types_the_verified_keystrokes() -> None:
 
 
 @pytest.mark.parametrize(
+    ("text", "label"),
+    [
+        ("en Discord apretá silenciar", "silenciar"),
+        ("apretá enviar en WhatsApp", "enviar"),
+        ("hace click en el boton rojo", "rojo"),
+        ("en la calculadora apretá el 5", "5"),
+    ],
+)
+def test_voseo_visible_click_keeps_the_control_label(text: str, label: str) -> None:
+    from baxy_mind.effect_intent import _visible_click_label
+
+    result = resolve_explicit_effects(text, {"input.visible.click", "input.key.press"})
+    assert result is not None
+    assert result.operations == ("input.visible.click",)
+    assert _visible_click_label(_fold(text)) == label
+
+
+@pytest.mark.parametrize(
     "text",
     [
         (
@@ -878,6 +896,10 @@ CASES = [
     ("decime si el wifi está prendido", ("wifi.status",)),
     ("Suma 2 más 2 en la Calculadora", ("app.open", "input.text.type")),
     ("multiplicá 6 por 7 en la calc", ("app.open", "input.text.type")),
+    ("en Discord apretá silenciar", ("input.visible.click",)),
+    ("apretá enviar en WhatsApp", ("input.visible.click",)),
+    ("hace click en el boton rojo", ("input.visible.click",)),
+    ("en la calculadora apretá el 5", ("input.visible.click",)),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}

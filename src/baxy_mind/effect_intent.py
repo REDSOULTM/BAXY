@@ -11785,8 +11785,16 @@ def _dependent_web_navigation_intent(
 
 
 _VISIBLE_CLICK_POINTING = (
-    r"(?:haz\s+clic(?:\s+en)?|click(?:ea|ear)?(?:\s+(?:on|it))?"
-    r"|pulsa(?:lo|la)?|presiona(?:lo|la)?|press(?:\s+it)?)"
+    r"(?:haz\s+clic(?:\s+en)?|hace\s+click(?:\s+en)?|"
+    r"click(?:ea|ear)?(?:\s+(?:on|it))?|"
+    r"pulsa(?:lo|la)?|presiona(?:lo|la)?|apret[aá](?:lo|la)?|"
+    r"aprieta(?:lo|la)?|press(?:\s+it)?)"
+)
+_VISIBLE_CLICK_KEY_LABELS = frozenset(
+    {"enter", "intro", "return", "esc", "escape", "tab", "space", "espacio"}
+)
+_VISIBLE_CLICK_APP_PREFIX = (
+    r"(?:(?:en|in|on)\s+(?:(?:el|la|los|las|the)\s+)?\S+\s+)?"
 )
 _VISIBLE_CLICK_NAVIGATE = (
     r"(?:ve\s+a|vete\s+a|go\s+to|navega\s+(?:a|hacia)|navigate\s+to)"
@@ -11817,11 +11825,12 @@ def _visible_click_label(
     request = _match(
         text,
         (
-            rf"^[¿?¡!\s]*{_REQUEST_PREFIX}{head}\s+"
+            rf"^[¿?¡!\s]*{_REQUEST_PREFIX}{_VISIBLE_CLICK_APP_PREFIX}{head}\s+"
             r"(?:(?:el|la|los|las|the)\s+)?"
             rf"(?:{_VISIBLE_CLICK_CONTROL_NOUN}\s+)?"
             r"(?P<label>[^,;.!?]{1,80}?)"
             rf"(?:\s+{_VISIBLE_CLICK_CONTROL_NOUN})?"
+            r"(?:\s+(?:en|in|on)\s+(?:el|la|the\s+)?\S+)?"
             r"[\s?!.]*$"
         ),
     )
@@ -11837,6 +11846,7 @@ def _visible_click_label(
     if (
         not label
         or len(label.split()) > 6
+        or label.casefold() in _VISIBLE_CLICK_KEY_LABELS
         or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
     ):
         return None
@@ -13154,6 +13164,7 @@ def resolve_explicit_effects(
                 is not None
                 for clause in clauses
             )
+            and _visible_click_label(folded) is None
         )
     ):
         return None
