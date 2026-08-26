@@ -258,6 +258,12 @@ def _audit_operations(row: dict[str, Any]) -> tuple[list[str], str | None]:
         values = list(operations)
     else:
         values = []
+    if not values:
+        intent = final.get("intent_operations")
+        if isinstance(intent, str):
+            values = [intent] if intent else []
+        elif isinstance(intent, list) and all(isinstance(item, str) for item in intent):
+            values = [item for item in intent if item]
     kind = final.get("kind") if isinstance(final.get("kind"), str) else None
     return values, kind
 

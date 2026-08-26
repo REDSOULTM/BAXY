@@ -220,6 +220,38 @@ def test_correction_is_scoped_by_acceptance_test_and_input_hash(tmp_path: Path) 
     assert correction is None
 
 
+def test_bypass_confirmation_scores_when_only_intent_operations_were_selected() -> None:
+    row = action_row()
+    row["expected_contract"] = {
+        "acceptance_test_id": "hist_open",
+        "operations": ["app.open"],
+        "denied_operations": [],
+    }
+    row["confirmation_mode"] = "bypass"
+    row["turn_audit"] = [
+        {
+            "phase": "final",
+            "final": {
+                "kind": "clarify",
+                "effect_operations": [],
+                "intent_operations": ["app.open"],
+            },
+        }
+    ]
+    row["journal_payloads"] = []
+    row["catalog_evidence"] = [
+        {
+            "operation": "app.open",
+            "risk": "low_reversible",
+            "verifier_contract_id": "app.open.visible.snapshot.v1",
+        }
+    ]
+    checks = mechanical_checks(row, row["expected_contract"])
+
+    assert checks["confirmation"]["verdict"] == "pass"
+    assert checks["risk"]["verdict"] == "pass"
+
+
 def test_normal_sensitive_operation_requires_confirmation_challenge() -> None:
     row = action_row()
     row["catalog_evidence"][0]["risk"] = "privacy_sensitive"

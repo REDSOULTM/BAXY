@@ -463,22 +463,10 @@ public sealed class ObservedUserCorpusReplayTests
             .SelectMany(static audit =>
             {
                 JsonElement final = audit.GetProperty("final");
-                if (!final.TryGetProperty("effect_operations", out JsonElement effects))
-                {
-                    return [];
-                }
-                if (effects.ValueKind == JsonValueKind.String)
-                {
-                    string operation = effects.GetString() ?? string.Empty;
-                    return string.IsNullOrWhiteSpace(operation) ? [] : [operation];
-                }
-                return effects.ValueKind == JsonValueKind.Array
-                    ? effects.EnumerateArray()
-                        .Where(static item => item.ValueKind == JsonValueKind.String)
-                        .Select(static item => item.GetString() ?? string.Empty)
-                        .Where(static item => !string.IsNullOrWhiteSpace(item))
-                        .ToArray()
-                    : [];
+                string[] effects = ReadOperationNames(final, "effect_operations");
+                return effects.Length > 0
+                    ? effects
+                    : ReadOperationNames(final, "intent_operations");
             })
             .ToArray();
         string[] journalOperations = journal
@@ -498,6 +486,28 @@ public sealed class ObservedUserCorpusReplayTests
                 descriptor.Risk,
                 descriptor.VerifierContractId))
             .ToArray();
+    }
+
+    private static string[] ReadOperationNames(JsonElement final, string property)
+    {
+        if (!final.TryGetProperty(property, out JsonElement effects))
+        {
+            return [];
+        }
+
+        if (effects.ValueKind == JsonValueKind.String)
+        {
+            string operation = effects.GetString() ?? string.Empty;
+            return string.IsNullOrWhiteSpace(operation) ? [] : [operation];
+        }
+
+        return effects.ValueKind == JsonValueKind.Array
+            ? effects.EnumerateArray()
+                .Where(static item => item.ValueKind == JsonValueKind.String)
+                .Select(static item => item.GetString() ?? string.Empty)
+                .Where(static item => !string.IsNullOrWhiteSpace(item))
+                .ToArray()
+            : [];
     }
 
     private static void WriteDurableRow(string path, object value)
