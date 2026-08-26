@@ -136,6 +136,16 @@ internal static class ModelMessageComposer
                 UsedRecovery: false);
         }
 
+        if (UserMessagePolicy.IsStructuredFacts(draft.Source))
+        {
+            // A second model call on the recovery draft would throw away the
+            // verified facts and publish a generic apology.
+            return new ModelMessageCompositionOutcome(
+                null,
+                "composition_lost_verified_facts",
+                UsedRecovery: false);
+        }
+
         // The deterministic sentence below is evidence for a second model call;
         // it is never shown. This is the model-authored apology required when a
         // factual result cannot be rendered without losing its contract.

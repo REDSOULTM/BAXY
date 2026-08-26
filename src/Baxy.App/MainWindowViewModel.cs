@@ -3381,7 +3381,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                     AddMessageCore(
                         "BAXY",
-                        TurnVisibleFacts.LastResortFailureProse(cause),
+                        TurnVisibleFacts.LastResortProse(cause, draft.Source),
                         isUser: false);
                     ClearMindPlan();
                     RestorePresentationState();

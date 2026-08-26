@@ -1696,3 +1696,16 @@ confirmación 504 (catálogo incompleto), riesgo 159.
 guardianes son anteriores a voseo/wifi/brillo: hay que rejuglarlos. El
 last-resort de calculadora es `app.open` `verification_failed` con
 `effectMayHaveOccurred` cuando la ventana ya estaba abierta.
+
+### Continuación 2026-08-26 — r84 calc+click y last-resort de open verificado
+
+Shard 763–863 r84 SHA-256
+`562ffcf5fc9ec64b247c6bd740d5d9732af83b36188bea5e5f9b3ca90020d076`,
+100/100 visible, 24 last-resort. Aritmética de calculadora ya entra por
+`explicit_effects` (`app.open`+`input.text.type`); un caso verificó los dos
+pasos y el compositor tiró «No pude redactar una frase verificable…».
+Click voseo también entra; un «el 5» verificó «Listo, el 5 fue apretado.».
+
+Arreglo dueño: compose estructurado ya no llama a la disculpa-modelo que
+tira los hechos; last-resort nombra `displayName` verificado; una ventana
+visible ya-abierta se verifica aunque Windows niegue el primer plano.

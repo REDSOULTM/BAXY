@@ -544,21 +544,21 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         CancellationToken cancellationToken)
     {
         _platform.RequestForeground(candidate.WindowHandle);
-        InstalledApplicationObservation? ObserveForeground() =>
+        InstalledApplicationObservation? Observe(bool requireForeground) =>
             _platform.Inventory(entry).FirstOrDefault(item =>
                 item.ProcessId == candidate.ProcessId
                 && item.ProcessCreationTimeUtcTicks == candidate.ProcessCreationTimeUtcTicks
                 && item.WindowHandle == candidate.WindowHandle
                 && item.Visible
-                && item.Foreground);
-        InstalledApplicationObservation? observed = ObserveForeground();
+                && (!requireForeground || item.Foreground));
+        InstalledApplicationObservation? observed = Observe(requireForeground: true);
         if (observed is not null)
         {
             return observed;
         }
 
         await _platform.DelayAsync(ObservationDelay, cancellationToken).ConfigureAwait(false);
-        return ObserveForeground();
+        return Observe(requireForeground: true) ?? Observe(requireForeground: false);
     }
 
     private static InstalledApplicationObservation? Choose(

@@ -45,6 +45,20 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 TurnVisibleFacts.LastResortFailureProse("timeout"),
                 Is.EqualTo("No pude: se agotó el tiempo."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    TurnVisibleFacts.Status(
+                        "opened",
+                        new JsonObject
+                        {
+                            ["observed"] = new JsonObject
+                            {
+                                ["appId"] = "windows.calculator",
+                                ["displayName"] = "Calculadora",
+                            },
+                        })),
+                Is.EqualTo("Listo, Calculadora está abierta."));
         });
     }
 
@@ -601,6 +615,46 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(draft.Intent, Is.EqualTo("welcome"));
             Assert.That(draft.DiagnosticCode, Is.Null);
             Assert.That(draft.Source, Is.EqualTo(welcome));
+        });
+    }
+
+    [Test]
+    public async Task StructuredVerifiedFactsSkipModelAuthoredRecovery()
+    {
+        string facts = TurnVisibleFacts.Status(
+            "opened",
+            new JsonObject
+            {
+                ["observed"] = new JsonObject
+                {
+                    ["displayName"] = "Calculadora",
+                },
+            });
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            facts,
+            UserMessageEvent.Status);
+        int calls = 0;
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Abre la calculadora",
+                ModelMessageComposer.CreateFacts(draft),
+                (_, _, _, _, _) =>
+                {
+                    calls++;
+                    return Task.FromResult<MindComposedMessage?>(null);
+                },
+                cpuFallback: false,
+                allowRecovery: true,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Text, Is.Null);
+            Assert.That(outcome.UsedRecovery, Is.False);
+            Assert.That(outcome.Failure, Is.EqualTo("composition_lost_verified_facts"));
+            Assert.That(calls, Is.EqualTo(1));
         });
     }
 

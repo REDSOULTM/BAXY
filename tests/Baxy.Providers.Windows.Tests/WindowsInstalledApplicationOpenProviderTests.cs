@@ -268,6 +268,31 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     [Test]
+    public async Task ExistingVisibleApplicationIsVerifiedWhenForegroundStealIsRefused()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FocusRefused = true,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(
+            Request("Steam"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.True);
+            Assert.That(result.Receipt.ReusedExisting, Is.True);
+            Assert.That(platform.ActivateCalls, Is.Zero);
+            Assert.That(platform.FocusCalls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public async Task ForegroundVerificationWaitsOnlyAfterAnUnconvergedImmediatePostread()
     {
         var platform = new FakePlatform(Catalog)
@@ -463,6 +488,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public bool FocusRequiresDelay { get; init; }
 
+        public bool FocusRefused { get; init; }
+
         public int ActivateCalls { get; private set; }
 
         public int FocusCalls { get; private set; }
@@ -508,6 +535,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         {
             FocusCalls++;
             _requestedForegroundHandle = windowHandle;
+            if (FocusRefused)
+            {
+                return;
+            }
+
             if (!FocusRequiresDelay)
             {
                 MarkForeground(windowHandle);

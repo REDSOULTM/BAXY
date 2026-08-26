@@ -44,6 +44,78 @@ internal static class TurnVisibleFacts
         };
     }
 
+    internal static string LastResortProse(string? cause, string? source)
+    {
+        if (!string.IsNullOrWhiteSpace(source)
+            && TryVerifiedOpenProse(source) is { Length: > 0 } prose)
+        {
+            return prose;
+        }
+
+        return LastResortFailureProse(cause);
+    }
+
+    private static string? TryVerifiedOpenProse(string source)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(source);
+            JsonElement root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            if (root.TryGetProperty("steps", out JsonElement steps)
+                && steps.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement step in steps.EnumerateArray())
+                {
+                    if (step.ValueKind == JsonValueKind.String
+                        && step.GetString() is { Length: > 0 } nested
+                        && TryVerifiedOpenProse(nested) is { Length: > 0 } fromStep)
+                    {
+                        return fromStep;
+                    }
+                }
+            }
+
+            string? name = null;
+            if (root.TryGetProperty("observed", out JsonElement observed)
+                && observed.ValueKind == JsonValueKind.Object
+                && observed.TryGetProperty("displayName", out JsonElement displayName)
+                && displayName.ValueKind == JsonValueKind.String)
+            {
+                name = displayName.GetString();
+            }
+
+            string? polarity = root.TryGetProperty("polarity", out JsonElement polarityNode)
+                && polarityNode.ValueKind == JsonValueKind.String
+                    ? polarityNode.GetString()
+                    : null;
+            string? cause = root.TryGetProperty("cause", out JsonElement causeNode)
+                && causeNode.ValueKind == JsonValueKind.String
+                    ? causeNode.GetString()
+                    : null;
+            bool success = string.Equals(polarity, "success", StringComparison.Ordinal)
+                || cause is "opened" or "focused" or "mission_completed";
+            if (!success || string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+
+            bool feminine = name.EndsWith('a')
+                || name.Contains("calculadora", StringComparison.OrdinalIgnoreCase);
+            return feminine
+                ? "Listo, " + name + " está abierta."
+                : "Listo, " + name + " está abierto.";
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
     internal static string Status(string cause, JsonObject? extra = null) =>
         Event("status", cause, extra);
 
