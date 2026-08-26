@@ -1,0 +1,37 @@
+{
+  "schema": "baxy.goal10-observed-replay-campaign.v1",
+  "runtime": "current local mind + Core, bypass confirmation, memory baseline enabled",
+  "corpus": "historical_observed_product_turns.v1.jsonl",
+  "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
+  "mapping_sha256": "9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779",
+  "replay_schema": "baxy.goal10-observed-product-replay.v2",
+  "private_dir": "%LOCALAPPDATA%\\BAXYRuntime\\goal10\\",
+  "shards": [
+    {
+      "name": "rep25-r49",
+      "start": 0,
+      "count": 25,
+      "private_file": "observed-rep25-r49.jsonl",
+      "sha256": "17219788b7067d79274595d14f105dc25acc635321529856024198fb8596fea9",
+      "visible_rows": 25,
+      "empty": 0,
+      "json_leak": 0,
+      "seconds": 102
+    },
+    {
+      "name": "0000-0100-r50",
+      "start": 0,
+      "count": 100,
+      "private_file": "observed-shard-0000-0100-r50.jsonl",
+      "sha256": "1be48725a95f63b02154702434f6bd312b521bc87f02064369f6d10b9d63978f",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "action_rows_missing_expected_ops": 18,
+      "composition_lost": 2,
+      "open_clarify": 4,
+      "avg_seconds": 4.71,
+      "wall_seconds": 504
+    }
+  ]
+}

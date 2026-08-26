@@ -720,6 +720,57 @@ def _direct_local_ip_request(folded: str) -> bool:
     )
 
 
+def _direct_voseo_open_request(folded: str) -> bool:
+    """Recognize «me abrís/abres X» as an open request, not a capability quiz."""
+
+    return (
+        re.fullmatch(
+            r"me\s+(?:abris|abres)\s+(?:(?:el|la|los|las|the)\s+)?\S.{0,80}",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _direct_wifi_status_request(folded: str) -> bool:
+    """Recognize a direct ask whether this machine's Wi-Fi radio is on."""
+
+    return (
+        re.fullmatch(
+            r"(?:(?:dime|decime|mostrame|muestrame|show|tell(?:\s+me)?)\s+"
+            r"(?:si|if|whether)\s+(?:el\s+|the\s+)?wi[\s-]?fi\s+"
+            r"(?:esta\s+)?(?:prendid[oa]|encendid[oa]|conectad[oa]|on|off|"
+            r"apagad[oa])|"
+            r"(?:esta|is)\s+(?:el\s+|the\s+)?wi[\s-]?fi\s+"
+            r"(?:prendid[oa]|encendid[oa]|conectad[oa]|on)|"
+            r"como\s+esta\s+(?:el\s+)?wi[\s-]?fi)"
+            r"[\s.!?]*",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _direct_brightness_status_request(folded: str) -> bool:
+    """Recognize a direct ask for the current screen brightness."""
+
+    return (
+        re.fullmatch(
+            r"(?:(?:dime|decime|mostrame|muestrame|show|tell(?:\s+me)?)\s+"
+            r"(?:el\s+|the\s+)?(?:brillo|brightness)|"
+            r"(?:cual|que|what)\s+(?:es|is)\s+(?:el\s+|the\s+)?(?:brillo|brightness)"
+            r"(?:\s+actual|\s+now)?|"
+            r"how\s+bright\s+is\s+(?:the\s+|my\s+)?(?:screen|display))"
+            r"[\s.!?]*",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
 def _direct_absolute_brightness_request(folded: str) -> bool:
     """Recognize a direct absolute brightness assignment with a literal value."""
 
@@ -6396,7 +6447,7 @@ _DEICTIC_DAY = (
     r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
     r"that\s+day|that\s+date|that\s+same\s+day)\b"
 )
-_OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+_OPEN = r"(?:abre|abrir|abri|abrime|abris|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
 _LIST = r"(?:lista|listar|enumera|enumerar|muestra|muestrame|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
 _CREATE = (
@@ -9574,6 +9625,15 @@ def _review_system_and_network_effects(
             "system.settings.set",
             r"\b(?:brillo|brightness)\b",
         )
+    if _direct_brightness_status_request(folded):
+        _append(
+            matches,
+            folded,
+            "system.settings.status",
+            r"\b(?:brillo|brightness)\b",
+        )
+    if _direct_wifi_status_request(folded):
+        _append(matches, folded, "wifi.status", r"\bwi[\s-]?fi\b")
 
 
 def _review_audio_effects(
@@ -12525,6 +12585,14 @@ def resolve_explicit_effects(
         folded
     ):
         return EffectIntent(("system.settings.set",), (folded,))
+    if "system.settings.status" in available and _direct_brightness_status_request(
+        folded
+    ):
+        return EffectIntent(("system.settings.status",), (folded,))
+    if "wifi.status" in available and _direct_wifi_status_request(folded):
+        return EffectIntent(("wifi.status",), (folded,))
+    if "app.open" in available and _direct_voseo_open_request(folded):
+        return EffectIntent(("app.open",), (folded,))
     if "calendar.event.list" in available and _relative_calendar_read_request(folded):
         return EffectIntent(("calendar.event.list",), (folded,))
     if "media.play.query" in available and (

@@ -237,6 +237,9 @@ def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
         ("poné el brillo al 80", ("system.settings.set",)),
         ("Pon el brillo al 50%", ("system.settings.set",)),
         ("set the brightness to 40", ("system.settings.set",)),
+        ("mostrame el brillo", ("system.settings.status",)),
+        ("decime si el wifi está prendido", ("wifi.status",)),
+        ("me abrís la calculadora", ("app.open",)),
     ],
 )
 def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
@@ -250,6 +253,9 @@ def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
             "web.search",
             "network.ip.list",
             "system.settings.set",
+            "system.settings.status",
+            "wifi.status",
+            "app.open",
         },
     )
 
@@ -852,6 +858,9 @@ CASES = [
     ("cual es mi direccion ip", ("network.ip.list",)),
     ("poné el brillo al 80", ("system.settings.set",)),
     ("cerrá la calculadora", ("app.close",)),
+    ("me abrís la calculadora", ("app.open",)),
+    ("mostrame el brillo", ("system.settings.status",)),
+    ("decime si el wifi está prendido", ("wifi.status",)),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}
