@@ -1658,3 +1658,18 @@ compose no se coma el turno. Resumen:
 
 Hay que rejuglar los shards con sidecar degradado (400–800, 800–1200,
 1500–1600, 1700–1800) en tandas de 100. Después, adjudicar.
+
+### Continuación 2026-08-26 — compose-swallow y rerun sucio r70–r83
+
+`aa573c8`: un compose vacío ya no encola reintentos ni deja `_pendingMindPlan`
+para tragar el siguiente trazo independiente. `StartNewUiSession` limpia el
+plan; el primer compose vacío publica last-resort y suelta el plan.
+
+Smoke 10/10, 0 `no_responde`. Campaña sucia 100 filas, sidecar fresco entre
+shards, 14/14 exit 0. Merge privado `observed-product-replay.v2.jsonl`
+SHA-256 `7d30748ebc8e9711cbcdb51cebabfdba0d4ed6bc9c0ba4b4edc8b60ba574a53b`:
+**1.947 / 1.947 ids, 0 vacíos, 0 JSON, 73 `No pude: no responde.` (eran 651).**
+118 «No pude redactar una frase verificable sin perder sus hechos». **No es
+1.947 pass.** Familias restantes del last-resort: `abrí la calculadora` (25),
+Spotify play (10), bloc de notas (6), título Netflix (6). Adjudicar sobre este
+merge; esas 73 fallan hasta que el compose de hecho verificado deje de morir.

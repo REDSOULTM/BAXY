@@ -1,15 +1,16 @@
 {
   "schema": "baxy.goal10-observed-replay-summary.v1",
   "private_output": "observed-product-replay.v2.jsonl",
-  "private_output_sha256": "d6e7db3ec461fe6a3810ff22d1127bb9b2db357073ea1b6ae49ad82252f556c1",
+  "private_output_sha256": "7d30748ebc8e9711cbcdb51cebabfdba0d4ed6bc9c0ba4b4edc8b60ba574a53b",
   "row_count": 1947,
   "unique_message_ids": 1947,
   "empty_responses": 0,
-  "no_responde": 651,
-  "composition_lost": 50,
+  "no_responde": 73,
+  "composition_lost": 118,
   "json_leak": 0,
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
   "mapping_sha256": "9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779",
-  "note": "Coverage of 1947/1947 message_ids. 731 no_responde rows are sidecar-compose failures and must be rerun; this is not 1947 pass."
+  "commit": "aa573c826db5197b5aba7855b589007bc7162b69",
+  "note": "Coverage of 1947/1947 message_ids after compose-swallow fix and dirty 100-row reruns r70-r83. 73 last-resort no_responde remain (was 651); not 1947 pass. Dominant leftovers: abrí la calculadora (25), Spotify play (10+), notepad open (6), Netflix title (6)."
 }
