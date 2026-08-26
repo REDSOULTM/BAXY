@@ -1793,3 +1793,16 @@ no morir con el Job Object. 0000–0400 listos (500 filas). 0400–0500 tiene
 12 formular (click Discord). 0500–1947 en testhost pid 34232. Mapping
 privado `b749ed53…`. Catálogo de evidencia cae a `intent_operations` si el
 efecto se retuvo (85271a5).
+
+### Continuación 2026-08-26 — r92 merge y 1031/1947
+
+Campaña r92 cerrada (pid 27440). Merge SHA-256
+`1b4a76819fad1ca83fff0cf0af9a604d1968e331f8de8fe390f1406d825ea8b3`.
+1.947 únicos, 0 vacíos, 3 `no_responde`, 154 formular.
+Adjudicación `f30d35aa1e7e647a57165de1eb723a576f84ad1070f885bd622c2bb0975842c4`.
+Semantic `fba3a7f8c6f78f9bfff66df74b154fd53ea8ffefbd7af7490dca39ebeefcb34d`.
+
+**1031 pass / 916 fail. No es 1.947/1.947.** Naturalidad 1947.
+El mapping que pasó reminders/Spotify a acción baja pases de clarify
+vacío. Siguiente dueño: click Discord/WhatsApp (99), `app.open` (65),
+`media.play.query` (52), `reminder.create` (35).

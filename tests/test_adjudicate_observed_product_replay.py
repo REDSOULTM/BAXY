@@ -248,8 +248,8 @@ def test_bypass_confirmation_scores_when_only_intent_operations_were_selected() 
     ]
     checks = mechanical_checks(row, row["expected_contract"])
 
-    assert checks["confirmation"]["verdict"] == "pass"
-    assert checks["risk"]["verdict"] == "pass"
+    assert checks["requested_action"]["verdict"] == "fail"
+    assert "never reached the journal" in checks["requested_action"]["reason"]
 
 
 def test_normal_sensitive_operation_requires_confirmation_challenge() -> None:

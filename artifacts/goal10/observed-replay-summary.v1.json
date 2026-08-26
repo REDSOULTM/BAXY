@@ -1,16 +1,16 @@
 {
   "schema": "baxy.goal10-observed-replay-summary.v1",
   "private_output": "observed-product-replay.v2.jsonl",
-  "private_output_sha256": "a76e397d8dde7736d087cca36cf181e3166f1fc0a8f91ce9e8732b260e5f9e0e",
+  "private_output_sha256": "1b4a76819fad1ca83fff0cf0af9a604d1968e331f8de8fe390f1406d825ea8b3",
   "row_count": 1947,
   "unique_message_ids": 1947,
   "empty_responses": 0,
-  "no_responde": 1,
-  "composition_lost": 157,
+  "no_responde": 3,
+  "composition_lost": 154,
   "json_leak": 0,
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
-  "mapping_sha256": "9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779",
-  "commit": "6533c79",
-  "note": "Full r91 remake after last-resort narrates verified facts and calculator digits type. 0 empty, 1 no_responde, 157 formular. Adjudication 1099 pass / 848 fail. Not 1947/1947. Honesty 24 fail (was 122). Leftovers: visible click without receipt (Discord/WhatsApp), empty-contract mapping, catalog risk, alarms, named media."
+  "mapping_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
+  "commit": "5a0281c",
+  "note": "Full r92 remake (detached). 0 empty, 3 no_responde, 154 formular. Adjudication 1031 pass / 916 fail. Not 1947/1947. Reminder/Spotify contracts now action so some former clarify-passes fail until the product journals them. Top leftover: Discord mute click, WhatsApp send click, alarms, volume, wifi, named media."
 }
