@@ -1774,3 +1774,13 @@ Naturalidad 1947/1947. Mecánica: acción 693, verificación 703, terminal
 819, confirmación 271. Top restante: «en Discord apretá silenciar» (63),
 click sin recibo, contratos vacíos (219), alarmas, Spotify/Netflix
 nombrados, catálogo de riesgo.
+
+### Continuación 2026-08-26 — click fuera del testhost, voseo open, contratos
+
+`DesktopClickVisible.ps1` ya no busca sólo el primer plano (testhost/Baxy):
+enumera otras ventanas de primer nivel. «me abrís la calculadora» pasa el
+nombre de la app como evidencia para que el grounding de catálogo no retire
+`app.open`. Recordatorios con hora y «pon música en Spotify» son acción
+(`reminder.create` / `media.play.query`), no clarify. Mapping privado
+`b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369`.
+Remake r92 de shards afectados en curso.
