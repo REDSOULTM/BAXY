@@ -31,6 +31,23 @@ public sealed class PlannerAppBoundaryTests
             Is.EqualTo(verified));
     }
 
+    [Test]
+    public void LastResortFailureProseDoesNotSwallowAVerifiedResultAsNoResponse()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                TurnVisibleFacts.LastResortFailureProse("no_response"),
+                Is.EqualTo("No pude: no responde."));
+            Assert.That(
+                TurnVisibleFacts.LastResortFailureProse("composition_lost_verified_facts"),
+                Is.EqualTo("No pude: no pude formular el resultado."));
+            Assert.That(
+                TurnVisibleFacts.LastResortFailureProse("timeout"),
+                Is.EqualTo("No pude: se agotó el tiempo."));
+        });
+    }
+
     [TestCase("confirmar", true)]
     [TestCase("cancel", true)]
     [TestCase("continuar", true)]

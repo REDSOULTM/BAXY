@@ -38,6 +38,8 @@ internal static class TurnVisibleFacts
             "no_response" or "provider_down" or "composer_request_failed"
                 or "composer_unavailable" => "No pude: no responde.",
             "timeout" => "No pude: se agotó el tiempo.",
+            "composition_lost_verified_facts" =>
+                "No pude: no pude formular el resultado.",
             _ => "No pude: no pude formular el resultado.",
         };
     }

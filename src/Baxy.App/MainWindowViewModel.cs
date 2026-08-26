@@ -93,6 +93,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         "BAXY",
                         TurnVisibleFacts.LastResortFailureProse(failure),
                         isUser: false);
+                    ClearMindPlan();
                     RestorePresentationState();
                 }),
             OnModelMessageQueued);
@@ -1607,6 +1608,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // A new visible conversation is also a new conversational authority
         // boundary.  Keeping an unfinished clarification here makes the first
         // message of the new session answer the previous session implicitly.
+        // A dead composer used to leave `_pendingMindPlan` set, so the next
+        // independent turn resumed a mission instead of deciding the new text.
+        ClearMindPlan();
         _pendingMindClarificationObjective = null;
         Messages.Clear();
         AddMessage(
@@ -3368,8 +3372,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 else
                 {
                     LastMessageCompositionFailure = outcome.Failure;
-                    pending.Attempts = 1;
-                    _modelMessages.Enqueue(pending, _mindLifetimeCancellation.Token);
+                    string cause = outcome.Failure ?? "no_response";
+                    if (UserMessagePolicy.IsStructuredFacts(draft.Source)
+                        && draft.Intent is "status" or "error")
+                    {
+                        cause = "composition_lost_verified_facts";
+                    }
+
+                    AddMessageCore(
+                        "BAXY",
+                        TurnVisibleFacts.LastResortFailureProse(cause),
+                        isUser: false);
+                    ClearMindPlan();
+                    RestorePresentationState();
                 }
                 return;
             }
