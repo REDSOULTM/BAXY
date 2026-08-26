@@ -1427,3 +1427,51 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   skips**. `scripts/test_source_quality.ps1` terminó **verde** en modo Fast, con
   build Release 0 advertencias/0 errores. Falta comprometer/publicar esta tanda y
   retomar el adjudicador integral de nueve dimensiones.
+
+### Continuación 2026-08-25 — adjudicador integral binario conectado al producto
+
+- `scripts/adjudicate_observed_product_replay.py` separa las dos autoridades que el
+  goal exige: el runner captura producto/Core/provider; el modelo del goal deja una
+  revisión semántica privada por fila. Pertinencia, naturalidad, idioma y honestidad
+  vienen de esa revisión; acción pedida, riesgo, confirmación, verificación y
+  terminal se derivan del audit, catálogo tipado y journal. Los únicos estados son
+  `pass` y `fail`: faltantes, duplicados, hashes viejos, `review`, `unresolved`,
+  postcondición ausente o lifecycle incompleto abortan o fallan.
+- Cada revisión queda ligada a `message_id`, hash del mensaje, hash de la respuesta
+  **y hash canónico de toda la fila física**. Por tanto una respuesta textual igual
+  no puede reutilizar un juicio si cambiaron facts, provider, catálogo, trace o
+  journal. La salida privada conserva mensaje/respuesta exactos, contrato corregido,
+  trazas, hechos, nueve checks, veredicto y razón; el resumen versionable sólo publica
+  nombres de archivo, hashes y conteos.
+- El ledger versionado
+  `artifacts/goal10/observed-contract-corrections.v1.json` usa selector compuesto
+  `(acceptance_test_id, text_sha256)`, nunca la respuesta. Es necesario porque un
+  mismo `acceptance_test_id` histórico agrupa órdenes, preguntas y observaciones. La
+  primera versión corrige sólo los tres conflictos demostrados: observación de
+  Bluetooth sin efecto, observación de brillo sin efecto y consulta de cualquier
+  ventana de Steam mediante `window.application.status` (con `window.active`
+  explícitamente denegada).
+- El replay físico es ahora schema
+  `baxy.goal10-observed-product-replay.v2`: captura por fila la definición actual de
+  cada efecto (`operation`, `risk`, `verifier_contract_id`) y el modo de confirmación
+  efectivo. V1 se rechaza para adjudicación. El test de ese contrato se movió a una
+  fixture separada para que el filtro histórico
+  `FullyQualifiedName~ObservedUserCorpusReplayTests` continúe seleccionando el test
+  físico explícito; se comprobó con una corrida real de 23 s, no con el falso verde
+  de 46 ms que reveló la colisión temporal de filtros.
+- Captura v2 final del par Steam:
+  `%LOCALAPPDATA%\BAXYRuntime\goal10\observed-fix-probando.window-status-r29.jsonl`,
+  SHA-256 `5a36dfdd5599603904a7b479989a79df2af48bfe389ce9ee10f04ecbf1734f85`.
+  Revisión semántica privada SHA-256
+  `fee3218dee6a2e143195064868ad5b8fb795c29220027812bb8b0e0da7e38b5b`;
+  adjudicación privada SHA-256
+  `bbb92fee313fba5ce82e3e80c5d07d4acb97fb1127781cd214560642f54e225b`.
+  Resultado: **2/2 pass**, con **2 pass y 0 fail en cada una de las nueve
+  dimensiones**. El resumen versionable está en
+  `artifacts/goal10/observed-product-adjudication-smoke-summary.v1.json`.
+- Suite dueña del adjudicador **9/9, 0 skips**; contrato .NET focal **1/1, 0
+  skips**. `scripts/test_source_quality.ps1` terminó **verde** en modo Fast, con
+  build Release 0 advertencias/0 errores. Este smoke demuestra el mecanismo, no
+  certifica todavía las 1.947. Próximo dueño: auditar las 626 variantes de contrato
+  congeladas contra Identidad/catálogo, completar el ledger y ejecutar una primera
+  tanda v2 representativa antes de la campaña completa.

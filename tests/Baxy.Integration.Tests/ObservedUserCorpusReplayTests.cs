@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Baxy.App;
+using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using NUnit.Framework;
 
 namespace Baxy.Integration.Tests;
@@ -133,7 +135,7 @@ public sealed class ObservedUserCorpusReplayTests
                     outputPath,
                     new
                     {
-                        schema = "baxy.goal10-observed-product-replay.v1",
+                        schema = "baxy.goal10-observed-product-replay.v2",
                         occurrence_index = row.CorpusIndex,
                         shard_index = index,
                         message_id = row.MessageId,
@@ -150,6 +152,11 @@ public sealed class ObservedUserCorpusReplayTests
                         turn_audit = turnAudit,
                         raw_reply_audit = rawReplyAudit,
                         compose_audit = composeAudit,
+                        catalog_evidence = CatalogEvidence(turnAudit, journal),
+                        confirmation_mode = ConfirmationModeStore.Read(dataRoot)
+                            == ConfirmationMode.Bypass
+                                ? "bypass"
+                                : "normal",
                         journal_payloads = journal,
                         cleanup_response = string.Empty,
                         timing_seconds = turnTimer.Elapsed.TotalSeconds,
@@ -387,6 +394,53 @@ public sealed class ObservedUserCorpusReplayTests
         throw new IOException($"JSONL stayed unavailable: {path}", lastFailure);
     }
 
+    internal static CatalogEvidenceRow[] CatalogEvidence(
+        JsonElement[] turnAudit,
+        JsonElement[] journal)
+    {
+        string[] operations = turnAudit
+            .Where(static audit => TextProperty(audit, "phase") == "final"
+                && audit.TryGetProperty("final", out JsonElement final)
+                && final.ValueKind == JsonValueKind.Object)
+            .SelectMany(static audit =>
+            {
+                JsonElement final = audit.GetProperty("final");
+                if (!final.TryGetProperty("effect_operations", out JsonElement effects))
+                {
+                    return [];
+                }
+                if (effects.ValueKind == JsonValueKind.String)
+                {
+                    string operation = effects.GetString() ?? string.Empty;
+                    return string.IsNullOrWhiteSpace(operation) ? [] : [operation];
+                }
+                return effects.ValueKind == JsonValueKind.Array
+                    ? effects.EnumerateArray()
+                        .Where(static item => item.ValueKind == JsonValueKind.String)
+                        .Select(static item => item.GetString() ?? string.Empty)
+                        .Where(static item => !string.IsNullOrWhiteSpace(item))
+                        .ToArray()
+                    : [];
+            })
+            .ToArray();
+        if (operations.Length == 0)
+        {
+            operations = journal
+                .Where(static payload => TextProperty(payload, "phase") == "started")
+                .Select(static payload => TextProperty(payload, "operation"))
+                .Where(static operation => !string.IsNullOrWhiteSpace(operation))
+                .ToArray();
+        }
+
+        return operations
+            .Select(ProductCatalog.GetRequired)
+            .Select(static descriptor => new CatalogEvidenceRow(
+                descriptor.Name,
+                descriptor.Risk,
+                descriptor.VerifierContractId))
+            .ToArray();
+    }
+
     private static void WriteDurableRow(string path, object value)
     {
         byte[] payload = Encoding.UTF8.GetBytes(
@@ -491,6 +545,11 @@ public sealed class ObservedUserCorpusReplayTests
         string Language,
         string Source,
         string SourceLocation);
+
+    internal sealed record CatalogEvidenceRow(
+        string operation,
+        string risk,
+        string verifier_contract_id);
 
     private sealed class EnvironmentVariableScope : IDisposable
     {

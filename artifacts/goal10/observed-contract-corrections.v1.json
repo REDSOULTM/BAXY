@@ -1,0 +1,89 @@
+{
+  "schema": "baxy.goal10-contract-corrections.v1",
+  "corrections": [
+    {
+      "selector": {
+        "acceptance_test_id": "hist_5d970660dc5ea1",
+        "text_sha256": "98a344f6decde3a3e139c5f7509670b424d49e7cec08a1b30517a01aa9652e11"
+      },
+      "reason": "The historical prototype treated a declarative Bluetooth observation as an action. Current Identity permits initiative only when requested; this literal grants no operation authority.",
+      "authority_bases": [
+        "documentacion/sprints/10_VALIDACION_INTEGRAL.md:326-329",
+        "documentacion/00_IDENTIDAD.md:161-176",
+        "src/Baxy.Kernel/Operations/ProductCatalog.cs:162-181"
+      ],
+      "replacement": {
+        "outcome_type": "conversation_only",
+        "operations": [],
+        "denied_operations": [],
+        "plan": [],
+        "risk": null,
+        "provider_roles": [],
+        "verification": [
+          "No operation or provider lifecycle record is emitted; the response does not claim an independently measured state."
+        ],
+        "natural_response": "A natural acknowledgement that preserves the user's stated object and state without claiming verification."
+      }
+    },
+    {
+      "selector": {
+        "acceptance_test_id": "hist_36c4351d3594b1",
+        "text_sha256": "e87db8dc5f9fbfa0b0e8d8568416c23c60ef2ec6932403fa09310062e21ef847"
+      },
+      "reason": "The historical prototype interpreted a declarative brightness observation as system.settings. The current product must acknowledge it without reading or changing brightness unless asked.",
+      "authority_bases": [
+        "documentacion/sprints/10_VALIDACION_INTEGRAL.md:326-329",
+        "documentacion/00_IDENTIDAD.md:161-176",
+        "src/Baxy.Kernel/Operations/ProductCatalog.cs:1337-1341"
+      ],
+      "replacement": {
+        "outcome_type": "conversation_only",
+        "operations": [],
+        "denied_operations": [],
+        "plan": [],
+        "risk": null,
+        "provider_roles": [],
+        "verification": [
+          "No operation or provider lifecycle record is emitted; the response does not claim an independently measured state."
+        ],
+        "natural_response": "A natural acknowledgement that preserves the user's stated object and state without claiming verification."
+      }
+    },
+    {
+      "selector": {
+        "acceptance_test_id": "hist_d05486872a26f5",
+        "text_sha256": "0d7ede161f8f6904460db819344a3c4d2f0a05731a7bda6b970067fcc383774d"
+      },
+      "reason": "The historical abstract window.manage label cannot answer whether a named application has any visible window. The current typed catalog assigns that read to window.application.status.",
+      "authority_bases": [
+        "src/baxy_mind/skills/windows-device-control/SKILL.md:33-38",
+        "src/Baxy.Kernel/Operations/ProductCatalog.cs:1547-1551",
+        "documentacion/00_IDENTIDAD.md:161-176"
+      ],
+      "replacement": {
+        "outcome_type": "mission_must_implement",
+        "operations": [
+          "window.application.status"
+        ],
+        "denied_operations": [
+          "window.active"
+        ],
+        "plan": [
+          "Observe the named application's visible-window snapshot without launching or focusing it."
+        ],
+        "risk": {
+          "class": "read_only",
+          "confirmation": "not_required",
+          "reason": "The operation only observes the current Start catalog and visible windows."
+        },
+        "provider_roles": [
+          "windows_application_inventory"
+        ],
+        "verification": [
+          "The provider returns the resolved display name and a verified count of unique visible HWNDs."
+        ],
+        "natural_response": "State whether the named application has a visible window using only the verified provider snapshot."
+      }
+    }
+  ]
+}
