@@ -1008,9 +1008,20 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
                     }
 
-                    string? executablePath = process.MainModule?.FileName;
-                    if (string.IsNullOrWhiteSpace(executablePath)
-                        || !Path.IsPathFullyQualified(executablePath))
+                    string executablePath = string.Empty;
+                    try
+                    {
+                        executablePath = process.MainModule?.FileName ?? string.Empty;
+                    }
+                    catch (Exception exception) when (exception is InvalidOperationException
+                        or System.ComponentModel.Win32Exception
+                        or NotSupportedException)
+                    {
+                        executablePath = string.Empty;
+                    }
+
+                    if (executablePath.Length > 0
+                        && !Path.IsPathFullyQualified(executablePath))
                     {
                         continue;
                     }
