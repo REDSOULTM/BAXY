@@ -1784,3 +1784,12 @@ nombre de la app como evidencia para que el grounding de catálogo no retire
 (`reminder.create` / `media.play.query`), no clarify. Mapping privado
 `b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369`.
 Remake r92 de shards afectados en curso.
+
+### Continuación 2026-08-26 — remake r92 desprendido del job
+
+El wait de la sesión mataba el testhost. `remake_all_r92.py` ahora salta
+shards ya completos y se lanza con `Win32_Process.Create` (pid 27440) para
+no morir con el Job Object. 0000–0400 listos (500 filas). 0400–0500 tiene
+12 formular (click Discord). 0500–1947 en testhost pid 34232. Mapping
+privado `b749ed53…`. Catálogo de evidencia cae a `intent_operations` si el
+efecto se retuvo (85271a5).
