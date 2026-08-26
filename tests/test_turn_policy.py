@@ -1748,6 +1748,8 @@ def test_explicit_arguments_are_bound_to_each_effect_fragment(
     [
         ("Necesito que cierres whatsapp", {"process": "whatsapp"}),
         ("Cierra la ventana de Bloc de notas.", {"process": "Bloc de notas"}),
+        ("Cerrá la calculadora", {"process": "calculadora"}),
+        ("cerra steam", {"process": "steam"}),
         ("I need you to close WhatsApp", {"process": "WhatsApp"}),
         ("Close the Notepad window", {"process": "Notepad"}),
         ("cierra la ventana activa", None),

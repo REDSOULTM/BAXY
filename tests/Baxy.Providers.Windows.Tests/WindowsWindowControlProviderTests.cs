@@ -6,6 +6,21 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class WindowsWindowControlProviderTests
 {
+    [TestCase("calculadora", "CalculatorApp", "Calculadora", true)]
+    [TestCase("calculator", "CalculatorApp", "Calculator", true)]
+    [TestCase("steam", "steam", "Steam", true)]
+    [TestCase("notepad", "explorer", "Documents", false)]
+    public void NamedCloseSelectorMatchesDisplayNameOrProcess(
+        string selector,
+        string processName,
+        string title,
+        bool expected)
+    {
+        Assert.That(
+            WindowSelector.Matches(selector, processName, title),
+            Is.EqualTo(expected));
+    }
+
     [Test]
     public async Task ForegroundResolveReturnsOnlyVerifiedActiveWindow()
     {

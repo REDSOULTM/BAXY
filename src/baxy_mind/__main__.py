@@ -4326,8 +4326,8 @@ def _explicit_window_process_arguments(evidence: str) -> dict[str, object] | Non
     patterns = (
         (
             r"^(?:(?:necesito|quiero|quisiera)\s+que\s+)?"
-            r"(?:cierra|cierre|cierres|cerrar)\s+"
-            r"(?:(?:la|una)\s+)?(?:ventana\s+(?:de|del)\s+)?"
+            r"(?:cierra|cierre|cierres|cerrar|cerra|cerrá)\s+"
+            r"(?:(?:la|el|una|un)\s+)?(?:ventana\s+(?:de|del)\s+)?"
             r"(?P<process>.+?)\s*[.!?]*$"
         ),
         (

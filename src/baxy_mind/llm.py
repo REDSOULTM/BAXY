@@ -3049,6 +3049,7 @@ _CAUSE_FACT = {
     ),
     "app_not_found": "not found",
     "window_not_found": "there is no matching visible window",
+    "memory_disabled": "local memory is turned off",
     "web_search_results_irrelevant": (
         "the public search returned no results relevant enough to verify"
     ),

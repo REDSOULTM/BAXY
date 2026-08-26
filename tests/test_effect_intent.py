@@ -231,13 +231,27 @@ def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
     [
         ("Que dia es hoy?", ("system.time",)),
         ("Busca noticias actuales de tecnologia y resume una.", ("web.search",)),
+        ("cuál es mi ip", ("network.ip.list",)),
+        ("cual es mi direccion ip", ("network.ip.list",)),
+        ("what is my ip", ("network.ip.list",)),
+        ("poné el brillo al 80", ("system.settings.set",)),
+        ("Pon el brillo al 50%", ("system.settings.set",)),
+        ("set the brightness to 40", ("system.settings.set",)),
     ],
 )
 def test_goal10_daily_use_surfaces_resolve_without_false_clarification(
     text: str,
     expected: tuple[str, ...],
 ) -> None:
-    result = resolve_explicit_effects(text, {"system.time", "web.search"})
+    result = resolve_explicit_effects(
+        text,
+        {
+            "system.time",
+            "web.search",
+            "network.ip.list",
+            "system.settings.set",
+        },
+    )
 
     assert result is not None
     assert result.operations == expected
@@ -834,6 +848,10 @@ CASES = [
         ("game.install.cancel.active",),
     ),
     ("scroll down a bit", ("input.pointer.control",)),
+    ("cuál es mi ip", ("network.ip.list",)),
+    ("cual es mi direccion ip", ("network.ip.list",)),
+    ("poné el brillo al 80", ("system.settings.set",)),
+    ("cerrá la calculadora", ("app.close",)),
 ]
 
 AVAILABLE = {operation for _, operations in CASES for operation in operations}

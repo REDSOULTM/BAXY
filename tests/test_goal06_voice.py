@@ -131,6 +131,18 @@ def test_compose_payload_translates_verified_core_failure_without_exposing_code(
     assert payload["reason"] == "there is no matching visible window"
     assert "window_not_found" not in json.dumps(payload)
 
+    disabled = _compose_situation_payload(
+        {
+            "kind": "failure",
+            "polarity": "failure",
+            "cause": "memory_disabled",
+        },
+        "es",
+        "acordate que mi color favorito es el azul",
+    )
+    assert disabled["cause"] == "local memory is turned off"
+    assert "memory_disabled" not in json.dumps(disabled)
+
     assert compose_visible_defect(
         "No pude: no hay una ventana está cerrada.",
         "error",

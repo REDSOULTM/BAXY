@@ -698,6 +698,50 @@ def _public_verified_lookup_request(folded: str) -> bool:
     return _public_live_lookup_request(folded) or _public_fact_lookup_request(folded)
 
 
+def _direct_local_ip_request(folded: str) -> bool:
+    """Recognize a direct request for this computer's local unicast IP."""
+
+    return (
+        re.fullmatch(
+            (
+                r"(?:"
+                r"(?:(?:cual|que)\s+es\s+(?:(?:la|mi)\s+)?(?:direccion\s+)?ip|"
+                r"what(?:'s|\s+s|\s+is)\s+(?:my\s+)?(?:ip(?:\s+address)?|"
+                r"(?:the\s+)?(?:ip\s+address))|"
+                r"(?:dime|decime|mostrame|muestrame|show|tell(?:\s+me)?)\s+"
+                r"(?:(?:la|the|mi|my)\s+)?(?:direccion\s+)?ip(?:\s+address)?)"
+                r")"
+            )
+            + r"[\s.!?]*",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _direct_absolute_brightness_request(folded: str) -> bool:
+    """Recognize a direct absolute brightness assignment with a literal value."""
+
+    return (
+        _has(folded, r"\b(?:brillo|brightness)\b")
+        and (
+            _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+            or _has(folded, r"%")
+            or _literal_percentage_word_value(folded) is not None
+        )
+        and _head_is(
+            _request_head(folded),
+            r"(?:pon|pone|ponme|poner|fija|ajusta|adjust|establece|set|"
+            r"cambia|change|deja|dejame)",
+        )
+        and not _has(
+            folded,
+            r"\b(?:sube|subi|baja|bajar|aumenta|reduce|raise|lower)\b",
+        )
+    )
+
+
 def _direct_current_time_request(folded: str) -> bool:
     """Recognize a direct request for the computer's current local time."""
 
@@ -1705,6 +1749,14 @@ def _curated_domain_is_grounded(
         return _process_list_domain(folded)
     if operation == "network.status":
         return _network_status_domain(folded)
+    if operation == "network.ip.list":
+        return _has(
+            folded,
+            r"\b(?:\bip\b|direccion\s+ip|ip\s+address)\b",
+        ) and not _has(
+            folded,
+            r"\b(?:billy|crystal|kate|mariah|address\s+book|agenda)\b",
+        )
     if operation in {
         "wifi.connect.named",
         "wifi.disconnect",
@@ -9508,6 +9560,20 @@ def _review_system_and_network_effects(
                 "wifi.connect.named" if named_profile else "wifi.ensure.connected",
                 r"\b(?:conecta|conectar|conectame|cambia|change|connect)\b",
             )
+    if _direct_local_ip_request(folded):
+        _append(
+            matches,
+            folded,
+            "network.ip.list",
+            r"\b(?:ip|direccion)\b",
+        )
+    if _direct_absolute_brightness_request(folded):
+        _append(
+            matches,
+            folded,
+            "system.settings.set",
+            r"\b(?:brillo|brightness)\b",
+        )
 
 
 def _review_audio_effects(
@@ -9593,12 +9659,12 @@ def _review_audio_effects(
         elif (
             _head_is(
                 head,
-                r"(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
+                r"(?:pon|pone|poner|ponme|fija|ajusta|adjust|establece|set|"
                 r"cambia|change|deja|dejame|leave)",
             )
             and _has(
                 folded,
-                r"\b(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
+                r"\b(?:pon|pone|poner|ponme|fija|ajusta|adjust|establece|set|"
                 r"cambia|change|deja|dejame|leave)\b",
             )
             and (
@@ -9610,7 +9676,7 @@ def _review_audio_effects(
                 matches,
                 folded,
                 "audio.volume",
-                r"\b(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
+                r"\b(?:pon|pone|poner|ponme|fija|ajusta|adjust|establece|set|"
                 r"cambia|change|deja|dejame|leave)\b",
             )
         elif context_audio and _has(
@@ -12453,6 +12519,12 @@ def resolve_explicit_effects(
         return EffectIntent(("note.search",), (folded,))
     if "system.time" in available and _direct_current_time_request(folded):
         return EffectIntent(("system.time",), (folded,))
+    if "network.ip.list" in available and _direct_local_ip_request(folded):
+        return EffectIntent(("network.ip.list",), (folded,))
+    if "system.settings.set" in available and _direct_absolute_brightness_request(
+        folded
+    ):
+        return EffectIntent(("system.settings.set",), (folded,))
     if "calendar.event.list" in available and _relative_calendar_read_request(folded):
         return EffectIntent(("calendar.event.list",), (folded,))
     if "media.play.query" in available and (

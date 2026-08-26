@@ -652,7 +652,69 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             }
         }
 
+        if (result.Count == 0)
+        {
+            CollectVisibleWindowsBySelector(processName, limit, result);
+        }
+
         return result;
+    }
+
+    private void CollectVisibleWindowsBySelector(
+        string selector,
+        int limit,
+        List<WindowSnapshot> result)
+    {
+        Process[] inventory = Process.GetProcesses();
+        try
+        {
+            foreach (Process process in inventory.OrderBy(static item => item.Id))
+            {
+                if (result.Count >= limit)
+                {
+                    break;
+                }
+
+                try
+                {
+                    process.Refresh();
+                    nint handle = process.MainWindowHandle;
+                    if (handle == 0 || !IsWindowVisible(handle))
+                    {
+                        continue;
+                    }
+
+                    if (!WindowSelector.Matches(
+                        selector,
+                        process.ProcessName,
+                        process.MainWindowTitle))
+                    {
+                        continue;
+                    }
+
+                    var identity = new WindowIdentity(
+                        handle,
+                        process.Id,
+                        process.StartTime.ToUniversalTime().Ticks,
+                        process.ProcessName,
+                        UtcNow);
+                    result.Add(Observe(identity));
+                }
+                catch (Exception exception) when (exception is Win32Exception
+                    or InvalidOperationException
+                    or NotSupportedException)
+                {
+                    // A candidate can disappear while the bounded inventory is read.
+                }
+            }
+        }
+        finally
+        {
+            foreach (Process process in inventory)
+            {
+                process.Dispose();
+            }
+        }
     }
 
     public WindowSnapshot Observe(WindowIdentity identity)

@@ -1545,3 +1545,36 @@ se dosifica por UIA. No matar un BAXY vivo para inspeccionarlo si estás midiend
   advertencias y 0 errores. Próximo dueño: usar este mapping en una muestra física
   v2 representativa; cualquier divergencia es defecto del producto o, con evidencia,
   una corrección explícita del contrato, nunca una edición oportunista por respuesta.
+
+### Continuación 2026-08-26 — auditoría y familias de la muestra v2
+
+No se hereda prosa de GPT/Claude como pase. Lo comprobado en disco:
+
+- Builder dueño: `mind-runtime-v1` `py scripts\build_observed_user_corpora.py` reproduce
+  Nivel 1 **1.947 / 626** SHA-256 `06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085`
+  y Nivel 2 **808 / 281** SHA-256 `3da27e544680285e40b0b493ebd9c1a72f2af9aa300e3d289e77c14103e252d2`.
+  Mapping único, 0 conflictos. `pytest tests/test_build_observed_user_corpora.py` **5/5**.
+- Mapping privado actual SHA-256
+  `9020a827cd8ef9b6fc0a824c10243c99f2d8e6784633e61a9cdcdd5eeb36f779` (1.947)
+  y revisión `9e807ac8da44edd73bb113f4c932001cbce08e1131b566b99af8ee332143bcca` (626):
+  coinciden con `artifacts/goal10/observed-current-contracts-summary.v1.json`.
+- La muestra privada r30–r35 **no certifica**: «cierra steam» → `window_not_found`;
+  «cerrá la calculadora» preguntó el nombre de proceso; «cuál es mi ip» se negó como
+  dato personal; «poné el brillo al 80» preguntó cantidad; «acordate que…» con memoria
+  apagada copió «No pude usar esa respuesta.» Abrir calculadora sí cerró.
+
+Familias arregladas en el dueño, sin literales del corpus:
+
+1. Pregunta local de IP → `network.ip.list` (cerrado, como `system.time`).
+2. Brillo absoluto con número y voseo `poné` → `system.settings.set`.
+3. Voseo `cerrá` rellena `window.resolve.process` sin pedir un id interno.
+4. `window.resolve` también casa título o proceso visible (`WindowSelector`), no sólo
+   `GetProcessesByName`.
+5. `memory_disabled` se formula como «local memory is turned off», no snake_case.
+6. El runner físico espera input-ready entre filas independientes y no se traga un
+   `SubmitAsync` silencioso; el turno visible usa el timeout interno del producto.
+
+Pruebas dueñas: `test_goal10_daily_use_surfaces…` + CASES + close voseo + compose
+memory_disabled + `WindowSelector` **177 pytest + 4 NUnit**. Replay físico r36–r38
+aún no cierra: un freeze de 3 min en el sidecar tras matar corridas anteriores no
+es un pase. Siguiente: una fila IP en frío con llama limpio, luego las seis juntas.

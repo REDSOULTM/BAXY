@@ -100,6 +100,8 @@ public sealed class ObservedUserCorpusReplayTests
                         row.Source,
                         StringComparison.Ordinal)))
                 {
+                    using var idleTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+                    await WaitUntilIdleAsync(viewModel, idleTimeout.Token);
                     Assert.That(viewModel.StartNewUiSession(), Is.True);
                 }
                 activeSource = row.Source;
@@ -110,7 +112,7 @@ public sealed class ObservedUserCorpusReplayTests
                 int rawReplyAuditRecords = ReadJsonLines(rawReplyAuditPath).Length;
                 int composeAuditRecords = ReadJsonLines(composeAuditPath).Length;
                 var turnTimer = Stopwatch.StartNew();
-                using var turnTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(3));
+                using var turnTimeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
                 string response = await SubmitAsync(
                     viewModel,
                     row.Text,
@@ -260,17 +262,19 @@ public sealed class ObservedUserCorpusReplayTests
         string text,
         CancellationToken cancellationToken)
     {
+        await WaitUntilIdleAsync(viewModel, cancellationToken);
         int previousCount = viewModel.Messages.Count;
         viewModel.Draft = text;
-        await viewModel.SubmitAsync(cancellationToken);
-        using var projectionTimeout = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken);
-        projectionTimeout.CancelAfter(TimeSpan.FromSeconds(5));
-        while (!viewModel.Messages
-            .Skip(previousCount)
-            .Any(static message => !message.IsUser))
+        Assert.That(
+            viewModel.CanSend,
+            Is.True,
+            "The shell must accept the next observed turn instead of returning silently.");
+        await viewModel.SubmitAsync(CancellationToken.None);
+        if (!viewModel.Messages.Skip(previousCount).Any(static message => !message.IsUser))
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(20), projectionTimeout.Token);
+            Assert.Fail(
+                "The turn returned without visible BAXY text. status="
+                + viewModel.StatusDescription);
         }
         ConversationMessage[] added = viewModel.Messages.Skip(previousCount).ToArray();
         Assert.Multiple(() =>
@@ -282,6 +286,27 @@ public sealed class ObservedUserCorpusReplayTests
             Assert.That(added[^1].Speaker, Is.EqualTo("BAXY"));
         });
         return added[^1].Body;
+    }
+
+    private static async Task WaitUntilIdleAsync(
+        MainWindowViewModel viewModel,
+        CancellationToken cancellationToken)
+    {
+        var idle = Stopwatch.StartNew();
+        while (!viewModel.IsInputEnabled || (viewModel.IsBusy && idle.Elapsed < TimeSpan.FromSeconds(30)))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (viewModel.HasStartupError)
+            {
+                Assert.Fail("The shell reported a startup error while waiting for the next turn.");
+            }
+            await Task.Delay(TimeSpan.FromMilliseconds(20), cancellationToken);
+        }
+        if (!viewModel.IsInputEnabled)
+        {
+            Assert.Fail(
+                "The shell did not become input-ready before the next observed turn.");
+        }
     }
 
     private static async Task WaitForMindAsync(
