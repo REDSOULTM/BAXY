@@ -1886,3 +1886,27 @@ Semantic `802f41964636c493bf46f8a543455c6a0c3ce533deac9689a8805e69771f2a7b`.
 **1245 pass / 702 fail. No es 1.947/1.947.** Vacíos 242→67. Risk fail
 291→47. Siguiente: `app.open` 64, `media.play.query` 61, vacíos 67,
 click 39.
+
+### Continuación 2026-08-27 — Start catalog: Steam path + AUMID
+
+`Get-StartApps` lista Steam dos veces (`{GUID}\Steam\Steam.exe` y
+`Valve.Steam.Client`). El snapshot tiraba el nombre por AUMID
+ambiguo y la mente preguntaba «¿Quieres que abra Steam?» de una app
+instalada. El snapshot publica el nombre cuando la misma preferencia
+no-path de `ResolveForLaunch` deja exactamente una identidad.
+Dueños: `CatalogSnapshotPublishesANameWhenDuplicateStartIdentitiesCollapseToOneLaunchable`,
+`test_explicit_open_survives_when_start_catalog_publishes_the_installed_name`.
+Commit `bb69625`. Humo vivo r96: «Abre Steam.» → «Listo, Steam está
+abierto.» Remake r96 de 13 shards sucios (WMI, no cerrar PowerShell).
+
+### Continuación 2026-08-27 — r96 merge 1276/1947
+
+Merge SHA-256
+`a3529f0d6cb6b2babb213f376e17fe15f3a657414dcb4671d4bd4bc5331eb3ff`.
+1.947 únicos, 0 vacíos, 2 `no_responde`, 64 formular.
+Adjudicación `1a8482d36fad4377b3b8392c4cb9e703079e31bd2186abb693f414513dac287f`.
+Semantic `c4d77d63ea7ce671f13a3385e67c05d3330711505e048bf949d3c3b3144cd46c`.
+
+**1276 pass / 671 fail. No es 1.947/1.947.** `app.open` 64→45 (Steam
+abre). Siguiente: vacíos 65, `media.play.query` 54, `app.open` 45,
+click 42, `reminder.create` 40.
