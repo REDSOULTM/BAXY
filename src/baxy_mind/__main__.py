@@ -4138,17 +4138,9 @@ def _explicit_relative_reminder_arguments(
     title = ""
     if "title" in match.groupdict() and match.group("title"):
         title = match.group("title").strip().rstrip(".!?").rstrip()
-    elif match.groupdict().get("wake") or (
-        match.groupdict().get("ping")
-        and re.search(
-            r"despert|levant|wake",
-            match.group("ping") or "",
-            re.IGNORECASE,
-        )
-    ):
-        title = "despertar"
     else:
-        title = "aviso"
+        # No named task: the request itself is the only grounded title.
+        title = evidence.strip(" ¿?¡!.")
     if not due or not title:
         return None
     return {"dueUtc": due, "title": title}
@@ -5419,7 +5411,7 @@ def _canonical_due_utc(
     bare_clock = None
     if military_clock is None and clock is None:
         bare_clock = re.search(
-            rf"\b(?:at|a|para)\s+(?:las?\s+)?"
+            rf"\b(?:at|a|para|for)\s+(?:las?\s+)?"
             rf"(?P<hour>{_TEMPORAL_NUMBER_PATTERN})"
             r"(?::(?P<minute>[0-5][0-9]))?(?!\s*:)",
             clock_source,

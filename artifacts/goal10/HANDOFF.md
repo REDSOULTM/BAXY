@@ -1931,3 +1931,12 @@ Semantic `e136fad97d98d0800c75cac07b5de8bfaaf36c23262d841ccdc56c37280f8be2`.
 **1297 pass / 650 fail. No es 1.947/1.947.** Vacíos 65→50. Risk fail
 50→35. Siguiente: `media.play.query` 54, vacíos 50, `app.open` 46,
 click 42.
+
+### Continuación 2026-08-27 — mente = 4B, schema help only
+
+PowerShell cerró r98 a las 800 filas (0000–0700 completos, 0 empty).
+`a607dac` ancló dueUtc/alarma/voseo play y también enrutó ventana/pantalla/
+enter/memoria. Eso sustituía `decide_turn`. `1d3df17` recorta ese enrutado
+(−77 líneas). El 4B elige la tool; el producto ancla `dueUtc` y el postread
+de Spotify. Tests dueños 79/79 ×2. Remake r99 0800–1947 en curso (pid
+Win32, árbol recortado). Overlay: r98 0000–0700 + r99 0800–1947.

@@ -2208,17 +2208,17 @@ def test_identity_literal_extraction_abstains_on_non_unique_requests(
         (
             "reminder.create",
             "avisame en una hora",
-            {"dueUtc": "en una hora", "title": "aviso"},
+            {"dueUtc": "en una hora", "title": "avisame en una hora"},
         ),
         (
             "reminder.create",
             "despertame en una hora",
-            {"dueUtc": "en una hora", "title": "despertar"},
+            {"dueUtc": "en una hora", "title": "despertame en una hora"},
         ),
         (
             "reminder.create",
             "despertame a las 8",
-            {"dueUtc": "a las 8", "title": "despertar"},
+            {"dueUtc": "a las 8", "title": "despertame a las 8"},
         ),
         (
             "reminder.create",
@@ -2242,6 +2242,30 @@ def test_common_complete_literals_do_not_require_model_reinference(
     expected: dict[str, object],
 ) -> None:
     assert _explicit_arguments_from_evidence(operation, evidence) == expected
+
+
+def test_ping_without_a_named_task_keeps_the_request_as_title() -> None:
+    schema = {
+        "type": "object",
+        "properties": {
+            "details": {"type": "string"},
+            "dueUtc": {"type": "string", "maxLength": 64},
+            "title": {"type": "string"},
+        },
+        "required": ["dueUtc", "title"],
+        "additionalProperties": False,
+    }
+
+    grounded = _ground_explicit_arguments(
+        "reminder.create",
+        "avisame en una hora",
+        schema,
+    )
+
+    assert grounded is not None
+    assert grounded["title"] == "avisame en una hora"
+    assert grounded["dueUtc"].endswith("Z")
+    assert "T" in grounded["dueUtc"]
 
 
 def test_bare_host_and_named_service_receive_closed_https_destinations() -> None:
