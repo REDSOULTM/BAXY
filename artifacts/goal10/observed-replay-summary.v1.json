@@ -1,16 +1,16 @@
 {
   "schema": "baxy.goal10-observed-replay-summary.v1",
   "private_output": "observed-product-replay.v2.jsonl",
-  "private_output_sha256": "56dd3e08f0b3cc2c60940bf7be4f2535676aa12fbbb8f46f5f9790aae1b5b3f5",
+  "private_output_sha256": "1a39af9f8cdf8f4d4cd2991752e7ee71f89dab0ac1b952e25734f087e289a46d",
   "row_count": 1947,
   "unique_message_ids": 1947,
   "empty_responses": 0,
   "no_responde": 3,
-  "composition_lost": 59,
+  "composition_lost": 85,
   "json_leak": 0,
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
   "mapping_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
-  "commit": "39474c8",
-  "note": "r94 overlay. 0 empty, 3 no_responde, 59 formular. Adjudication 1081 pass / 866 fail. Not 1947/1947. Click fails 36 (not_found + red button). Empty-ops 242 still the largest family."
+  "commit": "7500f5a",
+  "note": "r95 overlay. 0 empty, 3 no_responde, 85 formular. Adjudication 1245 pass / 702 fail. Not 1947/1947. Empty-ops reduced; risk fail 47."
 }

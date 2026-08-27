@@ -1874,3 +1874,15 @@ y catálogo cayendo a `intent` en clarify. El auditor ahora lee recovery
 como terminal: **1125 pass / 822 fail** sobre el merge r94 (SHA replay
 `56dd3e08`). Trivia ya no es efecto explícito. Catálogo de captura no
 inventa autoridad en clarify/conversation. Remake r95 de shards sucios.
+
+### Continuación 2026-08-27 — r95 merge 1245/1947
+
+Merge SHA-256
+`1a39af9f8cdf8f4d4cd2991752e7ee71f89dab0ac1b952e25734f087e289a46d`.
+1.947 únicos, 0 vacíos, 3 `no_responde`, 85 formular.
+Adjudicación `60ab521c612eb0d297f5883d18472b19866660ae3ffc4623e2534fe08d32cf1f`.
+Semantic `802f41964636c493bf46f8a543455c6a0c3ce533deac9689a8805e69771f2a7b`.
+
+**1245 pass / 702 fail. No es 1.947/1.947.** Vacíos 242→67. Risk fail
+291→47. Siguiente: `app.open` 64, `media.play.query` 61, vacíos 67,
+click 39.

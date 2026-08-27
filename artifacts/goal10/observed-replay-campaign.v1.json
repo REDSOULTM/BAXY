@@ -1,13 +1,13 @@
 {
   "schema": "baxy.goal10-observed-replay-campaign.v1",
-  "runtime": "r94 TogglePattern disambiguation overlay on r93/r92",
+  "runtime": "r95 no-effect conversation overlay",
   "corpus": "historical_observed_product_turns.v1.jsonl",
   "corpus_sha256": "06dda8dc3c8abf118730d297bd002e31752f9a09f4e30d69acf51e54a1b5d085",
   "mapping_sha256": "b749ed53cc3b4e2a95e9ffec666ba1daecfca5982836d73dc90839bfd8c8e369",
   "replay_schema": "baxy.goal10-observed-product-replay.v2",
   "private_dir": "%LOCALAPPDATA%\\\\BAXYRuntime\\\\goal10\\\\",
   "merge_file": "observed-product-replay.v2.jsonl",
-  "merge_sha256": "56dd3e08f0b3cc2c60940bf7be4f2535676aa12fbbb8f46f5f9790aae1b5b3f5",
+  "merge_sha256": "1a39af9f8cdf8f4d4cd2991752e7ee71f89dab0ac1b952e25734f087e289a46d",
   "shards": [
     {
       "name": "0000-0100-r92",
@@ -219,116 +219,6 @@
       "used_in_merge": true
     },
     {
-      "name": "0400-0500-r93",
-      "private_file": "observed-shard-0400-0500-r93.jsonl",
-      "sha256": "a7e38a5cfa6d080d91f326d5721cea4c82ef51fcd33f531b3f2e20cfc92f8c70",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 3,
-      "used_in_merge": true
-    },
-    {
-      "name": "0600-0700-r93",
-      "private_file": "observed-shard-0600-0700-r93.jsonl",
-      "sha256": "cd5ca168cf92e92518ae0a01c28f2bca9af4df7b7f97be0c44584858e5447378",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 0,
-      "used_in_merge": true
-    },
-    {
-      "name": "0700-0800-r93",
-      "private_file": "observed-shard-0700-0800-r93.jsonl",
-      "sha256": "3326c84ac7d77a13bcf5f1394b9af75e7296ba677fe840659ff9225bfac4de86",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 0,
-      "used_in_merge": true
-    },
-    {
-      "name": "0800-0900-r93",
-      "private_file": "observed-shard-0800-0900-r93.jsonl",
-      "sha256": "16e79443dcce8d2b10a0364b6d8cc663f216f73ba778a2f77781c7be117ac501",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 3,
-      "used_in_merge": true
-    },
-    {
-      "name": "0900-1000-r93",
-      "private_file": "observed-shard-0900-1000-r93.jsonl",
-      "sha256": "2be1362062a6d901bb6fc8a2893109b7548cc9dcbcbce4a939442206f51fc581",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 3,
-      "used_in_merge": true
-    },
-    {
-      "name": "1000-1100-r93",
-      "private_file": "observed-shard-1000-1100-r93.jsonl",
-      "sha256": "c0bb54177df0f9b615084aba26fbea1ad858763a7184d85f2c6a47f6ec5425dc",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 8,
-      "used_in_merge": true
-    },
-    {
-      "name": "1100-1200-r93",
-      "private_file": "observed-shard-1100-1200-r93.jsonl",
-      "sha256": "126d9d79b52d17e9e4aa4b5f333767602615c878a005d38f76b08f9f44cb8d87",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 1,
-      "used_in_merge": true
-    },
-    {
-      "name": "1200-1300-r93",
-      "private_file": "observed-shard-1200-1300-r93.jsonl",
-      "sha256": "d5ef4bf49aa109766622dc00cebfaee0d8ed42c01584e35821edcea9983883c6",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 7,
-      "used_in_merge": true
-    },
-    {
-      "name": "1300-1400-r93",
-      "private_file": "observed-shard-1300-1400-r93.jsonl",
-      "sha256": "cd78fe1f62b804f2301ed60e148f65d54407ac03eec3159492b4a3a31181620a",
-      "visible_rows": 100,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 1,
-      "used_in_merge": true
-    },
-    {
-      "name": "1800-1947-r93",
-      "private_file": "observed-shard-1800-1947-r93.jsonl",
-      "sha256": "60071b379b0f0c8d4a02c0d1bd14580fbb5af4f6f708243a6175d94931067a80",
-      "visible_rows": 147,
-      "empty": 0,
-      "json_leak": 0,
-      "no_responde": 0,
-      "formular": 4,
-      "used_in_merge": true
-    },
-    {
       "name": "0400-0500-r94",
       "private_file": "observed-shard-0400-0500-r94.jsonl",
       "sha256": "7774eb7ea931c6f349f2129ab2eba0cc0a7517121093ab319accc84709af8d64",
@@ -436,6 +326,215 @@
       "json_leak": 0,
       "no_responde": 0,
       "formular": 5,
+      "used_in_merge": true
+    },
+    {
+      "name": "0000-0100-r95",
+      "private_file": "observed-shard-0000-0100-r95.jsonl",
+      "sha256": "89c26fb51f9420534823d3b860c5f5be185343cb160075bab2bebcec9ffc0aa0",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 1,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "0100-0200-r95",
+      "private_file": "observed-shard-0100-0200-r95.jsonl",
+      "sha256": "ecb9d675ccd5fe2d0da1518da3356d58e7b85837539029ed148265c0452d8a1a",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 0,
+      "used_in_merge": true
+    },
+    {
+      "name": "0200-0300-r95",
+      "private_file": "observed-shard-0200-0300-r95.jsonl",
+      "sha256": "3bb3846107e73ddb0963035399b3dd4f0e1011e2b49db3a20e4b735c2d04c5ba",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 2,
+      "used_in_merge": true
+    },
+    {
+      "name": "0300-0400-r95",
+      "private_file": "observed-shard-0300-0400-r95.jsonl",
+      "sha256": "eb7fc9b09ce50eacc5fb3c7618ab6620cb2fa858d2e8b0780bb4a7c8b7df9699",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 0,
+      "used_in_merge": true
+    },
+    {
+      "name": "0400-0500-r95",
+      "private_file": "observed-shard-0400-0500-r95.jsonl",
+      "sha256": "c65d7b80737763777d1cc32231196bc8d69c5cafa7fc28a127840c1d413bcc4a",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 2,
+      "used_in_merge": true
+    },
+    {
+      "name": "0500-0600-r95",
+      "private_file": "observed-shard-0500-0600-r95.jsonl",
+      "sha256": "dfb8d081999e18f687cf0d05f7a992a7ca84e9b50ae3c12ac3b30debd10df792",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 4,
+      "used_in_merge": true
+    },
+    {
+      "name": "0600-0700-r95",
+      "private_file": "observed-shard-0600-0700-r95.jsonl",
+      "sha256": "6feec8ea1e9422aabb861cc2aedead030158b7774ac68e6322d674c3a870d0ff",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 0,
+      "used_in_merge": true
+    },
+    {
+      "name": "0700-0800-r95",
+      "private_file": "observed-shard-0700-0800-r95.jsonl",
+      "sha256": "d64eced49b5118e86474e14589d6ea12a59c32b45241f83b2f2796c87fe1415d",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "0800-0900-r95",
+      "private_file": "observed-shard-0800-0900-r95.jsonl",
+      "sha256": "c47897e587108060816fcfacb1f4d12470d9069bf72a121eacbe5f53b69b4ae7",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 5,
+      "used_in_merge": true
+    },
+    {
+      "name": "0900-1000-r95",
+      "private_file": "observed-shard-0900-1000-r95.jsonl",
+      "sha256": "b93ece5e7ef1b0368a7b5f19367631e1c0992bf93328f29c077e32731d2a7540",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 1,
+      "used_in_merge": true
+    },
+    {
+      "name": "1000-1100-r95",
+      "private_file": "observed-shard-1000-1100-r95.jsonl",
+      "sha256": "8fbc543d36b566024c7f6bebc9438493bc627e4b1f58f13ae21c4e0d2e8bc13a",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 2,
+      "used_in_merge": true
+    },
+    {
+      "name": "1100-1200-r95",
+      "private_file": "observed-shard-1100-1200-r95.jsonl",
+      "sha256": "d46fbfbcd3292bb9e266cba30b133c7ce21eee3271abb6003b842f6e540cd70f",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 4,
+      "used_in_merge": true
+    },
+    {
+      "name": "1200-1300-r95",
+      "private_file": "observed-shard-1200-1300-r95.jsonl",
+      "sha256": "4971395020aba2020f9421ee69022b802a3c52f1133bf393e7a0dadcea0aecc8",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 7,
+      "used_in_merge": true
+    },
+    {
+      "name": "1300-1400-r95",
+      "private_file": "observed-shard-1300-1400-r95.jsonl",
+      "sha256": "f6a87723f729b5bd908699cb6c20dbff0f4a940efe7dadc5bb731b1efaef0445",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 2,
+      "used_in_merge": true
+    },
+    {
+      "name": "1400-1500-r95",
+      "private_file": "observed-shard-1400-1500-r95.jsonl",
+      "sha256": "1ec3fb1731b693f6662060d65b8921277323ca05e5fd2f26ccb3096b19771803",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 12,
+      "used_in_merge": true
+    },
+    {
+      "name": "1500-1600-r95",
+      "private_file": "observed-shard-1500-1600-r95.jsonl",
+      "sha256": "de5688bcc1307c3435b1c6c4767848f71186c8d3630f670353633f43f897094f",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 21,
+      "used_in_merge": true
+    },
+    {
+      "name": "1600-1700-r95",
+      "private_file": "observed-shard-1600-1700-r95.jsonl",
+      "sha256": "7accc0e7b4b10a0ba130f522d8f9e30e4ebc86ec65336ec2c744604e9092b93e",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 6,
+      "used_in_merge": true
+    },
+    {
+      "name": "1700-1800-r95",
+      "private_file": "observed-shard-1700-1800-r95.jsonl",
+      "sha256": "a80778c95040f354bc6f6f2d37ee7b2203fd882b999d355d4f807cf752d45717",
+      "visible_rows": 100,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 2,
+      "formular": 9,
+      "used_in_merge": true
+    },
+    {
+      "name": "1800-1947-r95",
+      "private_file": "observed-shard-1800-1947-r95.jsonl",
+      "sha256": "fc4f545dbcc143bf011a83e7918bfc0debadd940feda5380a3a4700cca678187",
+      "visible_rows": 147,
+      "empty": 0,
+      "json_leak": 0,
+      "no_responde": 0,
+      "formular": 6,
       "used_in_merge": true
     }
   ]
