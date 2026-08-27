@@ -1938,5 +1938,19 @@ PowerShell cerró r98 a las 800 filas (0000–0700 completos, 0 empty).
 `a607dac` ancló dueUtc/alarma/voseo play y también enrutó ventana/pantalla/
 enter/memoria. Eso sustituía `decide_turn`. `1d3df17` recorta ese enrutado
 (−77 líneas). El 4B elige la tool; el producto ancla `dueUtc` y el postread
-de Spotify. Tests dueños 79/79 ×2. Remake r99 0800–1947 en curso (pid
-Win32, árbol recortado). Overlay: r98 0000–0700 + r99 0800–1947.
+de Spotify. Tests dueños 79/79 ×2.
+
+### Continuación 2026-08-27 — r100 merge 1414/1947
+
+PC reboot mató r99 en 1100 (92 filas, descartadas). r100 1100–1947
+completo, 0 empty. Merge SHA-256
+`340faf492512a883fc9ea7f1e30a8e103e065bcce33797276c5012a0d2f62782`.
+1.947 únicos, 0 vacíos, 2 `no_responde`, 44 formular.
+Adjudicación `b7f6834cbc8db427711301b1d568382857d4c0f185733e03cf3b2ba02b5be439`.
+Semantic `62cf6687d9358fd6f076d7c12242cf05058adbe72ae3a54499d838e12f13f806`.
+
+**1414 pass / 533 fail. No es 1.947/1.947.** r101 remake de shards
+enteros no convirtió los 16 «¿cuándo?» (`avisame en una hora` sigue
+siendo pregunta del 4B) y bajó a 1395/552. Overlay r101 descartado;
+se conserva r100. Ambientales: click not found 21, botón rojo 14,
+WhatsApp apagado 14. No se añade regex de enrutado.

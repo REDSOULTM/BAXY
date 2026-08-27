@@ -1,0 +1,24 @@
+{
+  "schema": "baxy.goal10-environmental-limits.v1",
+  "merge_sha256": "340faf492512a883fc9ea7f1e30a8e103e065bcce33797276c5012a0d2f62782",
+  "adjudication_sha256": "b7f6834cbc8db427711301b1d568382857d4c0f185733e03cf3b2ba02b5be439",
+  "pass": 1414,
+  "fail": 533,
+  "not_converted_to_success": [
+    {
+      "family": "input.visible.click",
+      "count": 41,
+      "limit": "Visible control missing or disabled on this desktop (button not found, red button not visible). Honest fail."
+    },
+    {
+      "family": "message.send",
+      "count": 33,
+      "limit": "WhatsApp/Discord client not running. Honest fail."
+    },
+    {
+      "family": "streaming.play.named",
+      "count": 22,
+      "limit": "Netflix title not confirmed on this session. Honest fail."
+    }
+  ]
+}
