@@ -3026,6 +3026,10 @@ def resolve_explicit_clarification_intent(
         )
         is not None
     )
+    relative_volume_without_amount = (
+        "audio.volume.adjust" in available
+        and _volume_missing_amount_request(folded)
+    )
     telegraphic_calendar_invite = (
         re.fullmatch(
             (
@@ -3042,6 +3046,7 @@ def resolve_explicit_clarification_intent(
         and not _alarm_turn_off_request(folded)
         and not incomplete_message_shape
         and not relative_spoken_volume
+        and not relative_volume_without_amount
         and not telegraphic_calendar_invite
     ):
         return None
@@ -3331,23 +3336,28 @@ def resolve_explicit_clarification_intent(
     if (
         "audio.volume.adjust" in available
         and (
-            _head_is(
-                _request_head(folded),
-                r"(?:sube|subi|subir|aumenta|aumentar|incrementa|incrementar|"
-                r"baja|bajar|reduce|reducir|raise|lower|increase|decrease)",
-            )
-            and _has(folded, r"\b(?:volumen|volume)\b")
+            relative_volume_without_amount
             or relative_spoken_volume
+            or (
+                _head_is(
+                    _request_head(folded),
+                    r"(?:sube|subi|subime|subir|aumenta|aumentar|incrementa|"
+                    r"incrementar|baja|bajame|bajar|reduce|reducir|raise|"
+                    r"lower|increase|decrease|turn)",
+                )
+                and _has(folded, r"\b(?:volumen|volume)\b")
+                and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+            )
         )
-        and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
     ):
         return ClarificationIntent(("audio.volume.adjust",), ("amount",))
     if (
         "system.settings.adjust" in available
         and _head_is(
             _request_head(folded),
-            r"(?:sube|subi|subir|aumenta|aumentar|incrementa|incrementar|"
-            r"baja|bajar|reduce|reducir|raise|lower|increase|decrease)",
+            r"(?:sube|subi|subime|subir|aumenta|aumentar|incrementa|"
+            r"incrementar|baja|bajame|bajar|reduce|reducir|raise|"
+            r"lower|increase|decrease|turn)",
         )
         and _has(
             folded,
@@ -5115,6 +5125,23 @@ def _volume_domain(text: str) -> bool:
             r"\d{1,3}\s*(?:%|por ciento|percent|puntos?|points?)?|"
             r"por favor|please)\b"
         ),
+    )
+
+
+def _volume_missing_amount_request(text: str) -> bool:
+    """Relative volume change that names the control but not a quantity."""
+
+    if not _volume_domain(text):
+        return False
+    if not _has(text, r"\b(?:volumen|volume)\b"):
+        return False
+    if _has(text, r"\b(?:100|[0-9]{1,2})\b"):
+        return False
+    return _has(
+        text,
+        r"\b(?:sube|subi|subime|subir|aumenta|aumentar|incrementa|incrementar|"
+        r"baja|bajame|bajar|bajalo|subelo|reduce|reducir|raise|lower|"
+        r"increase|decrease|turn\s+up|turn\s+down)\b",
     )
 
 
@@ -7403,7 +7430,7 @@ def _is_direct_request(text: str) -> bool:
         r"do(?=\s+i\s+have)|"
         r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
         r"establece|set|deja|dejar|put|leave|turn|"
-        r"sube|subi|subir|baja|bajar|bajalo|subelo|aumenta|reduce|"
+        r"sube|subi|subime|subir|baja|bajame|bajar|bajalo|subelo|aumenta|reduce|"
         r"raise|lower|increase|increment|decrease|"
         r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
         r"pega|pegar|pegalo|pegala|paste|"

@@ -3939,10 +3939,74 @@ def test_explicit_incomplete_effect_uses_only_model_authored_question() -> None:
 
 
 @pytest.mark.parametrize(
+    "user_request",
+    [
+        "es tarde bajá el volumen",
+        "turn up the volume",
+        "dale, subí un toque el volumen",
+    ],
+)
+def test_volume_without_amount_stays_clarify_without_a_plan(
+    user_request: str,
+) -> None:
+    tool = {
+        "type": "function",
+        "function": {
+            "name": "audio_volume_adjust",
+            "canonical_name": "audio.volume.adjust",
+            "description": "Change the current volume relatively.",
+            "risk": "low_reversible",
+            "parameters": {
+                "type": "object",
+                "properties": {"delta": {"type": "integer"}},
+                "required": ["delta"],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+    class NoEvidence:
+        @staticmethod
+        def candidate_families(*_args: object) -> tuple[str, ...]:
+            raise AssertionError("explicit clarification must not retrieve")
+
+        @staticmethod
+        def retrieve(*_args: object) -> list[object]:
+            raise AssertionError("explicit clarification must not retrieve")
+
+    class Runtime:
+        @staticmethod
+        def formulate_explicit_clarification_question(
+            objective: str,
+            operations: tuple[str, ...],
+            missing_fields: tuple[str, ...],
+        ) -> str:
+            return "¿Cuánto quieres cambiar el volumen?"
+
+    result = _prepare_turn_result(
+        {"id": "explicit-volume-clarification", "text": user_request},
+        llm=Runtime(),
+        planner_catalog=PlannerCatalog([tool]),
+        turn_evidence=NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"audio.volume.adjust": tool},
+    )
+
+    assert result["kind"] == "clarify"
+    assert result["intentOperations"] == ["audio.volume.adjust"]
+    assert result["effectOperations"] == []
+    assert result["question"] == "¿Cuánto quieres cambiar el volumen?"
+
+
+@pytest.mark.parametrize(
     ("user_request", "operation"),
     [
         ("subí el volumen", "audio.volume.adjust"),
+        ("es tarde bajá el volumen", "audio.volume.adjust"),
+        ("turn up the volume", "audio.volume.adjust"),
+        ("bajame el volumen", "audio.volume.adjust"),
         ("bajá el brillo", "system.settings.adjust"),
+        ("bajame el brillo un poco", "system.settings.adjust"),
         ("raise the brightness", "system.settings.adjust"),
     ],
 )

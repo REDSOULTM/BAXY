@@ -5179,9 +5179,21 @@ def test_named_song_request_is_not_downgraded_to_clarification() -> None:
     )
 
 
-def test_relative_volume_without_amount_preserves_operation_identity() -> None:
-    intent = resolve_explicit_clarification_intent(
+@pytest.mark.parametrize(
+    "text",
+    [
         "Sube el volumen.",
+        "es tarde bajá el volumen",
+        "turn up the volume",
+        "dale, subí un toque el volumen",
+        "bajame el volumen",
+    ],
+)
+def test_relative_volume_without_amount_preserves_operation_identity(
+    text: str,
+) -> None:
+    intent = resolve_explicit_clarification_intent(
+        text,
         {"audio.volume.adjust"},
     )
 
