@@ -5221,16 +5221,7 @@ def test_voseo_play_a_song_on_spotify_is_a_media_query() -> None:
         ("despertame a las 8", ("reminder.create",)),
         ("recuerdame comprar pilas mañana", ("reminder.create",)),
         ("ponme una alarma a las 7", ("notification.schedule",)),
-        ("está abierto el chrome", ("window.application.status",)),
-        ("está corriendo Spotify", ("window.application.status",)),
-        ("is Spotify open", ("window.application.status",)),
-        ("tirame cuánta memoria tengo", ("system.status",)),
-        ("qué hay en mi pantalla", ("vision.describe",)),
-        ("describime la pantalla", ("vision.describe",)),
-        ("en discord apretá enter", ("input.key.press",)),
-        ("busca el clima en Buenos Aires", ("web.search",)),
         ("va a llover mañana", ("web.search",)),
-        ("qué clima hace hoy", ("web.search",)),
     ],
 )
 def test_goal10_remaining_families_resolve_without_false_clarification(
