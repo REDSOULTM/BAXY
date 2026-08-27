@@ -146,3 +146,9 @@ def test_spotify_removed_blind_waits_without_weakening_exact_postreads() -> None
     assert "$titleMatches -and $identityMatches" in SOURCE
     assert "$name -in @('pausar','pause')" in SOURCE
     assert "}else{$nowPlaying -and $pause}" in SOURCE
+    # Query mode: Pause after a click is enough when nothing was playing;
+    # if Pause was already there, now-playing must change.
+    assert (
+        "$pause -and (-not $pauseAlready -or ($observedNowPlaying -ne '' "
+        "-and $observedNowPlaying -ne $beforeNowPlaying))"
+    ) in SOURCE

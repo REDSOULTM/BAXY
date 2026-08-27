@@ -257,7 +257,7 @@ try {
             foreach($element in $all){try{$name=Fold([string]$element.Current.Name);if($name.StartsWith($prefix+' ')){$observedNowPlaying=$name.Substring($prefix.Length+1);break}}catch{}}
             $windowTitle=Fold((Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle)
             $windowMatch=$windowTitle -eq $foldTitle -or $windowTitle.EndsWith(' '+$foldTitle) -or $windowTitle.StartsWith($foldTitle+' ')
-            $verified=if($Mode -eq 'query'){$pause -and $observedNowPlaying -ne '' -and $observedNowPlaying -ne $beforeNowPlaying}else{$nowPlaying -and $pause}
+            $verified=if($Mode -eq 'query'){$pause -and (-not $pauseAlready -or ($observedNowPlaying -ne '' -and $observedNowPlaying -ne $beforeNowPlaying))}else{$nowPlaying -and $pause}
             $playObservationError=$null
         } catch {
             $verified=$false

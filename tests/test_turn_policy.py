@@ -2205,6 +2205,35 @@ def test_identity_literal_extraction_abstains_on_non_unique_requests(
             "Connect to the Wi-Fi network called Home",
             {"profileName": "Home"},
         ),
+        (
+            "reminder.create",
+            "avisame en una hora",
+            {"dueUtc": "en una hora", "title": "aviso"},
+        ),
+        (
+            "reminder.create",
+            "despertame en una hora",
+            {"dueUtc": "en una hora", "title": "despertar"},
+        ),
+        (
+            "reminder.create",
+            "despertame a las 8",
+            {"dueUtc": "a las 8", "title": "despertar"},
+        ),
+        (
+            "reminder.create",
+            "recuerdame comprar pilas mañana",
+            {"dueUtc": "manana", "title": "comprar pilas"},
+        ),
+        (
+            "notification.schedule",
+            "ponme una alarma a las 7",
+            {
+                "dueUtc": "a las 7",
+                "kind": "alarm",
+                "title": "alarma a las 7",
+            },
+        ),
     ],
 )
 def test_common_complete_literals_do_not_require_model_reinference(
@@ -2301,6 +2330,27 @@ def test_relative_and_clock_due_literals_become_future_utc_instants() -> None:
         "kind": "alarm",
         "title": "alarma a las 15:00",
     }
+    assert (
+        mind_main._canonical_due_utc(
+            "a las 7",
+            now_utc=now,
+        )
+        == "2026-08-02T07:00:00Z"
+    )
+    assert (
+        mind_main._canonical_due_utc(
+            "en una hora",
+            now_utc=now,
+        )
+        == "2026-08-01T13:00:00Z"
+    )
+    assert (
+        mind_main._canonical_due_utc(
+            "mañana",
+            now_utc=now,
+        )
+        == "2026-08-02T12:00:00Z"
+    )
     assert (
         mind_main._explicit_notification_schedule_arguments(
             "make an alarm for 0760h",

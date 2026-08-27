@@ -4045,7 +4045,18 @@ def _explicit_notification_schedule_arguments(
     relative = list(re.finditer(relative_pattern, evidence, re.IGNORECASE))
     clocks = list(re.finditer(clock_pattern, evidence, re.IGNORECASE))
     military_clocks = list(re.finditer(military_clock_pattern, evidence, re.IGNORECASE))
-    if len(relative) + len(clocks) + len(military_clocks) != 1:
+    bare_hour_pattern = (
+        rf"\b(?P<bare>(?:(?:tomorrow|manana|maniana)\s+)?"
+        rf"(?:for|at|a|para)\s+(?:las?\s+)?{_TEMPORAL_NUMBER_PATTERN}"
+        r"(?!\s*:)"
+        r"(?:\s+(?:tomorrow|manana|maniana))?)\b"
+    )
+    bare_hours = (
+        []
+        if clocks or military_clocks
+        else list(re.finditer(bare_hour_pattern, evidence, re.IGNORECASE))
+    )
+    if len(relative) + len(clocks) + len(military_clocks) + len(bare_hours) != 1:
         return None
     due_literal = (
         relative[0].group("duration")
@@ -4053,6 +4064,8 @@ def _explicit_notification_schedule_arguments(
         else clocks[0].group("clock")
         if clocks
         else military_clocks[0].group("clock24")
+        if military_clocks
+        else bare_hours[0].group("bare")
     ).strip()
     noun = re.search(
         r"\b(?:alarm|alarma|timer|temporizador)\b", evidence, re.IGNORECASE
@@ -4085,6 +4098,15 @@ def _explicit_relative_reminder_arguments(
         rf"(?:(?:en|in)\s+){_TEMPORAL_NUMBER_PATTERN}\s+"
         r"(?:minutes?|minutos?|hours?|horas?)"
     )
+    clock = (
+        rf"(?:(?:at|a las?|para las?)\s+{_TEMPORAL_NUMBER_PATTERN}"
+        r"(?::[0-5][0-9])?"
+        r"(?:\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|de la manana|de la maniana|"
+        r"de la tarde|de la noche|in the morning|in the afternoon|"
+        r"in the evening))?)"
+    )
+    day = r"(?:manana|maniana|tomorrow|hoy|today)"
+    evidence = effect_intent._fold(evidence)
     patterns = (
         rf"^[¿?¡!\s]*(?:avisame|remind\s+me)\s+"
         rf"(?P<due>{duration})\s+(?:que|to)\s+(?P<title>.+?)[.!?]*$",
@@ -4095,6 +4117,14 @@ def _explicit_relative_reminder_arguments(
         rf"(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
         rf"^[¿?¡!\s]*(?:set\s+)?(?:a\s+)?reminder\s+to\s+"
         rf"(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        rf"^[¿?¡!\s]*(?P<ping>avisame|recuerdame|recordame|"
+        rf"despiertame|despertame|levantame|remind\s+me|"
+        rf"wake\s+me(?:\s+up)?)\s+(?P<due>{duration})[.!?]*$",
+        rf"^[¿?¡!\s]*(?P<wake>despiertame|despertame|levantame|"
+        rf"wake\s+me(?:\s+up)?)\s+(?P<due>{clock})[.!?]*$",
+        rf"^[¿?¡!\s]*(?:recuerdame|recordame|remind\s+me)\s+"
+        rf"(?:to\s+)?(?P<title>.+?)\s+(?P<due>{day}|{clock}|{duration})"
+        rf"[.!?]*$",
     )
     matches = [
         match
@@ -4103,8 +4133,22 @@ def _explicit_relative_reminder_arguments(
     ]
     if len(matches) != 1:
         return None
-    due = matches[0].group("due").strip()
-    title = matches[0].group("title").strip().rstrip(".!?").rstrip()
+    match = matches[0]
+    due = match.group("due").strip()
+    title = ""
+    if "title" in match.groupdict() and match.group("title"):
+        title = match.group("title").strip().rstrip(".!?").rstrip()
+    elif match.groupdict().get("wake") or (
+        match.groupdict().get("ping")
+        and re.search(
+            r"despert|levant|wake",
+            match.group("ping") or "",
+            re.IGNORECASE,
+        )
+    ):
+        title = "despertar"
+    else:
+        title = "aviso"
     if not due or not title:
         return None
     return {"dueUtc": due, "title": title}
@@ -5347,6 +5391,12 @@ def _canonical_due_utc(
             delta = timedelta(minutes=amount)
         due = (now + delta).replace(microsecond=0)
         return due.isoformat().replace("+00:00", "Z")
+    if folded_value in {"manana", "maniana", "tomorrow"}:
+        due = (now + timedelta(days=1)).replace(microsecond=0)
+        return due.isoformat().replace("+00:00", "Z")
+    if folded_value in {"hoy", "today"}:
+        due = (now + timedelta(hours=1)).replace(microsecond=0)
+        return due.isoformat().replace("+00:00", "Z")
 
     folded_context = effect_intent._fold(context)
     clock_source = f"{folded_value} {folded_context}".strip()
@@ -5366,13 +5416,21 @@ def _canonical_due_utc(
         clock_source,
         re.IGNORECASE,
     )
+    bare_clock = None
     if military_clock is None and clock is None:
-        return None
+        bare_clock = re.search(
+            rf"\b(?:at|a|para)\s+(?:las?\s+)?"
+            rf"(?P<hour>{_TEMPORAL_NUMBER_PATTERN})"
+            r"(?::(?P<minute>[0-5][0-9]))?(?!\s*:)",
+            clock_source,
+            re.IGNORECASE,
+        )
+        if bare_clock is None:
+            return None
     if military_clock is not None:
         hour = int(military_clock.group("hour24"))
         minute = int(military_clock.group("minute24"))
-    else:
-        assert clock is not None
+    elif clock is not None:
         parsed_hour = _temporal_number(clock.group("hour"))
         minute = int(clock.group("minute") or "0")
         if parsed_hour is None or not 1 <= parsed_hour <= 12:
@@ -5386,6 +5444,13 @@ def _canonical_due_utc(
         if is_am == is_pm:
             return None
         hour = parsed_hour % 12 if is_am else (parsed_hour % 12) + 12
+    else:
+        assert bare_clock is not None
+        parsed_hour = _temporal_number(bare_clock.group("hour"))
+        minute = int(bare_clock.group("minute") or "0")
+        if parsed_hour is None or not 0 <= parsed_hour <= 23:
+            return None
+        hour = parsed_hour
     local_now = (
         datetime.now().astimezone()
         if now_utc is None

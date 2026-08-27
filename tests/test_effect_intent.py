@@ -5202,6 +5202,77 @@ def test_relative_volume_without_amount_preserves_operation_identity(
     assert intent.missing_fields == ("amount",)
 
 
+def test_voseo_play_a_song_on_spotify_is_a_media_query() -> None:
+    intent = resolve_explicit_effects(
+        "tocá una canción en Spotify",
+        {"media.play.query", "media.play.exact", "app.open"},
+    )
+
+    assert intent is not None
+    assert intent.operations == ("media.play.query",)
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("tocame una canción en Spotify", ("media.play.query",)),
+        ("avisame en una hora", ("reminder.create",)),
+        ("despertame en una hora", ("reminder.create",)),
+        ("despertame a las 8", ("reminder.create",)),
+        ("recuerdame comprar pilas mañana", ("reminder.create",)),
+        ("ponme una alarma a las 7", ("notification.schedule",)),
+        ("está abierto el chrome", ("window.application.status",)),
+        ("está corriendo Spotify", ("window.application.status",)),
+        ("is Spotify open", ("window.application.status",)),
+        ("tirame cuánta memoria tengo", ("system.status",)),
+        ("qué hay en mi pantalla", ("vision.describe",)),
+        ("describime la pantalla", ("vision.describe",)),
+        ("en discord apretá enter", ("input.key.press",)),
+        ("busca el clima en Buenos Aires", ("web.search",)),
+        ("va a llover mañana", ("web.search",)),
+        ("qué clima hace hoy", ("web.search",)),
+    ],
+)
+def test_goal10_remaining_families_resolve_without_false_clarification(
+    text: str,
+    expected: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(
+        text,
+        {
+            "media.play.query",
+            "media.play.exact",
+            "app.open",
+            "reminder.create",
+            "notification.schedule",
+            "window.application.status",
+            "system.status",
+            "vision.describe",
+            "capture.screenshot",
+            "input.key.press",
+            "input.visible.click",
+            "web.search",
+        },
+        ("Spotify", "Chrome", "Discord"),
+    )
+
+    assert result is not None
+    assert result.operations == expected
+    assert resolve_explicit_clarification_intent(
+        text,
+        {
+            "media.play.query",
+            "reminder.create",
+            "notification.schedule",
+            "window.application.status",
+            "system.status",
+            "vision.describe",
+            "input.key.press",
+            "web.search",
+        },
+    ) is None
+
+
 def test_relative_spoken_voice_volume_preserves_operation_identity() -> None:
     intent = resolve_explicit_clarification_intent(
         "speak softer please",

@@ -192,11 +192,21 @@ def _public_live_lookup_request(folded: str) -> bool:
     weather_head = head in weather_heads or (
         vocative_weather is not None and vocative_weather.group("head") in weather_heads
     )
-    weather = weather_head and _has(
+    weather_words = _has(
         folded,
         r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|"
-        r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
-        r"cold|frio|fria)\b",
+        r"llover|llovera|umbrella|paraguas|temperature|temperatura|"
+        r"hot|caluroso|calurosa|cold|frio|fria)\b",
+    )
+    asked_as_weather = weather_head or _head_is(
+        head,
+        r"(?:busca|buscar|buscame|search|look|dime|decime|"
+        r"mostrame|muestrame|que|cual|tell|show)",
+    )
+    weather = weather_words and asked_as_weather and not _has(
+        folded,
+        r"\b(?:notas?|notes?|tareas?|tasks?|archivos?|files?|"
+        r"correo|email|mail)\b",
     )
     market_direction = (
         re.match(
@@ -790,6 +800,43 @@ def _direct_voseo_open_request(folded: str) -> str | None:
         return None
     app = request.group("app").strip(" \t\"'`")
     return app or None
+
+
+def _direct_screen_describe_request(folded: str) -> bool:
+    """Recognize a direct ask to describe the current screen."""
+
+    return (
+        re.fullmatch(
+            r"(?:(?:que|what)\s+(?:hay|is(?:\s+there)?)\s+(?:en|on|in)\s+"
+            r"(?:(?:mi|my|la|the|esta|this)\s+)?(?:pantalla|screen)|"
+            r"(?:que|what)\s+(?:ves|see|estas\s+viendo|"
+            r"are\s+you\s+(?:seeing|looking\s+at)|estas\s+viendo)"
+            r"(?:\s+(?:en|on|in)\s+(?:(?:mi|my|la|the)\s+)?"
+            r"(?:pantalla|screen))?|"
+            r"describ[ei](?:me)?\s+(?:la\s+|the\s+|lo\s+que\s+ves\s+en\s+"
+            r"(?:la\s+|the\s+|mi\s+|my\s+)?)?(?:pantalla|screen)|"
+            r"describe\s+(?:what\s+you\s+see|lo\s+que\s+ves)"
+            r"(?:\s+(?:en|on|in)\s+(?:(?:la|the|mi|my)\s+)?"
+            r"(?:pantalla|screen))?)"
+            r"[\s.!?]*",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _direct_enter_key_request(folded: str) -> bool:
+    """Recognize a named Enter press, even when the app is a prefix."""
+
+    return _has(
+        folded,
+        r"\b(?:apreta|aprieta|apretame|aprietame|dale|press|hit)\s+"
+        r"(?:enter|intro|return)\b",
+    ) and not _has(
+        folded,
+        r"\b(?:enviar|send|silenciar|mute|boton|button)\b",
+    )
 
 
 def _direct_wifi_status_request(folded: str) -> bool:
@@ -5661,7 +5708,7 @@ def _media_play_domain(text: str) -> bool:
         ),
     ) and _has(
         text,
-        r"\b(?:reproduce|reproducir|play|pon|ponme)\b",
+        r"\b(?:reproduce|reproducir|play|pon|ponme|toca|tocame)\b",
     )
     direct_query = (
         _head_is(_request_head(text), r"(?:reproduce|reproducir|play)")
@@ -6563,7 +6610,8 @@ _SCHEDULING_VERB = (
 # que R3 aceptó como acto de habla, no necesitan repetir el sustantivo:
 # «recuérdame comprar pan mañana», «alarma para mañana 8am».
 _SCHEDULING_BY_ITSELF = (
-    r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|despiertame|remind|"
+    r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|"
+    r"despiertame|despertame|levantame|remind|"
     r"recordatorio|recordatorios|reminder|reminders|"
     r"alarma|alarmas|alarm|alarms|temporizador|temporizadores|timer|timers)"
 )
@@ -7140,20 +7188,22 @@ def _review_calendar_message_and_direct_reminder_effects(
     if (
         _head_is(
             head,
-            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)",
+            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|"
+            r"despiertame|despertame|levantame|remind)",
         )
         and (temporal or _has(folded, _DEICTIC_DAY))
         and _has(
             folded,
             r"^[¿?¡!\s]*(?:recuerdame|recuerdamelo|recordame|recordamelo|"
-            r"avisame|remind\s+me)\b.+",
+            r"avisame|despiertame|despertame|levantame|remind\s+me)\b.+",
         )
     ):
         _append(
             matches,
             folded,
             "reminder.create",
-            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
+            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|"
+            r"despiertame|despertame|levantame|remind)\b",
         )
 
     if (
@@ -7378,7 +7428,7 @@ _MACHINE_STATUS_OBSERVATION = (
 _MACHINE_STATUS_OBSERVATION_HEAD = (
     r"(?:revisa|revisar|review|check|chequea|checar|checa|verifica|"
     r"verificar|fijate|mira|mirar|muestra|muestrame|mostrame|show|"
-    r"display|dime|decime|dame|ver)"
+    r"display|dime|decime|dame|tirame|tira|ver)"
 )
 
 
@@ -7440,13 +7490,14 @@ def _is_direct_request(text: str) -> bool:
         r"scroll|scrollea|scrollear|"
         r"apuntame|apunta|jot|"
         r"dale(?=\s+(?:enter|intro|return))|"
+        r"tirame|tira|"
         r"llevame|"
         r"devuelvele|devuelve|devuelveme|"
         r"maximiza|minimiza|restaura|escribe|escribi|escribele|escribile|write|type|"
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
         r"navega|navegar|navigate|ve|go|clic|click|"
-        r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
+        r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|toca|tocame|tune|"
         r"pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
         r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
@@ -7495,7 +7546,16 @@ def _named_window_status_target(text: str) -> str | None:
             r"(?:tiene|has|have)\s+(?:(?:una?|an?)\s+)?"
             r"(?:ventana|window)\s+(?:abierta|abierto|cerrada|cerrado|"
             r"visible|corriendo|open|closed|running)"
-            r"(?:\s+without\s+opening\s+it)?$"
+            r"(?:\s+without\s+opening\s+it)?$|"
+            r"^(?:esta|estan)\s+"
+            r"(?:abierta|abierto|cerrada|cerrado|corriendo|visible)\s+"
+            r"(?:(?:el|la|los|las|the)\s+)?"
+            r"(?P<target_state>[a-z0-9][a-z0-9 ._+@-]{0,100}?)$|"
+            r"^(?:esta|estan)\s+(?:el|la|los|las|the)\s+"
+            r"(?P<target_state_noun>[a-z0-9][a-z0-9 ._+@-]{0,100}?)\s+"
+            r"(?:abierta|abierto|cerrada|cerrado|corriendo|visible)$|"
+            r"^is\s+(?P<target_en_state>[a-z0-9][a-z0-9 ._+@-]{0,100}?)\s+"
+            r"(?:open|closed|running|visible)$"
         ),
     )
     if request is None:
@@ -7503,7 +7563,14 @@ def _named_window_status_target(text: str) -> str | None:
     target = next(
         (
             request.group(name)
-            for name in ("target", "target_en", "target_check")
+            for name in (
+                "target",
+                "target_en",
+                "target_check",
+                "target_state",
+                "target_state_noun",
+                "target_en_state",
+            )
             if request.group(name) is not None
         ),
         "",
@@ -10511,9 +10578,10 @@ def _review_input_and_capture_effects(
 ) -> None:
     """Append keyboard, clipboard, screenshot, and OCR effects."""
 
-    if _head_is(head, r"(?:dale|press|hit)") and _has(
+    if _has(
         folded,
-        r"\b(?:dale|press|hit)\s+(?:enter|intro|return)\b",
+        r"\b(?:dale|press|hit|apreta|aprieta|apretame|aprietame)\s+"
+        r"(?:enter|intro|return)\b",
     ):
         _append(
             matches,
@@ -11067,7 +11135,7 @@ def _review_media_and_email_effects(
         (
             _head_is(
                 head,
-                rf"(?:{_SEARCH}|reproduce|reproducir|reproduzca|play|pon|ponme)",
+                rf"(?:{_SEARCH}|reproduce|reproducir|reproduzca|play|pon|ponme|toca|tocame)",
             )
             and not (_head_is(head, r"(?:pon|poner|ponme)") and audio_level)
             and not audio_media_setting
@@ -11076,17 +11144,23 @@ def _review_media_and_email_effects(
             and _has(
                 folded,
                 rf"\b{_SEARCH}\b|"
-                r"\b(?:reproduce|reproducir|reproduzca|play|pon|ponme)\b",
+                r"\b(?:reproduce|reproducir|reproduzca|play|pon|ponme|toca|tocame)\b",
             )
         )
         or (
-            _head_is(head, r"(?:reproduce|reproducir|reproduzca|play|pon)")
+            _head_is(
+                head,
+                r"(?:reproduce|reproducir|reproduzca|play|pon|toca(?:me)?)",
+            )
             and context_spotify
             and not resume_existing_media
-            and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
+            and _has(folded, r"\b(?:reproduce|reproducir|play|pon|toca(?:me)?)\b")
         )
         or (
-            _head_is(head, r"(?:reproduce|reproducir|reproduzca|play|pon)")
+            _head_is(
+                head,
+                r"(?:reproduce|reproducir|reproduzca|play|pon|toca(?:me)?)",
+            )
             and _media_play_domain(folded)
             and not resume_existing_media
             and not media_navigation
@@ -11094,7 +11168,7 @@ def _review_media_and_email_effects(
             and _has(
                 folded,
                 r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-                r"(?:reproduce|reproducir|reproduzca|play|pon)\s+\S.+",
+                r"(?:reproduce|reproducir|reproduzca|play|pon|toca(?:me)?)\s+\S.+",
             )
         )
     ):
@@ -11102,7 +11176,7 @@ def _review_media_and_email_effects(
             matches,
             folded,
             "media.play.query",
-            rf"\b{_SEARCH}\b|\b(?:reproduce|reproducir|play|pon)\b",
+            rf"\b{_SEARCH}\b|\b(?:reproduce|reproducir|play|pon|toca(?:me)?)\b",
         )
     if (
         _head_is(head, r"(?:reproduce|reproducir|reproduzca|play|pon)")
@@ -12715,7 +12789,7 @@ def resolve_explicit_effects(
         return EffectIntent(("media.play.query",), (folded,))
     if (
         "system.status" in available
-        and _machine_status_scopes(folded) == frozenset(("os",))
+        and len(_machine_status_scopes(folded)) == 1
         and _is_direct_request(folded)
         and _system_status_domain(folded)
         and _machine_status_scopes_are_one_reading(folded)
@@ -12728,6 +12802,10 @@ def resolve_explicit_effects(
         )
     ):
         return EffectIntent(("system.status",), (folded,))
+    if "vision.describe" in available and _direct_screen_describe_request(folded):
+        return EffectIntent(("vision.describe",), (folded,))
+    if "input.key.press" in available and _direct_enter_key_request(folded):
+        return EffectIntent(("input.key.press",), (folded,))
     if "web.search" in available and _public_live_lookup_request(folded):
         return EffectIntent(("web.search",), (folded,))
     if {
