@@ -2905,6 +2905,37 @@ def test_application_launch_requires_authenticated_installed_identity() -> None:
     assert vetoed["effect_operations"] == []
 
 
+def test_explicit_open_survives_when_start_catalog_publishes_the_installed_name() -> None:
+    applications = effect_intent_module.build_application_catalog_index(
+        ("Steam", "Google Chrome")
+    )
+    decision = {
+        "mode": "action",
+        "operation": "app.open",
+        "question": "",
+        "conversation_kind": "",
+        "effect_count": "one",
+        "effect_operations": ["app.open"],
+        "effect_verification": "recovered",
+        "response_language": "es",
+    }
+
+    assert (
+        apply_operation_domain_grounding_veto(
+            decision,
+            "Abre Steam.",
+            EffectIntent(("app.open",), ("steam",)),
+            applications,
+        )
+        == decision
+    )
+    assert _explicit_arguments_from_evidence(
+        "app.open",
+        "steam",
+        applications,
+    ) == {"appId": "Steam"}
+
+
 def test_application_argument_grounding_uses_authenticated_provider_identity() -> None:
     applications = ("Bloc de notas", "Calculadora", "Google Chrome")
 

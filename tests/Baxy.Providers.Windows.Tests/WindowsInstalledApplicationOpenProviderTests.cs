@@ -393,6 +393,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         InstalledApplicationEntry[] catalog =
         [
             .. Catalog,
+            new("Steam", "Valve.Steam.Client"),
             new("Duplicate", "Contoso.First"),
             new("Dúplicate", "Contoso.Second"),
         ];
@@ -411,9 +412,33 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(snapshot.Names, Does.Contain("Visual Studio Code"));
             Assert.That(snapshot.Names, Does.Contain("Configuración"));
             Assert.That(snapshot.Names, Does.Contain("Asistencia rápida"));
+            Assert.That(snapshot.Names, Does.Contain("Steam"));
             Assert.That(snapshot.Names, Does.Not.Contain("Steam Support Center"));
             Assert.That(snapshot.Names, Does.Not.Contain("Duplicate"));
             Assert.That(snapshot.Names, Does.Not.Contain("Dúplicate"));
+        });
+    }
+
+    [Test]
+    public void CatalogSnapshotPublishesANameWhenDuplicateStartIdentitiesCollapseToOneLaunchable()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Steam", "Valve.Steam.Client"),
+            new("Steam", @"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Steam\steam.exe"),
+            new("Steam Support Center", "http://support.steampowered.com/"),
+            new("Duplicate", "Contoso.First"),
+            new("Dúplicate", "Contoso.Second"),
+        ];
+
+        InstalledApplicationCatalogSnapshot snapshot =
+            WindowsInstalledApplicationOpenProvider.CreateCatalogSnapshot(catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot.Verified, Is.True);
+            Assert.That(snapshot.Complete, Is.True);
+            Assert.That(snapshot.Names, Is.EqualTo(new[] { "Steam" }));
         });
     }
 

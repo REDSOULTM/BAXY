@@ -315,17 +315,14 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             }
         }
 
+        // Keep a colliding Start name when the same non-path preference
+        // ResolveForLaunch uses leaves exactly one identity (Steam's path
+        // shortcut plus Valve.Steam.Client). Two non-path identities stay out.
         string[] safelyResolvableNames = candidates
             .GroupBy(static candidate => candidate.Key, StringComparer.Ordinal)
-            .Where(static group =>
-                group.Select(static candidate => candidate.AppUserModelId)
-                    .Distinct(StringComparer.Ordinal)
-                    .Count() == 1)
-            .Select(static group => group
-                .OrderBy(static candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(static candidate => candidate.Name, StringComparer.Ordinal)
-                .First()
-                .Name)
+            .Select(SelectSnapshotName)
+            .Where(static name => name is not null)
+            .Select(static name => name!)
             .OrderBy(static name => name, StringComparer.OrdinalIgnoreCase)
             .ThenBy(static name => name, StringComparer.Ordinal)
             .ToArray();
@@ -361,6 +358,39 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
 
         return new(true, complete, names);
+    }
+
+    private static string? SelectSnapshotName(
+        IGrouping<string, (string Name, string AppUserModelId, string Key)> group)
+    {
+        (string Name, string AppUserModelId, string Key)[] entries = [.. group];
+        IReadOnlyList<(string Name, string AppUserModelId, string Key)> chosen = entries;
+        int identityCount = entries
+            .Select(static item => item.AppUserModelId)
+            .Distinct(StringComparer.Ordinal)
+            .Count();
+        if (identityCount > 1)
+        {
+            (string Name, string AppUserModelId, string Key)[] launchable = entries
+                .Where(static item =>
+                    !InstalledApplicationResolver.IsPathStyleAppUserModelId(item.AppUserModelId))
+                .ToArray();
+            if (launchable
+                    .Select(static item => item.AppUserModelId)
+                    .Distinct(StringComparer.Ordinal)
+                    .Count() != 1)
+            {
+                return null;
+            }
+
+            chosen = launchable;
+        }
+
+        return chosen
+            .OrderBy(static item => item.Name, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(static item => item.Name, StringComparer.Ordinal)
+            .First()
+            .Name;
     }
 
     private static string? TryReadInstalledVersion(string displayName)
@@ -770,9 +800,7 @@ internal static class InstalledApplicationResolver
         }
 
         InstalledApplicationEntry[] notPath = exact
-            .Where(static item => item.AppUserModelId.IndexOf('\\') < 0
-                && !item.AppUserModelId.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
-                && !item.AppUserModelId.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase))
+            .Where(static item => !IsPathStyleAppUserModelId(item.AppUserModelId))
             .ToArray();
         return new InstalledApplicationResolution(
             notPath.Length > 0 ? notPath[0] : exact[0],
@@ -814,6 +842,11 @@ internal static class InstalledApplicationResolver
         && !entry.AppUserModelId.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
         && !entry.AppUserModelId.Contains('\uFFFD', StringComparison.Ordinal)
         && !entry.AppUserModelId.Any(char.IsControl);
+
+    internal static bool IsPathStyleAppUserModelId(string appUserModelId) =>
+        appUserModelId.Contains('\\')
+        || appUserModelId.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+        || appUserModelId.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase);
 
     private static int Score(string query, string candidate)
     {
