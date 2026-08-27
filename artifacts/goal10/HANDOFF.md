@@ -1910,3 +1910,24 @@ Semantic `c4d77d63ea7ce671f13a3385e67c05d3330711505e048bf949d3c3b3144cd46c`.
 **1276 pass / 671 fail. No es 1.947/1.947.** `app.open` 64→45 (Steam
 abre). Siguiente: vacíos 65, `media.play.query` 54, `app.open` 45,
 click 42, `reminder.create` 40.
+
+### Continuación 2026-08-27 — volumen relativo sin cantidad
+
+«es tarde bajá el volumen» y «turn up the volume» no eran
+aclaración de cantidad: el turno pasaba a plan sobre un contrato
+vacío. Ahora `kind=clarify` sin efectos hasta que haya cantidad.
+Dueños: `test_volume_without_amount_stays_clarify_without_a_plan`,
+`test_relative_volume_without_amount_preserves_operation_identity`.
+Commit `b0fa98f`. Remake r97 de 8 shards.
+
+### Continuación 2026-08-27 — r97 merge 1297/1947
+
+Merge SHA-256
+`55a11d115ed9d6d4580fa99600ca20120bc58cb8da85dca6bc49d4cfaa62fbac`.
+1.947 únicos, 0 vacíos, 2 `no_responde`, 65 formular.
+Adjudicación `b77dd5a6782c898d42c7f12e7823f63b97ecfcd42d5343caaa6761b5c4e1a14e`.
+Semantic `e136fad97d98d0800c75cac07b5de8bfaaf36c23262d841ccdc56c37280f8be2`.
+
+**1297 pass / 650 fail. No es 1.947/1.947.** Vacíos 65→50. Risk fail
+50→35. Siguiente: `media.play.query` 54, vacíos 50, `app.open` 46,
+click 42.
