@@ -980,6 +980,8 @@ def _daily_time_request(folded: str) -> bool:
         r"\b(?:pelicula|movie|film|alarma|alarm|recordatorio|reminder)\b",
     ):
         return False
+    if re.fullmatch(r"(?:tiempo|time|hora|fecha|date)[\s.!?]*", folded):
+        return True
     if _has(folded, r"\b(?:qe|q)\s+ora\b"):
         return True
     if _has(
@@ -1100,6 +1102,24 @@ def _direct_known_shell_open_request(folded: str) -> str | None:
 
 def _direct_deictic_open_request(folded: str) -> bool:
     return bool(re.fullmatch(r"(?:abrelo|abrela|open\s+it)[\s.!?]*", folded))
+
+
+def _invalid_complete_alarm_clock(folded: str) -> bool:
+    """A named alarm with an out-of-range hour is complete and impossible."""
+
+    if not _has(folded, r"\b(?:alarma|alarm)\b"):
+        return False
+    hours = [
+        int(found.group(0))
+        for found in re.finditer(r"(?<![0-9])(?:[0-9]{1,3})(?![0-9])", folded)
+    ]
+    return len(hours) == 1 and hours[0] > 23
+
+
+def _direct_named_open_request(folded: str) -> bool:
+    """Recognize ``abrí la aplicación X`` without treating every open as an app."""
+
+    return _spoken_application_open_label(folded) is not None
 
 
 def _direct_relative_timer_request(folded: str) -> bool:
@@ -1280,6 +1300,8 @@ def _daily_use_family_intent(
     if shell is not None and "app.open" in available:
         return EffectIntent(("app.open",), (shell,))
     if "app.open" in available and _direct_deictic_open_request(folded):
+        return EffectIntent(("app.open",), (folded,))
+    if "app.open" in available and _direct_named_open_request(folded):
         return EffectIntent(("app.open",), (folded,))
 
     if (
@@ -2999,6 +3021,8 @@ def resolve_explicit_clarification_intent(
             "calendar.event.create" in available
             and _direct_named_meeting_create_request(folded)
         )
+        or ("app.open" in available and _direct_named_open_request(folded))
+        or _invalid_complete_alarm_clock(folded)
         or (
             "system.settings.set" in available
             and _direct_absolute_brightness_request(folded)
@@ -4206,11 +4230,18 @@ def _unique_catalog_prefix_name(
 ) -> str | None:
     """Resolve one unique catalog name from a truncated spoken prefix."""
 
-    if len(key) < 4:
+    if len(key) < 3:
         return None
+    stem = key[:3]
     hits: list[str] = []
     for name, candidate_key in catalog.entries:
-        if candidate_key.startswith(key) or _application_name_key(name).startswith(key):
+        name_key = _application_name_key(name)
+        if (
+            candidate_key.startswith(key)
+            or name_key.startswith(key)
+            or candidate_key.startswith(stem)
+            or name_key.startswith(stem)
+        ):
             hits.append(name)
     unique = list(dict.fromkeys(hits))
     return unique[0] if len(unique) == 1 else None
@@ -4222,14 +4253,18 @@ def _spoken_application_open_label(folded: str) -> str | None:
     request = re.fullmatch(
         r"(?:abri|abre|open)\s+(?:(?:la|el|the|una?)\s+)?"
         r"(?:aplicacion|app|application)\s+"
-        r"(?P<name>[a-z0-9][a-z0-9 ._+@-]{0,80})"
+        r"(?P<name>[a-z0-9][a-z0-9._+-]{2,40})"
         r"[\s.!?]*",
         folded,
     )
     if request is None:
         return None
     name = request.group("name").strip(" .")
-    return name or None
+    if not name or (" " in name):
+        return None
+    if len(name) < 6 and not re.search(r"[0-9]", name):
+        return None
+    return name
 
 
 def resolve_application_catalog_app_id(
@@ -13126,6 +13161,19 @@ def resolve_explicit_effects(
     daily_use = _daily_use_family_intent(folded, available)
     if daily_use is not None:
         return daily_use
+    if (
+        "app.open" in available
+        and not _has(folded, r"\b(?:pero|but|no abras|do not|en vez|instead)\b")
+    ):
+        token = re.fullmatch(
+            r"(?:abre|abri|abrime|open)\s+(?:el|la|the)?\s*"
+            r"(?P<name>[a-z0-9][a-z0-9.+_-]{2,40})[\s.!?]*",
+            folded,
+        )
+        if token is not None:
+            name = token.group("name")
+            if _unique_catalog_prefix_name(name, authenticated_applications) is not None:
+                return EffectIntent(("app.open",), (name,))
     if _volume_domain(folded) and _has(folded, r"\b(?:brillo|brightness)\b"):
         return None
     clauses = _request_clauses(folded)

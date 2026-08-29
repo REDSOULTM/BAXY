@@ -1,38 +1,46 @@
-# Handoff — Goal 10 — 2026-08-29 — r126 overlay scored
+# Handoff — Goal 10 — 2026-08-29 — owner-fix (none)/app.open → r129
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r128 20/20 + overlay 14 (verified_effect). In-scope **1576/144**.
-`open the file explorer` pasa. LastBoot `2026-08-27 21:25:24`.
-Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full. No r129 encima.
+Hecho: r128 overlay 14; in-scope **1576/144**. Owner-fix (none)/app.open:
+hechos implícitos → `DoNotPersist` (mente conversa, no `AskToSave`); `Tiempo`
+→ `system.time`; `abrí la aplicación X` + prefijo único 3 chars; alarma hora >23
+sin aclarar; terminal `System32\cmd.exe`. Tests verdes dos veces.
+LastBoot `2026-08-27 21:25:24`.
+En curso: lanzar r129 vía Win32 Create + deny-power
+(`%LOCALAPPDATA%\BAXYRuntime\goal10\launch_r129.ps1`).
+Sin empezar: overlay r129, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
-- No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
-- `poné una canción` sigue pidiendo query (`test_bare_song_request_clarifies…`).
-- `subí el brillo al máximo` es `system.settings.set` value=100, no amount.
-- Hechos verificados que el 4B no formula se narran en `TurnVisibleFacts`.
-- `system.power` nunca se invoca en vivo. Last boot no se toca.
+- Hecho implícito no se guarda ni se pregunta: `MustNotPersist` + `NoRoute`.
+  El oráculo `ask_to_save` contradecía invariante 5 (respuesta fija
+  `context_not_saved`). Safety sigue: `must_not_persist_before_consent`.
+- Prefijo de catálogo único a 3 letras (`Steel`→Steam) si hay un solo hit.
+  No literales de corpus en runtime.
+- `AskToSave` queda sin llamadas; no se borra en este paso.
 
 ## Archivos tocados
-- `artifacts/goal10/goal10-in-scope-r124.json` — score in-scope r124
-- `src/baxy_mind/effect_intent.py` — explorer/terminal/settings aliases, brillo max/status
-- `src/baxy_mind/__main__.py` — args de media, brillo, window status
-- `src/Baxy.App/TurnVisibleFacts.cs` — process.list, window status, brillo
-- `src/Baxy.Providers.Windows/Applications/` — `windows.explorer` + explorer.exe
+- `src/baxy_mind/effect_intent.py` — time, named open, prefix 3, alarma >23
+- `src/Baxy.App/NaturalMemoryRequestParser.cs` — ImplicitMemory → DoNotPersist
+- `src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs`
+  — cmd.exe por `SystemDirectory`
+- `tests/data/memory_corpus_oracle.json` — implicit consent = `no_memory_route`
+- `artifacts/goal10/goal10-in-scope-r128.json` — score vigente hasta overlay r129
 
 ## Hipótesis
-Confirmadas: r126 ejecutó brillo al máximo; overlay 11 ids; env 217 omitidas; 7 other-lang omitidas.
-Descartadas: overlay wholesale de shards; r127 encima de una tanda incompleta.
+Confirmadas: parser `AskToSave` rompía 2 hard-negatives al cambiar a DoNotPersist
+sin tocar el oráculo. Explorer 51/51. pytest 2605.
+Descartadas: relanzar 1947 con el test de memoria en rojo.
 
 ## Comandos ejecutados y resultado
-- r126 waiter → **DONE**. 20/20 empty=0 + `campaign done`. LastBoot `2026-08-27 21:25:24`
-- overlay r126: unique 1947, overlaid 11, blocked_lost_journal 177
-- in-scope `artifacts/goal10/goal10-in-scope-r126.json` → **1564/159**, criterion_zero_fail false
-- mind-runtime pytest → **2598 passed** twice (pre-r126 grounding)
+- `pytest tests/test_effect_intent.py tests/test_turn_policy.py -q` → **2605 passed** ×2
+- `dotnet test …NaturalMemoryRequestParserTests` → **1746 passed** ×2
+- `dotnet test …WindowsApplicationOpenProviderTests` → **51 passed**
+- LastBoot `2026-08-27 21:25:24`
 
 ## Siguiente acción recomendada
-Familia dueño sobre `(none)` 61 / `app.open` 11 / `media.play.query` 6.
-Tests verdes dos veces antes de otra remake.
+Esperar r129 `DONE` (20/20 + campaign done). Overlay `overlay_r129.py`, no shards
+incompletos. Score in-scope. Si fail>0, familia en dueño, no otra remake encima.

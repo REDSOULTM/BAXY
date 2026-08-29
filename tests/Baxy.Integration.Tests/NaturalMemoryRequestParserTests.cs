@@ -38,13 +38,13 @@ public sealed class NaturalMemoryRequestParserTests
     [TestCase("my favorite city is Lima")]
     [TestCase("i'm a developer")]
     [TestCase("me llamo Albeda")]
-    public void ImplicitPersonalFactsRequireConsentBeforePersistence(string text)
+    public void ImplicitPersonalFactsDoNotPersistWithoutASaveRequest(string text)
     {
         MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.AskToSave));
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.NoRoute));
             Assert.That(result.Operation, Is.Null);
             Assert.That(result.MustNotPersist, Is.True);
         });

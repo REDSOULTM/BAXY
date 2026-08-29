@@ -314,7 +314,7 @@ internal static partial class NaturalMemoryRequestParser
 
         if (ImplicitMemoryPattern().IsMatch(foldedCommand))
         {
-            return MemoryParseResult.AskToSave();
+            return MemoryParseResult.DoNotPersist();
         }
 
         if (AmbiguousSavePattern().IsMatch(foldedCommand))
@@ -368,7 +368,7 @@ internal static partial class NaturalMemoryRequestParser
                 return true;
             case "mi color favorito es azul":
             case "mi nombre es emmanuel":
-                result = MemoryParseResult.AskToSave();
+                result = MemoryParseResult.DoNotPersist();
                 return true;
             case "qu? recuerdas de m":
                 result = MemoryParseResult.ClarifyInspection();

@@ -714,7 +714,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
     private static ApplicationOpenResult OpenTerminalShell(ApplicationOpenRequest request)
     {
-        foreach (string executable in new[] { "wt.exe", "cmd.exe" })
+        string cmd = Path.Combine(Environment.SystemDirectory, "cmd.exe");
+        foreach (string executable in new[] { cmd, "wt.exe" })
         {
             try
             {

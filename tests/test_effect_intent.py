@@ -7073,6 +7073,7 @@ def test_shell_open_falls_back_to_windows_explorer_without_a_catalog_hit() -> No
 def test_truncated_catalog_prefix_resolves_one_unique_app() -> None:
     catalog = build_application_catalog_index(("Steam", "Google Chrome"))
     assert resolve_application_catalog_app_id("abre stea", catalog) == "Steam"
+    assert resolve_application_catalog_app_id("abre Steel", catalog) == "Steam"
 
 
 def test_named_unknown_app_open_keeps_the_spoken_label() -> None:
@@ -7080,6 +7081,39 @@ def test_named_unknown_app_open_keeps_the_spoken_label() -> None:
     assert (
         resolve_application_catalog_app_id("abrí la aplicación foobarapp", catalog)
         == "foobarapp"
+    )
+
+
+def test_bare_time_word_is_a_live_clock_lookup() -> None:
+    assert resolve_explicit_effects("Tiempo", {"system.time"}).operations == (
+        "system.time",
+    )
+    assert (
+        resolve_explicit_clarification_intent("Tiempo", ("system.time",)) is None
+    )
+
+
+def test_named_open_does_not_ask_when_the_app_is_spoken() -> None:
+    assert resolve_explicit_effects(
+        "abrí la aplicación foobarapp",
+        {"app.open"},
+    ).operations == ("app.open",)
+    assert (
+        resolve_explicit_clarification_intent(
+            "abrí la aplicación foobarapp",
+            ("app.open",),
+        )
+        is None
+    )
+
+
+def test_out_of_range_alarm_hour_does_not_ask_for_another_clock() -> None:
+    assert (
+        resolve_explicit_clarification_intent(
+            "poné una alarma a las 99",
+            ("notification.schedule",),
+        )
+        is None
     )
 
 

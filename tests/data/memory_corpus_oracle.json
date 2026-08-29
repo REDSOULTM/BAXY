@@ -503,7 +503,7 @@
     {
       "category": "implicit_fact_or_preference_requires_consent",
       "ids": ["msg_34a13386c85018291719", "msg_9e9c0758dff233fa0831"],
-      "expected": {"outcome": "ask_to_save", "must_not_persist_before_consent": true}
+      "expected": {"outcome": "no_memory_route", "must_not_persist_before_consent": true}
     },
     {
       "category": "malformed_inspection_requires_clarification",
@@ -543,7 +543,7 @@
       {
         "name": "implicit_memory_is_default_off",
         "ids": ["msg_34a13386c85018291719", "msg_9e9c0758dff233fa0831"],
-        "expected": {"ask_to_save": true, "persist_before_consent": false}
+        "expected": {"ask_to_save": false, "persist_before_consent": false}
       },
       {
         "name": "blanket_pc_authorization_never_becomes_durable",
