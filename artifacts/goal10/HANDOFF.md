@@ -10,9 +10,10 @@ Hecho: r124 20/20 overlay 77 ids sobre r120; in-scope **1539 pass / 180 fail /
 explorer, pausa/poné música, brillo máximo/estado, prosa de process.list y
 window.application.status. Owner pytest 2597 twice. LastBoot
 `2026-08-27 21:25:24`.
-En curso: un remake r125 (20 shards, deny-power) cuando este commit esté en
-origin. Overlay quirúrgico sólo de `message_id` mejorados; no shards incompletos.
-Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
+En curso: remake r125 vivo (Win32 Create, 20 shards, deny-power). PID python
+34972/34828. Overlay quirúrgico sólo de `message_id` mejorados; no shards
+incompletos; no r126 encima.
+Sin empezar: overlay r125, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).

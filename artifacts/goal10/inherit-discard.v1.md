@@ -62,10 +62,12 @@ Estos 4 ya fallaban en `67c621a` con tests HEAD + mente HEAD:
   identidad: trivia en conversación, hechos vivos (hora, clima) por lookup.
 
 Cerrado 2026-08-29: trivia/definiciones = conversación; hora/clima = lookup.
-Owner pytest 2581 twice. Campaña r124 en curso. No overlay de incompletos.
+Owner pytest 2597 twice (`5aee506`). r124 20/20 overlay 77 ids. In-scope
+1539/180. r125 en curso (Win32 Create, deny-power). No overlay de incompletos.
 
 ## Números históricos (no certificar)
 
 r120 surgical: raw 1507 pass / 440 fail. In-scope 1507 / 217 fail. Env 216.
+r124 overlay: raw 1539/408. In-scope 1539/180. Env 221. Other-lang 7.
 Otros idiomas 7 (`wie spät`, `öffne den Rechner`, `ouvre la calculatrice`,
 `che ore sono`, `apri la calcolatrice`, `alza il volume`, `que horas são`).
