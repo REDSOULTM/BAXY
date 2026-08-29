@@ -61,8 +61,8 @@ Estos 4 ya fallaban en `67c621a` con tests HEAD + mente HEAD:
   `test_public_fact_questions_stay_in_conversation` pide conversación. Gana
   identidad: trivia en conversación, hechos vivos (hora, clima) por lookup.
 
-No se lanza la tanda 1.947 mientras el dueño no decida el lado de esa costura.
-Las familias in-scope del plan (63) pasaron dos veces.
+Cerrado 2026-08-29: trivia/definiciones = conversación; hora/clima = lookup.
+Owner pytest 2581 twice. Campaña r124 en curso. No overlay de incompletos.
 
 ## Números históricos (no certificar)
 

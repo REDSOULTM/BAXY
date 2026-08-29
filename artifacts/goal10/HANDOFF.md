@@ -8,10 +8,11 @@ con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertida
 Hecho: inventario heredar/descartar; r123 incompleta anulada (no overlay);
 mente restaurada a HEAD anti-acumulación; `_daily_use_family_intent` en un dueño;
 fail-closed de `system.power`; LastBoot `2026-08-27 21:25:24`.
-Familias: 63 passed twice. Power test 2/2.
-En curso: 4 tests HEAD-preexistentes (trivia web.search vs conversación).
-Sin empezar: campaña 1.947 (no se lanza hasta esa costura), 808/2036/holdouts,
-matriz viva, latencia ABBA, Full.
+Familias: 63 twice. Owner pytest 2581 twice. Power 2/2.
+Trivia = conversación (no web.search). Campaña r124 lanzada
+2026-08-29T07:44:34Z, 20 shards, BAXY_DENY_HOST_POWER_TRANSITION=1.
+No overlay hasta 20/20 complete + «campaign done».
+Sin empezar: overlay/adjudicate, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - No `reset --hard 8c57747` ni force-push: origin ya tiene 163 commits del Goal 10.
