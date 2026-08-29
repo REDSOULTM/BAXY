@@ -9,8 +9,9 @@ Hecho: r125 20/20 + campaign done. Overlay quirúrgico **28** ids (gained_prose
 incluido). In-scope **1561 pass / 162 fail / 1723**. LastBoot
 `2026-08-27 21:25:24`. `system.settings.set` al máximo ahora grounds value=100
 sin pedir dígito (el testhost eligió action pero no ejecutó).
-En curso: owner-fix grounding + una remake r126. No overlay de incompletos.
-Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
+En curso: remake r126 vivo (Win32 Create, deny-power). Overlay al 20/20 +
+campaign done. No overlay de incompletos. No r127 encima.
+Sin empezar: overlay r126, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
