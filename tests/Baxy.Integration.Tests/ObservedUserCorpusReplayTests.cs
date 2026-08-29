@@ -30,6 +30,7 @@ public sealed class ObservedUserCorpusReplayTests
         "BAXY_MIND_TURN_AUDIT_PATH",
         "BAXY_VOICE_WAKE_ON_START",
         "BAXY_CONFIRMATION_MODE",
+        "BAXY_DENY_HOST_POWER_TRANSITION",
     ];
 
     [Test]
@@ -66,6 +67,7 @@ public sealed class ObservedUserCorpusReplayTests
             composeAuditPath);
         Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
         Environment.SetEnvironmentVariable("BAXY_CONFIRMATION_MODE", "bypass");
+        Environment.SetEnvironmentVariable("BAXY_DENY_HOST_POWER_TRANSITION", "1");
         Directory.CreateDirectory(dataRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
         File.Delete(outputPath);

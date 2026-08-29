@@ -1,0 +1,39 @@
+{
+  "schema": "baxy.goal10-canonical-2036-summary.v1",
+  "generated_at_utc": "2026-08-29T05:03:04.436328+00:00",
+  "source_sha256": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1",
+  "row_count": 2036,
+  "class_counts": {
+    "conversation_question": 2,
+    "engineering_instruction": 290,
+    "feedback_failure": 79,
+    "no_action_constraint": 13,
+    "preference": 12,
+    "product_requirement": 1421,
+    "safety_instruction": 1,
+    "user_mission": 218
+  },
+  "verdict_counts": {
+    "unscored": 1993,
+    "pass": 14,
+    "fail": 29
+  },
+  "criterion_2036_green": false,
+  "note": "Published apart from 1947/808. Only overlapping Nivel 2 r100 rows inherit a physical pipeline verdict.",
+  "existing_gates_not_physical_pass": [
+    "tests/test_historical_corpus.py",
+    "tests/test_planner_corpus.py",
+    "scripts/run_planner_corpus_gate.py",
+    "scripts/run_exhaustive_runtime_model_gate.py (tools_executed:0)"
+  ],
+  "unscored_by_class": {
+    "conversation_question": 2,
+    "engineering_instruction": 290,
+    "feedback_failure": 79,
+    "no_action_constraint": 13,
+    "preference": 12,
+    "product_requirement": 1421,
+    "safety_instruction": 1,
+    "user_mission": 175
+  }
+}

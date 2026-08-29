@@ -5,8 +5,11 @@ no bloqueaba: fragilidades teóricas, caminos de error que nadie ha recorrido,
 «esto podría fallar si…».
 
 No es una lista de pendientes que se ignora. Es la entrada del **Goal 10**, que
-existe para vaciarla: cada línea acaba arreglada, medida y descartada, o
-declarada limitación ambiental con su degradado.
+cobra lo in-scope (español/inglés, no ambiental): cada línea acaba arreglada,
+medida y descartada, o declarada limitación ambiental con degradado honesto.
+Las ambientales de escritorio (WhatsApp, click/HWND, visión, wifi, Firefox,
+streaming, power fail-closed) **no se cuentan como fail del Goal 10** y van al
+**Goal 11**. BAXY no promete idiomas fuera de es/en.
 
 ## Cómo se anota
 

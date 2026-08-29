@@ -781,15 +781,11 @@ public sealed class WindowsApplicationOpenProviderTests
             Assert.That(result.ProcessId, Is.EqualTo(800));
             Assert.That(result.WindowHandle, Is.EqualTo(0x8002));
             Assert.That(process.FocusRequests, Is.EqualTo(1));
-            Assert.That(platform.DelayCalls, Is.EqualTo(1));
         });
     }
 
-    [TestCase(false, true)]
-    [TestCase(true, false)]
-    public async Task VerifierRequiresBothVisibleWindowAndObservedForeground(
-        bool windowVisible,
-        bool foreground)
+    [Test]
+    public async Task VerifierRejectsAnInvisibleWindowEvenWhenForegroundIsClaimed()
     {
         using TestEnvironment environment = new();
         FakePlatform platform = environment.CreatePlatform();
@@ -797,8 +793,8 @@ public sealed class WindowsApplicationOpenProviderTests
             801,
             FirstCreationTime,
             (nint)0x801,
-            foreground);
-        process.WindowVisible = windowVisible;
+            foreground: true);
+        process.WindowVisible = false;
         process.FocusSucceeds = false;
         platform.Processes.Add(process);
         ApplicationOpenRequest request = Request();
@@ -821,8 +817,89 @@ public sealed class WindowsApplicationOpenProviderTests
             Assert.That(result.Verified, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo(
                 ApplicationOpenErrorCodes.VerificationFailed));
-            Assert.That(platform.DelayCalls, Is.EqualTo(19));
         });
+    }
+
+    [Test]
+    public async Task VisibleNotepadIsVerifiedWhenForegroundStealIsRefused()
+    {
+        using TestEnvironment environment = new();
+        FakePlatform platform = environment.CreatePlatform();
+        FakeProcessState process = environment.Win32Process(
+            802,
+            FirstCreationTime,
+            (nint)0x802,
+            foreground: false);
+        process.WindowVisible = true;
+        process.FocusSucceeds = false;
+        platform.Processes.Add(process);
+        ApplicationOpenRequest request = Request();
+        ApplicationLaunchReceipt receipt = ReceiptFor(
+            request,
+            environment.BootstrapPath,
+            802,
+            FirstCreationTime,
+            0x802,
+            launchIssued: true);
+
+        ApplicationVerificationResult result =
+            await new WindowsApplicationOpenVerifier(platform).VerifyAsync(
+                request,
+                receipt,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ProcessId, Is.EqualTo(802));
+            Assert.That(result.WindowHandle, Is.EqualTo(0x802));
+            Assert.That(process.FocusRequests, Is.EqualTo(1));
+            Assert.That(platform.DelayCalls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void StoreNotepadOwnedVisibleWindowIsSelectedWhenMainWindowHandleIsZero()
+    {
+        const int processId = 26808;
+        NotepadIdentityPolicy.ObservedTopLevelWindow[] windows =
+        [
+            new((nint)0x10, 1, true, 800, 600),
+            new((nint)0x20, unchecked((uint)processId), false, 1920, 1080),
+            new((nint)0x30, unchecked((uint)processId), true, 200, 100),
+            new((nint)0x40, unchecked((uint)processId), true, 800, 600),
+            new((nint)0, unchecked((uint)processId), true, 900, 900),
+        ];
+
+        nint chosen = NotepadIdentityPolicy.LargestVisibleOwnedWindow(processId, windows);
+
+        Assert.That(chosen, Is.EqualTo((nint)0x40));
+    }
+
+    [TestCase("Bloc de notas", true)]
+    [TestCase("Notepad", true)]
+    [TestCase("Sin título: Bloc de notas", true)]
+    [TestCase("Untitled - Notepad", true)]
+    [TestCase("Calculadora", false)]
+    [TestCase("Chrome", false)]
+    public void StoreNotepadChromeTitleIdentifiesTheVisibleFrameHostWindow(
+        string title,
+        bool expected)
+    {
+        Assert.That(NotepadIdentityPolicy.IsNotepadWindowTitle(title), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void StoreNotepadReturnsNoWindowWhenTheProcessOwnsNoneVisible()
+    {
+        nint chosen = NotepadIdentityPolicy.LargestVisibleOwnedWindow(
+            99,
+            [
+                new((nint)0x10, 99, false, 400, 400),
+                new((nint)0x11, 8, true, 400, 400),
+            ]);
+
+        Assert.That(chosen, Is.EqualTo(nint.Zero));
     }
 
     [Test]

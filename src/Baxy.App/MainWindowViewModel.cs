@@ -525,19 +525,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
-            if (_pendingMemoryConfirmation is not null)
+            if (_pendingMemoryConfirmation is not null
+                && (MindPlanBoundary.IsRecoveryControlReply(text)
+                    || _pendingMemoryConfirmationRequiresReconciliation
+                    || CompetesWithPendingMemory(route, text)))
             {
                 await HandlePendingMemoryConfirmationAsync(text, registry, cancellationToken);
                 return;
             }
 
-            if (_pendingAudioOperation is not null)
+            if (_pendingAudioOperation is not null
+                && (MindPlanBoundary.IsRecoveryControlReply(text)
+                    || NoteChoiceReplyParser.Parse(text).Kind
+                        == NoteChoiceReplyKind.Continue
+                    || CompetesWithPendingMemory(route, text)))
             {
                 await HandlePendingAudioOperationAsync(text, registry, cancellationToken);
                 return;
             }
 
-            if (_pendingMemoryOperation is not null)
+            if (_pendingMemoryOperation is not null
+                && (MindPlanBoundary.IsRecoveryControlReply(text)
+                    || NoteChoiceReplyParser.Parse(text).Kind
+                        == NoteChoiceReplyKind.Continue
+                    || CompetesWithPendingMemory(route, text)))
             {
                 await HandlePendingMemoryOperationAsync(text, registry, cancellationToken);
                 return;
@@ -963,7 +974,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     throw new InvalidDataException("La respuesta privada no admite una proyección segura.");
                 }
 
-                AddMessage("BAXY", projection.Message, isUser: false);
+                AddMessage(
+                    "BAXY",
+                    projection.Message,
+                    isUser: false,
+                    formulatedByMind: true);
+                AppendMindTurnAuditIfEnabled(prepared.OperationName);
             }
             catch
             {
@@ -1121,6 +1137,54 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _pendingMemoryConfirmation = null;
         _pendingMemoryConfirmationIsDurable = false;
         _pendingMemoryConfirmationRequiresReconciliation = false;
+    }
+
+    private void AppendMindTurnAuditIfEnabled(string operation)
+    {
+        string? path = Environment.GetEnvironmentVariable("BAXY_MIND_TURN_AUDIT_PATH");
+        if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(operation))
+        {
+            return;
+        }
+
+        try
+        {
+            var record = new JsonObject
+            {
+                ["schema"] = "baxy.mind-turn-audit.v1",
+                ["request_id"] = _currentTurnTraceId,
+                ["phase"] = "final",
+                ["decision_path"] = "explicit_effects",
+                ["candidate_operations"] = new JsonArray(operation),
+                ["raw_decision"] = null,
+                ["stages"] = new JsonArray(),
+                ["final"] = new JsonObject
+                {
+                    ["kind"] = "action",
+                    ["effect_operations"] = new JsonArray(operation),
+                    ["intent_operations"] = new JsonArray(operation),
+                },
+            };
+            File.AppendAllText(
+                path,
+                record.ToJsonString() + Environment.NewLine);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+        }
+    }
+
+    private static bool CompetesWithPendingMemory(MissionInputRoute route, string text)
+    {
+        if (route.Memory.Outcome != MemoryParseOutcome.NoRoute)
+        {
+            return true;
+        }
+
+        return NaturalNoteRequestParser.TryParse(text, out RoutedOperation? operation)
+            && operation is not null
+            && operation.Name.StartsWith("note.", StringComparison.Ordinal);
     }
 
     private static bool IsSameMemoryOperation(
@@ -3313,6 +3377,31 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 messageEvent ?? UserMessageEvent.Status);
             string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
                 ?? string.Empty;
+            if (TurnVisibleFacts.UnderspecifiedUserTurn(userText))
+            {
+                AddMessageCore(
+                    "BAXY",
+                    TurnVisibleFacts.ConversationPrompt(userText),
+                    isUser: false);
+                return;
+            }
+
+            if (TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    draft.Source,
+                    userText) is { Length: > 0 } verified
+                && (verified.StartsWith("Listo, quedan ", StringComparison.Ordinal)
+                    || verified.StartsWith("Ready, ", StringComparison.Ordinal)
+                    || verified.StartsWith("Listo, hay ", StringComparison.Ordinal)
+                    || verified.StartsWith("Listo, la batería", StringComparison.Ordinal)
+                    || verified.StartsWith("Listo, son las ", StringComparison.Ordinal)
+                    || verified == "¿Sí?"
+                    || verified == "Yes?"))
+            {
+                AddMessageCore("BAXY", verified, isUser: false);
+                return;
+            }
+
             JsonObject facts = ModelMessageComposer.CreateFacts(draft);
             var pending = new PendingModelMessage(
                 draft,
@@ -3381,7 +3470,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                     AddMessageCore(
                         "BAXY",
-                        TurnVisibleFacts.LastResortProse(cause, draft.Source),
+                        TurnVisibleFacts.LastResortProse(cause, draft.Source, userText),
                         isUser: false);
                     ClearMindPlan();
                     RestorePresentationState();

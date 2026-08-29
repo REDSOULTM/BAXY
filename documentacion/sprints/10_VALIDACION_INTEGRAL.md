@@ -448,16 +448,23 @@ verde. Los invariantes de arquitectura siguen siendo invariantes.
 
 ## Dónde está este goal ahora
 
-**No empiezas de cero.** La ejecución anterior del Goal 10 quedó cerrada y su
-evidencia, decisiones y limitaciones están en
-**[`artifacts/goal10/HANDOFF.md`](../../artifacts/goal10/HANDOFF.md)**. Léelo
-antes de tocar nada y actualízalo a medida que avanzas, no al final.
+Reinicio limpio (2026-08-29) desde el cierre del Goal 9. El inventario
+heredar/descartar está en
+[`artifacts/goal10/inherit-discard.v1.md`](../../artifacts/goal10/inherit-discard.v1.md).
+El handoff vivo está en
+[`artifacts/goal10/HANDOFF.md`](../../artifacts/goal10/HANDOFF.md).
 
-Esa evidencia se hereda y no se repite porque sí, pero **no certificó este corpus**:
-la antigua dosis espontánea no era un replay y una campaña exhaustiva de julio usó
-otro runtime, ejecutó cero tools y admitió estados `review`. La ampliación actual
-reabre el Goal 10 sólo para cerrar la validación integral definida aquí. No presentes
-la evidencia antigua como resultado del corpus nuevo.
+La evidencia de agentes anteriores (r120, r121–r123, dosis 2026-08-24) es
+histórica: no certifica este corpus. No se presenta como resultado de esta corrida.
+
+## Recuento de cierre (dueño)
+
+In-scope = español, inglés o spanglish **y** no ambiental.
+El recuento de fail del Goal 10 **omite** (no convierte en pass) las filas
+ambientales y los otros idiomas reales (de/fr/it/pt). Esas filas conservan fail
+individual. Las ambientales van al Goal 11.
+BAXY no promete idiomas fuera de es/en/spanglish.
+`system.power` en este host queda fail-closed; no se invoca en vivo.
 
 ## Criterios de cierre
 

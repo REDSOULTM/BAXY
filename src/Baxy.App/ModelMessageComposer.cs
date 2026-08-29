@@ -111,7 +111,8 @@ internal static class ModelMessageComposer
             cancellationToken).ConfigureAwait(false);
         string? accepted = UserMessagePolicy.AcceptModelAuthoredResponse(
             composed?.Text,
-            draft);
+            draft,
+            userText);
         if (accepted is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -122,7 +123,8 @@ internal static class ModelMessageComposer
 
         string originalFailure = UserMessagePolicy.ModelResponseRejectionReason(
             composed?.Text,
-            draft) ?? "model_response_rejected";
+            draft,
+            userText) ?? "model_response_rejected";
         // A generic apology is terminal. It may replace a status or error that
         // could not be rendered, but never a welcome, clarification or
         // confirmation whose exact wording is required for the next turn.
@@ -159,7 +161,8 @@ internal static class ModelMessageComposer
             cancellationToken).ConfigureAwait(false);
         string? acceptedRecovery = UserMessagePolicy.AcceptModelAuthoredResponse(
             recovered?.Text,
-            recoveryDraft);
+            recoveryDraft,
+            userText);
         if (acceptedRecovery is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -170,7 +173,8 @@ internal static class ModelMessageComposer
 
         string recoveryFailure = UserMessagePolicy.ModelResponseRejectionReason(
             recovered?.Text,
-            recoveryDraft) ?? "model_response_rejected";
+            recoveryDraft,
+            userText) ?? "model_response_rejected";
         return new ModelMessageCompositionOutcome(
             null,
             $"{originalFailure};recovery:{recoveryFailure}",

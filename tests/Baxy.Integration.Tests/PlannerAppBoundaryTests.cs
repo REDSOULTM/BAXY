@@ -77,8 +77,33 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 TurnVisibleFacts.LastResortProse(
                     "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"window.minimize","polarity":"success","verified":true,"succeeded":true}"""),
+                Is.EqualTo("Listo, minimicé la ventana."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"window.restore","polarity":"success","verified":true,"succeeded":true}"""),
+                Is.EqualTo("Listo, restauré la ventana."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
                     """{"kind":"operation","operation":"input.visible.click","polarity":"failure","verified":false,"succeeded":false,"error":"visible_click_no_receipt","effectUncertain":true}"""),
                 Is.EqualTo("No pude: no vi el control."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"vision.describe","polarity":"failure","verified":false,"succeeded":false,"error":"vision_provider_not_configured"}"""),
+                Is.EqualTo("No pude: no tengo visión configurada."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"system.power","polarity":"failure","verified":false,"succeeded":false,"error":"power_transition_physical_gate_required"}"""),
+                Is.EqualTo("No pude: no apago ni reinicio este equipo desde esta campaña."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"app.open","polarity":"failure","verified":false,"succeeded":false,"error":"verification_failed","effectUncertain":true}"""),
+                Is.EqualTo("No pude: no pude confirmar que se abrió."));
             Assert.That(
                 TurnVisibleFacts.LastResortProse(
                     "composition_lost_verified_facts",
@@ -103,6 +128,139 @@ public sealed class PlannerAppBoundaryTests
                         """{"kind":"operation","operation":"input.visible.click","polarity":"failure","verified":false,"succeeded":false,"error":"visible_click_no_receipt"}""",
                         UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted))),
                 Is.EqualTo("composition_lost_verified_facts"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "no_response",
+                    "Eliminé una memoria local."),
+                Is.EqualTo("Eliminé una memoria local."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composer_unavailable",
+                    "Guardé el dato en la memoria local."),
+                Is.EqualTo("Guardé el dato en la memoria local."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    TurnVisibleFacts.Failure("memory_forget_empty")),
+                Is.EqualTo("No pude: no encontré esa memoria."));
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "No pude: no responde.",
+                    UserMessagePolicy.Create(
+                        "Eliminé una memoria local.",
+                        UserMessageEvent.Status)),
+                Is.EqualTo("no_response"));
+            string diskFacts = """{"kind":"operation","operation":"system.status","polarity":"success","verified":true,"succeeded":true,"observed":{"disk":{"availableBytes":162532667392}}}""";
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "Listo, el estado del disco está disponible con 162532667392 bytes libres.",
+                    UserMessagePolicy.Create(
+                        diskFacts,
+                        UserMessageEvent.Status)),
+                Is.EqualTo("internal_quantity"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "internal_quantity",
+                    diskFacts),
+                Does.StartWith("Listo, ").And.Contain("libres en disco"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "internal_quantity",
+                    diskFacts,
+                    "how much disk space is free"),
+                Does.StartWith("Ready, ").And.Contain("free on disk").And.Not.Contain("162532667392"));
+            string timeFacts = """{"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"localTime":"2026-08-29T00:00:00"}}""";
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "internal_quantity",
+                    timeFacts),
+                Does.StartWith("Listo, son las "));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "internal_quantity",
+                    timeFacts,
+                    "what time is it?"),
+                Does.StartWith("Ready, it's ").And.Contain("00:00"));
+            Assert.That(TurnVisibleFacts.UnderspecifiedUserTurn("a"), Is.True);
+            Assert.That(TurnVisibleFacts.UnderspecifiedUserTurn("hi"), Is.False);
+            Assert.That(TurnVisibleFacts.ConversationPrompt("a"), Is.EqualTo("¿Sí?"));
+            Assert.That(TurnVisibleFacts.ConversationPrompt("Hello?"), Is.EqualTo("Yes?"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse("wrong_language_greeting", "{}", "a"),
+                Is.EqualTo("¿Sí?"));
+            UserMessageDraft chat = UserMessagePolicy.Create(
+                "conversation",
+                UserMessageEvent.Status);
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason("Hello.", chat, "a"),
+                Is.EqualTo("wrong_language_greeting"));
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason("Hello.", chat, "Hello?"),
+                Is.Null);
+            Assert.That(
+                UserMessagePolicy.ModelResponseRejectionReason(
+                    "Artiro, artiro. Estimado, estimado.",
+                    chat,
+                    "Artiro, artiro. Estimado, estimado."),
+                Is.EqualTo("echo_of_user"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    "Listo, el estado del disco está disponible con 162532667392 bytes libres."),
+                Is.Not.Contain("162532667392"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"media.status","polarity":"success","verified":true,"succeeded":true,"observed":{"title":"RED READY","playbackStatus":"playing"}}"""),
+                Is.EqualTo("Listo, está sonando RED READY."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"status","cause":"memory_records","shown":1,"total":1,"records":[{"label":"bebida","value":"cafe"}]}"""),
+                Is.EqualTo("cafe"));
+            string maximizeFacts = new JsonObject
+            {
+                ["kind"] = "operation",
+                ["steps"] = new JsonArray(
+                    new JsonObject
+                    {
+                        ["kind"] = "operation",
+                        ["operation"] = "window.active",
+                        ["polarity"] = "success",
+                        ["verified"] = true,
+                        ["succeeded"] = true,
+                        ["observed"] = new JsonObject { ["displayName"] = "Notepad" },
+                    }.ToJsonString(),
+                    new JsonObject
+                    {
+                        ["kind"] = "operation",
+                        ["operation"] = "window.maximize",
+                        ["polarity"] = "success",
+                        ["verified"] = true,
+                        ["succeeded"] = true,
+                    }.ToJsonString()),
+            }.ToJsonString();
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    maximizeFacts),
+                Is.EqualTo("Listo, maximicé la ventana."));
+            string recovery = TurnVisibleFacts.Confirmation(
+                "memory_recovery_pending",
+                TurnVisibleFacts.ContinueRetry);
+            Assert.That(
+                TurnVisibleFacts.LastResortProse("no_response", recovery),
+                Does.Contain("continuar").IgnoreCase);
+            Assert.That(
+                TurnVisibleFacts.LastResortProse("no_response", recovery),
+                Does.Not.Contain("no responde"));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "no_response",
+                    TurnVisibleFacts.Confirmation(
+                        "memory_confirm_or_cancel",
+                        TurnVisibleFacts.ConfirmCancel)),
+                Is.EqualTo("¿Confirmas o cancelas?"));
         });
     }
 

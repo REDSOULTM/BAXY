@@ -81,21 +81,50 @@ public sealed class WindowsApplicationOpenVerifier : IApplicationOpenVerifier
                 // identity bound by the receipt. Observe() independently proves
                 // that the current main HWND belongs to that same process, so bind
                 // the converged HWND instead of requiring a transient handle.
-                if (observation.WindowHandle != 0
-                    && observation.WindowVisible
-                    && observation.Foreground)
+                if (observation.WindowHandle != 0 && observation.WindowVisible)
                 {
-                    return new ApplicationVerificationResult(
-                        Verified: true,
-                        processId,
-                        observation.WindowHandle.ToInt64(),
-                        ErrorCode: null);
-                }
+                    if (observation.Foreground)
+                    {
+                        return new ApplicationVerificationResult(
+                            Verified: true,
+                            processId,
+                            observation.WindowHandle.ToInt64(),
+                            ErrorCode: null);
+                    }
 
-                if (observation.WindowHandle != 0
-                    && observation.WindowVisible)
-                {
                     reopened.RequestForeground(observation.WindowHandle);
+                    ApplicationProcessObservation afterFocus = reopened.Observe();
+                    if (afterFocus.CreationTimeUtcTicks == creationTimeUtcTicks
+                        && NotepadIdentityPolicy.IsAllowed(afterFocus, target)
+                        && NotepadIdentityPolicy.MatchesReceipt(afterFocus, receipt)
+                        && afterFocus.WindowHandle != 0
+                        && afterFocus.WindowVisible)
+                    {
+                        if (afterFocus.Foreground)
+                        {
+                            return new ApplicationVerificationResult(
+                                Verified: true,
+                                processId,
+                                afterFocus.WindowHandle.ToInt64(),
+                                ErrorCode: null);
+                        }
+
+                        await _platform.DelayAsync(VerificationDelay, cancellationToken)
+                            .ConfigureAwait(false);
+                        ApplicationProcessObservation afterDelay = reopened.Observe();
+                        if (afterDelay.CreationTimeUtcTicks == creationTimeUtcTicks
+                            && NotepadIdentityPolicy.IsAllowed(afterDelay, target)
+                            && NotepadIdentityPolicy.MatchesReceipt(afterDelay, receipt)
+                            && afterDelay.WindowHandle != 0
+                            && afterDelay.WindowVisible)
+                        {
+                            return new ApplicationVerificationResult(
+                                Verified: true,
+                                processId,
+                                afterDelay.WindowHandle.ToInt64(),
+                                ErrorCode: null);
+                        }
+                    }
                 }
             }
             catch (ApplicationProcessExitedException)

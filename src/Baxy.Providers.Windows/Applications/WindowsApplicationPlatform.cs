@@ -390,14 +390,27 @@ internal sealed class WindowsApplicationProcess : IWindowsApplicationProcess
             using Process process = Process.GetProcessById(_processId);
             process.Refresh();
             nint windowHandle = process.MainWindowHandle;
-            if (windowHandle == 0)
+            if (windowHandle != 0 && NativeMethods.IsWindowVisible(windowHandle))
             {
-                EnsureOriginalProcessRunning();
-                return 0;
+                EnsureWindowOwnedByOriginalProcess(windowHandle);
+                return windowHandle;
             }
 
-            EnsureWindowOwnedByOriginalProcess(windowHandle);
-            return windowHandle;
+            // Store / WinUI Notepad often has MainWindowHandle == 0 while a
+            // visible top-level HWND still belongs to the same PID. Installed
+            // app.open already enumerates owned windows; notepad must too.
+            nint ownedVisible = LargestOwnedVisibleWindow();
+            if (ownedVisible != 0)
+            {
+                EnsureWindowOwnedByOriginalProcess(ownedVisible);
+                return ownedVisible;
+            }
+
+            // WinUI Notepad's visible chrome lives on ApplicationFrameHost
+            // (same pattern as Calculator). Bind that titled HWND.
+            nint chrome = FindNotepadChromeWindow();
+            EnsureOriginalProcessRunning();
+            return chrome;
         }
         catch (ArgumentException)
         {
@@ -414,6 +427,101 @@ internal sealed class WindowsApplicationProcess : IWindowsApplicationProcess
         }
     }
 
+    private nint LargestOwnedVisibleWindow()
+    {
+        EnsureOriginalProcessRunning();
+        var windows = new List<NotepadIdentityPolicy.ObservedTopLevelWindow>();
+        NativeMethods.EnumWindowsProc callback = (window, _) =>
+        {
+            uint threadId = NativeMethods.GetWindowThreadProcessId(window, out uint owner);
+            if (threadId == 0)
+            {
+                return true;
+            }
+            bool visible = NativeMethods.IsWindow(window)
+                && NativeMethods.IsWindowVisible(window);
+            int width = 0;
+            int height = 0;
+            if (NativeMethods.GetWindowRect(window, out NativeMethods.Rect rect))
+            {
+                width = Math.Max(0, rect.Right - rect.Left);
+                height = Math.Max(0, rect.Bottom - rect.Top);
+            }
+
+            windows.Add(new NotepadIdentityPolicy.ObservedTopLevelWindow(
+                window,
+                owner,
+                visible,
+                width,
+                height));
+            return true;
+        };
+        _ = NativeMethods.EnumWindows(callback, 0);
+        EnsureOriginalProcessRunning();
+        return NotepadIdentityPolicy.LargestVisibleOwnedWindow(_processId, windows);
+    }
+
+    private static string ReadWindowTitle(nint windowHandle)
+    {
+        int length = NativeMethods.GetWindowTextLength(windowHandle);
+        if (length <= 0)
+        {
+            return string.Empty;
+        }
+
+        nint buffer = Marshal.AllocHGlobal(checked((length + 1) * sizeof(char)));
+        try
+        {
+            int written = NativeMethods.GetWindowText(windowHandle, buffer, length + 1);
+            return written > 0
+                ? Marshal.PtrToStringUni(buffer, written) ?? string.Empty
+                : string.Empty;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    private nint FindNotepadChromeWindow()
+    {
+        EnsureOriginalProcessRunning();
+        nint best = 0;
+        long bestArea = 0;
+        NativeMethods.EnumWindowsProc callback = (window, _) =>
+        {
+            if (!NativeMethods.IsWindow(window) || !NativeMethods.IsWindowVisible(window))
+            {
+                return true;
+            }
+
+            if (!NotepadIdentityPolicy.IsNotepadWindowTitle(ReadWindowTitle(window)))
+            {
+                return true;
+            }
+
+            int width = 0;
+            int height = 0;
+            if (NativeMethods.GetWindowRect(window, out NativeMethods.Rect rect))
+            {
+                width = Math.Max(0, rect.Right - rect.Left);
+                height = Math.Max(0, rect.Bottom - rect.Top);
+            }
+
+            long area = (long)width * height;
+            if (area > bestArea)
+            {
+                bestArea = area;
+                best = window;
+            }
+
+            return true;
+        };
+        _ = NativeMethods.EnumWindows(callback, 0);
+        EnsureOriginalProcessRunning();
+        return best;
+    }
+
     private void EnsureWindowOwnedByOriginalProcess(nint windowHandle)
     {
         EnsureOriginalProcessRunning();
@@ -422,8 +530,21 @@ internal sealed class WindowsApplicationProcess : IWindowsApplicationProcess
             throw new ApplicationInventoryException("The process window is invalid.");
         }
 
-        _ = NativeMethods.GetWindowThreadProcessId(windowHandle, out uint ownerProcessId);
-        if (ownerProcessId != unchecked((uint)_processId))
+        uint threadId = NativeMethods.GetWindowThreadProcessId(windowHandle, out uint ownerProcessId);
+        if (threadId == 0)
+        {
+            throw new ApplicationInventoryException("The process window is invalid.");
+        }
+
+        if (ownerProcessId == unchecked((uint)_processId))
+        {
+            EnsureOriginalProcessRunning();
+            return;
+        }
+
+        // ApplicationFrameHost hosts the visible WinUI Notepad chrome.
+        if (!NativeMethods.IsWindowVisible(windowHandle)
+            || !NotepadIdentityPolicy.IsNotepadWindowTitle(ReadWindowTitle(windowHandle)))
         {
             throw new ApplicationInventoryException(
                 "The process window belongs to a different process.");
@@ -591,4 +712,33 @@ internal static class NativeMethods
     internal static extern uint GetWindowThreadProcessId(
         nint windowHandle,
         out uint processId);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct Rect
+    {
+        internal int Left;
+        internal int Top;
+        internal int Right;
+        internal int Bottom;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    internal delegate bool EnumWindowsProc(nint windowHandle, nint lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetWindowRect(nint windowHandle, out Rect rect);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetWindowTextW")]
+    internal static extern int GetWindowText(
+        nint windowHandle,
+        nint text,
+        int maxCount);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetWindowTextLengthW")]
+    internal static extern int GetWindowTextLength(nint windowHandle);
 }

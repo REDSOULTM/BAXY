@@ -1,13 +1,13 @@
-# BAXY en once goals
+# BAXY en doce goals
 
-Once goals. Cada uno se lanza en una sesión nueva, se pega entero, y **se deja
+Doce goals. Cada uno se lanza en una sesión nueva, se pega entero, y **se deja
 correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
 
 ## Con qué modelo se lanza cada uno
 
 | Goals | Modelo | Dónde |
 |---|---|---|
-| **01–11** | **Grok 4.6**, esfuerzo `high` | Esta carpeta. Son los que están en uso. |
+| **01–12** | **Grok 4.6**, esfuerzo `high` | Esta carpeta. Son los que están en uso. |
 | **03C** | **Grok 4.6** | Esta carpeta. Cierra el alcance y los restos antes del 04. |
 | 03B (cerrado) | Se abrió con GPT-5.6 Sol y se cerró con Grok 4.6 | Esta carpeta. El 90 % se midió; el alcance no. |
 | 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/). Archivo, no se lanzan. |
@@ -44,7 +44,7 @@ heredada, mismos criterios de cierre. Lo que cambia es el bloque «Cómo trabaja
 aquí» de cada goal. Detalle de las versiones anteriores en
 [`sol/00_LEEME.md`](sol/00_LEEME.md).
 
-## Los once
+## Los doce
 
 | # | Goal | Cumplido cuando |
 |---|---|---|
@@ -59,8 +59,9 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | **La validación integral del producto** | Toda la identidad y cada uno de los 1.947 mensajes reales pasan con evaluación individual; la latencia se acerca al suelo del modelo |
-| 11 | **El cierre** | La evidencia del Goal 10 queda íntegra, coherente, documentada y publicada |
+| 10 | **La validación integral del producto** | Identidad + 1.947 veredictos individuales; el recuento de fail omite ambiente y idiomas que no sean es/en |
+| 11 | **El ambiente listo** | Las filas ambientales del 10 se reejecutan en un PC con WhatsApp, Firefox, visión, Wi‑Fi, click y streaming listos |
+| 12 | **El cierre** | La evidencia de los Goals 10 y 11 queda íntegra, coherente, documentada y publicada |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
 anteriores en esta máquina con piezas que ya funcionan. El 09 va casi al final por
@@ -70,8 +71,10 @@ hereda.
 **El 10 es la única validación integral.** Reúne el uso real, el corpus histórico,
 la identidad completa, los caminos de error, la deuda y la regresión sobre un mismo
 árbol final. Cada una de las 1.947 respuestas recibe un veredicto individual; ningún
-promedio u oráculo agregado puede ocultar una respuesta incorrecta. El 11 sólo cierra
-y publica esa evidencia: no lanza una segunda validación.
+promedio u oráculo agregado puede ocultar una respuesta incorrecta. El recuento de
+cierre del 10 omite (no convierte en pass) ambiente y idiomas que no sean español o
+inglés. El **11** reejecuta esas filas ambientales en un PC con el ambiente listo.
+El **12** cierra y publica la evidencia: no lanza una segunda validación.
 
 Ningún goal exige *soak*, 24 horas encendido ni otra espera prolongada. El uso
 continuado ocurre después de entregar el producto y no bloquea su cierre.

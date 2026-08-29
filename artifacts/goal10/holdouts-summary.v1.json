@@ -1,0 +1,20 @@
+{
+  "schema": "baxy.goal10-holdouts-summary.v1",
+  "generated_at_utc": "2026-08-29T05:03:04.468052+00:00",
+  "criterion_holdouts_green": false,
+  "public_holdout": {
+    "path": "tests/data/turn_evidence_public_holdout.v1.jsonl",
+    "exists": true,
+    "row_count": 9172,
+    "sha256": "e1ee1746a3cb110799997367490def6199e09fa3bc9f900b2d2dd99dc9c174be",
+    "live_gate": "scripts/run_turn_policy_gate.py",
+    "live_gate_run_this_turn": false,
+    "integrity_test": "tests/test_attest_turn_evidence_restoration_r234.py",
+    "note": "Public holdout is versioned and must not be used for calibration. Individual per-response live verdicts require the existing turn-policy gate, not run on this turn."
+  },
+  "fresh_holdouts": {
+    "note": "Goal 10 requires current public and fresh holdouts with per-response verdicts apart from 1947/808. No fresh observed-user holdout campaign was run on the r100 tree this turn.",
+    "live_gate_run_this_turn": false
+  },
+  "verdict": "incomplete"
+}

@@ -1,0 +1,27 @@
+{
+  "unique": 1947,
+  "empty": 0,
+  "sha256": "9202153113b522e1c37501342d000b12c375d0a46d2de210b34b20b5e05bc0e4",
+  "adjudication_sha256": "dc831b724c98012f85504f705d28ba5554629ce0de96266d42e71537a6b197d2",
+  "semantic_sha256": "f06b4bf4719641432ff3b93d3f99656875a88368297a47637503b7020e95898d",
+  "verdict_counts": {
+    "fail": 462,
+    "pass": 1485
+  },
+  "nivel2": {
+    "pass": 547,
+    "fail": 261
+  },
+  "canonical_2036": {
+    "pass": 11,
+    "fail": 32,
+    "unscored": 1993
+  },
+  "r111": true,
+  "campaign": "full 1947 including 1100-1200 behind fail-close after memory last-resort + calculator catalog identity",
+  "host_power": "denied; host stayed up",
+  "shard_no_responde": 2,
+  "shard_empty": 0,
+  "incomplete_shards": [],
+  "note": "r110 was 1484/463 and 548/260. r111 is 1485/462 and 547/261. Not 1947/0."
+}

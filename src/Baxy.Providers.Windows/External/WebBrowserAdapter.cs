@@ -914,6 +914,73 @@ internal sealed record CdpNavigationResult(
     string TargetId,
     string ErrorCode);
 
+internal static class CdpNavigationPostread
+{
+    internal static bool Satisfied(
+        Uri target,
+        string beforeUrl,
+        string beforeDocument,
+        string readyState,
+        string? final,
+        string document,
+        out Uri finalUri)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+        finalUri = null!;
+        if (!Uri.TryCreate(final, UriKind.Absolute, out Uri? parsed)
+            || parsed.Scheme is not ("http" or "https")
+            || readyState is not ("interactive" or "complete")
+            || string.Equals(parsed.AbsoluteUri, "about:blank", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        finalUri = parsed;
+        if (!string.Equals(parsed.AbsoluteUri, beforeUrl, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        // Idempotent "go to X" when the session is already on that destination
+        // (www / language-host redirects included). A no-op Page.navigate must
+        // not wait ten seconds and then claim the URL was never reached.
+        if (IsRequestedWebDestination(parsed, target))
+        {
+            return true;
+        }
+
+        return string.Equals(target.AbsoluteUri, beforeUrl, StringComparison.Ordinal)
+            && !string.Equals(document, beforeDocument, StringComparison.Ordinal);
+    }
+
+    internal static bool IsRequestedWebDestination(Uri finalUri, Uri target)
+    {
+        ArgumentNullException.ThrowIfNull(finalUri);
+        ArgumentNullException.ThrowIfNull(target);
+        string finalHost = CanonicalWebHost(finalUri.Host);
+        string targetHost = CanonicalWebHost(target.Host);
+        if (string.IsNullOrEmpty(finalHost) || string.IsNullOrEmpty(targetHost))
+        {
+            return false;
+        }
+
+        if (string.Equals(finalHost, targetHost, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return finalHost.EndsWith("." + targetHost, StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal static string CanonicalWebHost(string host)
+    {
+        host = host.Trim().TrimEnd('.');
+        return host.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
+            ? host[4..]
+            : host;
+    }
+}
+
 internal sealed record CdpBrowserControlResult(
     bool Verified,
     bool EffectObserved,
@@ -1038,20 +1105,14 @@ internal class CdpBrowserSession : IDisposable
             string readyState = fields.Length == 3 ? fields[0] : string.Empty;
             string? final = fields.Length == 3 ? fields[1] : null;
             string document = fields.Length == 3 ? fields[2] : string.Empty;
-            if (Uri.TryCreate(final, UriKind.Absolute, out Uri? finalUri)
-                && finalUri.Scheme is "http" or "https"
-                && readyState is "interactive" or "complete"
-                && !string.Equals(finalUri.AbsoluteUri, "about:blank", StringComparison.Ordinal)
-                && (!string.Equals(finalUri.AbsoluteUri, beforeUrl, StringComparison.Ordinal)
-                    || (
-                        string.Equals(
-                            target.AbsoluteUri,
-                            beforeUrl,
-                            StringComparison.Ordinal)
-                        && !string.Equals(
-                            document,
-                            beforeDocument,
-                            StringComparison.Ordinal))))
+            if (CdpNavigationPostread.Satisfied(
+                    target,
+                    beforeUrl,
+                    beforeDocument,
+                    readyState,
+                    final,
+                    document,
+                    out Uri? finalUri))
             {
                 return new(true, true, target.AbsoluteUri, finalUri.AbsoluteUri, targetId, string.Empty);
             }

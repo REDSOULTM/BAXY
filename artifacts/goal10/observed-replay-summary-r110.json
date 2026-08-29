@@ -1,0 +1,26 @@
+{
+  "unique": 1947,
+  "empty": 0,
+  "sha256": "18617a43bab3d542e1863954f3e0b8e5e9cccace3358d8b4b025ef839200e551",
+  "adjudication_sha256": "4dbab9d14b383849dc87f3a45cf21cf340cddb3ae540a22f00680cb51d23d8ba",
+  "semantic_sha256": "104fb9e615b23642614509d7b99e5ff09fd4ef3ec3126d8783686c3fb569b943",
+  "verdict_counts": {
+    "fail": 463,
+    "pass": 1484
+  },
+  "nivel2": {
+    "pass": 548,
+    "fail": 260
+  },
+  "canonical_2036": {
+    "pass": 11,
+    "fail": 32,
+    "unscored": 1993
+  },
+  "r110": true,
+  "campaign": "full 1947 including 1100-1200 behind fail-close",
+  "host_power": "denied; host stayed up",
+  "shard_no_responde": 1,
+  "shard_empty": 0,
+  "incomplete_shards": []
+}

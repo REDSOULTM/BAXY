@@ -1,0 +1,27 @@
+{
+  "unique": 1947,
+  "empty": 0,
+  "sha256": "cc167ff984c870e313b1e0fb809ae17b5981748dcc755d7911ba7823772054dd",
+  "adjudication_sha256": "8222c1a08c3b47329a07cc2c3f6065747ac2ad975189a575bc7fef65f35bbe6b",
+  "semantic_sha256": "e62dbfd630aabea16da0182133b818fd650681c7764e8a55ed1cef576a9e55e8",
+  "verdict_counts": {
+    "fail": 452,
+    "pass": 1495
+  },
+  "nivel2": {
+    "pass": 548,
+    "fail": 260
+  },
+  "canonical_2036": {
+    "pass": 11,
+    "fail": 32,
+    "unscored": 1993
+  },
+  "r112": true,
+  "calculator_app_open_fails": 0,
+  "host_power": "denied; 1100-1200 completed; host stayed up",
+  "shard_no_responde": 1,
+  "shard_empty": 0,
+  "incomplete_shards": [],
+  "note": "r111 was 1485/462. r112 is 1495/452. Calculator app.open fails went 8 to 0. Not 1947/0."
+}

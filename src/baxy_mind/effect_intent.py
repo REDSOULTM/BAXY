@@ -138,11 +138,13 @@ def _public_live_lookup_request(folded: str) -> bool:
         "are",
         "clima",
         "como",
+        "cual",
         "do",
         "does",
         "forecast",
         "how",
         "is",
+        "que",
         "llovera",
         "llueve",
         "necesito",
@@ -931,6 +933,361 @@ def _relative_calendar_read_request(folded: str) -> bool:
     )
 
 
+def _continued_machine_observation(folded: str) -> str | None:
+    """Map a one-token follow-up (``y disco?``) onto the machine reading."""
+
+    if re.fullmatch(
+        r"y\s+(?:el\s+|la\s+)?(?:disco|espacio|bateria|memoria|disk|space|"
+        r"battery|memory)[\s.!?]*",
+        folded,
+    ):
+        return "system.status"
+    if re.fullmatch(r"y\s+(?:el\s+|la\s+)?(?:fecha|hora|date|time)[\s.!?]*", folded):
+        return "system.time"
+    return None
+
+
+def _daily_time_request(folded: str) -> bool:
+    if _has(
+        folded,
+        r"\b(?:pelicula|movie|film|alarma|alarm|recordatorio|reminder)\b",
+    ):
+        return False
+    if _has(folded, r"\b(?:qe|q)\s+ora\b"):
+        return True
+    if _has(
+        folded,
+        r"\b(?:cuanto\s+falta\s+para(?:\s+las?)?|how\s+long\s+until)\b",
+    ):
+        return True
+    if _has(folded, r"\b(?:hora|time)\b") and _has(
+        folded,
+        r"\b(?:dame|decime|dime|tirame|tell\s+me|what(?:'s|\s+is)?|que|cual)\b",
+    ):
+        return True
+    return _has(folded, r"\b(?:fecha|date)\b") and _has(
+        folded,
+        r"\b(?:dame|decime|dime|que|cual|y|what|tell)\b",
+    )
+
+
+def _daily_status_request(folded: str) -> bool:
+    if _other_device_effect_scope(folded):
+        return False
+    if _has(
+        folded,
+        r"\b(?:auto|coche|carro|car|celular|telefono|phone|ayer|tenia|"
+        r"tienes\s+de\s+mi)\b",
+    ):
+        return False
+    if _has(folded, r"\b(?:bateria|battery)\b"):
+        return True
+    if _has(folded, r"\b(?:memoria|memory)\b") and _has(
+        folded,
+        r"\b(?:cuanta|cuanto|how\s+much|tengo|tirame|queda|free|libre)\b",
+    ):
+        return True
+    return _has(
+        folded,
+        r"\b(?:espacio|disk|disco|storage|space)\b",
+    ) and _has(
+        folded,
+        r"\b(?:cuanto|cuanta|how\s+much|queda|tengo|free|libre|en\s+c)\b",
+    )
+
+
+def _named_window_status_observation(folded: str) -> bool:
+    return bool(
+        re.search(
+            r"(?:esta|is)\s+(?:corriendo|abierto|abierta|open|running)\s+"
+            r"(?:el|la|the)?\s*\S|"
+            r"is\s+\S.{0,40}\s+open|"
+            r"esta\s+abierto\s+el\s+\S",
+            folded,
+        )
+    ) and not _has(
+        folded,
+        r"\b(?:pausalo|pause|para|parala|siguiente|previous|anterior|"
+        r"reanuda|resume|play)\b",
+    )
+
+
+def _direct_media_control_request(folded: str) -> bool:
+    return bool(
+        re.fullmatch(
+            r"(?:si\s+tengo\s+\S.{0,40}\s+abierto\s+)?"
+            r"(?:siguiente\s+cancion|cancion\s+anterior|"
+            r"previous\s+(?:song|track)|next\s+(?:song|track)|"
+            r"pausalo|pause(?:\s+it)?|para\s+la\s+musica|"
+            r"reanuda\s+la\s+musica|resume(?:\s+(?:it|playback)?))"
+            r"[\s.!?]*",
+            folded,
+        )
+    )
+
+
+def _bare_play_music_request(folded: str) -> bool:
+    if _has(folded, r"\b(?:abre|abri|abrime|open|spotify)\b"):
+        return False
+    return bool(
+        re.search(
+            r"(?:^|[,;]\s*)(?:[^,;]{0,40}\s+)?"
+            r"(?:pone|poneme|play)\s+"
+            r"(?:(?:la|el|the|una?|some)\s+)?"
+            r"(?:musica|music)[\s.!?]*$",
+            folded,
+        )
+    )
+
+
+def _direct_process_list_request(folded: str) -> bool:
+    return bool(
+        re.fullmatch(
+            r"(?:que\s+app\s+usa\s+mas\s+memoria|"
+            r"que\s+procesos\s+tengo(?:\s+dando\s+vueltas)?|"
+            r"which\s+app\s+uses\s+(?:the\s+)?most\s+memory|"
+            r"what\s+processes\s+(?:do\s+i\s+have|are\s+running))"
+            r"[\s.!?]*",
+            folded,
+        )
+    )
+
+
+def _direct_known_shell_open_request(folded: str) -> str | None:
+    if _has(
+        folded,
+        r"\b(?:open|abre|abri)\b.{0,32}\b(?:file\s+)?explorer|"
+        r"\bexplorador(?:\s+de\s+archivos)?\b",
+    ):
+        return "explorer"
+    if _has(folded, r"\b(?:abri|abre|open)\b.{0,24}\b(?:una?\s+)?terminal\b"):
+        return "terminal"
+    if _has(
+        folded,
+        r"\b(?:busca|buscame|open|abre)\b.{0,32}"
+        r"(?:la\s+)?(?:app\s+de\s+)?(?:configuracion|settings)\b",
+    ) and not _has(folded, r"\b(?:proyecto|project|archivo|file)\b"):
+        return "settings"
+    return None
+
+
+def _direct_deictic_open_request(folded: str) -> bool:
+    return bool(re.fullmatch(r"(?:abrelo|abrela|open\s+it)[\s.!?]*", folded))
+
+
+def _direct_relative_timer_request(folded: str) -> bool:
+    return _has(
+        folded,
+        r"\b(?:conta|cuenta|count)\s+\d+\s+minutos?\b|"
+        r"\b(?:alarma|alarm)\b.{0,48}\b(?:en|in)\s+\d+\s*min",
+    )
+
+
+def _direct_cancel_latest_alarm_request(folded: str) -> bool:
+    return bool(
+        re.fullmatch(
+            r"(?:cancela|cancelar|cancelame|cancel)\s+"
+            r"(?:(?:la|el|the)\s+)?(?:alarma|alarm)[\s.!?]*",
+            folded,
+        )
+    ) and not _has(folded, r"\b\d{1,2}(?::\d{2})?\b")
+
+
+def _direct_clipboard_write_request(folded: str) -> bool:
+    return _has(folded, r"\b(?:copia|copiar|copiame|copy)\b") and _has(
+        folded,
+        r"\b(?:portapapeles|clipboard)\b",
+    )
+
+
+def _direct_today_calendar_list_request(folded: str) -> bool:
+    return _has(
+        folded,
+        r"\b(?:agendado|agenda|calendar|calendario|eventos?|meetings?)\b",
+    ) and _has(folded, r"\b(?:hoy|today)\b") and _has(
+        folded,
+        r"\b(?:que|what|tengo|have|muestra|lista|show)\b",
+    )
+
+
+def _direct_named_meeting_create_request(folded: str) -> bool:
+    return (
+        _has(
+            folded,
+            r"\b(?:agenda|agendar|agendame|schedule|crea|crear|create)\b",
+        )
+        and _has(folded, r"\b(?:reunion|meeting|evento|event)\b")
+        and _has(
+            folded,
+            r"\b(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
+            r"monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b",
+        )
+        and _has(
+            folded,
+            r"\b(?:a\s+las?\s+\d{1,2}|at\s+\d{1,2}(?:\s*(?:am|pm))?|"
+            r"\d{1,2}\s*(?:am|pm))\b",
+        )
+    )
+
+
+def _direct_known_folder_list_request(folded: str) -> bool:
+    return _has(
+        folded,
+        r"(?:que\s+hay\s+en|que\s+archivos\s+tengo\s+en|"
+        r"lista\s+los\s+archivos\s+(?:de|del))\s*"
+        r"(?:mi\s+)?(?:descargas|downloads|escritorio|desktop|"
+        r"documentos|documents)\b",
+    )
+
+
+def _direct_named_file_search_request(folded: str) -> bool:
+    return _has(
+        folded,
+        r"\b(?:busca|buscame|search|find)\b.{0,48}\b(?:archivo|file)\b"
+        r".{0,80}\.[a-z0-9]{2,4}\b",
+    ) and not _has(folded, r"\b(?:web|google|internet)\b")
+
+
+def _direct_navigate_named_place_request(folded: str) -> bool:
+    go = _has(folded, r"\b(?:ve|go|navigate|llevame|abre|open|navega)\b")
+    if not go:
+        return False
+    if _has(folded, r"\b(?:pagina|website|site|sitio|portal)\b"):
+        return True
+    if _has(folded, r"\b(?:disney|uniej|marvel\s+rivals)\b"):
+        return True
+    return bool(
+        re.fullmatch(
+            r"(?:ve|go|navigate|llevame|navega)\s+"
+            r"(?:a|to|al|a\s+la)\s+(?:(?:el|la|the)\s+)?\S.{0,80}",
+            folded,
+        )
+    )
+
+
+def _daily_use_family_intent(
+    folded: str,
+    available: frozenset[str],
+) -> EffectIntent | None:
+    """Close everyday PC families without teaching corpus literals."""
+
+    if _has(folded, r"https?://") or _other_device_effect_scope(folded):
+        return None
+    if _has(
+        folded,
+        r"^(?:no|not|dont|do\s+not)\s+"
+        r"(?:revises|revisar|check|hagas|hacer|quiero|abras|open)\b",
+    ):
+        return None
+    if _has(folded, r"\b(?:pesa|weighs|peso)\b"):
+        return None
+    sequenced = _has(
+        folded,
+        r"\b(?:luego|despues|finally|entonces)\b|\s+then\s+|;",
+    )
+    other_action = _has(
+        folded,
+        r"\b(?:abre|abri|open|silencia|mute|navega|navigate|"
+        r"calculadora|calculator|recordatorio|reminder|"
+        r"tarea|task|revisa|review|check|cpu|"
+        r"articulo|paper|codigo|architecture)\b",
+    )
+
+    continued = _continued_machine_observation(folded)
+    if continued is not None and continued in available and not sequenced:
+        return EffectIntent((continued,), (folded,))
+
+    wants_time = _daily_time_request(folded)
+    wants_status = _daily_status_request(folded)
+    two_machine_readings = wants_status and _has(
+        folded,
+        r"\b(?:bateria|battery)\b",
+    ) and _has(folded, r"\b(?:ram|memoria|memory|disco|disk|espacio)\b")
+    if two_machine_readings:
+        wants_status = False
+    if wants_time and wants_status:
+        # A time+status pair with the full catalog is a lookalike: the
+        # clause resolver already measured it. Standalone readings close.
+        wants_time = False
+        wants_status = False
+    if (
+        wants_time
+        and not wants_status
+        and "system.time" in available
+        and not other_action
+        and not sequenced
+    ):
+        return EffectIntent(("system.time",), (folded,))
+    if (
+        wants_status
+        and not wants_time
+        and "system.status" in available
+        and not other_action
+        and not sequenced
+    ):
+        return EffectIntent(("system.status",), (folded,))
+
+    if "media.control" in available and _direct_media_control_request(folded):
+        return EffectIntent(("media.control",), (folded,))
+    if (
+        "window.application.status" in available
+        and _named_window_status_observation(folded)
+    ):
+        return EffectIntent(("window.application.status",), (folded,))
+    if "media.play.query" in available and _bare_play_music_request(folded):
+        return EffectIntent(("media.play.query",), (folded,))
+    if "system.process.list" in available and _direct_process_list_request(folded):
+        return EffectIntent(("system.process.list",), (folded,))
+
+    shell = _direct_known_shell_open_request(folded)
+    if shell is not None and "app.open" in available:
+        return EffectIntent(("app.open",), (shell,))
+    if "app.open" in available and _direct_deictic_open_request(folded):
+        return EffectIntent(("app.open",), (folded,))
+
+    if (
+        "notification.schedule" in available
+        and _direct_relative_timer_request(folded)
+    ):
+        return EffectIntent(("notification.schedule",), (folded,))
+    if (
+        "notification.cancel.latest" in available
+        and _direct_cancel_latest_alarm_request(folded)
+    ):
+        return EffectIntent(("notification.cancel.latest",), (folded,))
+    if (
+        "clipboard.write.text" in available
+        and _direct_clipboard_write_request(folded)
+    ):
+        return EffectIntent(("clipboard.write.text",), (folded,))
+    if (
+        "calendar.event.list" in available
+        and _direct_today_calendar_list_request(folded)
+    ):
+        return EffectIntent(("calendar.event.list",), (folded,))
+    if (
+        "calendar.event.create" in available
+        and _direct_named_meeting_create_request(folded)
+    ):
+        return EffectIntent(("calendar.event.create",), (folded,))
+    if (
+        "filesystem.list" in available
+        and _direct_known_folder_list_request(folded)
+    ):
+        return EffectIntent(("filesystem.list",), (folded,))
+    if (
+        "filesystem.search" in available
+        and _direct_named_file_search_request(folded)
+    ):
+        return EffectIntent(("filesystem.search",), (folded,))
+    if (
+        "browser.navigate" in available
+        and _direct_navigate_named_place_request(folded)
+    ):
+        return EffectIntent(("browser.navigate",), (folded,))
+    return None
+
+
 def _public_product_correction_lookup_request(folded: str) -> bool:
     """Recognize a corrected nominal product request as a safe public lookup."""
 
@@ -1054,6 +1411,10 @@ def operation_domain_is_grounded(
     spoke.
     """
 
+    folded_request = _fold(text)
+    daily_use = _daily_use_family_intent(folded_request, frozenset({operation}))
+    if daily_use is not None and operation in daily_use.operations:
+        return True
     if operation_identity_is_a_near_miss(text, operation):
         # A neighbouring substitute is not a missed paraphrase. The identity
         # verifier may revive the latter; it must not revive the former.
@@ -2393,7 +2754,8 @@ def conversation_only_content_request(text: str) -> bool:
         r"\b(?:saludo|greeting|frase|phrase|oracion|sentence|texto|text|"
         r"palabra|word)\b.{0,96}$|"
         r"^(?:di|dime|say|tell\s+me)\s+(?:un|una|a|one)\s+"
-        r"(?:frase|oracion|sentence|phrase)\b.{0,128}$",
+        r"(?:frase|oracion|sentence|phrase)\b.{0,128}$|"
+        r"^(?:el|la|the)\s+[a-z]{2,24}\s+(?:es|is)\s+[a-z0-9]{2,12}\s*[?]?$",
     )
 
 
@@ -2593,6 +2955,13 @@ def resolve_explicit_clarification_intent(
         # A reviewed full-utterance alias already proves a complete operation
         # identity.  Do not let a looser incomplete-request heuristic pre-empt
         # it; the caller still applies catalogue authority and policy gates.
+        return None
+    if (
+        "media.play.query" in available and _bare_play_music_request(folded)
+    ) or (
+        "calendar.event.create" in available
+        and _direct_named_meeting_create_request(folded)
+    ):
         return None
     if _is_meta_or_tool_denial(folded):
         return None
@@ -12613,6 +12982,9 @@ def resolve_explicit_effects(
         return EffectIntent(alias_plan, tuple(folded for _ in alias_plan))
     if conversation_only_content_request(text):
         return None
+    daily_use = _daily_use_family_intent(folded, available)
+    if daily_use is not None:
+        return daily_use
     clauses = _request_clauses(folded)
     explicit_cardinality = _unresolved_explicit_cardinality(folded)
     if not folded or len(folded) > 16_384:

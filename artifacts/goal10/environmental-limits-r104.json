@@ -1,0 +1,33 @@
+{
+  "schema": "baxy.goal10-environmental-limits.v1",
+  "merge_sha256": "b460ad82b9421269d31d6ac176930172ef31d9de974e9a542fcb9849c57b9037",
+  "adjudication_sha256": "5b8bc9bc4c699ae3ad121a77de68397476e74e03d2e7ca8d17200edf33e69a23",
+  "pass": 1440,
+  "fail": 507,
+  "not_converted_to_success": [
+    {
+      "family": "input.visible.click",
+      "count": 41,
+      "limit": "Visible control missing or disabled on this desktop. Honest fail."
+    },
+    {
+      "family": "message.send",
+      "count": 33,
+      "limit": "WhatsApp/Discord client not running. Honest fail."
+    },
+    {
+      "family": "streaming.play.named",
+      "count": 22,
+      "limit": "Netflix title not confirmed on this session. Honest fail."
+    },
+    {
+      "family": "system.power",
+      "count": 2,
+      "message_ids": [
+        "msg_91e9247cb7f365871f12",
+        "msg_ed8e5ebffa54520906e1"
+      ],
+      "limit": "Host power transition is fail-closed for this Goal 10 testhost campaign (power_transition_physical_gate_required). Identidad catalog identity is proven with a stubbed platform, not by rebooting this PC. Honest fail of the campaign, not a product pass."
+    }
+  ]
+}

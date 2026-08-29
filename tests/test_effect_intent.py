@@ -5481,9 +5481,11 @@ def test_calendar_event_without_duration_remains_a_calendar_clarification() -> N
         {"calendar.event.create", "reminder.create"},
     )
 
-    assert clarification is not None
-    assert clarification.operations == ("calendar.event.create",)
-    assert clarification.missing_fields == ("end_time_or_duration",)
+    # Identity: a named start is enough; duration is not a destroy-data confirm.
+    assert clarification is None
+    result = resolve_explicit_effects(text, {"calendar.event.create"})
+    assert result is not None
+    assert result.operations == ("calendar.event.create",)
 
 
 def test_telegraphic_calendar_invite_requests_missing_event_details() -> None:
@@ -6770,3 +6772,270 @@ def test_punctuated_rejection_exposes_only_the_replacement_request() -> None:
         )
         is None
     )
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("cuanto espacio queda en c", ("system.status",)),
+        ("cuanta bateria le queda a la notebook", ("system.status",)),
+        ("how much disk space is free", ("system.status",)),
+        ("tirame cuanta memoria tengo", ("system.status",)),
+        ("cuanto espacio tengo", ("system.status",)),
+        ("Y espacio? cuanto espacio tengo", ("system.status",)),
+        ("y disco?", ("system.status",)),
+        ("y la fecha?", ("system.time",)),
+        ("dame la hora", ("system.time",)),
+        ("qe ora es", ("system.time",)),
+        ("cuánto falta para las 3 de la tarde", ("system.time",)),
+        ("how long until 3pm", ("system.time",)),
+    ],
+)
+def test_machine_time_and_status_questions_resolve_closed_catalog(
+    text: str,
+    expected: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(text, {"system.time", "system.status"})
+    assert result is not None
+    assert result.operations == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "available", "expected"),
+    [
+        (
+            "está corriendo spotify",
+            {"window.application.status"},
+            ("window.application.status",),
+        ),
+        (
+            "está abierto el chrome",
+            {"window.application.status"},
+            ("window.application.status",),
+        ),
+        (
+            "está abierto el explorador",
+            {"window.application.status"},
+            ("window.application.status",),
+        ),
+        (
+            "is Spotify open?",
+            {"window.application.status"},
+            ("window.application.status",),
+        ),
+        (
+            "si tengo spotify abierto pausalo",
+            {"media.control", "media.play.query"},
+            ("media.control",),
+        ),
+        (
+            "siguiente canción",
+            {"media.control", "media.play.query"},
+            ("media.control",),
+        ),
+        (
+            "canción anterior",
+            {"media.control", "media.play.query"},
+            ("media.control",),
+        ),
+        (
+            "pará la música",
+            {"media.control", "audio.mute"},
+            ("media.control",),
+        ),
+        (
+            "reanudá la música",
+            {"media.control", "media.play.query"},
+            ("media.control",),
+        ),
+        (
+            "poné música",
+            {"media.play.query", "media.control"},
+            ("media.play.query",),
+        ),
+        (
+            "tengo hambre poné música",
+            {"media.play.query", "media.control"},
+            ("media.play.query",),
+        ),
+        (
+            "no me molesta, poné música",
+            {"media.play.query", "media.control"},
+            ("media.play.query",),
+        ),
+        (
+            "qué app usa más memoria",
+            {"system.process.list", "system.status"},
+            ("system.process.list",),
+        ),
+        (
+            "qué procesos tengo dando vueltas",
+            {"system.process.list", "system.status"},
+            ("system.process.list",),
+        ),
+        (
+            "open the file explorer",
+            {"app.open", "filesystem.list"},
+            ("app.open",),
+        ),
+        (
+            "abrí una terminal",
+            {"app.open", "window.restore"},
+            ("app.open",),
+        ),
+        (
+            "buscá la app de configuración",
+            {"app.open"},
+            ("app.open",),
+        ),
+        (
+            "contá 10 minutos",
+            {"notification.schedule"},
+            ("notification.schedule",),
+        ),
+        (
+            "Ponme una alarma en 2min",
+            {"notification.schedule"},
+            ("notification.schedule",),
+        ),
+        (
+            "cancelá la alarma",
+            {"notification.cancel.latest", "notification.cancel.at"},
+            ("notification.cancel.latest",),
+        ),
+        (
+            "copiá esto al portapapeles: hola mundo",
+            {"clipboard.write.text", "clipboard.read.text"},
+            ("clipboard.write.text",),
+        ),
+        (
+            "qué tengo agendado para hoy",
+            {"calendar.event.list", "calendar.event.create"},
+            ("calendar.event.list",),
+        ),
+        (
+            "agendá una reunión el viernes a las 3",
+            {"calendar.event.create", "calendar.event.list"},
+            ("calendar.event.create",),
+        ),
+        (
+            "qué hay en Descargas",
+            {"filesystem.list", "filesystem.known.search"},
+            ("filesystem.list",),
+        ),
+        (
+            "qué archivos tengo en descargas",
+            {"filesystem.list", "filesystem.known.search"},
+            ("filesystem.list",),
+        ),
+        (
+            "listá los archivos de mi escritorio",
+            {"filesystem.list", "filesystem.known.search"},
+            ("filesystem.list",),
+        ),
+        (
+            "buscá el archivo informe.pdf",
+            {"filesystem.search", "web.search"},
+            ("filesystem.search",),
+        ),
+        (
+            "Abrelo",
+            {"app.open"},
+            ("app.open",),
+        ),
+        (
+            "open it",
+            {"app.open"},
+            ("app.open",),
+        ),
+        (
+            "ve a portal uniej",
+            {"browser.navigate", "web.search"},
+            ("browser.navigate",),
+        ),
+        (
+            "ve a disney",
+            {"browser.navigate", "web.search"},
+            ("browser.navigate",),
+        ),
+        (
+            "ve a la pagina de marvel rivals de steam",
+            {"browser.navigate", "web.search"},
+            ("browser.navigate",),
+        ),
+        (
+            "abre Portal UNIEJ",
+            {"browser.navigate", "app.open"},
+            ("browser.navigate",),
+        ),
+    ],
+)
+def test_in_scope_named_identities_resolve_closed_catalog(
+    text: str,
+    available: set[str],
+    expected: tuple[str, ...],
+) -> None:
+    result = resolve_explicit_effects(text, available)
+    assert result is not None
+    assert result.operations == expected
+
+
+def test_named_friday_meeting_does_not_ask_for_duration() -> None:
+    text = "agendá una reunión el viernes a las 3"
+    assert (
+        resolve_explicit_clarification_intent(text, {"calendar.event.create"})
+        is None
+    )
+    result = resolve_explicit_effects(text, {"calendar.event.create"})
+    assert result is not None
+    assert result.operations == ("calendar.event.create",)
+
+
+def test_world_fact_questions_stay_conversation_not_identity() -> None:
+    for text in ("El agua es h2o?", "El aire es h20?"):
+        assert conversation_only_content_request(text) is True
+        assert (
+            resolve_explicit_effects(
+                text,
+                {"system.identity", "web.search", "app.open"},
+            )
+            is None
+        )
+
+
+def test_bare_play_music_does_not_ask_for_a_title() -> None:
+    text = "poné música"
+    assert (
+        resolve_explicit_clarification_intent(text, {"media.play.query"})
+        is None
+    )
+    result = resolve_explicit_effects(text, {"media.play.query"})
+    assert result is not None
+    assert result.operations == ("media.play.query",)
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("está corriendo spotify", "window.application.status"),
+        ("siguiente canción", "media.control"),
+        ("poné música", "media.play.query"),
+        ("qué app usa más memoria", "system.process.list"),
+        ("open the file explorer", "app.open"),
+        ("contá 10 minutos", "notification.schedule"),
+        ("cancelá la alarma", "notification.cancel.latest"),
+        ("copiá esto al portapapeles: hola mundo", "clipboard.write.text"),
+        ("qué tengo agendado para hoy", "calendar.event.list"),
+        ("agendá una reunión el viernes a las 3", "calendar.event.create"),
+        ("qué hay en Descargas", "filesystem.list"),
+        ("buscá el archivo informe.pdf", "filesystem.search"),
+        ("Abrelo", "app.open"),
+        ("ve a disney", "browser.navigate"),
+        ("ve a portal uniej", "browser.navigate"),
+    ],
+)
+def test_in_scope_named_identities_are_domain_grounded(
+    text: str,
+    operation: str,
+) -> None:
+    assert operation_domain_is_grounded(text, operation) is not False

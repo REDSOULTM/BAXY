@@ -1,0 +1,59 @@
+{
+  "schema": "baxy.goal10-environmental-limits.v1",
+  "merge": "r110",
+  "merge_sha256": "18617a43bab3d542e1863954f3e0b8e5e9cccace3358d8b4b025ef839200e551",
+  "adjudication_sha256": "4dbab9d14b383849dc87f3a45cf21cf340cddb3ae540a22f00680cb51d23d8ba",
+  "semantic_sha256": "104fb9e615b23642614509d7b99e5ff09fd4ef3ec3126d8783686c3fb569b943",
+  "pass": 1484,
+  "fail": 463,
+  "nivel2": {
+    "pass": 548,
+    "fail": 260
+  },
+  "canonical_2036": {
+    "pass": 11,
+    "fail": 32,
+    "unscored": 1993
+  },
+  "not_converted_to_success": [
+    {
+      "family": "input.visible.click",
+      "count": 35,
+      "limit": "Visible control missing or disabled on this desktop (botón rojo / no encontrado). Honest fail."
+    },
+    {
+      "family": "message.send",
+      "count": 33,
+      "limit": "WhatsApp/Discord client not running, or recipient/group not in session. Honest fail."
+    },
+    {
+      "family": "streaming.play.named",
+      "count": 22,
+      "limit": "Netflix title not confirmed / authentication required on this session. Honest fail."
+    },
+    {
+      "family": "vision.describe",
+      "count": 19,
+      "limit": "BAXY_VISION_ENDPOINT is not configured. Honest degrade: no tengo visión configurada."
+    },
+    {
+      "family": "wifi.status",
+      "count": 16,
+      "limit": "External wifi verification failed on this host. Honest fail."
+    },
+    {
+      "family": "app.open.firefox_not_installed",
+      "count": 6,
+      "limit": "Firefox is not installed on this PC. Honest fail (No puedo abrir firefox)."
+    },
+    {
+      "family": "system.power",
+      "count": 2,
+      "message_ids": [
+        "msg_91e9247cb7f365871f12",
+        "msg_ed8e5ebffa54520906e1"
+      ],
+      "limit": "Host power transition is fail-closed for this Goal 10 testhost campaign (BAXY_DENY_HOST_POWER_TRANSITION=1 / DeniedHostPowerTransitionPlatform / power_transition_physical_gate_required). r110 remade 1100-1200; host stayed up. One row asked confirmation for restart; the other published the physical-gate receipt. Identidad catalog identity is proven with a stubbed platform, not by rebooting this PC. Honest fail of the campaign, not a product pass."
+    }
+  ]
+}

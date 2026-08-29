@@ -76,17 +76,38 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
         uint reason);
 }
 
+internal sealed class DeniedHostPowerTransitionPlatform : IWindowsPowerTransitionPlatform
+{
+    public WindowsPowerTransitionResult Request(string action) =>
+        new(false, "power_transition_physical_gate_required");
+}
+
 internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
 {
+    internal const string DenyHostPowerTransitionVariable = "BAXY_DENY_HOST_POWER_TRANSITION";
+    internal const string ObservedCorpusVariable = "BAXY_GOAL10_OBSERVED_CORPUS";
+
     private readonly IWindowsPowerTransitionPlatform _platform;
 
     internal WindowsPowerTransitionAdapter()
-        : this(new WindowsPowerTransitionPlatform())
+        : this(CreateDefaultPlatform())
     {
     }
 
     internal WindowsPowerTransitionAdapter(IWindowsPowerTransitionPlatform platform) =>
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
+
+    internal static bool HostPowerTransitionDeniedForThisProcess() =>
+        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ObservedCorpusVariable))
+        || string.Equals(
+            Environment.GetEnvironmentVariable(DenyHostPowerTransitionVariable),
+            "1",
+            StringComparison.Ordinal);
+
+    internal static IWindowsPowerTransitionPlatform CreateDefaultPlatform() =>
+        HostPowerTransitionDeniedForThisProcess()
+            ? new DeniedHostPowerTransitionPlatform()
+            : new WindowsPowerTransitionPlatform();
 
     public bool CanHandle(string operation) => operation == "system.power";
 
@@ -102,6 +123,12 @@ internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
             string action = ExternalJson.RequiredString(arguments, "action");
             if (action is not ("lock" or "restart" or "shutdown" or "signout" or "sleep"))
                 return ValueTask.FromResult(ExternalJson.Failure(operation, "invalid_arguments"));
+
+            if (_platform is DeniedHostPowerTransitionPlatform)
+            {
+                return ValueTask.FromResult(ExternalJson.Failure(
+                    operation, "power_transition_physical_gate_required"));
+            }
 
             effectBoundary.Cross(cancellationToken);
             WindowsPowerTransitionResult transition = _platform.Request(action);

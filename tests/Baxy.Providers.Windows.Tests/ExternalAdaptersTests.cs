@@ -40,6 +40,105 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    [TestCase("BAXY_GOAL10_OBSERVED_CORPUS", @"D:\goal10-observed.jsonl")]
+    [TestCase("BAXY_DENY_HOST_POWER_TRANSITION", "1")]
+    public async Task Goal10TesthostCampaignFailClosesHostPowerWithoutCallingWin32(
+        string variable, string value)
+    {
+        string? previous = Environment.GetEnvironmentVariable(variable);
+        try
+        {
+            Environment.SetEnvironmentVariable(variable, value);
+
+            Assert.That(WindowsPowerTransitionAdapter.HostPowerTransitionDeniedForThisProcess(), Is.True);
+            Assert.That(
+                WindowsPowerTransitionAdapter.CreateDefaultPlatform(),
+                Is.InstanceOf<DeniedHostPowerTransitionPlatform>());
+
+            var adapter = new WindowsPowerTransitionAdapter();
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "system.power",
+                JsonSerializer.SerializeToElement(new { action = "shutdown" }),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(
+                    receipt.ErrorCode,
+                    Is.EqualTo("power_transition_physical_gate_required"));
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(variable, previous);
+        }
+    }
+
+    [TestCase(
+        "https://wikipedia.org/",
+        "https://www.wikipedia.org/",
+        "https://www.wikipedia.org/",
+        "complete",
+        true)]
+    [TestCase(
+        "https://wikipedia.org/",
+        "https://es.wikipedia.org/wiki/Portada",
+        "https://es.wikipedia.org/wiki/Portada",
+        "complete",
+        true)]
+    [TestCase(
+        "https://github.com/",
+        "https://github.com/",
+        "https://github.com/",
+        "complete",
+        true)]
+    [TestCase(
+        "https://wikipedia.org/",
+        "https://github.com/",
+        "https://github.com/",
+        "complete",
+        false)]
+    [TestCase(
+        "https://wikipedia.org/",
+        "https://www.google.com/",
+        "https://www.wikipedia.org/",
+        "complete",
+        true)]
+    [TestCase(
+        "https://mail.google.com/",
+        "https://www.google.com/",
+        "https://www.google.com/",
+        "complete",
+        false)]
+    public void AlreadyOpenRequestedDestinationIsAVerifiedNavigation(
+        string target,
+        string beforeUrl,
+        string final,
+        string readyState,
+        bool expected)
+    {
+        bool satisfied = CdpNavigationPostread.Satisfied(
+            new Uri(target),
+            beforeUrl,
+            beforeDocument: "1",
+            readyState,
+            final,
+            document: "1",
+            out Uri? finalUri);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(satisfied, Is.EqualTo(expected));
+            if (expected)
+            {
+                Assert.That(finalUri, Is.Not.Null);
+                Assert.That(finalUri!.AbsoluteUri, Is.EqualTo(new Uri(final).AbsoluteUri));
+            }
+        });
+    }
+
     [Test]
     public async Task ExactNamedProcessTerminationPreservesIdentityAndVerifiesAbsence()
     {

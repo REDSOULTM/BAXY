@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security;
 using Baxy.Providers.Windows.Infrastructure;
 
@@ -149,6 +150,50 @@ internal static class NotepadIdentityPolicy
             && fields[2] is "x64" or "x86" or "arm64"
             && fields[3].Length == 0
             && string.Equals(fields[4], MicrosoftPublisherId, StringComparison.Ordinal);
+    }
+
+    internal readonly record struct ObservedTopLevelWindow(
+        nint Handle,
+        uint OwnerProcessId,
+        bool Visible,
+        int Width,
+        int Height);
+
+    internal static bool IsNotepadWindowTitle(string title)
+    {
+        string normalized = InstalledApplicationResolver.Normalize(title);
+        return normalized is "bloc de notas" or "notepad"
+            || normalized.StartsWith("bloc de notas ", StringComparison.Ordinal)
+            || normalized.StartsWith("notepad ", StringComparison.Ordinal)
+            || normalized.EndsWith(" bloc de notas", StringComparison.Ordinal)
+            || normalized.EndsWith(" notepad", StringComparison.Ordinal);
+    }
+
+    internal static nint LargestVisibleOwnedWindow(
+        int processId,
+        IEnumerable<ObservedTopLevelWindow> windows)
+    {
+        nint best = 0;
+        long bestArea = 0;
+        uint owner = unchecked((uint)processId);
+        foreach (ObservedTopLevelWindow window in windows)
+        {
+            if (!window.Visible
+                || window.Handle == 0
+                || window.OwnerProcessId != owner)
+            {
+                continue;
+            }
+
+            long area = (long)Math.Max(0, window.Width) * Math.Max(0, window.Height);
+            if (area > bestArea)
+            {
+                bestArea = area;
+                best = window.Handle;
+            }
+        }
+
+        return best;
     }
 
     private static bool PathsEqual(string? left, string? right)

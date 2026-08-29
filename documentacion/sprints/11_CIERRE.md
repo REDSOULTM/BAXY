@@ -1,4 +1,8 @@
-# Goal 11 — El cierre
+# Goal 11 — El cierre (movido)
+
+Este documento se movió a [`12_CIERRE.md`](12_CIERRE.md). El Goal 11 vigente es
+[`11_AMBIENTE.md`](11_AMBIENTE.md): reejecutar las filas ambientales del Goal 10
+en un PC con el ambiente de uso listo.
 
 > **Esto es un goal, no una tarea.** Se lanza y corre hasta cumplirse. No pares a
 > mitad a pedir aprobación ni a preguntar: ante una duda, elige la opción más

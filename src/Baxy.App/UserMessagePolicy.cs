@@ -198,16 +198,30 @@ internal static class UserMessagePolicy
 
     public static string? ModelResponseRejectionReason(
         string? modelText,
-        UserMessageDraft draft)
+        UserMessageDraft draft,
+        string? userText = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
         if (string.IsNullOrWhiteSpace(modelText))
         {
             return "no_response";
         }
-        if (IsStructuredFacts(draft.Source)
-            && draft.Intent is "status" or "error"
-            && FoldForPolicy(modelText).Contains("no pude: no responde", StringComparison.Ordinal))
+
+        if (!string.IsNullOrWhiteSpace(userText)
+            && EchoesUserUtterance(userText, modelText))
+        {
+            return "echo_of_user";
+        }
+
+        if (TurnVisibleFacts.LooksLikeBareEnglishGreeting(modelText)
+            && !TurnVisibleFacts.RequestLooksEnglish(userText))
+        {
+            return "wrong_language_greeting";
+        }
+        if (draft.Intent is "status" or "error"
+            && FoldForPolicy(modelText).Contains("no pude: no responde", StringComparison.Ordinal)
+            && (IsStructuredFacts(draft.Source)
+                || TurnVisibleFacts.IsAlreadyPersonFacing(draft.Source)))
         {
             return "no_response";
         }
@@ -234,6 +248,10 @@ internal static class UserMessagePolicy
         if (ContainsUngroundedInternalCode(modelText, draft.Source))
         {
             return "internal_code";
+        }
+        if (ContainsRawMachineQuantity(modelText, draft.Source))
+        {
+            return "internal_quantity";
         }
         if (draft.Intent is "status" or "error")
         {
@@ -315,12 +333,35 @@ internal static class UserMessagePolicy
 
     public static string? AcceptModelAuthoredResponse(
         string? modelText,
-        UserMessageDraft draft)
+        UserMessageDraft draft,
+        string? userText = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
-        return ModelResponseRejectionReason(modelText, draft) is null
+        return ModelResponseRejectionReason(modelText, draft, userText) is null
             ? WithDiagnosticCode(modelText!, draft)
             : null;
+    }
+
+    private static bool EchoesUserUtterance(string userText, string modelText)
+    {
+        string user = FoldLetters(userText);
+        string model = FoldLetters(modelText);
+        return user.Length >= 12 && string.Equals(user, model, StringComparison.Ordinal);
+    }
+
+    private static string FoldLetters(string text)
+    {
+        Span<char> buffer = stackalloc char[text.Length];
+        int n = 0;
+        foreach (char c in text)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                buffer[n++] = char.ToLowerInvariant(c);
+            }
+        }
+
+        return new string(buffer[..n]);
     }
 
     public static bool IsSafeConversationReply(string userText, string reply)
@@ -373,6 +414,19 @@ internal static class UserMessagePolicy
         }
 
         return false;
+    }
+
+    private static bool ContainsRawMachineQuantity(string modelText, string source)
+    {
+        if (!IsStructuredFacts(source))
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(
+            modelText,
+            @"\b\d{9,}\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
     public static string WithDiagnosticCode(string text, UserMessageDraft draft)

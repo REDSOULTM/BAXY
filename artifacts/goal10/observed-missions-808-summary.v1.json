@@ -1,0 +1,170 @@
+{
+  "schema": "baxy.goal10-observed-missions-808-summary.v1",
+  "generated_at_utc": "2026-08-29T05:03:04.226210+00:00",
+  "merge": "r120",
+  "source_sha256": {
+    "replay": "6300a59e59966dc00da6835c00d8759412d8f6d1047f7159f457567b02dbbc90",
+    "adjudication": "0c00d3f76996c8a24eea96a7b0914b54f9c1761ffb73034e0c431e0901cf7a4a",
+    "level_2": "3da27e544680285e40b0b493ebd9c1a72f2af9aa300e3d289e77c14103e252d2"
+  },
+  "nivel1": {
+    "fail": 440,
+    "pass": 1507
+  },
+  "row_count": 808,
+  "unique_message_ids": 808,
+  "verdict_counts": {
+    "pass": 565,
+    "fail": 243
+  },
+  "adjudication_vs_pipeline": {
+    "fail->fail": 243,
+    "pass->pass": 565
+  },
+  "tools_executed_zero": {
+    "pass": 146,
+    "fail": 131
+  },
+  "pipeline_pass_with_journal": 419,
+  "pipeline_dimension_fail_counts": {
+    "terminal": 238,
+    "operation_or_plan": 176,
+    "parameters": 121,
+    "confirmation": 99,
+    "authorization": 121,
+    "postcondition": 229,
+    "verification": 229,
+    "risk": 22
+  },
+  "fail_historical_operations_top": [
+    {
+      "operations": [
+        "media.play"
+      ],
+      "count": 57
+    },
+    {
+      "operations": [
+        "wifi.manage"
+      ],
+      "count": 27
+    },
+    {
+      "operations": [
+        "vision.describe"
+      ],
+      "count": 26
+    },
+    {
+      "operations": [
+        "message.send"
+      ],
+      "count": 21
+    },
+    {
+      "operations": [
+        "media.play",
+        "streaming.navigate"
+      ],
+      "count": 17
+    },
+    {
+      "operations": [
+        "streaming.navigate"
+      ],
+      "count": 13
+    },
+    {
+      "operations": [
+        "audio.mute"
+      ],
+      "count": 10
+    },
+    {
+      "operations": [
+        "clipboard.manage"
+      ],
+      "count": 7
+    },
+    {
+      "operations": [
+        "web.search"
+      ],
+      "count": 6
+    },
+    {
+      "operations": [
+        "notification.manage"
+      ],
+      "count": 6
+    },
+    {
+      "operations": [
+        "media.control",
+        "media.play"
+      ],
+      "count": 6
+    },
+    {
+      "operations": [
+        "window.manage"
+      ],
+      "count": 5
+    },
+    {
+      "operations": [
+        "game.launch"
+      ],
+      "count": 4
+    },
+    {
+      "operations": [
+        "system.settings"
+      ],
+      "count": 4
+    },
+    {
+      "operations": [
+        "media.play",
+        "message.send"
+      ],
+      "count": 4
+    },
+    {
+      "operations": [
+        "calendar.manage"
+      ],
+      "count": 4
+    },
+    {
+      "operations": [
+        "memory.save"
+      ],
+      "count": 3
+    },
+    {
+      "operations": [
+        "audio.mute",
+        "peripheral.manage"
+      ],
+      "count": 3
+    },
+    {
+      "operations": [
+        "app.open"
+      ],
+      "count": 3
+    },
+    {
+      "operations": [
+        "game.install"
+      ],
+      "count": 3
+    }
+  ],
+  "environmental_historical_overlap_fails": 25,
+  "non_environmental_fails": 218,
+  "criterion_808_808": false,
+  "note": "tools_executed: 0 is never a pass when the current contract still expects operations. An adjudication fail cannot become a mission pass. Clarify/conversation current contracts may pass with zero tools.",
+  "private_rows_sha256": "81f4c0edb1d45458b9697e1dc5c067dea2b7148c809e8c5ef5fd80d2a035b6ea"
+}

@@ -44,18 +44,90 @@ internal static class TurnVisibleFacts
         };
     }
 
-    internal static string LastResortProse(string? cause, string? source)
+    internal static string LastResortProse(
+        string? cause,
+        string? source,
+        string? userText = null)
     {
         if (!string.IsNullOrWhiteSpace(source)
-            && TryVerifiedFactsProse(source) is { Length: > 0 } prose)
+            && TryVerifiedFactsProse(source, userText) is { Length: > 0 } prose)
         {
             return prose;
+        }
+
+        if (IsAlreadyPersonFacing(source))
+        {
+            return source!.Trim();
+        }
+
+        if (cause is "echo_of_user" or "wrong_language_greeting"
+            || UnderspecifiedUserTurn(userText))
+        {
+            return ConversationPrompt(userText);
         }
 
         return LastResortFailureProse(cause);
     }
 
-    private static string? TryVerifiedFactsProse(string source)
+    internal static bool UnderspecifiedUserTurn(string? userText)
+    {
+        if (string.IsNullOrWhiteSpace(userText))
+        {
+            return false;
+        }
+
+        string fold = userText.Trim();
+        return fold.Length <= 2 && !RequestLooksEnglish(userText);
+    }
+
+    internal static string ConversationPrompt(string? userText) =>
+        RequestLooksEnglish(userText) ? "Yes?" : "¿Sí?";
+
+    internal static bool LooksLikeBareEnglishGreeting(string? modelText)
+    {
+        if (string.IsNullOrWhiteSpace(modelText))
+        {
+            return false;
+        }
+
+        string fold = modelText.Trim().ToLowerInvariant().TrimEnd('.', '!', '?');
+        return fold is "hello" or "hi" or "hey" or "hello there";
+    }
+
+    internal static bool IsAlreadyPersonFacing(string? source)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        string trimmed = source.Trim();
+        if (trimmed.StartsWith('{'))
+        {
+            return false;
+        }
+
+        string fold = trimmed.ToLowerInvariant();
+        if (System.Text.RegularExpressions.Regex.IsMatch(
+            trimmed,
+            @"\b\d{9,}\b",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant
+                | System.Text.RegularExpressions.RegexOptions.NonBacktracking))
+        {
+            return false;
+        }
+
+        return fold.StartsWith("listo", StringComparison.Ordinal)
+            || fold.StartsWith("guardé", StringComparison.Ordinal)
+            || fold.StartsWith("guarde ", StringComparison.Ordinal)
+            || fold.StartsWith("eliminé", StringComparison.Ordinal)
+            || fold.StartsWith("elimine ", StringComparison.Ordinal)
+            || fold.StartsWith("la memoria local", StringComparison.Ordinal)
+            || fold.StartsWith("no había memoria", StringComparison.Ordinal)
+            || fold.StartsWith("no habia memoria", StringComparison.Ordinal);
+    }
+
+    private static string? TryVerifiedFactsProse(string source, string? userText = null)
     {
         try
         {
@@ -82,7 +154,7 @@ internal static class TurnVisibleFacts
                 var parts = new List<string>();
                 foreach (string nested in parsed)
                 {
-                    if (TryVerifiedFactsProse(nested) is { Length: > 0 } fromStep
+                    if (TryVerifiedFactsProse(nested, userText) is { Length: > 0 } fromStep
                         && !IsSupportOnlyFact(nested, parsed))
                     {
                         parts.Add(fromStep);
@@ -95,7 +167,7 @@ internal static class TurnVisibleFacts
                 }
             }
 
-            return TrySingleFactProse(root);
+            return TrySingleFactProse(root, userText);
         }
         catch (JsonException)
         {
@@ -122,7 +194,8 @@ internal static class TurnVisibleFacts
             string? other = ReadJsonString(sibling, "operation");
             if (other is "app.close" or "app.open" or "browser.navigate"
                 or "browser.navigate.named" or "ocr.read" or "input.text.type"
-                or "input.visible.click")
+                or "input.visible.click" or "window.maximize" or "window.minimize"
+                or "window.restore")
             {
                 return true;
             }
@@ -131,8 +204,9 @@ internal static class TurnVisibleFacts
         return false;
     }
 
-    private static string? TrySingleFactProse(JsonElement root)
+    private static string? TrySingleFactProse(JsonElement root, string? userText = null)
     {
+        string? kind = ReadString(root, "kind");
         string? polarity = ReadString(root, "polarity");
         string? cause = ReadString(root, "cause");
         string? operation = ReadString(root, "operation");
@@ -149,6 +223,32 @@ internal static class TurnVisibleFacts
         bool hasObserved = root.TryGetProperty("observed", out observed)
             && observed.ValueKind == JsonValueKind.Object;
         string? name = PersonFacingName(root, hasObserved ? observed : default);
+
+        if (kind is "confirmation")
+        {
+            return ConfirmationProse(cause, root);
+        }
+
+        if (kind is "clarification")
+        {
+            return "¿Puedes precisarlo?";
+        }
+
+        if (string.Equals(cause, "memory_records", StringComparison.Ordinal)
+            && root.TryGetProperty("records", out JsonElement records)
+            && records.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement record in records.EnumerateArray())
+            {
+                string? value = record.ValueKind == JsonValueKind.Object
+                    ? ReadString(record, "value")
+                    : null;
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value.Trim();
+                }
+            }
+        }
 
         if (!success)
         {
@@ -184,6 +284,42 @@ internal static class TurnVisibleFacts
             return string.IsNullOrWhiteSpace(title)
                 ? "Listo, anoté."
                 : "Listo, anoté " + title + ".";
+        }
+
+        if (operation is "media.status" && hasObserved)
+        {
+            string? title = ReadString(observed, "title");
+            string? playback = ReadString(observed, "playbackStatus");
+            if (string.Equals(playback, "paused", StringComparison.OrdinalIgnoreCase))
+            {
+                return string.IsNullOrWhiteSpace(title)
+                    ? "Listo, la reproducción está en pausa."
+                    : "Listo, está en pausa " + title + ".";
+            }
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                return "Listo, está sonando " + title + ".";
+            }
+
+            return "Listo, no hay nada sonando.";
+        }
+
+        if (operation is "audio.status" && hasObserved)
+        {
+            if (observed.TryGetProperty("muted", out JsonElement muted)
+                && muted.ValueKind is JsonValueKind.True)
+            {
+                return "Listo, el audio está silenciado.";
+            }
+
+            if (TryReadInt(observed, "volumePercent", out int percent)
+                || (observed.TryGetProperty("final", out JsonElement audioFinal)
+                    && audioFinal.ValueKind == JsonValueKind.Object
+                    && TryReadInt(audioFinal, "volumePercent", out percent)))
+            {
+                return "Listo, el volumen está al " + percent + ".";
+            }
         }
 
         if (operation is "media.play.query" or "media.play.exact"
@@ -238,13 +374,15 @@ internal static class TurnVisibleFacts
                 string clock = local.Contains('T', StringComparison.Ordinal)
                     ? local[(local.IndexOf('T') + 1)..Math.Min(local.IndexOf('T') + 6, local.Length)]
                     : local;
-                return "Listo, son las " + clock + ".";
+                return RequestLooksEnglish(userText)
+                    ? "Ready, it's " + clock + "."
+                    : "Listo, son las " + clock + ".";
             }
         }
 
         if (operation is "system.status" && hasObserved)
         {
-            return StatusReadingsProse(observed);
+            return StatusReadingsProse(observed, RequestLooksEnglish(userText));
         }
 
         if ((operation is "browser.navigate" or "browser.navigate.named") && hasObserved)
@@ -270,6 +408,16 @@ internal static class TurnVisibleFacts
         if (operation is "window.maximize")
         {
             return "Listo, maximicé la ventana.";
+        }
+
+        if (operation is "window.minimize")
+        {
+            return "Listo, minimicé la ventana.";
+        }
+
+        if (operation is "window.restore")
+        {
+            return "Listo, restauré la ventana.";
         }
 
         if (operation is "app.close"
@@ -298,45 +446,134 @@ internal static class TurnVisibleFacts
         return null;
     }
 
-    private static string? StatusReadingsProse(JsonElement observed)
+    private static string? StatusReadingsProse(JsonElement observed, bool english)
     {
         var parts = new List<string>();
         if (observed.TryGetProperty("disk", out JsonElement disk)
             && TryReadLong(disk, "availableBytes", out long diskBytes))
         {
-            parts.Add("quedan " + FormatBytes(diskBytes) + " libres en disco");
+            parts.Add(
+                english
+                    ? FormatBytes(diskBytes, english) + " free on disk"
+                    : "quedan " + FormatBytes(diskBytes, english) + " libres en disco");
         }
 
         if (observed.TryGetProperty("memory", out JsonElement memory)
             && TryReadLong(memory, "availableBytes", out long memoryBytes))
         {
-            parts.Add("hay " + FormatBytes(memoryBytes) + " de memoria disponibles");
+            parts.Add(
+                english
+                    ? FormatBytes(memoryBytes, english) + " of memory available"
+                    : "hay " + FormatBytes(memoryBytes, english) + " de memoria disponibles");
         }
 
         if (observed.TryGetProperty("battery", out JsonElement battery)
             && TryReadInt(battery, "chargePercent", out int charge))
         {
-            parts.Add("la batería está al " + charge + "%");
+            parts.Add(
+                english
+                    ? "the battery is at " + charge + "%"
+                    : "la batería está al " + charge + "%");
         }
 
-        return parts.Count == 0 ? null : "Listo, " + string.Join(" y ", parts) + ".";
+        if (parts.Count == 0)
+        {
+            return null;
+        }
+
+        string joined = string.Join(english ? " and " : " y ", parts);
+        return english ? "Ready, " + joined + "." : "Listo, " + joined + ".";
     }
 
-    private static string FormatBytes(long bytes)
+    internal static bool RequestLooksEnglish(string? userText)
+    {
+        if (string.IsNullOrWhiteSpace(userText))
+        {
+            return false;
+        }
+
+        string fold = userText.Trim().ToLowerInvariant();
+        return fold.StartsWith("hello", StringComparison.Ordinal)
+            || fold.StartsWith("hi ", StringComparison.Ordinal)
+            || fold.StartsWith("hi?", StringComparison.Ordinal)
+            || fold.StartsWith("hey", StringComparison.Ordinal)
+            || fold is "hi"
+            || fold.Contains("how much", StringComparison.Ordinal)
+            || fold.Contains("disk space", StringComparison.Ordinal)
+            || fold.Contains("free disk", StringComparison.Ordinal)
+            || fold.Contains("free space", StringComparison.Ordinal)
+            || fold.Contains("what time is it", StringComparison.Ordinal)
+            || fold.Contains("what's the time", StringComparison.Ordinal)
+            || fold.Contains("whats the time", StringComparison.Ordinal)
+            || fold.Contains("tell me the time", StringComparison.Ordinal);
+    }
+
+    private static string FormatBytes(long bytes, bool english)
     {
         double giga = bytes / 1_073_741_824d;
         if (giga >= 1)
         {
-            return giga >= 10
+            string number = giga >= 10
                 ? ((int)Math.Round(giga, MidpointRounding.AwayFromZero)).ToString(
-                    System.Globalization.CultureInfo.InvariantCulture) + " GB"
-                : giga.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)
-                    .Replace('.', ',') + " GB";
+                    System.Globalization.CultureInfo.InvariantCulture)
+                : giga.ToString(
+                    english ? "0.0" : "0.0",
+                    System.Globalization.CultureInfo.InvariantCulture);
+            if (!english)
+            {
+                number = number.Replace('.', ',');
+            }
+
+            return number + " GB";
         }
 
         double mega = bytes / 1_048_576d;
         return ((int)Math.Round(mega, MidpointRounding.AwayFromZero)).ToString(
             System.Globalization.CultureInfo.InvariantCulture) + " MB";
+    }
+
+    private static string ConfirmationProse(string? cause, JsonElement root)
+    {
+        bool hasContinuar = HasChoice(root, "continuar") || HasChoice(root, "continue");
+        bool hasConfirmar = HasChoice(root, "confirmar") || HasChoice(root, "confirm");
+        bool hasCancelar = HasChoice(root, "cancelar") || HasChoice(root, "cancel");
+        return cause switch
+        {
+            "memory_recovery_pending" =>
+                "Quedó una operación de memoria pendiente. Escribe continuar o reintentar.",
+            "memory_reconcile_only" or "memory_reconcile_same_attempt"
+                or "cannot_withdraw_uncertain" =>
+                "Esa memoria puede haber cambiado. ¿Confirmas?",
+            "pending_audio_reconcile" or "audio_volume_pending" or "audio_mute_pending" =>
+                "Quedó un ajuste de audio pendiente. Escribe continuar o reintentar.",
+            _ when hasContinuar =>
+                "Quedó una operación pendiente. Escribe continuar o reintentar.",
+            _ when hasConfirmar && hasCancelar =>
+                "¿Confirmas o cancelas?",
+            _ when hasConfirmar =>
+                "¿Confirmas?",
+            _ => "¿Confirmas o cancelas?",
+        };
+    }
+
+    private static bool HasChoice(JsonElement root, string value)
+    {
+        if (!root.TryGetProperty("choices", out JsonElement choices)
+            || choices.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+
+        foreach (JsonElement choice in choices.EnumerateArray())
+        {
+            if (choice.ValueKind == JsonValueKind.String
+                && string.Equals(choice.GetString(), value, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string? FailureProse(string? error, string? name, bool uncertain)
@@ -370,6 +607,27 @@ internal static class TurnVisibleFacts
             return "No pude: Netflix pide iniciar sesión.";
         }
 
+        if (error is "vision_provider_not_configured"
+            or "vision_session_adapter_required")
+        {
+            return "No pude: no tengo visión configurada.";
+        }
+
+        if (string.Equals(error, "external_verification_failed", StringComparison.Ordinal))
+        {
+            return "No pude: no pude leer eso.";
+        }
+
+        if (string.Equals(error, "power_transition_physical_gate_required", StringComparison.Ordinal))
+        {
+            return "No pude: no apago ni reinicio este equipo desde esta campaña.";
+        }
+
+        if (string.Equals(error, "memory_forget_empty", StringComparison.Ordinal))
+        {
+            return "No pude: no encontré esa memoria.";
+        }
+
         if (string.Equals(error, "recipient_identity_not_verified", StringComparison.Ordinal))
         {
             return "No pude: no pude confirmar el destinatario.";
@@ -387,10 +645,11 @@ internal static class TurnVisibleFacts
             return "No pude: YouTube no confirmó la reproducción.";
         }
 
-        if (string.Equals(error, "verification_failed", StringComparison.Ordinal)
-            && !string.IsNullOrWhiteSpace(name))
+        if (string.Equals(error, "verification_failed", StringComparison.Ordinal))
         {
-            return "No pude: " + name + " no responde.";
+            return string.IsNullOrWhiteSpace(name)
+                ? "No pude: no pude confirmar que se abrió."
+                : "No pude: " + name + " no responde.";
         }
 
         if (uncertain)
