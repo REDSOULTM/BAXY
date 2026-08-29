@@ -823,6 +823,8 @@ def _direct_brightness_status_request(folded: str) -> bool:
             r"(?:el\s+|the\s+)?(?:brillo|brightness)|"
             r"(?:cual|que|what)\s+(?:es|is)\s+(?:el\s+|the\s+)?(?:brillo|brightness)"
             r"(?:\s+actual|\s+now)?|"
+            r"(?:cual|que|what)\s+(?:brillo|brightness)\s+"
+            r"(?:tengo|have|do\s+i\s+have)|"
             r"how\s+bright\s+is\s+(?:the\s+|my\s+)?(?:screen|display))"
             r"[\s.!?]*",
             folded,
@@ -832,26 +834,51 @@ def _direct_brightness_status_request(folded: str) -> bool:
     )
 
 
+def _absolute_brightness_endpoint(folded: str) -> int | None:
+    """Read max/min as a complete brightness assignment, never an amount gap."""
+
+    if _has(
+        folded,
+        r"\b(?:al\s+maximo|al\s+tope|to\s+(?:the\s+)?(?:max(?:imum)?|highest)|"
+        r"at\s+(?:the\s+)?(?:max(?:imum)?|highest))\b",
+    ):
+        return 100
+    if _has(
+        folded,
+        r"\b(?:al\s+minimo|to\s+(?:the\s+)?(?:min(?:imum)?|lowest)|"
+        r"at\s+(?:the\s+)?(?:min(?:imum)?|lowest))\b",
+    ):
+        return 0
+    return None
+
+
 def _direct_absolute_brightness_request(folded: str) -> bool:
     """Recognize a direct absolute brightness assignment with a literal value."""
 
-    return (
-        _has(folded, r"\b(?:brillo|brightness)\b")
-        and (
-            _has(folded, r"\b(?:100|[0-9]{1,2})\b")
-            or _has(folded, r"%")
-            or _literal_percentage_word_value(folded) is not None
-        )
-        and _head_is(
-            _request_head(folded),
-            r"(?:pon|pone|ponme|poner|fija|ajusta|adjust|establece|set|"
-            r"cambia|change|deja|dejame)",
-        )
-        and not _has(
-            folded,
-            r"\b(?:sube|subi|baja|bajar|aumenta|reduce|raise|lower)\b",
-        )
+    if not _has(folded, r"\b(?:brillo|brightness)\b"):
+        return False
+    endpoint = _absolute_brightness_endpoint(folded)
+    has_value = (
+        endpoint is not None
+        or _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+        or _has(folded, r"%")
+        or _literal_percentage_word_value(folded) is not None
     )
+    if not has_value:
+        return False
+    if not _head_is(
+        _request_head(folded),
+        r"(?:pon|pone|ponme|poner|fija|ajusta|adjust|establece|set|"
+        r"cambia|change|deja|dejame|sube|subi|subime|subir|"
+        r"aumenta|aumentar|baja|bajame|bajar|raise|lower)",
+    ):
+        return False
+    if endpoint is None and _has(
+        folded,
+        r"\b(?:sube|subi|baja|bajar|aumenta|reduce|raise|lower)\b",
+    ):
+        return False
+    return True
 
 
 def _direct_current_time_request(folded: str) -> bool:
@@ -1238,6 +1265,16 @@ def _daily_use_family_intent(
         return EffectIntent(("media.play.query",), (folded,))
     if "system.process.list" in available and _direct_process_list_request(folded):
         return EffectIntent(("system.process.list",), (folded,))
+    if (
+        "system.settings.set" in available
+        and _direct_absolute_brightness_request(folded)
+        and not _volume_domain(folded)
+    ):
+        return EffectIntent(("system.settings.set",), (folded,))
+    if "system.settings.status" in available and _direct_brightness_status_request(
+        folded
+    ):
+        return EffectIntent(("system.settings.status",), (folded,))
 
     shell = _direct_known_shell_open_request(folded)
     if shell is not None and "app.open" in available:
@@ -2957,10 +2994,19 @@ def resolve_explicit_clarification_intent(
         # it; the caller still applies catalogue authority and policy gates.
         return None
     if (
-        "media.play.query" in available and _bare_play_music_request(folded)
-    ) or (
-        "calendar.event.create" in available
-        and _direct_named_meeting_create_request(folded)
+        ("media.play.query" in available and _bare_play_music_request(folded))
+        or (
+            "calendar.event.create" in available
+            and _direct_named_meeting_create_request(folded)
+        )
+        or (
+            "system.settings.set" in available
+            and _direct_absolute_brightness_request(folded)
+        )
+        or (
+            "system.settings.status" in available
+            and _direct_brightness_status_request(folded)
+        )
     ):
         return None
     if _is_meta_or_tool_denial(folded):
@@ -3734,6 +3780,7 @@ def resolve_explicit_clarification_intent(
             r"screen\s+(?:light|brightness))\b",
         )
         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+        and _absolute_brightness_endpoint(folded) is None
     ):
         # Direction and setting are already literal in this closed shape.  The
         # only missing argument is the magnitude; routing through the general
@@ -4199,7 +4246,22 @@ def resolve_application_catalog_app_id(
     settings_aliases = {
         "configuracion",
         "configuraciones de windows",
+        "configuracion de windows",
+        "app de configuracion",
         "windows settings",
+        "settings",
+    }
+    explorer_aliases = {
+        "file explorer",
+        "explorador de archivos",
+        "explorador",
+        "explorer",
+    }
+    terminal_aliases = {
+        "terminal",
+        "windows terminal",
+        "cmd",
+        "consola",
     }
     catalog_keys = {key for _, key in catalog.entries}
     for key in keys:
@@ -4211,10 +4273,35 @@ def resolve_application_catalog_app_id(
             matches = [
                 name
                 for name, candidate_key in catalog.entries
-                if candidate_key in {"configuracion", "windows settings"}
+                if candidate_key in {"configuracion", "windows settings", "settings"}
             ]
             if len(matches) == 1:
                 return matches[0]
+            if not matches:
+                return "windows.settings"
+        if key in explorer_aliases:
+            matches = [
+                name
+                for name, candidate_key in catalog.entries
+                if candidate_key in {
+                    "file explorer",
+                    "explorador de archivos",
+                    "explorador",
+                    "explorer",
+                }
+            ]
+            if len(matches) == 1:
+                return matches[0]
+            return "windows.explorer"
+        if key in terminal_aliases:
+            matches = [
+                name
+                for name, candidate_key in catalog.entries
+                if candidate_key in {"windows terminal", "terminal", "cmd"}
+            ]
+            if len(matches) == 1:
+                return matches[0]
+            return "windows.terminal"
 
     for key in keys:
         exact = [
@@ -7867,7 +7954,9 @@ def _named_window_status_target(text: str) -> str | None:
             r"(?:tiene|has|have)\s+(?:(?:una?|an?)\s+)?"
             r"(?:ventana|window)\s+(?:abierta|abierto|cerrada|cerrado|"
             r"visible|corriendo|open|closed|running)"
-            r"(?:\s+without\s+opening\s+it)?$"
+            r"(?:\s+without\s+opening\s+it)?$|"
+            r"^(?:esta|is)\s+(?:corriendo|abierto|abierta|open|running)\s+"
+            r"(?:el|la|the)?\s*(?P<running>[a-z0-9][a-z0-9 ._+@-]{0,80})$"
         ),
     )
     if request is None:
@@ -7879,6 +7968,7 @@ def _named_window_status_target(text: str) -> str | None:
                 "target",
                 "target_en",
                 "target_check",
+                "running",
             )
             if request.group(name) is not None
         ),

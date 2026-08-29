@@ -9,6 +9,26 @@ public sealed class WindowsApplicationOpenProviderTests
     private const long FirstCreationTime = 638_880_000_000_000_000;
 
     [Test]
+    public void ExplorerIdentityCoversFileExplorerAndSpanishName()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsExplorerIdentity("windows.explorer"),
+                Is.True);
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsExplorerIdentity("File Explorer"),
+                Is.True);
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsExplorerIdentity("explorador de archivos"),
+                Is.True);
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsExplorerIdentity("Google Chrome"),
+                Is.False);
+        });
+    }
+
+    [Test]
     public async Task NewInvocationPersistsIntentAndUsesOnlyTheBreakawayBootstrapLaunch()
     {
         using TestEnvironment environment = new();

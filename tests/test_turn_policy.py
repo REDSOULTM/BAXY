@@ -1733,6 +1733,13 @@ def test_repeated_effects_receive_distinct_argument_purposes() -> None:
         ("audio.mute", "mute audio", {"state": True}),
         ("audio.mute", "unmute audio", {"state": False}),
         ("audio.mute", "quita el mute del audio", {"state": False}),
+        ("media.control", "pará la música", {"action": "pause"}),
+        ("media.control", "si tengo spotify abierto pausalo", {"action": "pause", "sourceApp": "spotify"}),
+        ("media.play.query", "poné música", {"provider": "spotify", "query": "musica"}),
+        ("system.settings.set", "subí el brillo al máximo", {"setting": "brightness", "value": 100}),
+        ("system.settings.set", "poné el brillo al 80", {"setting": "brightness", "value": 80}),
+        ("system.settings.status", "qué brillo tengo", {"setting": "brightness"}),
+        ("window.application.status", "está corriendo spotify", {"name": "spotify"}),
     ],
 )
 def test_explicit_arguments_are_bound_to_each_effect_fragment(
@@ -4110,6 +4117,21 @@ def test_relative_adjustment_clarification_only_requests_the_missing_amount(
     assert clarification is not None
     assert clarification.operations == (operation,)
     assert clarification.missing_fields == ("amount",)
+
+
+def test_absolute_brightness_maximum_does_not_ask_for_an_amount() -> None:
+    clarification = effect_intent_module.resolve_explicit_clarification_intent(
+        "subí el brillo al máximo",
+        ("system.settings.adjust", "system.settings.set"),
+    )
+
+    assert clarification is None
+    effects = effect_intent_module.resolve_explicit_effects(
+        "subí el brillo al máximo",
+        ("system.settings.adjust", "system.settings.set"),
+    )
+    assert effects is not None
+    assert effects.operations == ("system.settings.set",)
 
 
 def test_bare_song_request_clarifies_the_query_without_authorizing_playback() -> None:

@@ -69,6 +69,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         };
         if (resolution.Entry is null)
         {
+            if (IsExplorerIdentity(request.ApplicationId))
+            {
+                return OpenExplorerShell(request);
+            }
+
             return Failure(
                 request,
                 request.ApplicationId,
@@ -620,6 +625,98 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             .OrderByDescending(static item => item.Foreground)
             .ThenByDescending(static item => item.ProcessCreationTimeUtcTicks)
             .FirstOrDefault();
+    }
+
+    internal static bool IsExplorerIdentity(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return false;
+        }
+
+        return id.Equals(ApplicationIds.Explorer, StringComparison.OrdinalIgnoreCase)
+            || id.Equals("explorer", StringComparison.OrdinalIgnoreCase)
+            || id.Contains("file explorer", StringComparison.OrdinalIgnoreCase)
+            || id.Contains("explorador", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static ApplicationOpenResult OpenExplorerShell(ApplicationOpenRequest request)
+    {
+        string explorer = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+            "explorer.exe");
+        try
+        {
+            var startInfo = new ProcessStartInfo(explorer)
+            {
+                UseShellExecute = true,
+            };
+            using Process? launched = Process.Start(startInfo);
+            using Process current = Process.GetCurrentProcess();
+            Process[] after = Process.GetProcessesByName("explorer");
+            try
+            {
+                Process? chosen = after
+                    .Where(item => item.Id != current.Id)
+                    .OrderByDescending(item =>
+                    {
+                        try
+                        {
+                            return item.StartTime.ToUniversalTime().Ticks;
+                        }
+                        catch (Exception)
+                        {
+                            return 0L;
+                        }
+                    })
+                    .FirstOrDefault();
+                if (chosen is null)
+                {
+                    return Failure(
+                        request,
+                        "Explorador de archivos",
+                        ApplicationOpenErrorCodes.LaunchFailed,
+                        launchIssued: true);
+                }
+
+                var entry = new InstalledApplicationEntry(
+                    "Explorador de archivos",
+                    ApplicationIds.Explorer);
+                long handle = 0;
+                try
+                {
+                    handle = chosen.MainWindowHandle.ToInt64();
+                }
+                catch (Exception)
+                {
+                }
+
+                var observation = new InstalledApplicationObservation(
+                    chosen.Id,
+                    chosen.StartTime.ToUniversalTime().Ticks,
+                    explorer,
+                    handle,
+                    Visible: true,
+                    Foreground: true);
+                return Success(request, entry, observation, reused: launched is null);
+            }
+            finally
+            {
+                foreach (Process item in after)
+                {
+                    item.Dispose();
+                }
+            }
+        }
+        catch (Exception exception) when (exception is InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            return Failure(
+                request,
+                "Explorador de archivos",
+                ApplicationOpenErrorCodes.LaunchFailed,
+                launchIssued: true);
+        }
     }
 
     private static ApplicationOpenResult Success(

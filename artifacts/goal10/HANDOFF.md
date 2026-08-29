@@ -1,35 +1,44 @@
-# Handoff — Goal 10 — 2026-08-29 — restart limpio
+# Handoff — Goal 10 — 2026-08-29 — r124 scored, owner-fix, r125 next
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: inventario heredar/descartar; r123 incompleta anulada (no overlay);
-mente restaurada a HEAD anti-acumulación; `_daily_use_family_intent` en un dueño;
-fail-closed de `system.power`; LastBoot `2026-08-27 21:25:24`.
-Familias: 63 twice. Owner pytest 2581 twice. Power 2/2.
-Trivia = conversación (no web.search). Campaña r124 lanzada
-2026-08-29T07:44:34Z, 20 shards, BAXY_DENY_HOST_POWER_TRANSITION=1.
-No overlay hasta 20/20 complete + «campaign done».
-Sin empezar: overlay/adjudicate, 808/2036/holdouts, matriz viva, ABBA, Full.
+Hecho: r124 20/20 overlay 77 ids sobre r120; in-scope **1539 pass / 180 fail /
+1719** (`artifacts/goal10/goal10-in-scope-r124.json`). Owner-fix de familias:
+explorer, pausa/poné música, brillo máximo/estado, prosa de process.list y
+window.application.status. Owner pytest 2597 twice. LastBoot
+`2026-08-27 21:25:24`.
+En curso: un remake r125 (20 shards, deny-power) cuando este commit esté en
+origin. Overlay quirúrgico sólo de `message_id` mejorados; no shards incompletos.
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
-- No `reset --hard 8c57747` ni force-push: origin ya tiene 163 commits del Goal 10.
-- No overlay de shards incompletos o voided.
-- La mente es el LLM; un reconocedor de familia, no un regex por fail.
-- `system.power` nunca se invoca en vivo en este PC.
+- No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
+- `poné una canción` sigue pidiendo query (`test_bare_song_request_clarifies…`).
+- `subí el brillo al máximo` es `system.settings.set` value=100, no amount.
+- Hechos verificados que el 4B no formula se narran en `TurnVisibleFacts`.
+- `system.power` nunca se invoca en vivo. Last boot no se toca.
 
 ## Archivos tocados
-- `artifacts/goal10/inherit-discard.v1.md` — inventario
-- `src/baxy_mind/effect_intent.py` — `_daily_use_family_intent`
-- `src/Baxy.Providers.Windows/External/WindowsPowerTransitionAdapter.cs` — deny host
-- `tests/Baxy.Integration.Tests/ObservedUserCorpusReplayTests.cs` — env deny=1
+- `artifacts/goal10/goal10-in-scope-r124.json` — score in-scope r124
+- `src/baxy_mind/effect_intent.py` — explorer/terminal/settings aliases, brillo max/status
+- `src/baxy_mind/__main__.py` — args de media, brillo, window status
+- `src/Baxy.App/TurnVisibleFacts.cs` — process.list, window status, brillo
+- `src/Baxy.Providers.Windows/Applications/` — `windows.explorer` + explorer.exe
 
 ## Hipótesis
-Confirmadas: r123 muerta (`^C`, 29 filas). Last boot sin cambio.
-Descartadas: «hay que resetear origin al Goal 9» → rompe la regla de publicación.
+Confirmadas: r124 overlay 77; env 221 omitidas; 7 other-lang omitidas.
+Descartadas: overlay wholesale de shards r124 (99/191 originales divergían).
+
+## Comandos ejecutados y resultado
+- mind-runtime pytest `tests/test_effect_intent.py tests/test_turn_policy.py -q` → **2597 passed** twice (78s, 68s)
+- `dotnet test …WindowsApplicationOpenProviderTests --filter ExplorerIdentity` → 1 pass
+- `dotnet test …PlannerAppBoundaryTests --filter LastResortFailureProse…` → 1 pass
+- LastBoot → `2026-08-27 21:25:24`
 
 ## Siguiente acción recomendada
-Cuando `test_effect_intent.py` + `test_turn_policy.py` + el test de power pasen
-dos veces: una campaña testhost 20 shards con `BAXY_DENY_HOST_POWER_TRANSITION=1`.
+Tras el push: una campaña testhost r125, 20 shards,
+`BAXY_DENY_HOST_POWER_TRANSITION=1`. No overlay hasta 20/20 + «campaign done».
+Score in-scope igual que r124; si fail>0, otra familia en el dueño, no veinte remakes.

@@ -385,6 +385,46 @@ internal static class TurnVisibleFacts
             return StatusReadingsProse(observed, RequestLooksEnglish(userText));
         }
 
+        if (operation is "system.process.list" && hasObserved)
+        {
+            return ProcessListProse(observed, RequestLooksEnglish(userText));
+        }
+
+        if (operation is "window.application.status" && hasObserved)
+        {
+            string? appName = ReadString(observed, "displayName")
+                ?? ReadString(observed, "requestedName")
+                ?? name;
+            if (string.IsNullOrWhiteSpace(appName))
+            {
+                return null;
+            }
+
+            bool visible = observed.TryGetProperty("hasVisibleWindow", out JsonElement visibleNode)
+                && visibleNode.ValueKind is JsonValueKind.True;
+            if (visible)
+            {
+                return Feminine(appName)
+                    ? "Listo, " + appName + " está abierta."
+                    : "Listo, " + appName + " está abierto.";
+            }
+
+            return Feminine(appName)
+                ? "Listo, " + appName + " no está abierta."
+                : "Listo, " + appName + " no está abierto.";
+        }
+
+        if (operation is "system.settings.status" or "system.settings.set"
+            or "system.settings.adjust")
+        {
+            if (TryBrightnessPercent(hasObserved ? observed : default, out int brightness))
+            {
+                return RequestLooksEnglish(userText)
+                    ? "Ready, the brightness is at " + brightness + "."
+                    : "Listo, el brillo está al " + brightness + ".";
+            }
+        }
+
         if ((operation is "browser.navigate" or "browser.navigate.named") && hasObserved)
         {
             string? url = ReadString(observed, "finalUrl")
@@ -483,6 +523,75 @@ internal static class TurnVisibleFacts
 
         string joined = string.Join(english ? " and " : " y ", parts);
         return english ? "Ready, " + joined + "." : "Listo, " + joined + ".";
+    }
+
+    private static string? ProcessListProse(JsonElement observed, bool english)
+    {
+        if (!observed.TryGetProperty("processes", out JsonElement processes)
+            || processes.ValueKind != JsonValueKind.Array
+            || processes.GetArrayLength() < 1)
+        {
+            return null;
+        }
+
+        string? processName = ReadString(processes[0], "name");
+        if (string.IsNullOrWhiteSpace(processName))
+        {
+            return null;
+        }
+
+        string shortName = ShortProcessName(processName);
+        string sort = ReadString(observed, "sort") ?? "memory";
+        if (string.Equals(sort, "cpu", StringComparison.Ordinal))
+        {
+            return english
+                ? "Ready, " + shortName + " is using the most CPU."
+                : "Listo, " + shortName + " usa más CPU.";
+        }
+
+        if (string.Equals(sort, "name", StringComparison.Ordinal))
+        {
+            return english
+                ? "Ready, " + shortName + " is running."
+                : "Listo, " + shortName + " está en la lista.";
+        }
+
+        return english
+            ? "Ready, " + shortName + " is using the most memory."
+            : "Listo, " + shortName + " usa más memoria.";
+    }
+
+    private static bool TryBrightnessPercent(JsonElement observed, out int brightness)
+    {
+        brightness = 0;
+        if (observed.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        if (TryReadInt(observed, "value", out brightness) && brightness is >= 0 and <= 100)
+        {
+            return true;
+        }
+
+        if (!observed.TryGetProperty("monitors", out JsonElement monitors))
+        {
+            return false;
+        }
+
+        JsonElement first = default;
+        if (monitors.ValueKind == JsonValueKind.Array && monitors.GetArrayLength() > 0)
+        {
+            first = monitors[0];
+        }
+        else if (monitors.ValueKind == JsonValueKind.Object)
+        {
+            first = monitors;
+        }
+
+        return first.ValueKind == JsonValueKind.Object
+            && TryReadInt(first, "value", out brightness)
+            && brightness is >= 0 and <= 100;
     }
 
     internal static bool RequestLooksEnglish(string? userText)

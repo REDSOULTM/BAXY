@@ -87,6 +87,26 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 TurnVisibleFacts.LastResortProse(
                     "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"system.process.list","polarity":"success","verified":true,"succeeded":true,"observed":{"sort":"memory","processes":[{"name":"alpha.exe","workingSetBytes":2048}]}}"""),
+                Is.EqualTo("Listo, alpha usa más memoria."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"window.application.status","polarity":"success","verified":true,"succeeded":true,"observed":{"requestedName":"spotify","displayName":"Spotify","hasVisibleWindow":true}}"""),
+                Is.EqualTo("Listo, Spotify está abierto."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"system.settings.status","polarity":"success","verified":true,"succeeded":true,"observed":{"setting":"brightness","monitors":[{"instanceName":"DISPLAY1","value":80}]}}"""),
+                Is.EqualTo("Listo, el brillo está al 80."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
+                    """{"kind":"operation","operation":"system.settings.set","polarity":"success","verified":true,"succeeded":true,"observed":{"setting":"brightness","value":100}}"""),
+                Is.EqualTo("Listo, el brillo está al 100."));
+            Assert.That(
+                TurnVisibleFacts.LastResortProse(
+                    "composition_lost_verified_facts",
                     """{"kind":"operation","operation":"input.visible.click","polarity":"failure","verified":false,"succeeded":false,"error":"visible_click_no_receipt","effectUncertain":true}"""),
                 Is.EqualTo("No pude: no vi el control."));
             Assert.That(

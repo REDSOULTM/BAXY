@@ -3773,6 +3773,14 @@ def _explicit_live_media_query_arguments(evidence: str) -> dict[str, object] | N
     desired_music = effect_intent._desired_music_query(evidence)
     if desired_music is not None:
         return {"provider": "spotify", "query": desired_music}
+    folded_evidence = effect_intent._fold(evidence)
+    if effect_intent._bare_play_music_request(folded_evidence):
+        query = (
+            "music"
+            if effect_intent._has(folded_evidence, r"\b(?:music|song)\b")
+            else "musica"
+        )
+        return {"provider": "spotify", "query": query}
     spoken_number_title = effect_intent._bare_spoken_number_media_query(evidence)
     if spoken_number_title is not None:
         return {"provider": "spotify", "query": spoken_number_title}
@@ -4338,7 +4346,10 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
             r"\b(?:cancion|pista|podcast|episodio)\s+anterior\b",
             r"\b(?:go|ve|vuelve)\s+(?:back|atras)\b",
         ),
-        "pause": (r"\b(?:pause|pausa|pausar)\b",),
+        "pause": (
+            r"\b(?:pause|pausa|pausar|pausalo|pausala)\b",
+            r"\bpara\s+la\s+musica\b",
+        ),
         "play": (
             r"\b(?:resume|reanuda|reanudar|continua|continuar)\b",
             r"\b(?:play|reproduce|reproducir)\b[^.;!?]*\b(?:paused|pausad[ao])\b",
@@ -4452,6 +4463,14 @@ def _explicit_arguments_from_evidence(
 
     if operation == "window.application.status":
         name = effect_intent._named_window_status_target(folded)
+        if name is None:
+            observed = re.search(
+                r"(?:esta|is)\s+(?:corriendo|abierto|abierta|open|running)\s+"
+                r"(?:el|la|the)?\s*(?P<name>[a-z0-9][a-z0-9 ._+@-]{0,80})",
+                folded,
+            )
+            if observed is not None:
+                name = observed.group("name").strip()
         if name is None and re.fullmatch(
             r"[a-z0-9][a-z0-9 ._+@-]{0,100}",
             folded,
@@ -4831,6 +4850,24 @@ def _explicit_arguments_from_evidence(
             if re.search(pattern, folded)
         }
         return {"sort": next(iter(sorts))} if len(sorts) == 1 else {}
+
+    if operation == "system.settings.status":
+        if effect_intent._direct_brightness_status_request(folded) or re.search(
+            r"\b(?:brillo|brightness)\b",
+            folded,
+        ):
+            return {"setting": "brightness"}
+        return None
+
+    if operation == "system.settings.set":
+        if not re.search(r"\b(?:brillo|brightness)\b", folded):
+            return None
+        endpoint = effect_intent._absolute_brightness_endpoint(folded)
+        if endpoint is not None:
+            return None if numbers else {"setting": "brightness", "value": endpoint}
+        if len(numbers) != 1 or not 0 <= numbers[0] <= 100:
+            return None
+        return {"setting": "brightness", "value": numbers[0]}
 
     if operation == "reminder.create":
         relative_reminder = _explicit_relative_reminder_arguments(evidence)

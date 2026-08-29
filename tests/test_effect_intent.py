@@ -237,7 +237,10 @@ def test_bare_spanish_temperature_factoid_uses_verified_public_lookup() -> None:
         ("poné el brillo al 80", ("system.settings.set",)),
         ("Pon el brillo al 50%", ("system.settings.set",)),
         ("set the brightness to 40", ("system.settings.set",)),
+        ("subí el brillo al máximo", ("system.settings.set",)),
+        ("set the brightness to maximum", ("system.settings.set",)),
         ("mostrame el brillo", ("system.settings.status",)),
+        ("qué brillo tengo", ("system.settings.status",)),
         ("decime si el wifi está prendido", ("wifi.status",)),
         ("me abrís la calculadora", ("app.open",)),
         ("Suma 2 más 2 en la Calculadora", ("app.open", "input.text.type")),
@@ -7020,6 +7023,9 @@ def test_bare_play_music_does_not_ask_for_a_title() -> None:
         ("siguiente canción", "media.control"),
         ("poné música", "media.play.query"),
         ("qué app usa más memoria", "system.process.list"),
+        ("qué brillo tengo", "system.settings.status"),
+        ("subí el brillo al máximo", "system.settings.set"),
+        ("está corriendo spotify", "window.application.status"),
         ("open the file explorer", "app.open"),
         ("contá 10 minutos", "notification.schedule"),
         ("cancelá la alarma", "notification.cancel.latest"),
@@ -7038,3 +7044,26 @@ def test_in_scope_named_identities_are_domain_grounded(
     operation: str,
 ) -> None:
     assert operation_domain_is_grounded(text, operation) is not False
+
+
+def test_shell_open_resolves_explorer_from_the_authenticated_catalog() -> None:
+    catalog = build_application_catalog_index(("File Explorer", "Google Chrome"))
+    assert (
+        resolve_application_catalog_app_id("open the file explorer", catalog)
+        == "File Explorer"
+    )
+    assert (
+        resolve_application_catalog_app_id(
+            "abrí el explorador de archivos",
+            catalog,
+        )
+        == "File Explorer"
+    )
+
+
+def test_shell_open_falls_back_to_windows_explorer_without_a_catalog_hit() -> None:
+    catalog = build_application_catalog_index(("Google Chrome",))
+    assert (
+        resolve_application_catalog_app_id("open the file explorer", catalog)
+        == "windows.explorer"
+    )

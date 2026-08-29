@@ -4,11 +4,13 @@ public static class ApplicationIds
 {
     public const string Notepad = "windows.notepad";
     public const string Calculator = "windows.calculator";
+    public const string Explorer = "windows.explorer";
 
     public static string? DisplayName(string id) => id switch
     {
         Notepad => "Bloc de notas",
         Calculator => "Calculadora",
+        Explorer => "Explorador de archivos",
         _ => null,
     };
 
