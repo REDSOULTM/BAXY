@@ -3566,8 +3566,7 @@ def test_r15_address_and_message_task_chain_preserve_closed_authority() -> None:
         "message.send",
         "note.list",
     )
-    assert knowledge is not None
-    assert knowledge.operations == ("web.search",)
+    assert knowledge is None
 
 
 @pytest.mark.parametrize(

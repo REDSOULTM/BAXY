@@ -3870,10 +3870,23 @@ def test_public_fact_question_is_closed_before_model_selection(text: str) -> Non
         def retrieve(*_args: object) -> list[object]:
             raise AssertionError("a public fact must not retrieve evidence")
 
-    class NoModel:
+    class Runtime:
         @staticmethod
         def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
-            raise AssertionError("the verified public lookup must own the turn")
+            raise AssertionError("trivia must not use the planner")
+
+        @staticmethod
+        def formulate_explicit_clarification_question(*_args: object) -> str:
+            raise AssertionError("trivia must close before clarification")
+
+        @staticmethod
+        def detect_response_language(_text: str) -> str:
+            return "en"
+
+        @staticmethod
+        def chat(*_args: object, **kwargs: object) -> tuple[str, list[object]]:
+            assert kwargs["conversation_kind"] == "knowledge"
+            return "Batman is a fictional hero.", []
 
         @staticmethod
         def retire_deferred_response_language(_text: str) -> None:
@@ -3881,17 +3894,18 @@ def test_public_fact_question_is_closed_before_model_selection(text: str) -> Non
 
     result = _prepare_turn_result(
         {"id": "public-fact", "text": text},
-        llm=NoModel(),
+        llm=Runtime(),
         planner_catalog=catalog,
         turn_evidence=NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"web.search": tool},
     )
 
-    assert result["kind"] == "action"
-    assert result["operation"] == "web.search"
-    assert result["intentOperations"] == ["web.search"]
-    assert result["effectOperations"] == ["web.search"]
+    assert result["kind"] == "conversation"
+    assert result["operation"] is None
+    assert result["intentOperations"] == []
+    assert result["effectOperations"] == []
+    assert result["reply"] == "Batman is a fictional hero."
 
 
 def test_explicit_message_payload_future_tense_preserves_intent_identity() -> None:

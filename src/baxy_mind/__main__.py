@@ -3112,7 +3112,12 @@ def _explicit_stable_no_effect_turn_decision(
         (
             r"^[¿?¡!\s]*(?:que\s+es|que\s+son|explica(?:me)?\s+que\s+es|"
             r"what\s+(?:is|are|es)|what's|"
-            r"para\s+que\s+sirve|explain\s+what)\b"
+            r"para\s+que\s+sirve|explain\s+what|"
+            r"quien(?:es)?\s+(?:es|son|fue|fueron)|"
+            r"who\s+(?:is|are|was|were)|"
+            r"(?:cual|que|what)\s+(?:es|is)\s+(?:el|la|the)\s+"
+            r"(?:ultimo|ultima|latest|most\s+recent)|"
+            r"what\s+is\s+the\s+capital\s+of)\b"
         ),
         folded,
         re.IGNORECASE,
@@ -3121,7 +3126,8 @@ def _explicit_stable_no_effect_turn_decision(
         (
             r"\b(?:actual|actualmente|ahora|current|currently|right\s+now|"
             r"volumen|volume|hora|time|fecha|date|estado|status|"
-            r"sonando|playing|usando|using)\b"
+            r"sonando|playing|usando|using|"
+            r"mi|mis|my|tu|tus|your)\b"
         ),
     )
     component_description = re.match(
