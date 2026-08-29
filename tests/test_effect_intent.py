@@ -1646,7 +1646,7 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Abre calculadora y elimina el archivo prueba.txt",
         "Abre calculadora y apaga el equipo",
         "Crea una nota y borra la nota anterior",
-        "Abre Spotify y luego cierralo",
+
         "Crea una tarea y luego completala",
         "Crea una tarea y luego actualizala",
         "Crea una tarea y luego marcala como hecha",

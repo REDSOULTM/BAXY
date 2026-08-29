@@ -12287,6 +12287,13 @@ def _visible_click_label(
         or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
     ):
         return None
+    if (
+        _has(text, r"\b(?:aprieta|apreta|apretalo|apretala)\b")
+        and not _has(text, rf"\b{_VISIBLE_CLICK_CONTROL_NOUN}\b")
+        and not _has(text, r"\b(?:en|in|on)\s+(?:el|la|the\s+)?\S+")
+        and len(label.split()) >= 3
+    ):
+        return None
     return label[:80]
 
 
@@ -12985,6 +12992,8 @@ def resolve_explicit_effects(
     daily_use = _daily_use_family_intent(folded, available)
     if daily_use is not None:
         return daily_use
+    if _volume_domain(folded) and _has(folded, r"\b(?:brillo|brightness)\b"):
+        return None
     clauses = _request_clauses(folded)
     explicit_cardinality = _unresolved_explicit_cardinality(folded)
     if not folded or len(folded) > 16_384:
@@ -13062,8 +13071,10 @@ def resolve_explicit_effects(
         return EffectIntent(("system.time",), (folded,))
     if "network.ip.list" in available and _direct_local_ip_request(folded):
         return EffectIntent(("network.ip.list",), (folded,))
-    if "system.settings.set" in available and _direct_absolute_brightness_request(
-        folded
+    if (
+        "system.settings.set" in available
+        and _direct_absolute_brightness_request(folded)
+        and not _volume_domain(folded)
     ):
         return EffectIntent(("system.settings.set",), (folded,))
     if "system.settings.status" in available and _direct_brightness_status_request(
