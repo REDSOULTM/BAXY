@@ -1,0 +1,88 @@
+{
+  "schema": "baxy.goal10-in-scope-score.v1",
+  "merge": "r120surgical+r126overlay",
+  "replay_sha256": "be22d9f9974ef3dbaf3c08f07c0af61764d5837f3348b248058c014891a5a925",
+  "adjudication_sha256": "a5628a2b410a1e0eefa7e69d8a9d0eeca1263b1a849b8a383447e3fc831d7174",
+  "owner_scope": {
+    "languages": [
+      "es",
+      "en"
+    ],
+    "omit_other_languages": true,
+    "omit_environmental": true,
+    "environmental_not_converted_to_pass": true
+  },
+  "raw": {
+    "rows": 1947,
+    "pass": 1564,
+    "fail": 383
+  },
+  "omitted": {
+    "environmental": 217,
+    "other_language": 7,
+    "other_language_samples": [
+      "wie spät ist es",
+      "öffne den Rechner",
+      "ouvre la calculatrice",
+      "che ore sono",
+      "apri la calcolatrice",
+      "alza il volume",
+      "que horas são"
+    ]
+  },
+  "goal10_in_scope": {
+    "pass": 1564,
+    "fail": 159,
+    "total": 1723,
+    "pass_rate": 0.9077,
+    "criterion_zero_fail": false
+  },
+  "deferred_to_goal11": {
+    "environmental_fails": 217,
+    "families": {
+      "window_not_found": 5,
+      "web.search_irrelevant": 23,
+      "task_not_found": 1,
+      "game.launch": 4,
+      "streaming.navigate": 7,
+      "external_verification_failed": 7,
+      "wifi.status": 16,
+      "streaming.play.named": 23,
+      "vision.describe": 19,
+      "ocr.read": 7,
+      "firefox_not_installed": 6,
+      "wifi.connect.named": 7,
+      "input.visible.click": 38,
+      "system.power_fail_closed": 2,
+      "media_session_not_available": 2,
+      "message.send": 33,
+      "package.install.prepare": 9,
+      "whatsapp_client_not_running": 3,
+      "calendar_host_not_configured": 4,
+      "cdp_final_url_not_verified": 1
+    }
+  },
+  "in_scope_fail_top": {
+    "(none)": 64,
+    "app.open": 18,
+    "media.play.query": 10,
+    "browser.navigate": 6,
+    "notification.schedule": 5,
+    "system.process.list": 4,
+    "filesystem.search": 4,
+    "clipboard.write.text": 4,
+    "notification.cancel.latest": 3,
+    "filesystem.list": 3,
+    "calendar.event.create": 3,
+    "clipboard.read.text": 3,
+    "media.play.youtube": 2,
+    "input.key.press": 2,
+    "window.focus": 2,
+    "notification.list.due": 2,
+    "media.control": 2,
+    "browser.control": 2,
+    "browser.page.read": 2,
+    "note.list": 2
+  },
+  "note": "Environmental and non-es/en rows keep their individual fail verdict. They are omitted from the Goal 10 fail count; they are not converted to pass."
+}

@@ -1,17 +1,17 @@
-# Handoff — Goal 10 — 2026-08-29 — r125 overlay scored
+# Handoff — Goal 10 — 2026-08-29 — r126 overlay scored
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r125 20/20 + campaign done. Overlay quirúrgico **28** ids (gained_prose
-incluido). In-scope **1561 pass / 162 fail / 1723**. LastBoot
-`2026-08-27 21:25:24`. `system.settings.set` al máximo ahora grounds value=100
-sin pedir dígito (el testhost eligió action pero no ejecutó).
-En curso: remake r126 vivo (Win32 Create, deny-power). Overlay al 20/20 +
-campaign done. No overlay de incompletos. No r127 encima.
-Sin empezar: overlay r126, 808/2036/holdouts, matriz viva, ABBA, Full.
+Hecho: r126 20/20 + campaign done. Overlay quirúrgico **11** ids sobre el
+merge r125. In-scope **1564 pass / 159 fail / 1723**. `subí el brillo al
+máximo` ahora ejecuta (`Listo, el brillo está al máximo.`). LastBoot
+`2026-08-27 21:25:24`.
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full. In-scope 0 fail
+sigue abierto; no r127 encima de incompletos. La siguiente familia, si hay
+otra remake, sale de `(none)` 64 / `app.open` 18 / `media.play.query` 10.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
@@ -28,16 +28,15 @@ Sin empezar: overlay r126, 808/2036/holdouts, matriz viva, ABBA, Full.
 - `src/Baxy.Providers.Windows/Applications/` — `windows.explorer` + explorer.exe
 
 ## Hipótesis
-Confirmadas: r124 overlay 77; env 221 omitidas; 7 other-lang omitidas.
-Descartadas: overlay wholesale de shards r124 (99/191 originales divergían).
+Confirmadas: r126 ejecutó brillo al máximo; overlay 11 ids; env 217 omitidas; 7 other-lang omitidas.
+Descartadas: overlay wholesale de shards; r127 encima de una tanda incompleta.
 
 ## Comandos ejecutados y resultado
-- mind-runtime pytest `tests/test_effect_intent.py tests/test_turn_policy.py -q` → **2597 passed** twice (78s, 68s)
-- `dotnet test …WindowsApplicationOpenProviderTests --filter ExplorerIdentity` → 1 pass
-- `dotnet test …PlannerAppBoundaryTests --filter LastResortFailureProse…` → 1 pass
-- LastBoot → `2026-08-27 21:25:24`
+- r126 waiter → **DONE**. 20/20 empty=0 + `campaign done`. LastBoot `2026-08-27 21:25:24`
+- overlay r126: unique 1947, overlaid 11, blocked_lost_journal 177
+- in-scope `artifacts/goal10/goal10-in-scope-r126.json` → **1564/159**, criterion_zero_fail false
+- mind-runtime pytest → **2598 passed** twice (pre-r126 grounding)
 
 ## Siguiente acción recomendada
-Tras el push: una campaña testhost r125, 20 shards,
-`BAXY_DENY_HOST_POWER_TRANSITION=1`. No overlay hasta 20/20 + «campaign done».
-Score in-scope igual que r124; si fail>0, otra familia en el dueño, no veinte remakes.
+Familia dueño sobre `(none)` 64 / `app.open` 18 / `media.play.query` 10.
+No lanzar otra 1947 hasta que esa familia tenga tests verdes dos veces.
