@@ -38,6 +38,29 @@ public sealed class WindowsApplicationOpenProviderTests
     }
 
     [Test]
+    public async Task ExplorerShellOpenBindsAVisibleFolderWindow()
+    {
+        var provider = new WindowsInstalledApplicationOpenProvider();
+        ApplicationOpenResult result = await provider.OpenAsync(
+            new ApplicationOpenRequest(
+                ApplicationIds.Explorer,
+                Guid.NewGuid().ToString("D")),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ErrorCode, Is.Null);
+            Assert.That(result.ProcessId, Is.GreaterThan(0));
+            Assert.That(result.WindowHandle, Is.GreaterThan(0));
+            Assert.That(result.Receipt.ProcessCreationTimeUtcTicks, Is.GreaterThan(0));
+            Assert.That(result.Receipt.ExecutablePath, Is.Not.Null.And.Not.Empty);
+            Assert.That(Path.IsPathFullyQualified(result.Receipt.ExecutablePath!), Is.True);
+        });
+    }
+
+    [Test]
     public async Task NewInvocationPersistsIntentAndUsesOnlyTheBreakawayBootstrapLaunch()
     {
         using TestEnvironment environment = new();

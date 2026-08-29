@@ -5,11 +5,10 @@ BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r127 20/20 + overlay 14. In-scope **1572 pass / 148 fail / 1720**.
-`a`→¿Sí?. `no me molesta, poné música` reproduce. Explorer shell aún
-`verification_failed`/`effectUncertain`. LastBoot `2026-08-27 21:25:24`.
-pytest 2602 twice. Publicado `de2dd09` + score r127.
-Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full. No r128 encima.
+Hecho: explorer/terminal postlectura liga HWND visible (`CabinetWClass`).
+Tests Explorer 2/2 twice; pytest 2602 twice. LastBoot `2026-08-27 21:25:24`.
+En curso: remake r128 tras este commit (Win32 Create, deny-power).
+Sin empezar: overlay r128, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
@@ -36,6 +35,4 @@ Descartadas: overlay wholesale de shards; r127 encima de una tanda incompleta.
 - mind-runtime pytest → **2598 passed** twice (pre-r126 grounding)
 
 ## Siguiente acción recomendada
-Familia dueño: `app.open` explorer verification_failed (OpenExplorerShell
-no pasa postlectura). `(none)` 60 y `media.play.query` 6. Tests verdes
-dos veces antes de otra remake.
+Tras 20/20 r128 + campaign done: overlay quirúrgico y score in-scope.

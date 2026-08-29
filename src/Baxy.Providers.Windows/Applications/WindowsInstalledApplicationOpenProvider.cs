@@ -676,61 +676,30 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 UseShellExecute = true,
             };
             using Process? launched = Process.Start(startInfo);
-            using Process current = Process.GetCurrentProcess();
-            Process[] after = Process.GetProcessesByName("explorer");
-            try
+            if (!WindowsInstalledApplicationPlatform.TryWaitForVisibleWindowClass(
+                    ["CabinetWClass", "ExploreWClass"],
+                    out int processId,
+                    out long handle,
+                    out long createdTicks))
             {
-                Process? chosen = after
-                    .Where(item => item.Id != current.Id)
-                    .OrderByDescending(item =>
-                    {
-                        try
-                        {
-                            return item.StartTime.ToUniversalTime().Ticks;
-                        }
-                        catch (Exception)
-                        {
-                            return 0L;
-                        }
-                    })
-                    .FirstOrDefault();
-                if (chosen is null)
-                {
-                    return Failure(
-                        request,
-                        "Explorador de archivos",
-                        ApplicationOpenErrorCodes.LaunchFailed,
-                        launchIssued: true);
-                }
-
-                var entry = new InstalledApplicationEntry(
+                return Failure(
+                    request,
                     "Explorador de archivos",
-                    ApplicationIds.Explorer);
-                long handle = 0;
-                try
-                {
-                    handle = chosen.MainWindowHandle.ToInt64();
-                }
-                catch (Exception)
-                {
-                }
+                    ApplicationOpenErrorCodes.VerificationFailed,
+                    launchIssued: true);
+            }
 
-                var observation = new InstalledApplicationObservation(
-                    chosen.Id,
-                    chosen.StartTime.ToUniversalTime().Ticks,
-                    explorer,
-                    handle,
-                    Visible: true,
-                    Foreground: true);
-                return Success(request, entry, observation, reused: launched is null);
-            }
-            finally
-            {
-                foreach (Process item in after)
-                {
-                    item.Dispose();
-                }
-            }
+            var entry = new InstalledApplicationEntry(
+                "Explorador de archivos",
+                ApplicationIds.Explorer);
+            var observation = new InstalledApplicationObservation(
+                processId,
+                createdTicks,
+                explorer,
+                handle,
+                Visible: true,
+                Foreground: true);
+            return Success(request, entry, observation, reused: launched is null);
         }
         catch (Exception exception) when (exception is InvalidOperationException
             or System.ComponentModel.Win32Exception)
@@ -759,20 +728,28 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     continue;
                 }
 
-                var entry = new InstalledApplicationEntry("Terminal", "windows.terminal");
-                long handle = 0;
+                if (!WindowsInstalledApplicationPlatform.TryWaitForVisibleProcessWindow(
+                        launched.Id,
+                        out long handle,
+                        out long createdTicks))
+                {
+                    continue;
+                }
+
+                string executablePath = Path.GetFullPath(executable);
                 try
                 {
-                    handle = launched.MainWindowHandle.ToInt64();
+                    executablePath = launched.MainModule?.FileName ?? executablePath;
                 }
                 catch (Exception)
                 {
                 }
 
+                var entry = new InstalledApplicationEntry("Terminal", "windows.terminal");
                 var observation = new InstalledApplicationObservation(
                     launched.Id,
-                    launched.StartTime.ToUniversalTime().Ticks,
-                    executable,
+                    createdTicks,
+                    executablePath,
                     handle,
                     Visible: true,
                     Foreground: true);
@@ -1350,6 +1327,116 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return identities;
     }
 
+    internal static bool TryWaitForVisibleWindowClass(
+        IReadOnlyList<string> classNames,
+        out int processId,
+        out long handle,
+        out long createdTicks)
+    {
+        processId = 0;
+        handle = 0;
+        createdTicks = 0;
+        for (int attempt = 0; attempt < 20; attempt++)
+        {
+            nint found = FindVisibleWindowOfClass(classNames);
+            if (found != 0)
+            {
+                GetWindowThreadProcessId(found, out uint owner);
+                if (owner != 0)
+                {
+                    try
+                    {
+                        using Process process = Process.GetProcessById(unchecked((int)owner));
+                        processId = process.Id;
+                        handle = found.ToInt64();
+                        createdTicks = process.StartTime.ToUniversalTime().Ticks;
+                        if (processId > 0 && handle > 0 && createdTicks > 0)
+                        {
+                            return true;
+                        }
+                    }
+                    catch (Exception exception) when (exception is ArgumentException
+                        or InvalidOperationException
+                        or System.ComponentModel.Win32Exception)
+                    {
+                    }
+                }
+            }
+
+            Thread.Sleep(100);
+        }
+
+        return false;
+    }
+
+    internal static bool TryWaitForVisibleProcessWindow(
+        int processId,
+        out long handle,
+        out long createdTicks)
+    {
+        handle = 0;
+        createdTicks = 0;
+        for (int attempt = 0; attempt < 20; attempt++)
+        {
+            nint found = LargestTopLevelWindow(processId, includeHidden: false);
+            if (found != 0)
+            {
+                try
+                {
+                    using Process process = Process.GetProcessById(processId);
+                    handle = found.ToInt64();
+                    createdTicks = process.StartTime.ToUniversalTime().Ticks;
+                    if (handle > 0 && createdTicks > 0)
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception exception) when (exception is ArgumentException
+                    or InvalidOperationException
+                    or System.ComponentModel.Win32Exception)
+                {
+                }
+            }
+
+            Thread.Sleep(100);
+        }
+
+        return false;
+    }
+
+    private static nint FindVisibleWindowOfClass(IReadOnlyList<string> classNames)
+    {
+        nint found = 0;
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (!IsWindowVisible(window))
+            {
+                return true;
+            }
+
+            Span<char> buffer = stackalloc char[256];
+            int length = GetClassName(window, buffer, buffer.Length);
+            if (length <= 0)
+            {
+                return true;
+            }
+
+            ReadOnlySpan<char> className = buffer[..length];
+            foreach (string expected in classNames)
+            {
+                if (className.Equals(expected, StringComparison.Ordinal))
+                {
+                    found = window;
+                    return false;
+                }
+            }
+
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return found;
+    }
+
     private static nint LargestTopLevelWindow(int processId, bool includeHidden)
     {
         nint best = 0;
@@ -1419,6 +1506,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsWindowVisible(nint window);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetClassNameW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int GetClassName(nint hWnd, Span<char> className, int maxCount);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
