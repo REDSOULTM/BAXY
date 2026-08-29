@@ -5,10 +5,9 @@ BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: explorer/terminal postlectura liga HWND visible (`CabinetWClass`).
-Tests Explorer 2/2 twice; pytest 2602 twice. LastBoot `2026-08-27 21:25:24`.
-En curso: remake r128 tras este commit (Win32 Create, deny-power).
-Sin empezar: overlay r128, 808/2036/holdouts, matriz viva, ABBA, Full.
+Hecho: r128 20/20 + overlay 14 (verified_effect). In-scope **1576/144**.
+`open the file explorer` pasa. LastBoot `2026-08-27 21:25:24`.
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full. No r129 encima.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
@@ -35,4 +34,5 @@ Descartadas: overlay wholesale de shards; r127 encima de una tanda incompleta.
 - mind-runtime pytest → **2598 passed** twice (pre-r126 grounding)
 
 ## Siguiente acción recomendada
-Tras 20/20 r128 + campaign done: overlay quirúrgico y score in-scope.
+Familia dueño sobre `(none)` 61 / `app.open` 11 / `media.play.query` 6.
+Tests verdes dos veces antes de otra remake.
