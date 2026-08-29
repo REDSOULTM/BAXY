@@ -50,6 +50,20 @@ uso diario (`_daily_use_family_intent`): hora/estado, ventana, media, procesos,
 shell, timer, portapapeles, calendario, carpetas conocidas, búsqueda de archivo,
 navegación nombrada, deícticos. No hay un regex por `message_id`.
 
+## HEAD-preexistentes (no de esta corrida)
+
+Estos 4 ya fallaban en `67c621a` con tests HEAD + mente HEAD:
+
+- `test_r15_address_and_message_task_chain_preserve_closed_authority`
+  (`What is a notification?` → el test pide `web.search`; el resolutor se abstiene)
+- `test_public_fact_question_is_closed_before_model_selection` ×3
+  (Batman / Mortal Kombat / Nigeria): `turn_policy` pide `web.search` sin modelo;
+  `test_public_fact_questions_stay_in_conversation` pide conversación. Gana
+  identidad: trivia en conversación, hechos vivos (hora, clima) por lookup.
+
+No se lanza la tanda 1.947 mientras el dueño no decida el lado de esa costura.
+Las familias in-scope del plan (63) pasaron dos veces.
+
 ## Números históricos (no certificar)
 
 r120 surgical: raw 1507 pass / 440 fail. In-scope 1507 / 217 fail. Env 216.

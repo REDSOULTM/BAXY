@@ -9,8 +9,9 @@ Hecho: inventario heredar/descartar; r123 incompleta anulada (no overlay);
 mente restaurada a HEAD anti-acumulación; `_daily_use_family_intent` en un dueño;
 fail-closed de `system.power`; LastBoot `2026-08-27 21:25:24`.
 Familias: 63 passed twice. Power test 2/2.
-En curso: **una** campaña 1.947 cuando este árbol esté commiteado.
-Sin empezar: 808/2036/holdouts, matriz viva, latencia ABBA, Full, push.
+En curso: 4 tests HEAD-preexistentes (trivia web.search vs conversación).
+Sin empezar: campaña 1.947 (no se lanza hasta esa costura), 808/2036/holdouts,
+matriz viva, latencia ABBA, Full.
 
 ## Decisiones tomadas
 - No `reset --hard 8c57747` ni force-push: origin ya tiene 163 commits del Goal 10.
