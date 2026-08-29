@@ -43,4 +43,5 @@ Descartadas: relanzar 1947 con el test de memoria en rojo.
 
 ## Siguiente acción recomendada
 Esperar r129 `DONE` (20/20 + campaign done). Overlay `overlay_r129.py`, no shards
-incompletos. Score in-scope. Si fail>0, familia en dueño, no otra remake encima.
+incompletos. Score in-scope. Familias r128 restantes:
+`artifacts/goal10/r128-remaining-families.md`. Si fail>0, una familia en dueño.
