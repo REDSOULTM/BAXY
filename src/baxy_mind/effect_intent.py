@@ -4200,6 +4200,38 @@ def _authenticated_application_target(
     )
 
 
+def _unique_catalog_prefix_name(
+    key: str,
+    catalog: ApplicationCatalogIndex,
+) -> str | None:
+    """Resolve one unique catalog name from a truncated spoken prefix."""
+
+    if len(key) < 4:
+        return None
+    hits: list[str] = []
+    for name, candidate_key in catalog.entries:
+        if candidate_key.startswith(key) or _application_name_key(name).startswith(key):
+            hits.append(name)
+    unique = list(dict.fromkeys(hits))
+    return unique[0] if len(unique) == 1 else None
+
+
+def _spoken_application_open_label(folded: str) -> str | None:
+    """Keep a named app-open label even when the catalog has no hit."""
+
+    request = re.fullmatch(
+        r"(?:abri|abre|open)\s+(?:(?:la|el|the|una?)\s+)?"
+        r"(?:aplicacion|app|application)\s+"
+        r"(?P<name>[a-z0-9][a-z0-9 ._+@-]{0,80})"
+        r"[\s.!?]*",
+        folded,
+    )
+    if request is None:
+        return None
+    name = request.group("name").strip(" .")
+    return name or None
+
+
 def resolve_application_catalog_app_id(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -4302,6 +4334,16 @@ def resolve_application_catalog_app_id(
             if len(matches) == 1:
                 return matches[0]
             return "windows.terminal"
+
+    for key in keys:
+        prefixed = _unique_catalog_prefix_name(key, catalog)
+        if prefixed is not None:
+            return prefixed
+
+    spoken = _spoken_application_open_label(folded)
+    if spoken is not None:
+        prefixed = _unique_catalog_prefix_name(spoken, catalog)
+        return prefixed or spoken
 
     for key in keys:
         exact = [
@@ -4852,6 +4894,8 @@ _REQUEST_PREFIX = (
     # ``no quiero que abras Steam`` remains a negated request and never gains
     # authority by normalization.
     r"(?:no|nop|nope)\s*[,;:.!?]+\s*|"
+    rf"(?:no me molesta|no me importa|no problem|doesn'?t bother me|dale)"
+    rf"\s*[,;:.!?]+{_PREFIX_GAP}|"
     rf"(?:por favor|porfa|please)\s*[,;:.!?]?{_PREFIX_GAP}|"
     rf"(?:una\s+(?:pequena\s+)?cuestion|i\s+small\s+question)"
     rf"\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"

@@ -11,8 +11,8 @@
       "pass": 1937
     },
     "language": {
-      "fail": 11,
-      "pass": 1936
+      "fail": 10,
+      "pass": 1937
     },
     "naturalness": {
       "fail": 1,
@@ -39,11 +39,11 @@
       "pass": 1601
     }
   },
-  "private_output_sha256": "a5628a2b410a1e0eefa7e69d8a9d0eeca1263b1a849b8a383447e3fc831d7174",
+  "private_output_sha256": "2e2096d6cdfd2739eefc00d22a75f78d6b9e032a8f93536fbd12bab4ad98e085",
   "replay_inputs": [
     {
       "file": "observed-product-replay.v2.jsonl",
-      "sha256": "be22d9f9974ef3dbaf3c08f07c0af61764d5837f3348b248058c014891a5a925"
+      "sha256": "c646249381bba1581638212898553aa135a1258c2207eb12b1e52e0665bd879f"
     }
   ],
   "row_count": 1947,
@@ -51,11 +51,11 @@
   "semantic_review_inputs": [
     {
       "file": "observed-semantic-review.v2.jsonl",
-      "sha256": "1071c3634809bdafe647f42b4464667459e9b9e6307386061258844cbb6f412f"
+      "sha256": "cfd0199c972df75b8684122d84ecff056f87c715167598320836f3eb50ee1bb8"
     }
   ],
   "verdict_counts": {
-    "fail": 383,
-    "pass": 1564
+    "fail": 382,
+    "pass": 1565
   }
 }

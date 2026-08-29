@@ -25,6 +25,15 @@ public sealed class WindowsApplicationOpenProviderTests
             Assert.That(
                 WindowsInstalledApplicationOpenProvider.IsExplorerIdentity("Google Chrome"),
                 Is.False);
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsTerminalIdentity("windows.terminal"),
+                Is.True);
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsTerminalIdentity("cmd"),
+                Is.True);
+            Assert.That(
+                WindowsInstalledApplicationOpenProvider.IsTerminalIdentity("Google Chrome"),
+                Is.False);
         });
     }
 

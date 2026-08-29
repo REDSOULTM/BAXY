@@ -3369,12 +3369,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         if (!isUser
             && string.Equals(speaker, "BAXY", StringComparison.Ordinal)
-            && !formulatedByMind
             && !UserMessagePolicy.BypassLlmCompositionForTests)
         {
-            UserMessageDraft draft = UserMessagePolicy.Create(
-                body,
-                messageEvent ?? UserMessageEvent.Status);
             string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
                 ?? string.Empty;
             if (TurnVisibleFacts.UnderspecifiedUserTurn(userText))
@@ -3385,6 +3381,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     isUser: false);
                 return;
             }
+
+            if (formulatedByMind)
+            {
+                AddMessageCore(speaker, body, isUser: false);
+                return;
+            }
+
+            UserMessageDraft draft = UserMessagePolicy.Create(
+                body,
+                messageEvent ?? UserMessageEvent.Status);
 
             if (TurnVisibleFacts.LastResortProse(
                     "composition_lost_verified_facts",

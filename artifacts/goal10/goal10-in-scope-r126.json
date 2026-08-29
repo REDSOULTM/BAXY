@@ -1,8 +1,8 @@
 {
   "schema": "baxy.goal10-in-scope-score.v1",
   "merge": "r120surgical+r126overlay",
-  "replay_sha256": "be22d9f9974ef3dbaf3c08f07c0af61764d5837f3348b248058c014891a5a925",
-  "adjudication_sha256": "a5628a2b410a1e0eefa7e69d8a9d0eeca1263b1a849b8a383447e3fc831d7174",
+  "replay_sha256": "c646249381bba1581638212898553aa135a1258c2207eb12b1e52e0665bd879f",
+  "adjudication_sha256": "2e2096d6cdfd2739eefc00d22a75f78d6b9e032a8f93536fbd12bab4ad98e085",
   "owner_scope": {
     "languages": [
       "es",
@@ -14,8 +14,8 @@
   },
   "raw": {
     "rows": 1947,
-    "pass": 1564,
-    "fail": 383
+    "pass": 1565,
+    "fail": 382
   },
   "omitted": {
     "environmental": 217,
@@ -31,10 +31,10 @@
     ]
   },
   "goal10_in_scope": {
-    "pass": 1564,
-    "fail": 159,
+    "pass": 1565,
+    "fail": 158,
     "total": 1723,
-    "pass_rate": 0.9077,
+    "pass_rate": 0.9083,
     "criterion_zero_fail": false
   },
   "deferred_to_goal11": {
@@ -63,7 +63,7 @@
     }
   },
   "in_scope_fail_top": {
-    "(none)": 64,
+    "(none)": 63,
     "app.open": 18,
     "media.play.query": 10,
     "browser.navigate": 6,

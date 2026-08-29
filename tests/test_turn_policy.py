@@ -1736,6 +1736,11 @@ def test_repeated_effects_receive_distinct_argument_purposes() -> None:
         ("media.control", "pará la música", {"action": "pause"}),
         ("media.control", "si tengo spotify abierto pausalo", {"action": "pause", "sourceApp": "spotify"}),
         ("media.play.query", "poné música", {"provider": "spotify", "query": "musica"}),
+        (
+            "media.play.query",
+            "no me molesta, poné música",
+            {"provider": "spotify", "query": "musica"},
+        ),
         ("system.settings.set", "subí el brillo al máximo", {"setting": "brightness", "value": 100}),
         ("system.settings.set", "poné el brillo al 80", {"setting": "brightness", "value": 80}),
         ("system.settings.status", "qué brillo tengo", {"setting": "brightness"}),

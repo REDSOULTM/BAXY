@@ -45,6 +45,16 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return Failure(request, string.Empty, ApplicationOpenErrorCodes.InvalidApplication);
         }
 
+        if (IsExplorerIdentity(request.ApplicationId))
+        {
+            return OpenExplorerShell(request);
+        }
+
+        if (IsTerminalIdentity(request.ApplicationId))
+        {
+            return OpenTerminalShell(request);
+        }
+
         IReadOnlyList<InstalledApplicationEntry> catalog;
         try
         {
@@ -640,6 +650,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             || id.Contains("explorador", StringComparison.OrdinalIgnoreCase);
     }
 
+    internal static bool IsTerminalIdentity(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return false;
+        }
+
+        return id.Equals("windows.terminal", StringComparison.OrdinalIgnoreCase)
+            || id.Equals("terminal", StringComparison.OrdinalIgnoreCase)
+            || id.Equals("cmd", StringComparison.OrdinalIgnoreCase)
+            || id.Contains("windows terminal", StringComparison.OrdinalIgnoreCase)
+            || id.Contains("consola", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static ApplicationOpenResult OpenExplorerShell(ApplicationOpenRequest request)
     {
         string explorer = Path.Combine(
@@ -717,6 +741,55 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.LaunchFailed,
                 launchIssued: true);
         }
+    }
+
+    private static ApplicationOpenResult OpenTerminalShell(ApplicationOpenRequest request)
+    {
+        foreach (string executable in new[] { "wt.exe", "cmd.exe" })
+        {
+            try
+            {
+                var startInfo = new ProcessStartInfo(executable)
+                {
+                    UseShellExecute = true,
+                };
+                using Process? launched = Process.Start(startInfo);
+                if (launched is null)
+                {
+                    continue;
+                }
+
+                var entry = new InstalledApplicationEntry("Terminal", "windows.terminal");
+                long handle = 0;
+                try
+                {
+                    handle = launched.MainWindowHandle.ToInt64();
+                }
+                catch (Exception)
+                {
+                }
+
+                var observation = new InstalledApplicationObservation(
+                    launched.Id,
+                    launched.StartTime.ToUniversalTime().Ticks,
+                    executable,
+                    handle,
+                    Visible: true,
+                    Foreground: true);
+                return Success(request, entry, observation, reused: false);
+            }
+            catch (Exception exception) when (exception is InvalidOperationException
+                or System.ComponentModel.Win32Exception
+                or System.IO.FileNotFoundException)
+            {
+            }
+        }
+
+        return Failure(
+            request,
+            "Terminal",
+            ApplicationOpenErrorCodes.LaunchFailed,
+            launchIssued: false);
     }
 
     private static ApplicationOpenResult Success(

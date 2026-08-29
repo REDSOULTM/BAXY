@@ -7,6 +7,7 @@ import pytest
 from baxy_mind.effect_intent import (
     CompoundEffectContract,
     EffectIntent,
+    _bare_play_music_request,
     _fold,
     _strip_request_envelope,
     build_application_catalog_index,
@@ -7066,4 +7067,33 @@ def test_shell_open_falls_back_to_windows_explorer_without_a_catalog_hit() -> No
     assert (
         resolve_application_catalog_app_id("open the file explorer", catalog)
         == "windows.explorer"
+    )
+
+
+def test_truncated_catalog_prefix_resolves_one_unique_app() -> None:
+    catalog = build_application_catalog_index(("Steam", "Google Chrome"))
+    assert resolve_application_catalog_app_id("abre stea", catalog) == "Steam"
+
+
+def test_named_unknown_app_open_keeps_the_spoken_label() -> None:
+    catalog = build_application_catalog_index(("Google Chrome",))
+    assert (
+        resolve_application_catalog_app_id("abrí la aplicación foobarapp", catalog)
+        == "foobarapp"
+    )
+
+
+def test_concession_preface_does_not_hide_a_bare_play_request() -> None:
+    folded = _fold("no me molesta, poné música")
+    assert _bare_play_music_request(folded)
+    assert resolve_explicit_effects(
+        "no me molesta, poné música",
+        {"media.play.query"},
+    ) == EffectIntent(("media.play.query",), (_fold("poné música"),))
+    assert (
+        resolve_explicit_clarification_intent(
+            "no me molesta, poné música",
+            ("media.play.query",),
+        )
+        is None
     )

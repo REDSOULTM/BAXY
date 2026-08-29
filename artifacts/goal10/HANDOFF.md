@@ -5,13 +5,12 @@ BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r126 20/20 + campaign done. Overlay quirúrgico **11** ids sobre el
-merge r125. In-scope **1564 pass / 159 fail / 1723**. `subí el brillo al
-máximo` ahora ejecuta (`Listo, el brillo está al máximo.`). LastBoot
-`2026-08-27 21:25:24`.
-Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full. In-scope 0 fail
-sigue abierto; no r127 encima de incompletos. La siguiente familia, si hay
-otra remake, sale de `(none)` 64 / `app.open` 18 / `media.play.query` 10.
+Hecho: familias dueño — explorer/terminal por shell, `a`→¿Sí? aunque el 4B
+diga Hello, prefacio `no me molesta,` no tapa `poné música`, prefijo único de
+catálogo, app nombrada aunque no esté instalada. pytest **2602** twice.
+In-scope actual **1565/158**. LastBoot `2026-08-27 21:25:24`.
+En curso: una remake r127 tras este commit.
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
