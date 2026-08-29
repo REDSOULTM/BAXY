@@ -1750,6 +1750,27 @@ def test_explicit_arguments_are_bound_to_each_effect_fragment(
     assert _explicit_arguments_from_evidence(operation, evidence) == expected
 
 
+def test_absolute_brightness_maximum_grounds_without_a_digit_literal() -> None:
+    schema = {
+        "type": "object",
+        "properties": {
+            "setting": {
+                "type": "string",
+                "enum": ["brightness", "do_not_disturb", "night_light"],
+            },
+            "value": {"type": "integer", "minimum": 0, "maximum": 100},
+        },
+        "required": ["setting", "value"],
+        "additionalProperties": False,
+    }
+
+    assert _ground_explicit_arguments(
+        "system.settings.set",
+        "subí el brillo al máximo",
+        schema,
+    ) == {"setting": "brightness", "value": 100}
+
+
 @pytest.mark.parametrize(
     ("evidence", "expected"),
     [

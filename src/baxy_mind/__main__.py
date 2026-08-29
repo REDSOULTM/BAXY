@@ -5226,6 +5226,8 @@ def _ground_explicit_arguments(
         "game.launch",
         "media.control",
         "media.play.query",
+        "system.settings.set",
+        "system.settings.status",
         "window.application.status",
     }:
         # Core's verified installed application/game snapshots own identity

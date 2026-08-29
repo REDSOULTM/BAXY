@@ -1,19 +1,16 @@
-# Handoff — Goal 10 — 2026-08-29 — r124 scored, owner-fix, r125 next
+# Handoff — Goal 10 — 2026-08-29 — r125 overlay scored
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r124 20/20 overlay 77 ids sobre r120; in-scope **1539 pass / 180 fail /
-1719** (`artifacts/goal10/goal10-in-scope-r124.json`). Owner-fix de familias:
-explorer, pausa/poné música, brillo máximo/estado, prosa de process.list y
-window.application.status. Owner pytest 2597 twice. LastBoot
-`2026-08-27 21:25:24`.
-En curso: remake r125 vivo (Win32 Create, 20 shards, deny-power). PID python
-34972/34828. Overlay quirúrgico sólo de `message_id` mejorados; no shards
-incompletos; no r126 encima.
-Sin empezar: overlay r125, 808/2036/holdouts, matriz viva, ABBA, Full.
+Hecho: r125 20/20 + campaign done. Overlay quirúrgico **28** ids (gained_prose
+incluido). In-scope **1561 pass / 162 fail / 1723**. LastBoot
+`2026-08-27 21:25:24`. `system.settings.set` al máximo ahora grounds value=100
+sin pedir dígito (el testhost eligió action pero no ejecutó).
+En curso: owner-fix grounding + una remake r126. No overlay de incompletos.
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - No regex-por-fail ni literales de corpus (`zzqwx123`, `Abre stea`, `a`→Hello).
