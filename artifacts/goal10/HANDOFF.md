@@ -9,9 +9,9 @@ Hecho: r128 overlay 14; in-scope **1576/144**. Owner-fix (none)/app.open:
 hechos implícitos → `DoNotPersist` (mente conversa, no `AskToSave`); `Tiempo`
 → `system.time`; `abrí la aplicación X` + prefijo único 3 chars; alarma hora >23
 sin aclarar; terminal `System32\cmd.exe`. Tests verdes dos veces.
+r129 lanzada vía Win32 Create (`launch_r129.ps1`, python 54788/55316).
 LastBoot `2026-08-27 21:25:24`.
-En curso: lanzar r129 vía Win32 Create + deny-power
-(`%LOCALAPPDATA%\BAXYRuntime\goal10\launch_r129.ps1`).
+En curso: campaña r129 1947 (esperar 20/20 + `campaign done`).
 Sin empezar: overlay r129, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
