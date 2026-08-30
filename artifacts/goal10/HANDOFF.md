@@ -1,41 +1,38 @@
-# Handoff — Goal 10 — 2026-08-30 — r131 overlay scored
+# Handoff — Goal 10 — 2026-08-30 — r132 overlay scored
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r130 VOID (reboot). r131 20/20 + overlay 11. In-scope **1582/144**.
-`abre Steel.` pasa. `Sí. Abre Steel.` journal app.open pero
-`No pude encontrarlo`: el `appId` no se resuelve (sobre sin strip en
-`resolve_application_catalog_app_id`; evidencia `steel.`).
-LastBoot `2026-08-29 21:12:42`.
-Owner-fix: `resolve_application_catalog_app_id` strip envelope;
-evidencia del prefijo sin `steel.`. pytest 2606 ×2.
-r132 lanzada vía Win32 Create (`launch_r132.ps1`, python 32400/3464).
-LastBoot `2026-08-29 21:12:42`. Deny-power=1.
-En curso: campaña r132 1947 (esperar 20/20 + `campaign done`).
-Sin empezar: overlay r132, 808/2036/holdouts, matriz viva, ABBA, Full.
+Hecho: r130 VOID. r131 1582/144. r132 20/20 + overlay 8.
+In-scope **1590/142**. `Sí. Abre Steel.` / `Sí, abre Ste.` / `abre Steel.`
+pasan (`Listo, Steam está abierto`). LastBoot `2026-08-29 21:12:42`.
+En curso: siguiente familia in-scope (app.open 8: Abrelo, terminal,
+photoshop, zzqwx fail-closed, chrome spam). (none) 63.
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
-- r130 no overlay (0 shards, reboot). Baseline r129 hasta r131 overlay.
-- Overlay r131 incluye `Sí. Abre Steel.` gained_journal — sigue fail.
-- Env omitidas 220→214: 5 env pasaron; 1 fail dejó de clasificar env
-  y entra in-scope. No convertir env a pass.
+- Envelope strip en `resolve_application_catalog_app_id` — `Sí. Abre Steel`
+  → Steam. Evidencia sin punto final.
+- zzqwx y firefox no se convierten a pass. Firefox es env Goal 11.
+- Overlay no pisa journal (184 blocked).
 
 ## Archivos tocados
-- `artifacts/goal10/goal10-in-scope-r131.json` — 1582/144
-- merge SHA `4fc137cacee1b8f81278afb7985e7deec32cc982fa84ef7ba6f0d1c18ae26642`
+- `artifacts/goal10/goal10-in-scope-r132.json` — 1590/142
+- merge SHA `a1b6f273c205a709e76f66738f595c5f4f7810a6e06b07ca556e4c4f08639230`
 
 ## Hipótesis
-Confirmadas: r131 20/20 empty=0. Afirmación abre pero no groundea Steam.
-Descartadas: overlay r130.
+Confirmadas: r132 20/20; Steel con afirmación groundea Steam.
+Descartadas: overlay r130; r132 in-scope 0 fail.
 
 ## Comandos ejecutados y resultado
-- wait_r131 → **DONE**. 20/20 + campaign done. LastBoot `2026-08-29 21:12:42`
-- overlay unique 1947, overlaid 11, blocked 180
-- in-scope **1582/144**, criterion_zero_fail false
+- wait_r132 → **DONE**. 20/20 empty=0. LastBoot `2026-08-29 21:12:42`
+- overlay unique 1947, overlaid 8, blocked 184
+- in-scope **1590/142**, criterion_zero_fail false
+- pytest 2606 ×2 (pre-r132 grounding)
 
 ## Siguiente acción recomendada
-Ground `Sí. Abre Steel.` → appId Steam. Tests verdes dos veces. UNA remake
-r132. No overlay incompleto. No system.power live.
+Owner-fix una familia: `abri photoshop` (token único sin hit de catálogo)
+o `Abrelo` deíctico. Tests verdes dos veces, UNA remake. No overlay
+incompleto. No system.power live.
