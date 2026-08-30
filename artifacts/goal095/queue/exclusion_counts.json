@@ -1,0 +1,120 @@
+{
+  "by_rule": {
+    "dot_directory": {
+      "bytes": 14402646075,
+      "files": 91435
+    },
+    "dotnet_obj": {
+      "bytes": 201066963,
+      "files": 1262
+    },
+    "egg_info": {
+      "bytes": 34751,
+      "files": 22
+    },
+    "node_modules": {
+      "bytes": 1737801616,
+      "files": 77410
+    },
+    "python_cache": {
+      "bytes": 90940849,
+      "files": 6203
+    },
+    "vendor_snapshot": {
+      "bytes": 1681589771,
+      "files": 85603
+    }
+  },
+  "by_source": {
+    "baxy": {
+      "dot_directory": {
+        "bytes": 1720997269,
+        "files": 45495
+      },
+      "dotnet_obj": {
+        "bytes": 201066963,
+        "files": 1262
+      },
+      "node_modules": {
+        "bytes": 1163450432,
+        "files": 51452
+      },
+      "python_cache": {
+        "bytes": 37091081,
+        "files": 1817
+      }
+    },
+    "carter": {
+      "dot_directory": {
+        "bytes": 12679770680,
+        "files": 44791
+      },
+      "egg_info": {
+        "bytes": 34751,
+        "files": 22
+      },
+      "python_cache": {
+        "bytes": 24775282,
+        "files": 1905
+      },
+      "vendor_snapshot": {
+        "bytes": 1681589771,
+        "files": 85603
+      }
+    },
+    "functiongemma": {
+      "python_cache": {
+        "bytes": 1888334,
+        "files": 58
+      }
+    },
+    "probando_gemma4": {
+      "dot_directory": {
+        "bytes": 1878126,
+        "files": 1149
+      },
+      "node_modules": {
+        "bytes": 574351184,
+        "files": 25958
+      },
+      "python_cache": {
+        "bytes": 27186152,
+        "files": 2423
+      }
+    }
+  },
+  "rules": [
+    {
+      "id": "dot_directory",
+      "reason": "directorio cuyo nombre empieza por punto (.git, .venv, caches, IDE)"
+    },
+    {
+      "id": "python_cache",
+      "reason": "bytecode o caches de pytest/ruff/mypy"
+    },
+    {
+      "id": "python_venv",
+      "reason": "entorno virtual, no es fuente del linaje"
+    },
+    {
+      "id": "node_modules",
+      "reason": "dependencias instaladas, no fuente propia"
+    },
+    {
+      "id": "dotnet_obj",
+      "reason": "salida de compilacion MSBuild"
+    },
+    {
+      "id": "egg_info",
+      "reason": "metadatos de instalacion pip"
+    },
+    {
+      "id": "vendor_snapshot",
+      "reason": "arbol de terceros clonado (competidores, OpenClaw, Hermes, llama.cpp)"
+    },
+    {
+      "id": "non_regular",
+      "reason": "symlink o no-regular; no se hashea el blob"
+    }
+  ]
+}

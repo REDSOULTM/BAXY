@@ -1,50 +1,48 @@
-# Handoff — 09.5.0 run2 — 2026-08-30
+# Handoff — 09.5.1 — 2026-08-30
 
 ## Objetivo
-Congelar las cuatro fuentes mínimas con material intelectual identificable, sin
-exigir blobs pesados ni carpeta Schema ni `.git`. Cierre verde o `FALLO_DE_AMBIENTE`.
+Manifiesto unico, colas disjuntas y lotes <=350k para auditar solo lo no cubierto.
 
 ## Estado
-Hecho: preflight run2; A=B=recuentos `5db4d64`; manifiestos SHA-256 reutilizados;
-Schema Agent anclado a refs Git de BAXY; `09_5_FUENTES.md` verde.
-En curso: nada.
-Sin empezar: 09.5.1.
+Hecho: manifiesto 28373; cola 19512; duplicados 8348; cobertura previa 513;
+exclusiones 261935; sparse_exclusions sin hashes inventados; 634 lotes;
+dos reconstrucciones identicas; tests 9 passed.
+En curso: nada de 09.5.1.
+Sin empezar: 09.5.2 sobre `docs-001-carter`.
 
 ## Decisiones tomadas
-- No se altera `artifacts/goal095/environment/09.5.0.md` (fallo histórico).
-- No se rehashea FunctionGemma ni Probando Gemma 4: mismos ficheros/bytes/`newest`.
-- `Probando schemas` no es fuente. Schema Agent = `origin/Tools-Reduce`,
-  `origin/vram4_lean`, `v0.9.2` dentro de `Programacion\BAXY`.
-- FunctionGemma sin `test_*.py` se registra; no bloquea (hay evals en `ops\`).
-- `D:\BAXY` sigue relacionado, no independiente.
+- Cubierto solo con hash identico a `biblioteca/01_INVENTARIO.md` o tarjeta unica
+  de `00_MAPA.md` / `D_ADAPTADORES_POR_APP.md`. Coincidencia de nombre no cubre.
+- Exclusiones: reglas (`dot_directory`, `node_modules`, `vendor_snapshot`, ...),
+  no juicio. Cuentan contra el recuento 09.5.0; no van al manifiesto hasheado.
+- Estimador `bytes/2`. Binarios 256. Evidence/JSONL/logs: tope 8192 (parseo).
+- Schema Agent: 12 blobs de refs Git de BAXY, `source_id=baxy_schema_agent`.
 
 ## Archivos tocados
-- `documentacion/herencia/09_5_FUENTES.md` — cierre PASS de esta corrida
-- `artifacts/goal095/run2/*` — snapshots, índice, reuso de manifiestos, sentinelas
+- `scripts/build_goal095_queues.py` — builder
+- `tests/test_goal095_queues.py` — union, privacidad, 09.5.0, reconstrucciones
+- `artifacts/goal095/queue/*` — cola, ledger, manifiesto, sello
+- `artifacts/goal095/sources/*.keep.sha256.jsonl` — keep hasheado
+- `documentacion/herencia/09_5_COBERTURA.md` — resumen
 - `artifacts/goal095/HANDOFF.md` — este handoff
 
-## Archivos relevantes aún sin tocar
-- `documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md`
-- `artifacts/goal095/environment/09.5.0.md` — se conserva
-- `artifacts/goal095/sources/*.sha256.jsonl` — se reutilizan
+## Archivos relevantes aun sin tocar
+- `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md`
+- `artifacts/goal095/queue/batches.json` lote `docs-001-carter`
 
-## Hipótesis
-Confirmadas: snapshot idéntico a `5db4d64`; Git históricos no mutados; refs Schema
-existen en BAXY.
-Descartadas: «hay que hashear otra vez» → conteos iguales. «Falta pytest en
-FunctionGemma ⇒ incompleto» → hay `ops\eval_*.json` y schemas.
+## Hipotesis
+Confirmadas: recuentos A=B=09.5.0; manifiestos FG/PG4 estables; union 100%.
+Descartadas: «cubrir por nombre de biblioteca» → 513 solo por hash/tarjeta.
 
 ## Comandos ejecutados y resultado
-- Recuento run2 A/B = run1: BAXY 116641/25488709507, Carter 136316/14935292111,
-  FunctionGemma 1090/34366705385, PG4 36249/3690624981.
-- `git rev-parse origin/Tools-Reduce` → `e6f9c1e5`; `vram4_lean` → `c5f65e9a`;
-  tag `v0.9.2` commit `398f120c`.
-- Git status SHA vs run1: BAXY `b0508200…`, Carter `3adb0157…`, iguales.
+- `py -m pytest tests/test_goal095_queues.py -q` → 9 passed
+- `scripts/build_goal095_queues.py --repeat 2` → sellos identicos,
+  `first_docs_batch_id=docs-001-carter`, missing 0, overlaps 0
 - Full: no. No hay cambio de producto.
 
 ## Problemas pendientes
-Ninguno de ambiente. 09.5.1 debe abrir `sparse_exclusions` con `models`/`data`
-omitidos de PG4.
+Ninguno de 09.5.1. 09.5.2 lee 72 archivos / 299986 tokens de `docs-001-carter`.
 
-## Siguiente acción recomendada
-Lanzar `documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md` en sesión nueva.
+## Siguiente accion recomendada
+Pegar `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md` y reclamar
+`docs-001-carter`.

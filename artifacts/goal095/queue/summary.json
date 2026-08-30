@@ -1,0 +1,44 @@
+{
+  "batch_count": 634,
+  "biblioteca_hashed": 1139,
+  "duplicates": 8348,
+  "estimator": "bytes_div_2",
+  "excluded_files": 261935,
+  "first_docs_batch_id": "docs-001-carter",
+  "goal01_cards": 74,
+  "manifest_files": 28373,
+  "missing": 0,
+  "overlaps": 0,
+  "prior_coverage": 513,
+  "queued": 19512,
+  "schema_agent_files": 12,
+  "source_totals": {
+    "baxy": {
+      "excluded": 100026,
+      "frozen": 116641,
+      "keep": 16615,
+      "walked": 116641
+    },
+    "carter": {
+      "excluded": 132321,
+      "frozen": 136316,
+      "keep": 3995,
+      "walked": 136316
+    },
+    "functiongemma": {
+      "excluded": 58,
+      "frozen": 1090,
+      "keep": 1032,
+      "walked": 1090
+    },
+    "probando_gemma4": {
+      "excluded": 29530,
+      "frozen": 36249,
+      "keep": 6719,
+      "walked": 36249
+    }
+  },
+  "token_limit": 350000,
+  "token_target": 300000,
+  "tokenizer": "none_compatible_for_tree_inventory"
+}

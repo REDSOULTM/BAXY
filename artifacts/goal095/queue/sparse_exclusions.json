@@ -1,0 +1,40 @@
+{
+  "counted_as_physical_missing": false,
+  "entries": [
+    {
+      "asset_type": "gguf_models",
+      "consumer": "runtime LLM (llama-server / gemma4_agent)",
+      "historical_size": "~17 GiB GGUF",
+      "historical_source": "documentacion/herencia/00_MAPA.md Goal 01 2026-08-16; documentacion/herencia/09_5_FUENTES.md",
+      "individual_hashes": "not invented",
+      "individual_paths": null,
+      "logical_prefix": "Programacion/Probando Gemma 4/models",
+      "present_in_snapshot": "empty directory, 0 files",
+      "recipe_or_evidence": "documentacion/herencia/00_MAPA.md section 2; artifacts/goal095/run2/sparse_exclusions.json"
+    },
+    {
+      "asset_type": "training_datasets",
+      "consumer": "wake/STT training and eval (wake_universal_eval, livekit, nemotron, voxcpm)",
+      "historical_size": "~39 GiB",
+      "historical_source": "documentacion/herencia/00_MAPA.md Goal 01 2026-08-16; documentacion/herencia/09_5_FUENTES.md",
+      "individual_hashes": "not invented",
+      "individual_paths": null,
+      "logical_prefix": "Programacion/Probando Gemma 4/data",
+      "present_in_snapshot": "1354 files, 247259115 bytes remain",
+      "recipe_or_evidence": "documentacion/herencia/00_MAPA.md section 2; artifacts/goal095/run2/sparse_exclusions.json"
+    },
+    {
+      "asset_type": "training_checkpoints",
+      "consumer": "fine-tune / resume scripts of gemma4_agent",
+      "historical_size": "Goal 01 already found checkpoints/ empty",
+      "historical_source": "documentacion/herencia/00_MAPA.md Goal 01",
+      "individual_hashes": "not invented",
+      "individual_paths": null,
+      "logical_prefix": "Programacion/Probando Gemma 4/checkpoints/model",
+      "present_in_snapshot": "empty directory",
+      "recipe_or_evidence": "documentacion/herencia/00_MAPA.md section 2"
+    }
+  ],
+  "inspected": false,
+  "note": "Omisiones deliberadas del snapshot disperso de Probando Gemma 4. No hay rutas ni hashes individuales. No son faltantes fisicos de esta corrida ni archivos inspeccionados."
+}
