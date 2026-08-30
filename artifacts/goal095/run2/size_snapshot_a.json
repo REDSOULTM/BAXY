@@ -1,0 +1,101 @@
+[
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY",
+    "exists": true,
+    "root_logical": "BAXY",
+    "files": 116641,
+    "dirs": 13632,
+    "bytes": 25488709507,
+    "empty_files": 1243,
+    "newest_mtime_unix": 1788070799.467714,
+    "oldest_mtime_unix": 1153704088.0,
+    "newest_rel": ".git\\index",
+    "errors": [],
+    "error_count": 0,
+    "elapsed_s": 14.964
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI",
+    "exists": true,
+    "root_logical": "Carter OS AI",
+    "files": 136316,
+    "dirs": 12545,
+    "bytes": 14935292111,
+    "empty_files": 776,
+    "newest_mtime_unix": 1788070812.2661576,
+    "oldest_mtime_unix": 1725847873.0,
+    "newest_rel": ".git\\index",
+    "errors": [],
+    "error_count": 0,
+    "elapsed_s": 17.491
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\FunctionGemma",
+    "exists": true,
+    "root_logical": "FunctionGemma",
+    "files": 1090,
+    "dirs": 73,
+    "bytes": 34366705385,
+    "empty_files": 1,
+    "newest_mtime_unix": 1783754536.8322706,
+    "oldest_mtime_unix": 1781413860.4572797,
+    "newest_rel": "AGENTS.md",
+    "errors": [],
+    "error_count": 0,
+    "elapsed_s": 0.092
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4",
+    "exists": true,
+    "root_logical": "Probando Gemma 4",
+    "files": 36249,
+    "dirs": 3164,
+    "bytes": 3690624981,
+    "empty_files": 5,
+    "newest_mtime_unix": 1788069601.335985,
+    "oldest_mtime_unix": 1778335225.1609397,
+    "newest_rel": "README.md",
+    "errors": [],
+    "error_count": 0,
+    "elapsed_s": 3.606
+  },
+  {
+    "asked": "D:\\BAXY",
+    "exists": true,
+    "root_logical": "BAXY",
+    "files": 103161,
+    "dirs": 14013,
+    "bytes": 34258703806,
+    "empty_files": 1056,
+    "newest_mtime_unix": 1788066911.6822507,
+    "oldest_mtime_unix": 1616011416.0,
+    "newest_rel": "source\\.git\\refs\\codex\\turn-diffs\\checkpoints\\8e7c08ee4a44b71efe506251e81a7e4b18a45007de1ddfa9964e2256d0e2dc42\\fcfab2d4bef9bb900180fcc58c14175557f281e0a33488f152d3b45393a11b5c\\1788066911529\\b32b1b71-2a50-4d5d-a4c2-814212d62041",
+    "errors": [
+      "[WinError 5] Acceso denegado: 'D:\\\\BAXY\\\\source\\\\.tmp\\\\planner_regression_20260811'",
+      "[WinError 5] Acceso denegado: 'D:\\\\BAXY\\\\source\\\\.tmp\\\\pytest-mvp-cpu-contract'",
+      "[WinError 5] Acceso denegado: 'D:\\\\BAXY\\\\source\\\\.tmp\\\\pytest-mvp-gates-20260811-a'",
+      "[WinError 5] Acceso denegado: 'D:\\\\BAXY\\\\source\\\\.tmp\\\\pytest-mvp-planner-launcher-a'"
+    ],
+    "error_count": 4,
+    "elapsed_s": 12.314
+  },
+  {
+    "asked": "D:\\BAXY\\FunctionGemma",
+    "exists": true,
+    "root_logical": "FunctionGemma",
+    "files": 3,
+    "dirs": 5,
+    "bytes": 6760611,
+    "empty_files": 0,
+    "newest_mtime_unix": 1784503916.1887622,
+    "oldest_mtime_unix": 1781416446.0,
+    "newest_rel": "router\\data\\router_corpus_curated_ft.jsonl",
+    "errors": [],
+    "error_count": 0,
+    "elapsed_s": 0.001
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando schemas",
+    "exists": false
+  }
+]

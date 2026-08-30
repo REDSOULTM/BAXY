@@ -1,0 +1,242 @@
+﻿[
+    {
+        "src":  "BAXY",
+        "rel":  "src",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  9
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "tests",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  405
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "documentacion",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  44
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "Baxy.slnx",
+        "exists":  true,
+        "kind":  "file",
+        "length":  935,
+        "child_count":  null
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "README.md",
+        "exists":  true,
+        "kind":  "file",
+        "length":  6340,
+        "child_count":  null
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "legacy\\models\\artifacts",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  8
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "carter_v5",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  27
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "La razon de carter",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  21
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "legacy\\Carter_v4",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  25
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "tests",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  5
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "docs",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  2
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "documentacion",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  7
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "README_TOOLS.md",
+        "exists":  true,
+        "kind":  "file",
+        "length":  3463,
+        "child_count":  null
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "router",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  6
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "tool_schemas_slim.json",
+        "exists":  true,
+        "kind":  "file",
+        "length":  230145,
+        "child_count":  null
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "tool_schemas_full.json",
+        "exists":  true,
+        "kind":  "file",
+        "length":  117319,
+        "child_count":  null
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "finetune_llm",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  89
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "kva_gate.json",
+        "exists":  true,
+        "kind":  "file",
+        "length":  8232,
+        "child_count":  null
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "model",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  16
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "gemma4_agent",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  42
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "gemma4_agent\\computer_use_pkg",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  10
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "documentacion",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  128
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "README.md",
+        "exists":  true,
+        "kind":  "file",
+        "length":  36831,
+        "child_count":  null
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "pyproject.toml",
+        "exists":  true,
+        "kind":  "file",
+        "length":  1886,
+        "child_count":  null
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "conftest.py",
+        "exists":  true,
+        "kind":  "file",
+        "length":  952,
+        "child_count":  null
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "requirements.txt",
+        "exists":  true,
+        "kind":  "file",
+        "length":  7778,
+        "child_count":  null
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "overnight_audit_results.json",
+        "exists":  true,
+        "kind":  "file",
+        "length":  4826,
+        "child_count":  null
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "models",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  0
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "data",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  9
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "checkpoints",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "child_count":  1
+    }
+]

@@ -1,0 +1,29 @@
+{
+  "source": "Programacion/Probando Gemma 4",
+  "kind": "sparse_snapshot_authorized",
+  "owner_decision": "copy without ~140GB models/checkpoints/datasets",
+  "size_is_not_a_gate": true,
+  "omissions": [
+    {
+      "category": "models",
+      "path_logical": "Probando Gemma 4/models",
+      "present": "empty directory, 0 files",
+      "historical_size": "~17 GiB GGUF (Goal 01, 2026-08-16)",
+      "individual_hashes": "not invented"
+    },
+    {
+      "category": "datasets",
+      "path_logical": "Probando Gemma 4/data",
+      "present": "1354 files, 247259115 bytes",
+      "historical_size": "~39 GiB (Goal 01, 2026-08-16)",
+      "individual_hashes": "not invented"
+    },
+    {
+      "category": "checkpoints",
+      "path_logical": "Probando Gemma 4/checkpoints/model",
+      "present": "empty directory",
+      "historical_note": "Goal 01 already found checkpoints/ empty",
+      "individual_hashes": "not invented"
+    }
+  ]
+}

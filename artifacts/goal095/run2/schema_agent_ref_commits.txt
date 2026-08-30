@@ -1,0 +1,6 @@
+﻿HEAD files_with_schema_in_path=9 commit=203c34a968ee7890e3c1f4505b7a5d12a3d4d45f 2026-08-15T23:17:24-04:00 docs: add sprint 11 (validation and close) and the deferred register
+origin/Tools-Reduce files_with_schema_in_path=12 commit=e6f9c1e5130d17d8de2c1b9447c327e53f468948 2026-06-26T01:54:15-04:00 feat: Netflix perfil guardar autom├ítico con extractor multiling├╝e
+origin/vram4_lean files_with_schema_in_path=12 commit=c5f65e9ae04e6766acf3cdffcc0571b6d6bd89ec 2026-06-17T12:18:29-04:00 merge: traer fix _fg_router_on() a vram4_lean
+v0.9.2 files_with_schema_in_path=12 commit=398f120c6a46265690684a6b479ffea075240251 2026-06-19T16:15:08-04:00 release(0.9.2): pinear deps instaladas + declarar tokenizers (reproducibilidad)
+origin/Dev files_with_schema_in_path=12 commit=2c0465790fb9d7cf8d367dd49215ac60b100b329 2026-06-20T19:09:55-04:00 feat(browser): "resumime esta p├ígina" resume la pesta├▒a web abierta (CDP)
+origin/main files_with_schema_in_path=12 commit=2c0465790fb9d7cf8d367dd49215ac60b100b329 2026-06-20T19:09:55-04:00 feat(browser): "resumime esta p├ígina" resume la pesta├▒a web abierta (CDP)

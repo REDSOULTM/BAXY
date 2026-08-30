@@ -1,65 +1,50 @@
-# Handoff — 09.5.0 — 2026-08-30
-
-> **Handoff histórico supersedido.** El dueño corrigió dos premisas: no existe un
-> proyecto `Probando schemas`, y no deben copiarse los ~140 GB de blobs omitidos de
-> `Probando Gemma 4`. Schema Agent se audita dentro del Git de `BAXY`. Repetir
-> 09.5.0 con el prompt vigente para producir el handoff verde.
+# Handoff — 09.5.0 run2 — 2026-08-30
 
 ## Objetivo
-Demostrar que todas las fuentes del linaje están presentes, copiadas del todo e
-identificadas sin modificarlas. Cierre: universo estable **o** `FALLO_DE_AMBIENTE`.
+Congelar las cuatro fuentes mínimas con material intelectual identificable, sin
+exigir blobs pesados ni carpeta Schema ni `.git`. Cierre verde o `FALLO_DE_AMBIENTE`.
 
 ## Estado
-Hecho: preflight de `Programacion`, aliases, Git de BAXY/Carter, SHA-256 de
-FunctionGemma y Probando Gemma 4, snapshots A/B, before/after Git idéntico,
-informe `documentacion/herencia/09_5_FUENTES.md`.
-En curso: nada. La sesión cierra `FALLO_DE_AMBIENTE`.
-Sin empezar: 09.5.1 manifiesto y colas.
+Hecho: preflight run2; A=B=recuentos `5db4d64`; manifiestos SHA-256 reutilizados;
+Schema Agent anclado a refs Git de BAXY; `09_5_FUENTES.md` verde.
+En curso: nada.
+Sin empezar: 09.5.1.
 
 ## Decisiones tomadas
-- `D:\BAXY` y `D:\BAXYRuntime` no cuentan como generaciones independientes.
-  `D:\BAXY\source` es otro HEAD del mismo remoto que `Programacion\BAXY`
-  (`c57c7aff` ≠ `203c34a9`). `D:\BAXY\FunctionGemma` (3 ficheros) no es
-  duplicado de `Programacion\FunctionGemma`.
-- `ETC (No relacionado con baxy)` queda fuera: nombre + primer nivel de curso.
-- Schema Agent descrito en `documentacion/25_INTEGRACION_GENERACIONAL_*.md` vive
-  en historial Git de BAXY; eso no localiza la carpeta que 09.5.0 exige.
-- Completitud de `Probando Gemma 4` se mide contra el mapa 01 (`models` ~17 GiB,
-  `data` ~39 GiB), no contra «la carpeta existe».
+- No se altera `artifacts/goal095/environment/09.5.0.md` (fallo histórico).
+- No se rehashea FunctionGemma ni Probando Gemma 4: mismos ficheros/bytes/`newest`.
+- `Probando schemas` no es fuente. Schema Agent = `origin/Tools-Reduce`,
+  `origin/vram4_lean`, `v0.9.2` dentro de `Programacion\BAXY`.
+- FunctionGemma sin `test_*.py` se registra; no bloquea (hay evals en `ops\`).
+- `D:\BAXY` sigue relacionado, no independiente.
 
 ## Archivos tocados
-- `documentacion/herencia/09_5_FUENTES.md` — inventario y veredicto
-- `artifacts/goal095/environment/09.5.0.md` — receta de ambiente
-- `artifacts/goal095/environment/sources_index.json` — índice máquina
-- `artifacts/goal095/sources/*.sha256.jsonl` — identidad de árboles sin Git
-- `artifacts/goal095/scripts/hash_tree.py` — receta del manifiesto
+- `documentacion/herencia/09_5_FUENTES.md` — cierre PASS de esta corrida
+- `artifacts/goal095/run2/*` — snapshots, índice, reuso de manifiestos, sentinelas
+- `artifacts/goal095/HANDOFF.md` — este handoff
 
 ## Archivos relevantes aún sin tocar
-- `documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md` — siguiente **después**
-  de un 09.5.0 verde
-- `documentacion/herencia/00_MAPA.md` — no se reescribe en el fallo
+- `documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md`
+- `artifacts/goal095/environment/09.5.0.md` — se conserva
+- `artifacts/goal095/sources/*.sha256.jsonl` — se reutilizan
 
 ## Hipótesis
-Confirmadas: no hay copia viva (0 procesos; A=B). Git históricos no mutados
-(HEAD + `status` SHA-256 iguales).
-Descartadas: «FunctionGemma a medias» → 34,4 GiB, sentinelas del mapa 01,
-estable. «`Probando schemas` podría ser FunctionGemma/schemas» → no hay carpeta
-con ese nombre; Agent/Function Schema tampoco.
+Confirmadas: snapshot idéntico a `5db4d64`; Git históricos no mutados; refs Schema
+existen en BAXY.
+Descartadas: «hay que hashear otra vez» → conteos iguales. «Falta pytest en
+FunctionGemma ⇒ incompleto» → hay `ops\eval_*.json` y schemas.
 
 ## Comandos ejecutados y resultado
-- Recuento A/B → BAXY 116641/25488709507, Carter 136316/14935292111,
-  FunctionGemma 1090/34366705385, Probando Gemma 4 36249/3690624981; A=B.
-- `hash_tree.py` FunctionGemma → manifiesto `ff150df2…619eaa` (59,96 s, 0 errores).
-- `hash_tree.py` Probando Gemma 4 → manifiesto `72f9e5fc…13c7e71` (520,71 s, 0 errores).
-- Git before/after BAXY `203c34a9` / Carter `9cf62d23` / status SHA iguales.
-- Compuerta Full: no ejecutada — no hay cambio de producto; el goal para en
-  ambiente.
+- Recuento run2 A/B = run1: BAXY 116641/25488709507, Carter 136316/14935292111,
+  FunctionGemma 1090/34366705385, PG4 36249/3690624981.
+- `git rev-parse origin/Tools-Reduce` → `e6f9c1e5`; `vram4_lean` → `c5f65e9a`;
+  tag `v0.9.2` commit `398f120c`.
+- Git status SHA vs run1: BAXY `b0508200…`, Carter `3adb0157…`, iguales.
+- Full: no. No hay cambio de producto.
 
 ## Problemas pendientes
-- Copiar `Probando schemas` y Agent/Function Schema a `Programacion\`.
-- Completar `Probando Gemma 4\models` y `\data` hasta el tamaño del mapa 01.
-- Owner: ambiente. Luego la misma sesión 09.5.0.
+Ninguno de ambiente. 09.5.1 debe abrir `sparse_exclusions` con `models`/`data`
+omitidos de PG4.
 
 ## Siguiente acción recomendada
-Preparar el PC con `artifacts/goal095/environment/09.5.0.md` (prueba
-`READY=1`) y relanzar `documentacion/sprints/09.5.0_FUENTES_Y_AMBIENTE.md`.
+Lanzar `documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md` en sesión nueva.

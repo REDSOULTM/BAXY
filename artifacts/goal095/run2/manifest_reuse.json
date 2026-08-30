@@ -1,0 +1,25 @@
+{
+  "policy": "reuse_if_counts_bytes_newest_match_5db4d64",
+  "run1_commit": "5db4d64a08746dd151e0bd35e38eee5ced7c1aa5",
+  "rehashed": [],
+  "reused": [
+    {
+      "source": "FunctionGemma",
+      "manifest": "artifacts/goal095/sources/FunctionGemma.sha256.jsonl",
+      "manifest_sha256": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+      "reason": "run2 A/B files+bytes+newest equal run1"
+    },
+    {
+      "source": "Probando Gemma 4",
+      "manifest": "artifacts/goal095/sources/Probando_Gemma_4.sha256.jsonl",
+      "manifest_sha256": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+      "reason": "run2 A/B files+bytes+newest equal run1"
+    },
+    {
+      "source": "D:/BAXY/FunctionGemma",
+      "manifest": "artifacts/goal095/sources/D_BAXY_FunctionGemma.sha256.jsonl",
+      "manifest_sha256": "eddf65f7c851128d66024a2148ba8eb156d92f5cf557a16197f237dffa24579a",
+      "reason": "run2 A/B files+bytes+newest equal run1"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "BAXY",
+    "Kind": "dir"
+  },
+  {
+    "Name": "BAXY DEFINITIVO",
+    "Kind": "dir"
+  },
+  {
+    "Name": "Carter OS AI",
+    "Kind": "dir"
+  },
+  {
+    "Name": "desktop.ini",
+    "Kind": "file"
+  },
+  {
+    "Name": "ETC (No relacionado con baxy)",
+    "Kind": "dir"
+  },
+  {
+    "Name": "FunctionGemma",
+    "Kind": "dir"
+  },
+  {
+    "Name": "Probando Gemma 4",
+    "Kind": "dir"
+  }
+]

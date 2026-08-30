@@ -1,0 +1,20 @@
+[
+  {
+    "logical": "BAXY",
+    "head_run2": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+    "head_run1": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+    "head_equal_run1": true,
+    "status_sha256_run2": "b050820036e1cf31b2646e07ba9c03a2d2361ece1f162ae0d6c7ebdd560351f4",
+    "status_sha256_run1": "b050820036e1cf31b2646e07ba9c03a2d2361ece1f162ae0d6c7ebdd560351f4",
+    "status_equal_run1": true
+  },
+  {
+    "logical": "Carter OS AI",
+    "head_run2": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+    "head_run1": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+    "head_equal_run1": true,
+    "status_sha256_run2": "3adb0157729d8f8c9194ff2448fba10506a81515ac423436e7d3082219d5a3cf",
+    "status_sha256_run1": "3adb0157729d8f8c9194ff2448fba10506a81515ac423436e7d3082219d5a3cf",
+    "status_equal_run1": true
+  }
+]

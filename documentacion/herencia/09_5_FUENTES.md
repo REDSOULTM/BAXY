@@ -1,130 +1,125 @@
 # Goal 9.5.0 — Fuentes del linaje, congeladas
 
-Fecha de corte: **2026-08-30**. Máquina de este goal.
+Fecha de corte de esta corrida: **2026-08-30 ~09:52**. Máquina de este goal.
 
-> **Veredicto histórico de la primera corrida: `FALLO_DE_AMBIENTE` (supersedido).** Hay identidad reproducible de lo presente.
-> Faltan fuentes declaradas y `Probando Gemma 4` no puede probarse completa.
-> No se abre 09.5.1. Receta y prueba de readiness:
-> [`artifacts/goal095/environment/09.5.0.md`](../../artifacts/goal095/environment/09.5.0.md).
+> **Veredicto: PASS.** Las cuatro rutas mínimas están presentes, estables e
+> identificadas. Schema Agent se toma del historial Git de `BAXY`. No hay carpeta
+> `Probando schemas` y no se exige. Siguiente:
+> [`../sprints/09.5.1_MANIFIESTO_Y_COLAS.md`](../sprints/09.5.1_MANIFIESTO_Y_COLAS.md).
 
-> **Enmienda del dueño, posterior a esa corrida:** los ~140 GB omitidos de
-> `Probando Gemma 4` son modelos/checkpoints/datasets pesados que decidió no
-> transferir. Desde el commit que incorpora esta enmienda, ese árbol se acepta como
-> snapshot disperso y su tamaño deja de ser gate. Además, `Probando schemas` no es
-> un proyecto del linaje: fue una interpretación errónea. Schema Agent ya vive en
-> el historial Git de `BAXY`. El fallo se conserva como evidencia, pero sus dos
-> bloqueos quedaron anulados. Manda el prompt 09.5.0 vigente, no la receta histórica.
+La corrida `5db4d64` cerró `FALLO_DE_AMBIENTE` con dos premisas que el dueño
+corrigió después (carpeta Schema externa, y tamaño de `models`/`data` como gate).
+Ese artefacto **no se reabre**: sigue en
+[`artifacts/goal095/environment/09.5.0.md`](../../artifacts/goal095/environment/09.5.0.md)
+y en los manifiestos SHA-256 de esa hora. Esta corrida (`run2/`) confirma el
+mismo snapshot con las reglas vigentes y publica el cierre verde.
 
-> **Segunda aclaración del dueño:** la ausencia de `.git` es normal en estos
-> proyectos locales. No indica copia parcial ni puede provocar un fallo. La primera
-> corrida ya identificó FunctionGemma correctamente por SHA-256; el prompt vigente
-> eleva esa práctica a regla explícita para todas las fuentes.
-
-Este documento no audita temas. Inventaría repositorios y carpetas, los identifica
-y dice cuáles son copias. El inventario anterior del Goal 01 sigue en
-[`00_MAPA.md`](00_MAPA.md); aquí solo se congela el universo que 09.5 va a
-conciliar.
-
-Raíz lógica de las fuentes declaradas: `Programacion\`, hermana de este
-repositorio (`BAXY DEFINITIVO`). Las rutas personales no se repiten abajo.
+Raíz lógica: `Programacion\`, hermana de `BAXY DEFINITIVO`.
 
 ## Método
 
-- Lectura solamente. Ningún `git checkout`, restore, clean ni commit en fuentes
-  históricas. `git --no-optional-locks` para no refrescar el índice.
-- Dos recuentos de ficheros/bytes a ~90 s: A 02:41 y B 02:45. Cero procesos
-  `robocopy`/`xcopy`/FastCopy. Explorer abierto sobre `Programacion`, sin ventana
-  de transferencia.
-- Git cuando existe; manifiesto SHA-256 ordenado por ruta relativa cuando no.
-- Aliases buscados en el nivel superior de `Programacion` y un nivel en el
-  escritorio, `ETC`, `D:\` y Documentos. No se recorrió el contenido en el chat.
+- Sólo lectura. `git --no-optional-locks`. Ningún checkout, restore ni clean en
+  fuentes históricas.
+- Recuentos A 09:48 y B 09:52 (~90 s). Cero procesos de copia.
+- Si ficheros, bytes y `newest_rel` coinciden con `5db4d64`, **se reutiliza** el
+  manifiesto SHA-256; no se vuelve a hashear.
+- Ausencia de `.git` no es defecto. FunctionGemma y `Probando Gemma 4` son
+  proyectos locales.
+- No se busca una quinta carpeta por la palabra `schema`.
 
-## Universo declarado por la corrida original — corregido después
+## Universo mínimo
 
-| Fuente | Presente | Identidad | Ficheros | Bytes | ¿Completa para 09.5.0? |
+| Fuente | Presente | Identidad | Ficheros | Bytes | Suficiente |
 |---|---|---|---:|---:|---|
 | `Programacion\BAXY` | sí | Git `203c34a9` rama `codex/baxy-cross-encoder-r209-handoff` | 116 641 | 25 488 709 507 | sí |
 | `Programacion\Carter OS AI` | sí | Git `9cf62d23` rama `feat/gemma4-integration` | 136 316 | 14 935 292 111 | sí |
-| `Programacion\FunctionGemma` | sí | manifiesto SHA-256 `ff150df2…619eaa` (sin `.git`) | 1 090 | 34 366 705 385 | sí (sentinelas del mapa 01 presentes; árbol estable) |
-| `Programacion\Probando Gemma 4` | sí | manifiesto SHA-256 `72f9e5fc…13c7e71` (sin `.git`) | 36 249 | 3 690 624 981 | **sí, snapshot disperso autorizado** |
-| `Programacion\Probando schemas` | no | — | — | — | **no aplica: no existe ese proyecto** |
-| Schema Agent | dentro del historial Git de `BAXY` | evidencia generacional versionada | — | — | **sí, no requiere carpeta propia** |
+| `Programacion\FunctionGemma` | sí | SHA-256 `ff150df2…619eaa` (reutilizado de `5db4d64`) | 1 090 | 34 366 705 385 | sí |
+| `Programacion\Probando Gemma 4` | sí | SHA-256 `72f9e5fc…13c7e71` (reutilizado; snapshot **disperso**) | 36 249 | 3 690 624 981 | sí |
 
-La corrida observó que `Probando Gemma 4` está estable en bytes, pero no es el árbol que el Goal 01
-midió el 2026-08-16 (`models/` ~17 GiB y `data/` ~39 GiB). Hoy `models/` es un
-directorio vacío (0 ficheros, no es junction) y `data/` pesa 247 259 115 bytes.
-La decisión posterior del dueño convierte esa diferencia en exclusión deliberada
-de blobs, no en fuente incompleta.
+A = B en esta corrida y A = recuento de `5db4d64` en las cuatro. HEAD y
+`git status` de BAXY y Carter son byte-idénticos a la corrida anterior
+(`status` SHA-256 `b0508200…` y `3adb0157…`).
 
-FunctionGemma no trae Git. La procedencia visible es una copia de esta madrugada
-(CreationTime 01:48–01:55) que conservó mtimes de junio–julio de 2026. Sentinelas
-del mapa 01 presentes: `README_TOOLS.md`, `router\`, `tool_schemas_slim.json`,
-`finetune_llm\`, `model\` (16 GGUF, 6,10 GiB).
+Carter no tiene remotos. BAXY: `origin` `https://github.com/REDSOULTM/Baxy.git`,
+`ahead 18`, commit 2026-08-15. Worktrees sucios: evidencia, no se limpia.
 
-Carter y BAXY conservan Git sucio. Esa suciedad es evidencia y no se limpió.
-Carter no tiene remotos. BAXY apunta a `origin` `https://github.com/REDSOULTM/Baxy.git`
-y está `ahead 18` de `origin/codex/baxy-cross-encoder-r209-handoff`. Último
-commit en disco: 2026-08-15 «docs: add sprint 11 (validation and close) and the
-deferred register».
+## Schema Agent
 
-## Candidatos descubiertos — relacionados, no independientes
-
-| Candidato | Qué es | Relación |
-|---|---|---|
-| `Programacion\BAXY DEFINITIVO` | sitio de trabajo | no es fuente histórica |
-| `Programacion\ETC (No relacionado con baxy)` | 33 hijos inmediatos de curso/herramientas | excluido por nombre y por contenido de primer nivel; 0 hits de linaje |
-| `D:\BAXY` | árbol de julio (attestations, experimental_assets, `source`, stub `FunctionGemma`) | **relacionado** con la generación 5, no un sexto producto |
-| `D:\BAXY\source` | Git del mismo remoto y la misma rama que `Programacion\BAXY`, HEAD distinto `c57c7aff` (2026-08-22) | snapshot distinto, no duplicado por hash/HEAD |
-| `D:\BAXY\FunctionGemma` | 3 ficheros, 6 760 611 bytes, manifiesto `eddf65f7…24579a` | **no** es duplicado de `Programacion\FunctionGemma` (1 090 ficheros / `ff150df2…`) |
-| `D:\BAXYRuntime` | runtime y datasets del producto actual | sidecar ya nombrado en el mapa 01; no es una generación |
-| acceso directo `BAXY.lnk` en el escritorio | `Baxy.Setup.exe --launch` del instalado | producto instalado, no fuente |
-
-`D:\BAXY` no se recorrió entero: 4 directorios bajo `source\.tmp\` devolvieron
-acceso denegado (restos de pytest). No se usa como evidencia independiente.
-
-No apareció JRVS en `Programacion`. No apareció otra carpeta de linaje real.
-
-La generación «Schema Agent» citada en
+No es un repositorio hermano. Vive en el Git de `Programacion\BAXY`, como ya
+documentó
 [`../25_INTEGRACION_GENERACIONAL_CARTER_SCHEMA_BAXY.md`](../25_INTEGRACION_GENERACIONAL_CARTER_SCHEMA_BAXY.md)
-se inspeccionó en 2026-07-22 **dentro del historial Git de BAXY**, no como
-carpeta hermana. Ésa es su fuente correcta; no existe un repositorio externo
-`Probando schemas` que localizar.
+(2026-07-22). Refs comprobados en esta corrida (sólo lectura):
+
+| Ref | Commit | Fecha | Rutas con `schema` |
+|---|---|---|---:|
+| `origin/Tools-Reduce` | `e6f9c1e5` | 2026-06-26 | 12 |
+| `origin/vram4_lean` | `c5f65e9a` | 2026-06-17 | 12 |
+| `v0.9.2` | `398f120c` | 2026-06-19 | 12 |
+| `HEAD` actual | `203c34a9` | 2026-08-15 | 9 |
+
+En `Tools-Reduce` hay, entre otros:
+`documentacion/datos_crudos/schemas_16_consolidated.json`,
+`schemas_60_individuales.json`, `gemma4_agent/data/fg/tool_schemas_slim.json`,
+`gemma4_agent/tools_pkg/tool_schemas.py`. La ausencia de
+`Programacion\Probando schemas` no es fallo.
+
+## Material intelectual (existencia, no auditoría)
+
+| Fuente | Código | Docs | Tests | Config | Resultados | Manifiestos |
+|---|---|---|---|---|---|---|
+| BAXY | `src/` (9), `src\baxy_mind` | `documentacion/` (44), `README.md` | `tests/` (405) | `Baxy.slnx` | `artifacts/` (18) | catálogo en `src` |
+| Carter OS AI | `carter_v5` (27), `legacy\Carter_v4` | `La razon de carter` (21), `docs`, `documentacion` | `tests/` + `pytest.ini` | `pytest.ini` | JSON del bench 540 en `La razon de carter` | — |
+| FunctionGemma | scripts y `finetune_llm/` (89) | `README_TOOLS.md`, `router\README_ROUTER.md` | **no hay `test_*.py`** | `tool_schemas_*.json` | `finetune_llm\ops\` evals JSON + `kva_gate.json` | `tool_schemas_slim.json` (230 145 B) |
+| Probando Gemma 4 | `gemma4_agent/` (42) | `documentacion/` (128), `README.md` | `gemma4_agent\tests\` (282 `test_*.py`) | `pyproject.toml`, `requirements.txt`, `conftest.py` | `overnight_audit_results.json` y JSONL de eval en la raíz | — |
+
+FunctionGemma no trae suite pytest; el material de decisión está en `ops\`
+(`NIGHT_RUN_STATE.md`, `eval_*.json`). Eso se nombra, no bloquea.
+
+## Snapshot disperso — `Probando Gemma 4`
+
+Copia deliberada sin ~140 GB de blobs. Gate de tamaño: **ninguno**.
+
+| Categoría omitida | Qué hay hoy | Evidencia histórica (mapa 01, 2026-08-16) | Hash de blobs |
+|---|---|---|---|
+| `models\` | directorio vacío, 0 ficheros | ~17 GiB de GGUF | no se inventa |
+| `data\` | 1 354 ficheros, 247 259 115 bytes | ~39 GiB | no se inventa |
+| `checkpoints\model\` | vacío | el mapa 01 ya lo vio vacío | no aplica |
+
+Esos huecos van a `sparse_exclusions` en 09.5.1. No son faltantes físicos de
+esta corrida.
+
+## Relacionados, no independientes
+
+| Candidato | Relación |
+|---|---|
+| `Programacion\BAXY DEFINITIVO` | sitio de trabajo |
+| `Programacion\ETC (No relacionado con baxy)` | curso; excluido por nombre y primer nivel |
+| `D:\BAXY` | sidecar de julio; `source` es otro HEAD (`c57c7aff`) del mismo remoto que `Programacion\BAXY` |
+| `D:\BAXY\FunctionGemma` | 3 ficheros, manifiesto `eddf65f7…`; no duplicado de `Programacion\FunctionGemma` |
+| `D:\BAXYRuntime` | runtime del producto actual, no generación |
+| acceso directo instalado `BAXY` | `Baxy.Setup.exe --launch`, no fuente |
+
+JRVS no aparece en `Programacion`.
 
 ## Estabilidad y no mutación
 
-| Árbol | Snapshot A = B (ficheros y bytes) | Git HEAD/rama/status antes = después |
-|---|---|---|
-| `BAXY` | sí | sí (`status` SHA-256 `b0508200…0351f4`) |
-| `Carter OS AI` | sí | sí (`status` SHA-256 `3adb0157…d5a3cf`) |
-| `FunctionGemma` | sí | no aplica |
-| `Probando Gemma 4` | sí | no aplica |
-| `D:\BAXY` | sí (con los 4 errores ACL repetidos) | `source` no se usó como fuente mutada |
-
-Los `.git\index` de BAXY y Carter tienen mtime 02:19–02:20, anterior a esta
-sesión. El preflight no los reescribió.
+| Árbol | A = B (run2) | Igual a `5db4d64` | Git vs run1 |
+|---|---|---|---|
+| BAXY | sí | sí | HEAD y status idénticos |
+| Carter OS AI | sí | sí | HEAD y status idénticos |
+| FunctionGemma | sí | sí | no aplica (local, sin Git) |
+| Probando Gemma 4 | sí | sí | no aplica (local, sin Git) |
 
 ## Artefactos
 
-Todo bajo [`artifacts/goal095/`](../../artifacts/goal095/):
+Nueva corrida: [`artifacts/goal095/run2/`](../../artifacts/goal095/run2/).
 
-- `environment/sources_index.json` — índice máquina del veredicto
-- `environment/09.5.0.md` — `FALLO_DE_AMBIENTE` y receta
-- `environment/size_snapshot_a.json`, `size_snapshot_b.json`, `size_stability.json`
-- `environment/git_identity_before.json`, `git_identity_after.json`, `git_before_after.json`
-- `sources/FunctionGemma.sha256.jsonl` + `.summary.json`
-- `sources/Probando_Gemma_4.sha256.jsonl` + `.summary.json`
-- `sources/D_BAXY_FunctionGemma.sha256.jsonl` + `.summary.json`
-- `scripts/hash_tree.py` — receta reproducible del manifiesto
+Manifiestos SHA-256 reutilizados (no regenerados):
 
-## Qué queda cerrado y qué no
+- `artifacts/goal095/sources/FunctionGemma.sha256.jsonl`
+- `artifacts/goal095/sources/Probando_Gemma_4.sha256.jsonl`
 
-Cerrado: inventario de lo **presente**, relaciones de copias, identidad Git o
-SHA-256, prueba de que esta sesión no mutó los Git históricos.
+Fallo histórico, intacto: `artifacts/goal095/environment/09.5.0.md`.
 
-El fallo original queda supersedido por dos correcciones del dueño: snapshot
-disperso permitido y `Probando schemas` inexistente. Aun así, 09.5.1 no arranca
-hasta repetir 09.5.0 y publicar un cierre verde con las reglas vigentes.
-
-Siguiente prompt, **el mismo**: [`../sprints/09.5.0_FUENTES_Y_AMBIENTE.md`](../sprints/09.5.0_FUENTES_Y_AMBIENTE.md).
-Después de un ambiente verde, el siguiente lote es
+Siguiente prompt exacto:
 [`../sprints/09.5.1_MANIFIESTO_Y_COLAS.md`](../sprints/09.5.1_MANIFIESTO_Y_COLAS.md).

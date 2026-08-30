@@ -1,0 +1,64 @@
+{
+  "goal": "09.5.0",
+  "run": 2,
+  "frozen_at": "2026-08-30T09:52:41-04:00",
+  "verdict": "PASS",
+  "supersedes_run1_verdict": "FALLO_DE_AMBIENTE at 5db4d64; failure artifact left untouched",
+  "copy_processes": 0,
+  "hash_manifests": "reused from 5db4d64; run2 counts/bytes/newest identical",
+  "declared_minimum": [
+    {
+      "logical": "Programacion/BAXY",
+      "present": true,
+      "identity": "git",
+      "head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+      "files": 116641,
+      "bytes": 25488709507,
+      "sufficient": true
+    },
+    {
+      "logical": "Programacion/Carter OS AI",
+      "present": true,
+      "identity": "git",
+      "head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+      "files": 136316,
+      "bytes": 14935292111,
+      "sufficient": true
+    },
+    {
+      "logical": "Programacion/FunctionGemma",
+      "present": true,
+      "identity": "sha256_manifest_reused",
+      "manifest_sha256": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+      "files": 1090,
+      "bytes": 34366705385,
+      "has_dot_git": false,
+      "git_absence_is_not_a_defect": true,
+      "sufficient": true
+    },
+    {
+      "logical": "Programacion/Probando Gemma 4",
+      "present": true,
+      "identity": "sha256_manifest_reused",
+      "manifest_sha256": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+      "files": 36249,
+      "bytes": 3690624981,
+      "sparse_snapshot": true,
+      "sufficient": true
+    }
+  ],
+  "schema_agent": {
+    "folder_required": false,
+    "source": "BAXY git history",
+    "refs": {
+      "origin/Tools-Reduce": "e6f9c1e5130d17d8de2c1b9447c327e53f468948",
+      "origin/vram4_lean": "c5f65e9ae04e6766acf3cdffcc0571b6d6bd89ec",
+      "v0.9.2_commit": "398f120c6a46265690684a6b479ffea075240251"
+    }
+  },
+  "probando_schemas_folder": {
+    "required": false,
+    "present": false,
+    "is_defect": false
+  }
+}
