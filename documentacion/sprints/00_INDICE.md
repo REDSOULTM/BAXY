@@ -6,6 +6,9 @@ Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, 
 09.5, 10 y 11 son mapas: su unidad de ejecución son sus subgoals, una sesión nueva
 por prompt o lote.
 
+Acceso directo en orden a todos los prompts ejecutables:
+[`00_ORDEN_DESDE_09_5.md`](00_ORDEN_DESDE_09_5.md).
+
 ## Con qué modelo se lanza cada uno
 
 | Goals | Modelo | Dónde |
