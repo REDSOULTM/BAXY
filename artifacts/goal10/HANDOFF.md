@@ -8,8 +8,9 @@ con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertida
 Hecho: r129 20/20 + overlay quirúrgico 13 + 3 consent-ask→conversación.
 In-scope **1577/143** (r128 era 1576/144). `abre Steel` → Steam pasa.
 LastBoot `2026-08-27 21:25:24`.
-En curso: owner-fix afirmación puntuada `Sí. Abre…` (prefijo con lookahead
-de open). pytest 2606 ×2. Siguiente: UNA remake r130.
+r130 lanzada vía Win32 Create (`launch_r130.ps1`, python 38052/48716).
+pytest 2606 ×2. LastBoot `2026-08-27 21:25:24`.
+En curso: campaña r130 1947 (esperar 20/20 + `campaign done`).
 Sin empezar: overlay r130, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
