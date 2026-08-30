@@ -1,17 +1,16 @@
-# Handoff — Goal 10 — 2026-08-30 — r129 overlay scored
+# Handoff — Goal 10 — 2026-08-29 — r130 VOID (host reboot) → r131
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r129 20/20 + overlay quirúrgico 13 + 3 consent-ask→conversación.
-In-scope **1577/143** (r128 era 1576/144). `abre Steel` → Steam pasa.
-LastBoot `2026-08-27 21:25:24`.
-r130 lanzada vía Win32 Create (`launch_r130.ps1`, python 38052/48716).
-pytest 2606 ×2. LastBoot `2026-08-27 21:25:24`.
-En curso: campaña r130 1947 (esperar 20/20 + `campaign done`).
-Sin empezar: overlay r130, 808/2036/holdouts, matriz viva, ABBA, Full.
+Hecho: r129 20/20 + overlay 16; in-scope **1577/143**. pytest 2606 ×2.
+**r130 ANULADA.** Host reboot `2026-08-29 21:12:42` (antes `2026-08-27 21:25:24`).
+0/20 shards. Marker `%LOCALAPPDATA%\BAXYRuntime\goal10\r130-VOIDED.txt`.
+Merge intacto r129 SHA `df007225…`. **No overlay r130.**
+En curso: r131 reemplazo (mismo árbol que r130, Win32 Create + deny-power).
+Sin empezar: overlay r131, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - Overlay no pisa journal. 205 blocked_lost_journal.
@@ -34,7 +33,8 @@ Sin empezar: overlay r130, 808/2036/holdouts, matriz viva, ABBA, Full.
 ## Hipótesis
 Confirmadas: prefix 3 chars abre Steam; nombres implícitos saludan en
 shard r129; overlay sin journal no los copiaba.
-Descartadas: overlay wholesale; r129 in-scope 0 fail.
+Descartadas: overlay wholesale; r129 in-scope 0 fail; overlay r130
+(0 shards, reboot).
 
 ## Comandos ejecutados y resultado
 - wait_r129 → **DONE**. 20/20 empty=0 + `campaign done`. LastBoot `2026-08-27 21:25:24`
@@ -42,6 +42,6 @@ Descartadas: overlay wholesale; r129 in-scope 0 fail.
 - in-scope `artifacts/goal10/goal10-in-scope-r129.json` → **1577/143**
 
 ## Siguiente acción recomendada
-Owner-fix familia `app.open` restante: afirmación `Sí.`/`Yes.` delante
-de un open de catálogo único; `Abrelo`; terminal HWND. Tests verdes dos
-veces, luego UNA remake r130. No overlay incompleto.
+Esperar r131 `DONE` 20/20. Overlay `overlay_r131.py` sólo entonces.
+Si fail>0, una familia en dueño, no r132 encima. LastBoot ahora
+`2026-08-29 21:12:42`; si cambia otra vez, anular y avisar.
