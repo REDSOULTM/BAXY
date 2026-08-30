@@ -15,6 +15,11 @@ Fecha de corte: **2026-08-30**. Máquina de este goal.
 > el historial Git de `BAXY`. El fallo se conserva como evidencia, pero sus dos
 > bloqueos quedaron anulados. Manda el prompt 09.5.0 vigente, no la receta histórica.
 
+> **Segunda aclaración del dueño:** la ausencia de `.git` es normal en estos
+> proyectos locales. No indica copia parcial ni puede provocar un fallo. La primera
+> corrida ya identificó FunctionGemma correctamente por SHA-256; el prompt vigente
+> eleva esa práctica a regla explícita para todas las fuentes.
+
 Este documento no audita temas. Inventaría repositorios y carpetas, los identifica
 y dice cuáles son copias. El inventario anterior del Goal 01 sigue en
 [`00_MAPA.md`](00_MAPA.md); aquí solo se congela el universo que 09.5 va a
