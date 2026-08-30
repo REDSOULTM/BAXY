@@ -1,0 +1,130 @@
+{
+  "goal": "09.5.0",
+  "frozen_at": "2026-08-30T02:56:44-04:00",
+  "verdict": "FALLO_DE_AMBIENTE",
+  "copy_processes": 0,
+  "stability_window_s": 90,
+  "work_repo_head_at_freeze": "66c48c30d27842cee8d5c5ea6384d1a1c83f2182",
+  "declared_minimum": [
+    {
+      "logical": "Programacion/BAXY",
+      "role": "generation_5_declared",
+      "present": true,
+      "stable": true,
+      "identity": "git",
+      "head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+      "branch": "codex/baxy-cross-encoder-r209-handoff",
+      "files": 116641,
+      "bytes": 25488709507,
+      "complete_enough_for_09_5_0": true
+    },
+    {
+      "logical": "Programacion/Carter OS AI",
+      "role": "generation_1_2_declared",
+      "present": true,
+      "stable": true,
+      "identity": "git",
+      "head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+      "branch": "feat/gemma4-integration",
+      "files": 136316,
+      "bytes": 14935292111,
+      "complete_enough_for_09_5_0": true
+    },
+    {
+      "logical": "Programacion/FunctionGemma",
+      "role": "generation_4_declared",
+      "present": true,
+      "stable": true,
+      "identity": "sha256_manifest",
+      "manifest_sha256": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+      "files": 1090,
+      "bytes": 34366705385,
+      "complete_enough_for_09_5_0": true
+    },
+    {
+      "logical": "Programacion/Probando Gemma 4",
+      "role": "generation_3_declared",
+      "present": true,
+      "stable": true,
+      "identity": "sha256_manifest",
+      "manifest_sha256": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+      "files": 36249,
+      "bytes": 3690624981,
+      "models_files": 0,
+      "models_bytes": 0,
+      "data_files": 1354,
+      "data_bytes": 247259115,
+      "goal01_models_bytes_approx": 17000000000,
+      "goal01_data_bytes_approx": 39000000000,
+      "complete_enough_for_09_5_0": false,
+      "reason": "models/ empty; data/ 247 MiB vs ~39 GiB measured 2026-08-16"
+    },
+    {
+      "logical": "Programacion/Probando schemas",
+      "role": "declared_schema_tree",
+      "present": false,
+      "complete_enough_for_09_5_0": false
+    },
+    {
+      "logical": "Programacion/Agent Schema|Function Schema (any alias)",
+      "role": "declared_schema_generation",
+      "present": false,
+      "aliases_tried": [
+        "Agent Schema",
+        "Function Schema",
+        "AgentSchema",
+        "FunctionSchema",
+        "Schema Agent",
+        "Schema Function"
+      ],
+      "complete_enough_for_09_5_0": false
+    }
+  ],
+  "discovered_related": [
+    {
+      "logical": "D:/BAXY",
+      "role": "related_snapshot_not_independent",
+      "present": true,
+      "stable_counts": true,
+      "files": 103161,
+      "bytes": 34258703806,
+      "walk_errors": 4,
+      "walk_error_kind": "WinError 5 ACL on source/.tmp pytest leftovers",
+      "nested_git": {
+        "logical": "D:/BAXY/source",
+        "head": "c57c7aff926169d2b62eff7682e1095195f94d80",
+        "branch": "codex/baxy-cross-encoder-r209-handoff",
+        "same_remote_as": "Programacion/BAXY",
+        "different_head": true
+      },
+      "nested_functiongemma": {
+        "files": 3,
+        "bytes": 6760611,
+        "manifest_sha256": "eddf65f7c851128d66024a2148ba8eb156d92f5cf557a16197f237dffa24579a",
+        "duplicate_of_programacion_functiongemma": false
+      }
+    },
+    {
+      "logical": "D:/BAXYRuntime",
+      "role": "runtime_sidecar_not_generation",
+      "present": true,
+      "datasets_bytes": 18950782,
+      "assets_bytes": 17851243066
+    },
+    {
+      "logical": "Desktop/BAXY.lnk",
+      "role": "installed_product_shortcut_not_source",
+      "target": "LocalAppData/Programs/BAXY/Baxy.Setup.exe --launch"
+    },
+    {
+      "logical": "Programacion/ETC (No relacionado con baxy)",
+      "role": "excluded_named_unrelated",
+      "child_count": 33,
+      "lineage_name_hits": 0
+    },
+    {
+      "logical": "Programacion/BAXY DEFINITIVO",
+      "role": "work_repo_not_historical_source"
+    }
+  ]
+}

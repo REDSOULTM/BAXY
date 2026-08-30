@@ -1,0 +1,18 @@
+﻿[
+    {
+        "DeviceID":  "C:",
+        "DriveType":  3,
+        "VolumeName":  "M.2 Samsung",
+        "FileSystem":  "NTFS",
+        "Size":  485740580864,
+        "Free":  101199069184
+    },
+    {
+        "DeviceID":  "D:",
+        "DriveType":  3,
+        "VolumeName":  "M.2 ADATA",
+        "FileSystem":  "NTFS",
+        "Size":  1000188088320,
+        "Free":  200457969664
+    }
+]

@@ -1,0 +1,92 @@
+﻿[
+    {
+        "Root":  "D:\\Perfil\\Escritorio",
+        "Name":  "BAXY.lnk",
+        "FullNameLogical":  "BAXY.lnk",
+        "Kind":  "file",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-07-18T22:21:48.0979545-04:00",
+        "LastWriteTime":  "2026-07-23T01:05:50.8083017-04:00"
+    },
+    {
+        "Root":  "D:\\Perfil\\Escritorio\\ETC\\Programacion",
+        "Name":  "BAXY",
+        "FullNameLogical":  "BAXY",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-08-21T11:54:19.0952508-04:00",
+        "LastWriteTime":  "2026-08-30T01:43:50.9435035-04:00"
+    },
+    {
+        "Root":  "D:\\Perfil\\Escritorio\\ETC\\Programacion",
+        "Name":  "BAXY DEFINITIVO",
+        "FullNameLogical":  "BAXY DEFINITIVO",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-08-19T20:06:57.0077513-04:00",
+        "LastWriteTime":  "2026-08-30T01:14:24.0735557-04:00"
+    },
+    {
+        "Root":  "D:\\Perfil\\Escritorio\\ETC\\Programacion",
+        "Name":  "Carter OS AI",
+        "FullNameLogical":  "Carter OS AI",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-08-22T00:09:22.8629886-04:00",
+        "LastWriteTime":  "2026-08-22T00:26:42.1361066-04:00"
+    },
+    {
+        "Root":  "D:\\Perfil\\Escritorio\\ETC\\Programacion",
+        "Name":  "ETC (No relacionado con baxy)",
+        "FullNameLogical":  "ETC (No relacionado con baxy)",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-08-30T01:43:28.7228554-04:00",
+        "LastWriteTime":  "2026-08-30T01:43:53.3983796-04:00"
+    },
+    {
+        "Root":  "D:\\Perfil\\Escritorio\\ETC\\Programacion",
+        "Name":  "FunctionGemma",
+        "FullNameLogical":  "FunctionGemma",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-08-30T01:48:33.3744997-04:00",
+        "LastWriteTime":  "2026-08-30T01:55:08.6149904-04:00"
+    },
+    {
+        "Root":  "D:\\Perfil\\Escritorio\\ETC\\Programacion",
+        "Name":  "Probando Gemma 4",
+        "FullNameLogical":  "Probando Gemma 4",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-08-30T02:15:44.2631609-04:00",
+        "LastWriteTime":  "2026-08-30T02:23:13.3525092-04:00"
+    },
+    {
+        "Root":  "D:\\",
+        "Name":  "BAXY",
+        "FullNameLogical":  "BAXY",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-07-18T21:32:00.7761539-04:00",
+        "LastWriteTime":  "2026-08-01T02:25:26.6009828-04:00"
+    },
+    {
+        "Root":  "D:\\",
+        "Name":  "BAXYRuntime",
+        "FullNameLogical":  "BAXYRuntime",
+        "Kind":  "dir",
+        "Reparse":  false,
+        "LinkType":  "",
+        "CreationTime":  "2026-07-18T21:34:53.0977929-04:00",
+        "LastWriteTime":  "2026-08-25T00:50:04.3781431-04:00"
+    }
+]

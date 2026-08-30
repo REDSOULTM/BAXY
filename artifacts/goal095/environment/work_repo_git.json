@@ -1,0 +1,9 @@
+﻿{
+    "branch":  "main",
+    "head":  "66c48c30d27842cee8d5c5ea6384d1a1c83f2182",
+    "remotes":  [
+                    "origin\thttps://github.com/REDSOULTM/baxy-definitivo.git (fetch)",
+                    "origin\thttps://github.com/REDSOULTM/baxy-definitivo.git (push)"
+                ],
+    "status":  "## main...origin/main\r\n?? artifacts/goal095/"
+}

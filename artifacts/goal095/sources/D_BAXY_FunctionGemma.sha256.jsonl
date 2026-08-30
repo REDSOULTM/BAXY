@@ -1,0 +1,3 @@
+{"kind": "file", "mtime_unix": 1781416446.0, "path": "finetune_llm/curated/train_v3.jsonl", "sha256": "6ccf110a23090ce274695d24a7c7956f2ea36e91b51fe001509be4a9abd01643", "size": 5402482}
+{"kind": "file", "mtime_unix": 1784503916.1887622, "path": "router/data/router_corpus_curated_ft.jsonl", "sha256": "c7d15542b7da5d1b8ad6eacc683687bb8a6c1cc26fef3918ee3ca9f3878fd423", "size": 994229}
+{"kind": "file", "mtime_unix": 1784503916.0913007, "path": "router/data/router_eval_corpus.curated.jsonl", "sha256": "c234df94bdb71befc8ba36fd8b9d40399cd140ae3e2ec76be48330c16369dfdb", "size": 363900}

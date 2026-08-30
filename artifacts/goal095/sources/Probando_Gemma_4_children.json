@@ -1,0 +1,706 @@
+﻿[
+    {
+        "Name":  "%TEMP%",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-06-11T00:29:15.4055532-04:00",
+        "CreationTime":  "2026-08-30T02:16:35.4548886-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".claude",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:37.1703065-04:00",
+        "CreationTime":  "2026-08-30T02:15:44.2631609-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".pytest_cache",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:37.1929379-04:00",
+        "CreationTime":  "2026-08-30T02:15:44.2719309-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".ruff_cache",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:37.2278297-04:00",
+        "CreationTime":  "2026-08-30T02:15:44.2809639-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".vscode",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:40.4230142-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3484090-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "captures",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-06-26T10:23:22.3368047-04:00",
+        "CreationTime":  "2026-08-30T02:16:35.4578913-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "checkpoints",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:40.4364917-04:00",
+        "CreationTime":  "2026-08-30T02:16:35.4169008-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "data",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:44.6472722-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3684415-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "dataset_finetune",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:48.4598720-04:00",
+        "CreationTime":  "2026-08-30T02:15:47.8596672-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "documentacion",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:16:51.6838325-04:00",
+        "CreationTime":  "2026-08-30T02:15:53.0532274-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "gemma4_agent",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:03.5138130-04:00",
+        "CreationTime":  "2026-08-30T02:15:53.9133529-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "hf_publish",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:05.6568977-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.4034997-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "models",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:03:30.0213506-04:00",
+        "CreationTime":  "2026-08-30T02:16:35.4615547-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "out",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:06:55.0081023-04:00",
+        "CreationTime":  "2026-08-30T02:16:35.4615547-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "output",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:05.7585594-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5339386-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "scripts",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:11.0073433-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5756798-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "sounds",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:12.5484320-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.6499613-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "tools",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:06:51.4561855-04:00",
+        "CreationTime":  "2026-08-30T02:16:35.4635558-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "unsloth_compiled_cache",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:12.7674131-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8050254-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_tesis_curso",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:13.3383283-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9274357-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "__pycache__",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:23:13.3686874-04:00",
+        "CreationTime":  "2026-08-30T02:16:34.0420341-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".env.example",
+        "Kind":  "file",
+        "Length":  1924,
+        "LastWriteTime":  "2026-06-03T15:43:36.8250069-04:00",
+        "CreationTime":  "2026-08-30T02:15:44.2689319-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".gitignore",
+        "Kind":  "file",
+        "Length":  6774,
+        "LastWriteTime":  "2026-06-26T01:54:28.4786125-04:00",
+        "CreationTime":  "2026-08-30T02:15:44.2699306-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "@AutomationLog.txt",
+        "Kind":  "file",
+        "Length":  3339,
+        "LastWriteTime":  "2026-06-17T08:38:30.9077871-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3484090-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "AGENTS.md",
+        "Kind":  "file",
+        "Length":  14927,
+        "LastWriteTime":  "2026-07-11T03:22:16.8342812-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3494088-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Captura de pantalla 2026-08-30 015934.png",
+        "Kind":  "file",
+        "Length":  118266,
+        "LastWriteTime":  "2026-08-30T01:59:48.0843845-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3504075-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Chat de WhatsApp con 202610.8016  PORTAFOLIO DE PROYECTOS.zip",
+        "Kind":  "file",
+        "Length":  9034976,
+        "LastWriteTime":  "2026-06-03T04:05:34.8832895-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3514095-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "CLAUDE.md",
+        "Kind":  "file",
+        "Length":  14930,
+        "LastWriteTime":  "2026-06-26T01:54:28.4791115-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3644216-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "conftest.py",
+        "Kind":  "file",
+        "Length":  952,
+        "LastWriteTime":  "2026-06-10T01:09:52.0481410-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3644216-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "constraints.txt",
+        "Kind":  "file",
+        "Length":  958,
+        "LastWriteTime":  "2026-06-07T20:42:50.0349950-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3659309-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "ContextoGPT.md",
+        "Kind":  "file",
+        "Length":  185010,
+        "LastWriteTime":  "2026-06-14T21:52:10.9979557-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3659309-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "CONTRIBUTING.md",
+        "Kind":  "file",
+        "Length":  2697,
+        "LastWriteTime":  "2026-06-07T11:43:39.7233639-04:00",
+        "CreationTime":  "2026-08-30T02:15:45.3674352-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "fix_streaming.py",
+        "Kind":  "file",
+        "Length":  2858,
+        "LastWriteTime":  "2026-06-26T01:56:33.8156921-04:00",
+        "CreationTime":  "2026-08-30T02:15:53.9118458-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "implement_autoplay_guarantee.py",
+        "Kind":  "file",
+        "Length":  8948,
+        "LastWriteTime":  "2026-06-26T02:00:14.4518279-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.4161389-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "LICENSE",
+        "Kind":  "file",
+        "Length":  1437,
+        "LastWriteTime":  "2026-06-03T15:43:17.9052323-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.4173753-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "log.txt",
+        "Kind":  "file",
+        "Length":  523,
+        "LastWriteTime":  "2026-06-10T18:41:06.2344490-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.4173753-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Modelfile",
+        "Kind":  "file",
+        "Length":  428,
+        "LastWriteTime":  "2026-06-26T13:23:24.7315181-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.4183742-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Modelfile.devstral",
+        "Kind":  "file",
+        "Length":  497,
+        "LastWriteTime":  "2026-06-26T13:43:31.5580237-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5295012-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Modelfile.devstral.16k",
+        "Kind":  "file",
+        "Length":  497,
+        "LastWriteTime":  "2026-06-26T14:02:28.2298071-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5309384-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "nightly_e2e_suite.py",
+        "Kind":  "file",
+        "Length":  36275,
+        "LastWriteTime":  "2026-06-26T09:55:36.7422714-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5319382-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "OVERNIGHT_AUDIT_REPORT.md",
+        "Kind":  "file",
+        "Length":  905,
+        "LastWriteTime":  "2026-06-26T09:59:09.8073051-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5555547-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "overnight_audit_results.json",
+        "Kind":  "file",
+        "Length":  4826,
+        "LastWriteTime":  "2026-06-26T09:59:09.8063017-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5565537-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "pyproject.toml",
+        "Kind":  "file",
+        "Length":  1886,
+        "LastWriteTime":  "2026-06-19T16:08:25.5571808-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5655703-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "README.md",
+        "Kind":  "file",
+        "Length":  36831,
+        "LastWriteTime":  "2026-08-30T02:00:01.3359849-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5655703-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements-camera.txt",
+        "Kind":  "file",
+        "Length":  523,
+        "LastWriteTime":  "2026-05-31T21:56:31.2841656-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5726775-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements-voice.txt",
+        "Kind":  "file",
+        "Length":  2141,
+        "LastWriteTime":  "2026-06-26T01:54:28.6057833-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5726775-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements.txt",
+        "Kind":  "file",
+        "Length":  7778,
+        "LastWriteTime":  "2026-06-26T01:54:28.6067813-04:00",
+        "CreationTime":  "2026-08-30T02:16:32.5736784-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "test_streaming_live.py",
+        "Kind":  "file",
+        "Length":  5740,
+        "LastWriteTime":  "2026-06-26T02:07:44.3752116-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8030228-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "upgrade_autoplay.py",
+        "Kind":  "file",
+        "Length":  5515,
+        "LastWriteTime":  "2026-06-26T01:59:01.4451104-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8720512-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Voz Amigo que dice baxy.ogg",
+        "Kind":  "file",
+        "Length":  187413,
+        "LastWriteTime":  "2026-06-18T00:17:24.2834078-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8730499-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "WhatsApp Ptt 2026-06-18 at 00.11.07.ogg",
+        "Kind":  "file",
+        "Length":  63653,
+        "LastWriteTime":  "2026-06-18T01:10:39.1523715-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8740498-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "WhatsApp Ptt 2026-06-18 at 00.58.17.ogg",
+        "Kind":  "file",
+        "Length":  196615,
+        "LastWriteTime":  "2026-06-18T01:10:46.8928331-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8750500-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "WhatsApp Ptt 2026-06-18 at 01.00.42.ogg",
+        "Kind":  "file",
+        "Length":  235137,
+        "LastWriteTime":  "2026-06-18T01:10:52.1543817-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8760504-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "whatsapp_diag_095753.png",
+        "Kind":  "file",
+        "Length":  2346640,
+        "LastWriteTime":  "2026-06-26T09:57:54.2152954-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8780511-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "whatsapp_diag_095918.png",
+        "Kind":  "file",
+        "Length":  2261085,
+        "LastWriteTime":  "2026-06-26T09:59:18.8179282-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8845831-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_codex_field_server.err.log",
+        "Kind":  "file",
+        "Length":  5300,
+        "LastWriteTime":  "2026-06-09T14:01:25.0922497-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8921864-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_codex_field_server.out.log",
+        "Kind":  "file",
+        "Length":  1523,
+        "LastWriteTime":  "2026-06-09T18:28:09.2052779-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8931915-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_console.log",
+        "Kind":  "file",
+        "Length":  18684,
+        "LastWriteTime":  "2026-06-04T06:44:58.3008672-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8931915-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_results.jsonl",
+        "Kind":  "file",
+        "Length":  25536,
+        "LastWriteTime":  "2026-06-06T06:03:37.8402860-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8941906-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_results_run1_stratified.jsonl",
+        "Kind":  "file",
+        "Length":  439045,
+        "LastWriteTime":  "2026-06-04T12:34:18.3265659-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8951870-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_results_run2_fresh.jsonl",
+        "Kind":  "file",
+        "Length":  348943,
+        "LastWriteTime":  "2026-06-04T13:38:18.9015472-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8971869-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_results_run3.jsonl",
+        "Kind":  "file",
+        "Length":  1049138,
+        "LastWriteTime":  "2026-06-04T16:29:08.4744663-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.8986918-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_results_run4_fresh.jsonl",
+        "Kind":  "file",
+        "Length":  450964,
+        "LastWriteTime":  "2026-06-04T18:01:40.5229490-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9006968-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_run2_console.log",
+        "Kind":  "file",
+        "Length":  2505,
+        "LastWriteTime":  "2026-06-04T13:35:52.2638919-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9027406-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_run3_console.log",
+        "Kind":  "file",
+        "Length":  6159,
+        "LastWriteTime":  "2026-06-04T16:28:49.9084541-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9037400-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_run4_console.log",
+        "Kind":  "file",
+        "Length":  2384,
+        "LastWriteTime":  "2026-06-04T18:01:34.6158113-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9037400-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_seen_run1.json",
+        "Kind":  "file",
+        "Length":  61188,
+        "LastWriteTime":  "2026-06-04T12:34:18.4184545-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9047411-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_seen_run12.json",
+        "Kind":  "file",
+        "Length":  102617,
+        "LastWriteTime":  "2026-06-04T13:38:19.0091904-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9057403-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_finetune_eval_seen_run123.json",
+        "Kind":  "file",
+        "Length":  232937,
+        "LastWriteTime":  "2026-06-04T16:55:54.7058675-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9067405-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_ft_gate_3ep.log",
+        "Kind":  "file",
+        "Length":  828,
+        "LastWriteTime":  "2026-06-06T06:03:37.8407853-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9087395-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_ft_gate_console.log",
+        "Kind":  "file",
+        "Length":  892,
+        "LastWriteTime":  "2026-06-05T19:05:39.6077431-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9087395-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_ft_gate_v3.log",
+        "Kind":  "file",
+        "Length":  874,
+        "LastWriteTime":  "2026-06-05T21:10:04.0394863-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9087395-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_ft_v3_baseline.log",
+        "Kind":  "file",
+        "Length":  1177,
+        "LastWriteTime":  "2026-06-05T21:39:42.4699230-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9106618-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_hunt_tanda1_console.log",
+        "Kind":  "file",
+        "Length":  1367,
+        "LastWriteTime":  "2026-06-04T20:15:31.2458237-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9106618-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_hunt_tanda2_console.log",
+        "Kind":  "file",
+        "Length":  1373,
+        "LastWriteTime":  "2026-06-05T03:54:23.3711357-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9106618-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_hunt_tanda3_console.log",
+        "Kind":  "file",
+        "Length":  1373,
+        "LastWriteTime":  "2026-06-05T04:52:06.5191319-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9116680-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_hunt_tanda4_console.log",
+        "Kind":  "file",
+        "Length":  1373,
+        "LastWriteTime":  "2026-06-05T05:49:45.6588903-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9126669-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_hunt_tanda5_console.log",
+        "Kind":  "file",
+        "Length":  1372,
+        "LastWriteTime":  "2026-06-05T06:35:50.5520922-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9126669-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_hunt_tanda6_console.log",
+        "Kind":  "file",
+        "Length":  1479,
+        "LastWriteTime":  "2026-06-05T07:50:38.1186295-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9136675-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_baseline.jsonl",
+        "Kind":  "file",
+        "Length":  71042,
+        "LastWriteTime":  "2026-06-10T06:08:38.3355578-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9136675-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_baseline_7776.jsonl",
+        "Kind":  "file",
+        "Length":  2455066,
+        "LastWriteTime":  "2026-06-13T16:14:44.4882736-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9146664-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_e4b.jsonl",
+        "Kind":  "file",
+        "Length":  210318,
+        "LastWriteTime":  "2026-06-13T20:45:40.2872574-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9186676-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_hybrid_e2b.jsonl",
+        "Kind":  "file",
+        "Length":  202681,
+        "LastWriteTime":  "2026-06-13T18:17:09.1709822-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9199271-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_results.jsonl",
+        "Kind":  "file",
+        "Length":  204727,
+        "LastWriteTime":  "2026-06-13T20:54:38.1850512-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9214324-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_results_sample498.jsonl",
+        "Kind":  "file",
+        "Length":  151047,
+        "LastWriteTime":  "2026-06-13T12:33:54.3344023-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9224352-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_v1_ft.jsonl",
+        "Kind":  "file",
+        "Length":  198975,
+        "LastWriteTime":  "2026-06-13T17:07:45.2732883-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9234362-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_mission_eval_v2_ft.jsonl",
+        "Kind":  "file",
+        "Length":  200535,
+        "LastWriteTime":  "2026-06-13T17:22:56.0132130-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9244351-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "_rerun_6162_console.log",
+        "Kind":  "file",
+        "Length":  9406,
+        "LastWriteTime":  "2026-06-05T15:15:21.1828106-04:00",
+        "CreationTime":  "2026-08-30T02:16:33.9254352-04:00",
+        "Reparse":  false
+    }
+]

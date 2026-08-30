@@ -1,0 +1,11 @@
+{
+  "root_name": "Probando Gemma 4",
+  "files": 36249,
+  "bytes": 3690624981,
+  "error_count": 0,
+  "errors": [],
+  "manifest_sha256": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "manifest_lines": 36249,
+  "elapsed_s": 520.708,
+  "skip_git": false
+}

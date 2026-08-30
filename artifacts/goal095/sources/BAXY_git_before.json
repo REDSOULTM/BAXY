@@ -1,0 +1,19 @@
+﻿{
+    "logical_path":  "BAXY",
+    "abs_present":  true,
+    "has_dot_git":  true,
+    "git_dir_kind":  "directory",
+    "head":  "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+    "branch":  "codex/baxy-cross-encoder-r209-handoff",
+    "detached":  "False",
+    "remotes":  [
+                    "origin\thttps://github.com/REDSOULTM/Baxy.git (fetch)",
+                    "origin\thttps://github.com/REDSOULTM/Baxy.git (push)"
+                ],
+    "last_commit_iso":  "2026-08-15T23:17:24-04:00",
+    "last_commit_subject":  "docs: add sprint 11 (validation and close) and the deferred register",
+    "status_short":  "## codex/baxy-cross-encoder-r209-handoff...origin/codex/baxy-cross-encoder-r209-handoff [ahead 18]\r\n M artifacts/audit/situated_cut_b_r228_recogniser_reach_r229.json\r\n M artifacts/development/bge_qwen_embedding_cascade_r186_preregistration.json\r\n M artifacts/development/current_core_catalog_snapshot_r219.json\r\n M artifacts/development/independent_cut_b_oracle_r146.jsonl\r\n M artifacts/development/r196_full_provenance_classifier_training.jsonl\r\n M artifacts/development/r207_cross_encoder_pairs.jsonl\r\n M artifacts/holdout/generalization_product_current_tree_r28.jsonl\r\n M artifacts/holdout/situated_cut_b_r228.jsonl\r\n M artifacts/holdout/situated_cut_b_r228.preregistration.json\r\n M artifacts/holdout/veto_reach_v1.json\r\n M artifacts/holdout/veto_reach_v1.preregistration.json\r\n M artifacts/holdout/veto_reach_v2.json\r\n M artifacts/holdout/veto_reach_v2.preregistration.json\r\n M artifacts/holdout/veto_reach_v3.json\r\n M artifacts/holdout/veto_reach_v3.preregistration.json\r\n M artifacts/holdout/veto_reach_v4.preregistration.json\r\n M artifacts/holdout/veto_reach_v5.json\r\n M artifacts/holdout/veto_reach_v5.preregistration.json\r\n M artifacts/holdout/veto_reach_v6.json\r\n M artifacts/holdout/veto_reach_v6.preregistration.json\r\n M artifacts/holdout/veto_reach_v7.json\r\n M artifacts/holdout/veto_reach_v7.preregistration.json\r\n M artifacts/holdout/veto_reach_v8.consumed.json\r\n M artifacts/holdout/veto_reach_v8.corpus.jsonl\r\n M artifacts/holdout/veto_reach_v8.json\r\n M artifacts/holdout/veto_reach_v8.preregistration.json\r\n M artifacts/holdout/veto_reach_v8.raw-replies.jsonl\r\n M artifacts/holdout/veto_reach_v8.telemetry.jsonl\r\n M artifacts/holdout/veto_reach_v8.turn-audit.jsonl\r\n M src/baxy_mind/data/catalog_operation_aliases.v1.json\r\n M tests/data/turn_evidence_public_holdout.v1.jsonl\r\n M tests/data/turn_evidence_public_manifest.v1.json",
+    "status_branch":  null,
+    "is_worktree":  false,
+    "error":  null
+}

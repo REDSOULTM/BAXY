@@ -1,0 +1,8 @@
+﻿{
+  "logical": "Programacion/ETC (No relacionado con baxy)",
+  "inspected": "immediate children only",
+  "child_count": 33,
+  "lineage_name_hits": 0,
+  "classification": "excluded_named_unrelated",
+  "reason": "Folder name declares it is not BAXY lineage. Immediate children are coursework/tooling (C++, Java, Python, Git portable, Flutter/Ionic), not Carter, Schema, FunctionGemma or BAXY."
+}

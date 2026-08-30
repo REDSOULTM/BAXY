@@ -1,0 +1,11 @@
+{
+  "root_name": "FunctionGemma",
+  "files": 1090,
+  "bytes": 34366705385,
+  "error_count": 0,
+  "errors": [],
+  "manifest_sha256": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "manifest_lines": 1090,
+  "elapsed_s": 59.955,
+  "skip_git": false
+}

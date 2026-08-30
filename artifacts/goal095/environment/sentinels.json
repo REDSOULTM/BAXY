@@ -1,0 +1,122 @@
+﻿[
+    {
+        "src":  "Carter OS AI",
+        "rel":  "carter_v5",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-22T00:15:19.7290422-04:00"
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "La razon de carter",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-22T00:21:03.1253455-04:00"
+    },
+    {
+        "src":  "Carter OS AI",
+        "rel":  "legacy\\Carter_v4",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-22T00:23:39.2203311-04:00"
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "README_TOOLS.md",
+        "exists":  true,
+        "kind":  "file",
+        "length":  3463,
+        "lastwrite":  "2026-06-14T01:12:01.7553842-04:00"
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "router",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-30T01:55:05.8579789-04:00"
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "tool_schemas_slim.json",
+        "exists":  true,
+        "kind":  "file",
+        "length":  230145,
+        "lastwrite":  "2026-06-15T03:25:47.6177990-04:00"
+    },
+    {
+        "src":  "FunctionGemma",
+        "rel":  "finetune_llm",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-30T01:54:57.1281329-04:00"
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "gemma4_agent",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-30T02:23:03.5138130-04:00"
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "gemma4_agent\\computer_use_pkg",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-30T02:16:55.8429213-04:00"
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "models",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-30T02:03:30.0213506-04:00"
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "data",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-30T02:16:44.6472722-04:00"
+    },
+    {
+        "src":  "Probando Gemma 4",
+        "rel":  "README.md",
+        "exists":  true,
+        "kind":  "file",
+        "length":  36831,
+        "lastwrite":  "2026-08-30T02:00:01.3359849-04:00"
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "legacy\\models\\artifacts",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-21T12:18:20.0737567-04:00"
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "src",
+        "exists":  true,
+        "kind":  "dir",
+        "length":  null,
+        "lastwrite":  "2026-08-21T12:22:36.7873703-04:00"
+    },
+    {
+        "src":  "BAXY",
+        "rel":  "Baxy.slnx",
+        "exists":  true,
+        "kind":  "file",
+        "length":  935,
+        "lastwrite":  "2026-07-15T13:21:28.2338489-04:00"
+    }
+]

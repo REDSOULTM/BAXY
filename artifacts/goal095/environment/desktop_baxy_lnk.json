@@ -1,0 +1,6 @@
+﻿{
+    "Path":  "D:\\Perfil\\Escritorio\\BAXY.lnk",
+    "TargetPath":  "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\Baxy.Setup.exe",
+    "WorkingDirectory":  "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY",
+    "Arguments":  "--launch"
+}

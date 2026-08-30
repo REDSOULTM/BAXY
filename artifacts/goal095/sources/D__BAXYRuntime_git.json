@@ -1,0 +1,20 @@
+﻿{
+    "logical_path":  "D:\\BAXYRuntime",
+    "abs_present":  true,
+    "has_dot_git":  false,
+    "git_dir_kind":  null,
+    "head":  null,
+    "branch":  null,
+    "remotes":  [
+
+                ],
+    "last_commit_iso":  null,
+    "last_commit_subject":  null,
+    "status_first_line":  null,
+    "status_line_count":  null,
+    "error":  null,
+    "Reparse":  false,
+    "LinkType":  "",
+    "CreationTime":  "2026-07-18T21:34:53.0977929-04:00",
+    "LastWriteTime":  "2026-08-25T00:50:04.3781431-04:00"
+}

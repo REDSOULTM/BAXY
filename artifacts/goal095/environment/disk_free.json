@@ -1,0 +1,12 @@
+﻿[
+    {
+        "DeviceID":  "C:",
+        "FreeGB":  95.88,
+        "SizeGB":  452.38
+    },
+    {
+        "DeviceID":  "D:",
+        "FreeGB":  186.69,
+        "SizeGB":  931.5
+    }
+]

@@ -1,0 +1,12 @@
+﻿{
+    "head":  "c57c7aff926169d2b62eff7682e1095195f94d80",
+    "branch":  "codex/baxy-cross-encoder-r209-handoff",
+    "remotes":  [
+                    "origin\thttps://github.com/REDSOULTM/Baxy.git (fetch)",
+                    "origin\thttps://github.com/REDSOULTM/Baxy.git (push)"
+                ],
+    "last_commit_iso":  "2026-08-22T13:04:16-04:00",
+    "last_commit_subject":  "research: reject direct Qwen syntax repair",
+    "status_first":  "## codex/baxy-cross-encoder-r209-handoff",
+    "child_count":  43
+}

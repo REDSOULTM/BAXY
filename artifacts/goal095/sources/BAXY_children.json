@@ -1,0 +1,314 @@
+﻿[
+    {
+        "Name":  ".git",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-30T02:19:59.4707155-04:00",
+        "CreationTime":  "2026-08-21T11:54:19.0992648-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".pytest_cache",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:03:15.0551590-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.3880897-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".ruff_cache",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:03:15.1254115-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.3987807-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "artifacts",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:04:07.1938026-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.4132853-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "bootstrap",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:04:07.2108415-04:00",
+        "CreationTime":  "2026-08-21T11:57:02.3197822-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "contexto",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:04:07.4402250-04:00",
+        "CreationTime":  "2026-08-21T11:57:03.0285119-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "documentacion",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:04:09.3745771-04:00",
+        "CreationTime":  "2026-08-21T11:57:03.0728686-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "experiments",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:09:52.2711721-04:00",
+        "CreationTime":  "2026-08-21T11:57:07.5106600-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "legacy",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:18:24.3692909-04:00",
+        "CreationTime":  "2026-08-21T11:58:34.9909304-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "scripts",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:18:25.0604988-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9651989-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "src",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:22:36.7873703-04:00",
+        "CreationTime":  "2026-08-21T12:01:49.4667575-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "tests",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:22:46.6141480-04:00",
+        "CreationTime":  "2026-08-21T12:02:46.6113191-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "__pycache__",
+        "Kind":  "dir",
+        "Length":  null,
+        "LastWriteTime":  "2026-08-21T12:22:48.3982284-04:00",
+        "CreationTime":  "2026-08-21T12:02:55.2348831-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".editorconfig",
+        "Kind":  "file",
+        "Length":  562,
+        "LastWriteTime":  "2026-08-14T20:37:52.7143781-04:00",
+        "CreationTime":  "2026-08-21T11:54:19.0967545-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".gitattributes",
+        "Kind":  "file",
+        "Length":  15513,
+        "LastWriteTime":  "2026-08-15T19:57:38.5427714-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.3860910-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  ".gitignore",
+        "Kind":  "file",
+        "Length":  5273,
+        "LastWriteTime":  "2026-08-14T20:37:52.7153648-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.3870899-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "AGENTS.md",
+        "Kind":  "file",
+        "Length":  5146,
+        "LastWriteTime":  "2026-08-14T20:37:52.7158651-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.4117974-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "AGENT_HANDOFF.md",
+        "Kind":  "file",
+        "Length":  6849,
+        "LastWriteTime":  "2026-08-14T20:37:52.7163706-04:00",
+        "CreationTime":  "2026-08-21T11:54:24.4117974-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "assets.manifest.json",
+        "Kind":  "file",
+        "Length":  7701,
+        "LastWriteTime":  "2026-08-14T20:37:58.6028266-04:00",
+        "CreationTime":  "2026-08-21T11:57:02.3177795-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Baxy.slnx",
+        "Kind":  "file",
+        "Length":  935,
+        "LastWriteTime":  "2026-07-15T13:21:28.2338489-04:00",
+        "CreationTime":  "2026-08-21T11:57:02.3177795-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "BAXY_GPT56_ULTRA_PROMPT.md",
+        "Kind":  "file",
+        "Length":  46405,
+        "LastWriteTime":  "2026-07-14T06:44:23.9934020-04:00",
+        "CreationTime":  "2026-08-21T11:57:02.3187813-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "constraints-runtime-win-x64.txt",
+        "Kind":  "file",
+        "Length":  1308,
+        "LastWriteTime":  "2026-08-14T20:37:58.6033254-04:00",
+        "CreationTime":  "2026-08-21T11:57:03.0265098-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "constraints-test-win-x64.txt",
+        "Kind":  "file",
+        "Length":  322,
+        "LastWriteTime":  "2026-08-14T20:37:58.6038256-04:00",
+        "CreationTime":  "2026-08-21T11:57:03.0275107-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Directory.Build.props",
+        "Kind":  "file",
+        "Length":  808,
+        "LastWriteTime":  "2026-08-14T20:37:52.7168649-04:00",
+        "CreationTime":  "2026-08-21T11:57:03.0718681-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "Directory.Packages.props",
+        "Kind":  "file",
+        "Length":  434,
+        "LastWriteTime":  "2026-07-16T15:21:35.7563821-04:00",
+        "CreationTime":  "2026-08-21T11:57:03.0718681-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "global.json",
+        "Kind":  "file",
+        "Length":  105,
+        "LastWriteTime":  "2026-07-14T16:45:41.3923552-04:00",
+        "CreationTime":  "2026-08-21T11:58:34.9899283-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "goal.md",
+        "Kind":  "file",
+        "Length":  10128,
+        "LastWriteTime":  "2026-08-15T21:53:54.7452418-04:00",
+        "CreationTime":  "2026-08-21T11:58:34.9909304-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "main.py",
+        "Kind":  "file",
+        "Length":  8430,
+        "LastWriteTime":  "2026-08-15T18:31:03.5671883-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9538171-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "pylock.runtime-win-x64.toml",
+        "Kind":  "file",
+        "Length":  22750,
+        "LastWriteTime":  "2026-08-14T20:37:58.8821353-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9538171-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "pylock.test-win-x64.toml",
+        "Kind":  "file",
+        "Length":  2419,
+        "LastWriteTime":  "2026-08-14T20:37:58.8821353-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9571231-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "pytest.ini",
+        "Kind":  "file",
+        "Length":  47,
+        "LastWriteTime":  "2026-08-14T20:37:58.8826328-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9576448-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "R209_CROSS_ENCODER_HANDOFF.md",
+        "Kind":  "file",
+        "Length":  8824,
+        "LastWriteTime":  "2026-08-15T09:03:44.4320531-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9586507-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "README.md",
+        "Kind":  "file",
+        "Length":  6340,
+        "LastWriteTime":  "2026-08-14T20:37:52.7178653-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9586507-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements-quality-win-x64.lock.txt",
+        "Kind":  "file",
+        "Length":  288,
+        "LastWriteTime":  "2026-08-14T20:37:58.8831325-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9602022-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements-quality.txt",
+        "Kind":  "file",
+        "Length":  73,
+        "LastWriteTime":  "2026-08-14T20:37:58.8831325-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9602022-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements-runtime-win-x64.in",
+        "Kind":  "file",
+        "Length":  483,
+        "LastWriteTime":  "2026-08-14T20:37:58.8836370-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9618939-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "requirements-test-win-x64.in",
+        "Kind":  "file",
+        "Length":  83,
+        "LastWriteTime":  "2026-08-14T20:37:58.8841372-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9618939-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "ruff.toml",
+        "Kind":  "file",
+        "Length":  561,
+        "LastWriteTime":  "2026-08-14T20:37:58.8841372-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9636316-04:00",
+        "Reparse":  false
+    },
+    {
+        "Name":  "run_mvp.ps1",
+        "Kind":  "file",
+        "Length":  8743,
+        "LastWriteTime":  "2026-08-15T19:44:39.3351241-04:00",
+        "CreationTime":  "2026-08-21T12:01:48.9636316-04:00",
+        "Reparse":  false
+    }
+]

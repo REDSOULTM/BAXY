@@ -1,0 +1,18 @@
+﻿{
+    "logical_path":  "FunctionGemma",
+    "abs_present":  true,
+    "has_dot_git":  false,
+    "git_dir_kind":  null,
+    "head":  null,
+    "branch":  null,
+    "detached":  null,
+    "remotes":  [
+
+                ],
+    "last_commit_iso":  null,
+    "last_commit_subject":  null,
+    "status_short":  null,
+    "status_branch":  null,
+    "is_worktree":  null,
+    "error":  null
+}

@@ -1,0 +1,37 @@
+﻿[
+    {
+        "rel":  "finetune_llm",
+        "Length":  null,
+        "LastWriteTime":  "2026-07-19T09:15:09.0306444-04:00"
+    },
+    {
+        "rel":  "router",
+        "Length":  null,
+        "LastWriteTime":  "2026-07-19T19:31:55.9520615-04:00"
+    },
+    {
+        "rel":  "finetune_llm\\curated",
+        "Length":  null,
+        "LastWriteTime":  "2026-07-19T09:15:09.0362176-04:00"
+    },
+    {
+        "rel":  "finetune_llm\\curated\\train_v3.jsonl",
+        "Length":  5402482,
+        "LastWriteTime":  "2026-06-14T01:54:06.0000000-04:00"
+    },
+    {
+        "rel":  "router\\data",
+        "Length":  null,
+        "LastWriteTime":  "2026-07-19T19:31:56.1897619-04:00"
+    },
+    {
+        "rel":  "router\\data\\router_corpus_curated_ft.jsonl",
+        "Length":  994229,
+        "LastWriteTime":  "2026-07-19T19:31:56.1887622-04:00"
+    },
+    {
+        "rel":  "router\\data\\router_eval_corpus.curated.jsonl",
+        "Length":  363900,
+        "LastWriteTime":  "2026-07-19T19:31:56.0913007-04:00"
+    }
+]

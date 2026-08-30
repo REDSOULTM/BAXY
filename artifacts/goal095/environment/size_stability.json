@@ -1,0 +1,72 @@
+[
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY",
+    "files_a": 116641,
+    "files_b": 116641,
+    "bytes_a": 25488709507,
+    "bytes_b": 25488709507,
+    "newest_a": ".git\\index",
+    "newest_b": ".git\\index",
+    "stable": true
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI",
+    "files_a": 136316,
+    "files_b": 136316,
+    "bytes_a": 14935292111,
+    "bytes_b": 14935292111,
+    "newest_a": ".git\\index",
+    "newest_b": ".git\\index",
+    "stable": true
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\FunctionGemma",
+    "files_a": 1090,
+    "files_b": 1090,
+    "bytes_a": 34366705385,
+    "bytes_b": 34366705385,
+    "newest_a": "AGENTS.md",
+    "newest_b": "AGENTS.md",
+    "stable": true
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4",
+    "files_a": 36249,
+    "files_b": 36249,
+    "bytes_a": 3690624981,
+    "bytes_b": 3690624981,
+    "newest_a": "README.md",
+    "newest_b": "README.md",
+    "stable": true
+  },
+  {
+    "asked": "D:\\BAXY",
+    "files_a": 103161,
+    "files_b": 103161,
+    "bytes_a": 34258703806,
+    "bytes_b": 34258703806,
+    "newest_a": "source\\.git\\refs\\codex\\turn-diffs\\checkpoints\\8e7c08ee4a44b71efe506251e81a7e4b18a45007de1ddfa9964e2256d0e2dc42\\fcfab2d4bef9bb900180fcc58c14175557f281e0a33488f152d3b45393a11b5c\\1788066911529\\b32b1b71-2a50-4d5d-a4c2-814212d62041",
+    "newest_b": "source\\.git\\refs\\codex\\turn-diffs\\checkpoints\\8e7c08ee4a44b71efe506251e81a7e4b18a45007de1ddfa9964e2256d0e2dc42\\fcfab2d4bef9bb900180fcc58c14175557f281e0a33488f152d3b45393a11b5c\\1788066911529\\b32b1b71-2a50-4d5d-a4c2-814212d62041",
+    "stable": true
+  },
+  {
+    "asked": "D:\\BAXY\\FunctionGemma",
+    "files_a": 3,
+    "files_b": 3,
+    "bytes_a": 6760611,
+    "bytes_b": 6760611,
+    "newest_a": "router\\data\\router_corpus_curated_ft.jsonl",
+    "newest_b": "router\\data\\router_corpus_curated_ft.jsonl",
+    "stable": true
+  },
+  {
+    "asked": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando schemas",
+    "files_a": null,
+    "files_b": null,
+    "bytes_a": null,
+    "bytes_b": null,
+    "newest_a": null,
+    "newest_b": null,
+    "stable": true
+  }
+]
