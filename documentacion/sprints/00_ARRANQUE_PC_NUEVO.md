@@ -30,10 +30,12 @@ lo mismo para el goal 03B y quedó como archivo.
    Las tres son `required: true`. Wake, TTS neural, visión, OCR, mpv y yt-dlp son
    opcionales: que falten no impide arrancar (los pide el goal 09).
 
-3. Opcional, sólo si el goal en curso hereda de ellas: las pilas vecinas
-   `Programacion\BAXY`, `Programacion\FunctionGemma`, `Programacion\Probando Gemma 4`.
-   El goal 06 no las necesita — su herencia (`biblioteca/`, 1.350 documentos) sí
-   viaja dentro del repositorio.
+3. Las pilas vecinas son opcionales para un goal ordinario, pero **obligatorias para
+   09.5**: `Programacion\BAXY`, `Programacion\Carter OS AI`,
+   `Programacion\FunctionGemma`, `Programacion\Probando Gemma 4`,
+   `Programacion\Probando schemas` y cualquier Agent/Function Schema o BAXY adicional
+   que el dueño identifique. Si falta una o sigue copiándose, 09.5.0 cierra
+   `FALLO_DE_AMBIENTE`; `biblioteca/` no sustituye silenciosamente la fuente.
 
 ## El prompt de arranque
 

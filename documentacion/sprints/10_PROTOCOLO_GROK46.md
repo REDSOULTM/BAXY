@@ -13,11 +13,12 @@ activo quedó reducido a una frase de ese tipo.
 ## Contrato de ejecución
 
 Antes de actuar, lee `AGENTS.md`, `00_INDICE.md`, `../00_IDENTIDAD.md`,
-`10_APRENDIZAJES.md`, este protocolo y el handoff del tramo anterior. Después:
+`10_APRENDIZAJES.md`, este protocolo, `../herencia/00_MAPA.md`, la decisión 09.5
+del subsistema y el handoff del tramo anterior. Después:
 
 1. crea un checklist corto basado sólo en los criterios de cierre;
 2. ejecuta el preflight de ambiente de la partición;
-3. localiza dueño y prueba con búsquedas acotadas;
+3. localiza primero la pieza histórica aceptada, luego dueño y prueba con búsquedas acotadas;
 4. mide antes de editar;
 5. corrige la causa mínima;
 6. ejecuta test dueño dos veces, medición del tramo y validación proporcional;
@@ -28,7 +29,7 @@ datos personales o a otro proyecto. No trabajes en el siguiente `10.x`.
 
 ## Las cinco leyes
 
-1. Hereda primero, estado del arte después, construye al final.
+1. Hereda primero desde el ledger 09.5, estado del arte después, construye al final.
 2. Mínimo código; una capa nueva retira en el mismo goal la que sustituye.
 3. Sólo arregla lo que bloquea este tramo. Lo demás va en `APLAZADOS.md`.
 4. Gana lo más ligero que cumpla; 4 GB de VRAM es techo, no objetivo.
@@ -68,6 +69,10 @@ terceros, borrados personales, energía y otros efectos peligrosos usan ámbito
 desechable o fixture fiel y se publican como no físicos. Nunca se toca un dato
 personal para aprobar una fila.
 
+Sólo español, inglés y spanglish son alcance de producto. Un nombre inglés de app
+dentro de una petición española es spanglish. Otro idioma puede cerrarse fuera de
+alcance con procedencia, nunca como fallo ambiental ni como capacidad pendiente.
+
 ## Ambiente: fallo, no excepción
 
 Antes de ejecutar la campaña, deriva de sus contratos una lista comprobable de
@@ -96,8 +101,8 @@ quedar fuera de alcance; el manifiesto lo justifica fila por fila.
 
 No soak, no espera de 24 h, no enseñar el examen al runtime, no regex por fallo, no
 overlay parcial, no remake con tests rojos, no convertir ambiente/idioma en pass,
-no avanzar después de `FALLO_DE_AMBIENTE` y no usar el código del intento fallido
-como autoridad.
+no avanzar después de `FALLO_DE_AMBIENTE`, no saltarse el ledger 09.5 y no usar el
+código del intento fallido como autoridad.
 
 ## Forma del cierre
 

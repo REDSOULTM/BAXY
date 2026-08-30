@@ -4,6 +4,9 @@ Lanza una sesión limpia en Grok 4.6 High con `/goal` y pega un solo `11.x`. Lee
 `AGENTS.md`, `00_INDICE.md`, `../00_IDENTIDAD.md`, `11_VALIDACION.md`, este
 protocolo, la cola 11.1 y el handoff anterior. Aplican las cinco leyes, los seis
 invariantes y la disciplina de contexto de `10_PROTOCOLO_GROK46.md`.
+Lee además `../herencia/00_MAPA.md` y la decisión 09.5 del owner: una corrección
+histórica aceptada se reutiliza antes de diseñar otra. Sólo ES/EN/spanglish son
+alcance; nombres ingleses de apps dentro de español cuentan como spanglish.
 
 ## Qué cambia respecto del 10
 

@@ -10,8 +10,9 @@ trabajo**. Nada de lo que escribas va allí.
 
 ## Qué haces aquí
 
-El trabajo está en **once goals**, en `documentacion/sprints/`. Cada uno se lanza en
-una sesión nueva, se pega entero, y corre hasta cumplirse.
+El trabajo está en **once goals de producto** y la recuperación histórica 09.5, en
+`documentacion/sprints/`. Cada prompt ejecutable se lanza en una sesión nueva, se
+pega entero, y corre hasta cumplirse.
 
 **Si te han dado un goal, ésa es tu única instrucción.** Este fichero no te dice qué
 hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, empieza por
@@ -21,7 +22,8 @@ hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, empieza p
 
 1. **[`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md)** — qué es
    BAXY. No son preferencias: son decisiones del dueño del producto con los cuatro
-   intentos anteriores sobre la mesa. Si un diseño tuyo las contradice, cambias tú.
+   intentos anteriores conocidos sobre la mesa. El Goal 09.5 concilia cualquier
+   fuente histórica añadida después. Si un diseño tuyo las contradice, cambias tú.
 2. **Tu goal**. Trae dentro las cinco leyes, lo ya medido y rechazado, y sus
    criterios de cierre.
 

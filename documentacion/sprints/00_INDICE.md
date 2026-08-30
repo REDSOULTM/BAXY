@@ -1,14 +1,16 @@
-# BAXY en once goals
+# BAXY en once goals y una recuperación histórica 09.5
 
 Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, y
-**se deja correr hasta que se cumple**. Los Goals 10 y 11 son mapas: su unidad de
-ejecución son `10.0`–`10.18` y `11.1`–`11.16`, una sesión nueva por subgoal.
+**se deja correr hasta que se cumple**. Antes del 10 se intercala la recuperación
+09.5 porque aparecieron fuentes históricas cuya cobertura no estaba demostrada.
+09.5, 10 y 11 son mapas: su unidad de ejecución son sus subgoals, una sesión nueva
+por prompt o lote.
 
 ## Con qué modelo se lanza cada uno
 
 | Goals | Modelo | Dónde |
 |---|---|---|
-| **01–11** | **Grok 4.6**, esfuerzo `high` | Esta carpeta. Son los que están en uso. |
+| **01–11 + 09.5** | **Grok 4.6**, esfuerzo `high` | Esta carpeta. Son los que están en uso. |
 | **03C** | **Grok 4.6** | Esta carpeta. Cierra el alcance y los restos antes del 04. |
 | 03B (cerrado) | Se abrió con GPT-5.6 Sol y se cerró con Grok 4.6 | Esta carpeta. El 90 % se midió; el alcance no. |
 | 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/). Archivo, no se lanzan. |
@@ -38,7 +40,7 @@ pegado entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cump
 que una revisión de evidencia independiente reproduce el resultado**; si no puede
 reproducirlo, el goal sigue abierto con los huecos nombrados. Eso es exactamente el
 invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una sesión por
-goal ejecutable, no una sesión para todo el día. En 10.x/11.x el techo operativo es
+goal ejecutable, no una sesión para todo el día. En 09.5.x/10.x/11.x el techo operativo es
 **500k tokens** y nunca se juntan dos ficheros.
 
 **El contenido no cambia entre versiones**: mismo objetivo, misma evidencia
@@ -61,20 +63,22 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | **Uso diario + aceptación** ([mapa](10_USO_DIARIO.md)) | Base verde, 200 turnos y cinco×20 **sin 24 h**, más 1.947/808 e Identidad; se pega `10.0`–`10.18` |
-| 11 | **Validación y cierre** ([mapa](11_VALIDACION.md)) | 2.036 contratos por clase, deuda, errores, regresión e higiene; se pega `11.1`–`11.16` |
+| 09.5 | **Herencia total** ([mapa](09.5_HERENCIA_TOTAL.md)) | Todas las versiones presentes conciliadas, mejores piezas trasplantadas y 01–09 revalidados; se pegan los `09.5.x` |
+| 10 | **Uso diario + aceptación** ([mapa](10_USO_DIARIO.md)) | Base verde, 200 turnos y cinco×20 **sin 24 h**, más `N10/M10` (mínimos 1.947/808 + delta 09.5) e Identidad |
+| 11 | **Validación y cierre** ([mapa](11_VALIDACION.md)) | `K11` contratos (mínimo 2.036 + delta 09.5), deuda, errores, regresión e higiene |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
-anteriores en esta máquina con piezas que ya funcionan. El 09 va casi al final por
-decisión del dueño —backend primero—, pero el 01 ya deja localizado lo que se
-hereda.
+anteriores en esta máquina con piezas que ya funcionan. El 09.5 no invalida ese
+trabajo: concilia el mapa del 01 contra copias añadidas después, cubre sus huecos
+declarados y trasplanta sólo el delta probado antes del uso diario.
 
 **El 11 es distinto y por eso va aparte.** Del 01 al 10 está prohibido perseguir lo
 que *podría* fallar: van rápido a propósito. El 11 invierte esa regla y se dedica
 exactamente a eso — los caminos de error, las fragilidades, la regresión completa
 sobre el árbol final. Es donde se cobra la deuda que los diez fueron dejando.
 
-**Ambiente no es aprobación.** Desde 10.1, una misión in-scope que necesita una
+**Ambiente no es aprobación.** Desde 09.5.0, una fuente histórica requerida que
+falte o siga copiándose cierra `FALLO_DE_AMBIENTE`. Desde 10.1, una misión in-scope que necesita una
 app, cuenta, serie, contenido, permiso o dispositivo ausente cierra su sesión como
 `FALLO_DE_AMBIENTE`. El prompt deja al dueño la preparación exacta y se repite el
 mismo subgoal; no se omite la fila ni se avanza.
@@ -111,10 +115,12 @@ Van dentro de los once prompts, idénticas. Son lo que evita que este intento ac
 como los cuatro anteriores.
 
 **1. Hereda primero, estado del arte después, construye al final.** En ese orden:
-¿lo resolvió ya un BAXY anterior? — entonces trae esa solución, o la **mejor
-combinación** de las que hay, buscándola en
-[`biblioteca/`](../../biblioteca/00_INDICE.md), donde están los 1.350 documentos de
-las cuatro escrituras anteriores. ¿Está resuelto ahí fuera? — entonces impleméntalo en
+¿lo resolvió ya un Carter, Agent/Function Schema o BAXY anterior? — entonces trae
+esa solución, o la **mejor combinación** de las que hay, buscándola primero en
+[`biblioteca/`](../../biblioteca/00_INDICE.md) y, desde 09.5, en su manifiesto
+reconciliado contra **todos** los repositorios históricos presentes. Los 1.350
+documentos son el inventario previo, no un certificado eterno de completitud.
+¿Está resuelto ahí fuera? — entonces impleméntalo en
 vez de inventarlo. Construir es el último recurso, y hay que decir por qué. Y al
 revés: **que BAXY ya lo haga de una manera no es razón para conservarla**; heredar
 es traer lo que funciona, no conservar lo que estaba. Es una pasada, no una
@@ -154,9 +160,9 @@ no puedes decidir si mejoraste, así que no lo cambias nunca. Lo que **no** se
 escribe: interfaces con un solo implementador «por si acaso», registros de plugins,
 configuración para elegir entre implementaciones que no existen.
 
-**Y la consigna que une las cinco:** ésta es la **quinta** escritura de BAXY y
-tiene que ser **la más rápida de las cinco**. No porque haga menos —es la
-definitiva— sino porque **no vuelve a descubrir nada que ya se descubrió**. Cada
+**Y la consigna que une las cinco:** ésta es la escritura definitiva tras múltiples
+versiones de Carter, schemas y BAXY, y tiene que ser **la más rápida del linaje**.
+No porque haga menos, sino porque **no vuelve a descubrir nada que ya se descubrió**. Cada
 hora gastada re-derivando algo ya medido en estos repositorios es una hora que el
 proyecto ya pagó una vez.
 

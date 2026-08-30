@@ -52,6 +52,10 @@ Por eso los 2.036 pasan al Goal 11 y está prohibido ejecutarlos a ciegas como
 prompts. Los requisitos se prueban o trazan; las misiones sí cruzan runtime; las
 restricciones demuestran no-acción.
 
+Estos conteos son el baseline conocido antes del Goal 09.5, no un techo. Toda
+fuente histórica nueva se concilia allí: 10.1 congela `N10/M10` y 11.1 congela
+`K11`, preservando 1.947/808/2.036 como subconjuntos exactos de no-regresión.
+
 ## Lecciones operativas
 
 - Nunca perder el journal ni aplicar un overlay de un shard incompleto.
@@ -79,7 +83,8 @@ y postlectura obligatoria antes de afirmar que una app o estado cambió.
 
 ## Regla de herencia
 
-Antes de implementar una corrección, se puede inspeccionar el commit histórico que
-la intentó. Se hereda únicamente si el test dueño demuestra que resuelve la causa
-en el árbol nuevo sin reintroducir capas, literales de examen ni dependencias
-caducadas. El commit es una pista; el test sobre el nuevo árbol es la autoridad.
+Antes de implementar una corrección, se consulta el ledger del Goal 09.5 y el
+commit/repositorio histórico que la intentó. Se hereda únicamente si el test dueño
+demuestra que resuelve la causa en el árbol nuevo sin reintroducir capas, literales
+de examen ni dependencias caducadas. La fuente es una pista; el test sobre el árbol
+nuevo es la autoridad.

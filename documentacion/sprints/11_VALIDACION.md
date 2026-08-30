@@ -10,19 +10,20 @@ cumple la función que tenía desde el plan original: buscar lo que todavía pue
 romperse, cobrar la deuda aplazada, repetir todas las barras juntas, retirar lo que
 sobra y publicar el cierre.
 
-También absorbe correctamente el anillo de 2.036 contratos que el intento fallido
-metió entero en el 10. No se ejecutan todos como mensajes: 218 son misiones, 2 son
-conversaciones, 1.421 son requisitos, 290 son instrucciones de ingeniería y el
-resto son fallos, restricciones, preferencias o seguridad. Cada clase recibe su
-oráculo correcto.
+También absorbe correctamente el anillo conocido de 2.036 contratos que el intento
+fallido metió entero en el 10, más el delta encontrado por 09.5. 11.1 congela ese
+total como `K11`, nunca menor de 2.036. No se ejecutan todos como mensajes: en el
+baseline 218 son misiones, 2 conversaciones, 1.421 requisitos, 290 instrucciones de
+ingeniería y el resto son fallos, restricciones, preferencias o seguridad. Cada
+clase —incluido el delta— recibe su oráculo correcto.
 
 ## Orden
 
 | Goal | Misión | Cierre local |
 |---|---|---|
-| 11.1 | Congelar cola de cierre | 2.036 + APLAZADOS asignados sin solapes |
-| 11.2 | Contratos runtime | 218 misiones + 2 conversaciones |
-| 11.3–11.8 | Requisitos A–F | 1.421 requisitos, ≤240 por sesión |
+| 11.1 | Congelar cola de cierre | `K11` (≥2.036) + APLAZADOS asignados sin solapes |
+| 11.2 | Contratos runtime | baseline 218 misiones + 2 conversaciones, más delta 09.5 |
+| 11.3–11.8 | Requisitos A–F | baseline 1.421 + delta, ≤240 por sesión; 09.5.12 añade slices si hacen falta |
 | 11.9–11.10 | Contratos no-runtime A–B | ingeniería, fallos, no-acción, preferencias y seguridad |
 | 11.11 | Errores de mente/kernel | inválido, timeout, autorización, duplicación |
 | 11.12 | Errores de providers/estado | mentira, disco, proceso, persistencia, UI/voz |
@@ -45,7 +46,7 @@ alcance futuro, nunca como capacidad certificada.
 
 ## Criterios agregados
 
-- [ ] 2.036/2.036 contratos con oráculo adecuado y veredicto individual.
+- [ ] `K11/K11` contratos, con mínimo histórico 2.036 + delta 09.5, tienen oráculo y veredicto individual.
 - [ ] `APLAZADOS.md` vacío por resolución, descarte medido o salida formal del
       alcance; ninguna entrada se pierde por reescritura del ledger.
 - [ ] Caminos de error provocados sin afirmación falsa, acción doble ni constante.
