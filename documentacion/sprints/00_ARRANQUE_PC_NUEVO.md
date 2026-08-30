@@ -33,9 +33,13 @@ lo mismo para el goal 03B y quedó como archivo.
 3. Las pilas vecinas son opcionales para un goal ordinario, pero **obligatorias para
    09.5**: `Programacion\BAXY`, `Programacion\Carter OS AI`,
    `Programacion\FunctionGemma`, `Programacion\Probando Gemma 4`,
-   `Programacion\Probando schemas` y cualquier Agent/Function Schema o BAXY adicional
-   que el dueño identifique. Si falta una o sigue copiándose, 09.5.0 cierra
-   `FALLO_DE_AMBIENTE`; `biblioteca/` no sustituye silenciosamente la fuente.
+   y cualquier Carter/BAXY adicional que el dueño identifique como proyecto real.
+   Schema Agent ya vive en el historial de `BAXY`: no existe ni se requiere una
+   carpeta `Probando schemas`. Si falta una fuente real o sigue copiándose, 09.5.0 cierra
+   `FALLO_DE_AMBIENTE`; `biblioteca/` no sustituye silenciosamente la fuente. No es
+   obligatorio duplicar los ~140 GB de modelos/checkpoints/datasets históricos de
+   `Probando Gemma 4`: 09.5 acepta esa fuente dispersa y pedirá sólo un asset exacto
+   si finalmente decide reutilizarlo.
 
 ## El prompt de arranque
 

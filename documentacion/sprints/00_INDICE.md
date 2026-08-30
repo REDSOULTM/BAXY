@@ -118,7 +118,7 @@ Van dentro de los once prompts, idénticas. Son lo que evita que este intento ac
 como los cuatro anteriores.
 
 **1. Hereda primero, estado del arte después, construye al final.** En ese orden:
-¿lo resolvió ya un Carter, Agent/Function Schema o BAXY anterior? — entonces trae
+¿lo resolvió ya un Carter o BAXY anterior, incluida su etapa Schema Agent? — entonces trae
 esa solución, o la **mejor combinación** de las que hay, buscándola primero en
 [`biblioteca/`](../../biblioteca/00_INDICE.md) y, desde 09.5, en su manifiesto
 reconciliado contra **todos** los repositorios históricos presentes. Los 1.350

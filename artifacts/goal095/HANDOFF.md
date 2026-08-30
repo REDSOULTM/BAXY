@@ -1,5 +1,10 @@
 # Handoff — 09.5.0 — 2026-08-30
 
+> **Handoff histórico supersedido.** El dueño corrigió dos premisas: no existe un
+> proyecto `Probando schemas`, y no deben copiarse los ~140 GB de blobs omitidos de
+> `Probando Gemma 4`. Schema Agent se audita dentro del Git de `BAXY`. Repetir
+> 09.5.0 con el prompt vigente para producir el handoff verde.
+
 ## Objetivo
 Demostrar que todas las fuentes del linaje están presentes, copiadas del todo e
 identificadas sin modificarlas. Cierre: universo estable **o** `FALLO_DE_AMBIENTE`.
