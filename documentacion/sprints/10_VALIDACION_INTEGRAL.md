@@ -1,5 +1,10 @@
 # Goal 10 — La validación integral del producto
 
+> **No se lanza entero.** El dueño lo cortó el 2026-08-30: una ventana 500k no
+> basta. Se pega **una** de `10.1`–`10.10`. Este fichero es el mapa y la
+> evidencia de criterios. Siguiente sesión: **10.2**
+> ([`10.2_APP_OPEN.md`](10.2_APP_OPEN.md)); el 10.1 ya está cumplido.
+
 > **Esto es un goal, no una tarea.** Se lanza y corre hasta cumplirse. No pares a
 > mitad a pedir aprobación ni a preguntar: ante una duda, elige la opción más
 > razonable, anótala y sigue. Acabas cuando los criterios de cierre estén

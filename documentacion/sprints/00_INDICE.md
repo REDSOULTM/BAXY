@@ -3,6 +3,12 @@
 Doce goals. Cada uno se lanza en una sesión nueva, se pega entero, y **se deja
 correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
 
+El **10 se corta en diez sesiones 10.1–10.10** (una por ventana 500k), igual
+que 01–09. El padre [`10_VALIDACION_INTEGRAL.md`](10_VALIDACION_INTEGRAL.md)
+queda como mapa; **no se pega entero**. Índice de las diez:
+[`10.1_MEDICION_CONGELADA.md`](10.1_MEDICION_CONGELADA.md) … 
+[`10.10_HIGIENE_Y_FULL.md`](10.10_HIGIENE_Y_FULL.md).
+
 ## Con qué modelo se lanza cada uno
 
 | Goals | Modelo | Dónde |
@@ -59,7 +65,17 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | **La validación integral del producto** | Identidad + 1.947 veredictos individuales; el recuento de fail omite ambiente y idiomas que no sean es/en |
+| 10 | **La validación integral** (mapa; no se lanza entero) | Suma de 10.1–10.10. In-scope 1947 omite ambiente y no-es/en |
+| 10.1 | Medición congelada | Score in-scope, overlay quirúrgico, baseline r132. **Cumplido.** |
+| 10.2 | Familia `app.open` | In-scope `app.open` fail = 0 |
+| 10.3 | Conversación `(none)` | In-scope `(none)` fail = 0 o inalcanzable medido |
+| 10.4 | Resto in-scope 1947 | In-scope fail = 0 sobre las 1.947 |
+| 10.5 | Misiones 808 | 808/808 tubería real |
+| 10.6 | Canónicos 2036 | 2036 + holdouts, métrica aparte de 1947 |
+| 10.7 | Identidad viva | Matriz `00_IDENTIDAD.md` decisión a decisión |
+| 10.8 | Latencia ABBA | p50 ≤+25 ms, IC95 ≤+100 ms |
+| 10.9 | Caminos de error | Ninguno afirma en falso ni duplica |
+| 10.10 | Higiene y Full | APLAZADOS, COSTURAS, Full, origin limpio |
 | 11 | **El ambiente listo** | Las filas ambientales del 10 se reejecutan en un PC con WhatsApp, Firefox, visión, Wi‑Fi, click y streaming listos |
 | 12 | **El cierre** | La evidencia de los Goals 10 y 11 queda íntegra, coherente, documentada y publicada |
 
@@ -68,13 +84,11 @@ anteriores en esta máquina con piezas que ya funcionan. El 09 va casi al final 
 decisión del dueño —backend primero—, pero el 01 ya deja localizado lo que se
 hereda.
 
-**El 10 es la única validación integral.** Reúne el uso real, el corpus histórico,
-la identidad completa, los caminos de error, la deuda y la regresión sobre un mismo
-árbol final. Cada una de las 1.947 respuestas recibe un veredicto individual; ningún
-promedio u oráculo agregado puede ocultar una respuesta incorrecta. El recuento de
-cierre del 10 omite (no convierte en pass) ambiente y idiomas que no sean español o
-inglés. El **11** reejecuta esas filas ambientales en un PC con el ambiente listo.
-El **12** cierra y publica la evidencia: no lanza una segunda validación.
+**El 10 es la única validación integral**, cortada en **10.1–10.10** porque no
+cabe en una ventana 500k. Se pega una sesión corta, no el padre. Cada una de
+las 1.947 respuestas sigue teniendo veredicto individual; el recuento in-scope
+omite (no convierte en pass) ambiente e idiomas que no sean es/en. El **11**
+reejecuta las filas ambientales. El **12** publica 10.1–10.10 y el 11.
 
 Ningún goal exige *soak*, 24 horas encendido ni otra espera prolongada. El uso
 continuado ocurre después de entregar el producto y no bloquea su cierre.
