@@ -7,7 +7,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-001-carter.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-30T20:05:00Z",
+      "closed_utc": "2026-08-30T20:13:42Z"
     },
     {
       "batch_id": "docs-002-carter",
@@ -5707,7 +5709,7 @@
       "status": "pending"
     }
   ],
-  "first_docs_batch_id": "docs-001-carter",
+  "first_docs_batch_id": "docs-002-carter",
   "goal": "09.5.1",
   "status": "queues_ready"
 }

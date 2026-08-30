@@ -54,11 +54,20 @@ Cola completa: `artifacts/goal095/queue/batches.json` y `artifacts/goal095/queue
 
 Primer lote docs (subsistema, no alfabeto global):
 
-- `batch_id`: `docs-001-carter`
-- archivos: 72
-- tokens estimados: 299986
-- salida: `artifacts/goal095/ledger/docs-001-carter.json`
+- `batch_id`: `docs-001-carter` — **completo** (09.5.2, 2026-08-30)
+- archivos: 72, todos `leido`
+- tokens estimados: 299986 (limite 350000)
+- tarjetas: 18 en `artifacts/goal095/ledger/docs-001-carter.json`
+- biblioteca: 15 hashes identicos, 57 delta (se leyo el snapshot Carter OS AI)
+- faltantes/solapes globales: 0 / 0 (sin cambio)
+
+Proximo lote docs pendiente:
+
+- `batch_id`: `docs-002-carter`
+- archivos: 86
+- tokens estimados: 299425
+- salida: `artifacts/goal095/ledger/docs-002-carter.json`
 
 ## Siguiente
 
-Primer lote docs pendiente: `docs-001-carter` — prompt `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md`.
+Primer lote docs pendiente: `docs-002-carter` — prompt `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md`.

@@ -658,7 +658,7 @@
     "output": "artifacts/goal095/ledger/docs-001-carter.json",
     "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
     "source_id": "carter",
-    "status": "pending",
+    "status": "complete",
     "subsystem": "carter_docs",
     "subsystems": [
       "carter_docs",

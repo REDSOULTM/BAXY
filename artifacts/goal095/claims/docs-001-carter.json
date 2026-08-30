@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-001-carter",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-30T20:05:00Z",
+  "estimated_tokens": 299986,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 72,
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "output": "artifacts/goal095/ledger/docs-001-carter.json"
+}

@@ -1,0 +1,1323 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-001-carter",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-30T20:05:00Z",
+  "closed_utc": "2026-08-30T21:30:00Z",
+  "estimated_tokens": 299986,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 72,
+  "files": [
+    {
+      "path": "docs/investigaciones/La razon de carter/00_RESUMEN_EJECUTIVO.md",
+      "sha256": "afe809eb9f6f1ee95c7a579f05d96be7fb7bf3e44535540303d79d09e59492c1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/01_TESIS_DE_CARTER.md",
+      "sha256": "d0745abb16085681bffaabb8d351cfe795ce171ffdc30a622a89ebf892f0c589",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-16",
+        "28-42"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/02_MAPA_DE_COMPETIDORES.md",
+      "sha256": "133719de389293e29d3dfb934a7b915679bd61f6d10dd5c5c614999802c846db",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-20",
+        "56-72"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/03_COMPARACION_TECNICA_PROFUNDA.md",
+      "sha256": "0cca920261936cfe0ef7fb8239b7c77298536343db7d5a67a3c32ea237252219",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-22",
+        "52-78"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/04_POR_QUE_CARTER_FUNCIONA_COMO_PRODUCTO_FINAL.md",
+      "sha256": "f9cac994d80784893f810842529dca1f7b4aafbbd50de58210ba524ae74608d1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-41"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/05_POR_QUE_CARTER_PODRIA_FRACASAR.md",
+      "sha256": "e7a61ffbd109ad823d213d84d13d4e2c09febb5093fb19a4d07dbc3bbf543e83",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-54"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/06_DEFENSA_COMO_TESIS.md",
+      "sha256": "8f77134cd045ac27b492991e840db3a38d661af347a95203c5f4f3d8ff0dfe84",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-47"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/07_ARGUMENTO_CONTRA_COMPETIDORES.md",
+      "sha256": "0c103a7221b89afc17f64ea65fe6016cc021ad310f4c00c06f58e987f289ad32",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-39"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/08_ROADMAP_PARA_HACERLO_INDISCUTIBLE.md",
+      "sha256": "11d2fdc6f69696c6b1170a9ef52e391a9d7aacb1547b218ceffc483607c7942b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-53"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/09_VEREDICTO_FINAL.md",
+      "sha256": "9a8be752a2f5352898b051d73c7c9480fe6807cb2796ae253c2de9d462040845",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-43"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/GUIA_ORADOR_DEFENSA_CARTER.md",
+      "sha256": "e8336866968127ca3fd2a4ffa6b1987ed7973adf3b86b70d1abd17ebd91d71c5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-42",
+        "139-185"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/README.md",
+      "sha256": "5e801fc6a68c414700d3f969bda1b29dd5a5ef51afbb064d5489e8d0494f8a6d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-68"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/Contrato.md",
+      "sha256": "7561f6425f303e75fe3146c5662dff9858672f5253df76f0f0029622d9a2efac",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/GEMMA4_VALIDACION_COMPLETA.md",
+      "sha256": "960bd3b130c2113faa3b28ade47f31be9580ab0480d203f55a583621858ac979",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-45"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/README.md",
+      "sha256": "d4e151b71bc6488b846894d51a7755e58587de7f34364c1b82efcecd9151018a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-90"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/REPORTE.md",
+      "sha256": "a934796d1341c4d54c62f3009ac1cf7b7dc037d1f20b21e13d7c4922efec7228",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80"
+      ],
+      "biblioteca_same_hash": true
+    },
+    {
+      "path": "legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_AUDIT.md",
+      "sha256": "573dcce615113820742f019379f1f909f94b24c033708be3440f589df18759da",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-20",
+        "64-77"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_REPORT.md",
+      "sha256": "180d014986ba4cf566263ffa2f5cf554ae6289be954b9ef39529da5e36b88379",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-72"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/CARTER_MODEL_LAB_REPORT.md",
+      "sha256": "eafdbd64553c91e6e8195fe68a219cd7db5e6efb9f0c19c6d37a4ed079977ebb",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-73",
+        "143-193"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/CARTER_MODEL_RECOMMENDATION.md",
+      "sha256": "2efecd0c89dea4009e4ddc00b41dfb7a1836454b9f8143080ad0696dd2f47815",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-55"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/CARTER_TEXT_CORE_RC_AUDIT.md",
+      "sha256": "81bfcad487ed917c59c80ecfbbe1dcb41ae90d1013c8156f53401e010bd36db6",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-53"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/CARTER_TEXT_CORE_RELEASE_NOTES.md",
+      "sha256": "d42e454255bd001b12ccaa8771e0bf1976815092617f7a5047f9dd4f47d1539b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-74"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/CODEBASE_DIET_PLAN.md",
+      "sha256": "323e0954f6af3f9b0052d706ec98724c595c93f399148d7efad0687ac9f022b7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-25"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/FULL_LIVE_LLM_TEST_AUDIT.md",
+      "sha256": "3080eab723ee649e5a4a0da1931384cc3ccb64d601bb4475ca222f4eb11a4606",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-24"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/LLM_AUTONOMY_BOUNDARY.md",
+      "sha256": "974c219b4930c7cb2a6f550cdb82d031e62a3487989c7384ce8d5f7d7d05c729",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/LLM_CONTEXT_MEMORY_AUDIT.md",
+      "sha256": "a6299f2a415d87f23505e76ca44fd7242d4fbaf6fa6504c17f542553b31a6a6b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-50",
+        "105-146"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/LLM_CONTEXT_MEMORY_REPORT.md",
+      "sha256": "ed1ec0a38793f29f5fa01167f88b58b5983b6f817d3bf9e185eb9752008c82b8",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_CANDIDATES_BY_VRAM.md",
+      "sha256": "1669494def3075807692db5316e19a72ffec6725a82060ddccc920d89d196945",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-54"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_COMPATIBILITY_BIAS_AUDIT.md",
+      "sha256": "d3413fa5d7e9c1f8796181646c2af27ff02553dbf7bf9e37324518449411a327",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-47",
+        "63-117"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_DOWNLOAD_LOG.md",
+      "sha256": "287b680558820edc5d835ce17cb54e9481fb58bbc3131bed367aab885db4fa6f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-67"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_DOWNLOAD_PLAN.md",
+      "sha256": "d5e610006f47b4acd9fc192d04a65c647930f03cc122ad7466de9253d96190f9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-56"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_HARDWARE_PROFILES.md",
+      "sha256": "56c2663eb6a0a3d074eb130a266e7e31fcbe1a9f64c7a8110622b0213f40b856",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-100"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_LAB_AUDIT.md",
+      "sha256": "0023c30b01f55e083a6c26e5f72ebdbed3dc18d6dbe70d3b3c817d9ebfacfcfe",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_LAB_WAVE2_AUDIT.md",
+      "sha256": "de99ebfd2c8ab1a05f932ccdf63e5e3163c7547118e28eb97f0470533c7a7a2a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-85"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_RESEARCH_MATRIX.md",
+      "sha256": "115945a49ba7c4451876cabe57a2389a906b579f8ef20e1597f7520941650ab6",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_STACK_BY_VRAM.md",
+      "sha256": "1647eceedebac49af149ff9139affb3f652b3037c047cb94f35bbbdf35ebaee1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-84"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_STORAGE_CLEANUP_PLAN.md",
+      "sha256": "567ab24af1393f7b00218c0a33424e98194f84f6679af340610a2101a2844012",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-55"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_STT_TOURNAMENT_REPORT.md",
+      "sha256": "22926e764b8dffc330014e3fea3b99ce719cb047f2ec4d51ac4c727097332d66",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_TOURNAMENT_REPORT.md",
+      "sha256": "8b8c94160adad7f618ff59271fac444a08027606e74133149277f81cd78b8852",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-84"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_TTS_TOURNAMENT_REPORT.md",
+      "sha256": "e5ec3104fbb0b819ffa1d0ccb538ee284369a0ae678f395131b940e421d2497b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_VISION_TOURNAMENT_REPORT.md",
+      "sha256": "e56282918727d7212e044f5a4270062562b459cd72d3612aee560ed0a7767fa4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/MODEL_VOICE_TOURNAMENT_REPORT.md",
+      "sha256": "abd9f74122ea4d3397d5e595b81d4622fd3517fa79d5554aa5eeae492ecd50ba",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/PRE_LLM_LATENCY_REPORT.md",
+      "sha256": "e05cfb22a496211d13e749fe167d71165aa833b53668c36c5588219784e4ad48",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-50"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/README.md",
+      "sha256": "22c3c6a47202e58b5524f5a457d9b07ba31a4c93be8134e08213d266ba0761ee",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/REAL_RUNTIME_FAILURE_AUDIT.md",
+      "sha256": "cac99b9c492dd94d7a852823143f33b4c1f575ade640cc75159f1d4e1c63c51c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-90"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/REAL_RUNTIME_LIVE_REPRO_REPORT.md",
+      "sha256": "3252411d2684fa18d152ce67c08117c5151e0b604840f6d3ac2eb70107f71a02",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-99"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/REPO_CLEANUP_AUDIT.md",
+      "sha256": "6c5547df5d99dccf579c990ce13f5aaa013976247433b159eacc4333922758fa",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-58",
+        "140-150"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/RESIDUAL_BACKLOG_AFTER_BLOCK.md",
+      "sha256": "a53b76783505d990a0ff1e5b897bef803111b2bea73fa8db8cba671e28857731",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-168"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/RESIDUAL_BACKLOG_V2.md",
+      "sha256": "d9a2911fb01530bc415de2a521092da4244d32247d76a36b8b0a216dc8d199e0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-109"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/RUNTIME_TOOL_PROTOCOL_WIRING_AUDIT.md",
+      "sha256": "0614a64791f95afd7ae928b1c25f1530a1262a0d900e0b6e720749e204aff719",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-50"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TEXT_CORE_ARCHITECTURE.md",
+      "sha256": "f8b00128bdcd1f2561f232cbc5feb1c1bb6d64f8ce22ef9826b9ffd7442370b4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-90"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TEXT_CORE_CLEANUP_PLAN.md",
+      "sha256": "c0a9b414ea186f86b6369807adc8c104d0c668e6a7e1e76009ce322194c74998",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-59"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TEXT_CORE_INVARIANTS.md",
+      "sha256": "d509af021eadbec8e137c443c3b3f9f7beba94fb5464957beba2df0fd34cc822",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-27"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TEXT_CORE_MODEL_DECISION.md",
+      "sha256": "d16f4ac21e5a3516f2e450dcdec8268151ce56b10833405cab2ea738a780237e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-45"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TEXT_CORE_PERFORMANCE_FINAL.md",
+      "sha256": "b86f5f83ffb8c3f2434b467e0d5e69cd6151e3caa9e8f64d6a0d9f39549672e4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-77"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TEXT_CORE_SOAK_TEST_REPORT.md",
+      "sha256": "c6c062137f9a56ee03be8607a2d92a3d6f83dd4bdc2e071dec81bda7f4f8ad88",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-27"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/TOOL_CALL_COMPATIBILITY_AUDIT.md",
+      "sha256": "48f711210623865f19ad15ffb945545e6d3403559de0c4d942be3b6931773093",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80",
+        "126-147"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/ULTRA_LATENCY_AUDIT.md",
+      "sha256": "98694e295d963a50152b586b55382d50a66cb8020acec6b5a7edf281869b3194",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/VOICE_CAMERA_HANDOFF_PLAN.md",
+      "sha256": "3ae68cd417ddfec3dc2662d4017d0ef3abd19dfc1500ec0cd1348b90837c1bbe",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-54"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/VOICE_MODEL_RESEARCH.md",
+      "sha256": "76a3710f72b423f2c75dc6ccd0d105dcf0521d5e655073fb8c9e39da9614aa27",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/F0_prompt_template.txt",
+      "sha256": "9e2f417eeffee9a6a4c1283cb35ccce3d550c8188cfea759673fba6ed0feea94",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/logs/historical/f8_test_summary.txt",
+      "sha256": "b6930495eff53f055a73cddbc680518abb724d174ca62cf5044c24eb6a7c53fd",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-13"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_DEFAULT_SWITCH_AUDIT.md",
+      "sha256": "572354f95ee1cf9742f11d3f5e8f0caa08c9ba6becc94d0f3bd1934a1041464e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-56"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_GLOBAL_RUNTIME_AUDIT.md",
+      "sha256": "83469a3fd0167b405ae79efac251912131431c8ce2ddce9d0ef748d916c55d5b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-86"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_MODEL_REBASELINE_AUDIT.md",
+      "sha256": "b988e3fc8cec70661949fee941622d40ee4b609743583b17b88691cf147b0614",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_RUNTIME_STABILITY_AUDIT.md",
+      "sha256": "93917249fcb1b9d6995fbf82832e9bd64a687d6581b70c5dc39fc0436c65abb3",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-120"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_AUDIT.md",
+      "sha256": "ce10e511a3721d55e785767cc47ffa5a1e28d5c8c576ddc0af64e269a0ae8147",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40",
+        "91-118"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_V2_AUDIT.md",
+      "sha256": "88b927cda71de0b5e9f73ad066b6881b02c4e6281be1b5143b01ce42c6d92c84",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-38",
+        "155-180"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/FULL_LIVE_LLM_VALIDATION_SUMMARY.md",
+      "sha256": "52cc10c3d741f96e3887f188507ee8724a5a29ca41c099a786a5827f1d81e84b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_SUMMARY.md",
+      "sha256": "c494a44c7550ea63fac7cf05f20f78c121fc0ad7d2f3e8dd110b85cf45c9c0b4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-39"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks_fair_runtime/CONSOLIDATED.md",
+      "sha256": "85a8b733f161e19754ad5fb46d73e0c139055af8d6bd23b5a11ccd8645848413",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-63"
+      ],
+      "biblioteca_same_hash": false
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/post_model_lab_gates_20260502-092159.txt",
+      "sha256": "9a7f0bd472a8cf2c52272360ba1b512b7f5623a32487cb3a035ab08f4928b5f0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-11"
+      ],
+      "biblioteca_same_hash": false
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "tesis-nicho-windows-verificable",
+      "claim_kind": "documental",
+      "problem": "Carter no es AGI ni Jarvis universal; competidores ganan en GUI research, coding agents y cloud.",
+      "outcome": "contexto",
+      "solution_or_failure": "Nicho: asistente local Windows-first privado y verificable. Tesis academica = menos fake success, no 'construir un asistente'.",
+      "causal_mechanism": "La ventaja declarada es verificacion post-accion + tools tipadas + privacidad local, no superioridad VLM/OSWorld.",
+      "measurement": "55 tools cargadas; pytest Carter_v4 131 passed (2026-05-08). Hash identico a biblioteca en los 12 docs de La razon.",
+      "provenance": {
+        "path": "docs/investigaciones/La razon de carter/00_RESUMEN_EJECUTIVO.md",
+        "ranges": [
+          "1-70"
+        ],
+        "date": "2026-05-08",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Auditoria de tesis, no corrida de producto. No mide BAXY actual.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/00_IDENTIDAD.md (companero local Windows) + invariante 2/3 (no afirmar sin verificar; estados terminales honestos)",
+      "source_files": [
+        "docs/investigaciones/La razon de carter/00_RESUMEN_EJECUTIVO.md",
+        "docs/investigaciones/La razon de carter/01_TESIS_DE_CARTER.md",
+        "docs/investigaciones/La razon de carter/02_MAPA_DE_COMPETIDORES.md",
+        "docs/investigaciones/La razon de carter/04_POR_QUE_CARTER_FUNCIONA_COMO_PRODUCTO_FINAL.md",
+        "docs/investigaciones/La razon de carter/06_DEFENSA_COMO_TESIS.md",
+        "docs/investigaciones/La razon de carter/07_ARGUMENTO_CONTRA_COMPETIDORES.md",
+        "docs/investigaciones/La razon de carter/08_ROADMAP_PARA_HACERLO_INDISCUTIBLE.md",
+        "docs/investigaciones/La razon de carter/09_VEREDICTO_FINAL.md",
+        "docs/investigaciones/La razon de carter/GUIA_ORADOR_DEFENSA_CARTER.md",
+        "docs/investigaciones/La razon de carter/README.md"
+      ],
+      "repeats": [
+        "biblioteca/carter/la-razon-de-carter/* es otro corpus (lecciones v1-v4), no estos 12 ficheros"
+      ]
+    },
+    {
+      "card_id": "matrix-540-numeros-en-conflicto",
+      "claim_kind": "documental",
+      "problem": "La misma matrix 540 se cita con cifras incompatibles; el auditor automatico infla PASS.",
+      "outcome": "fracaso",
+      "solution_or_failure": "La razon usa evidencia local 417/540 manual y 489/540 automatico, y rechaza 519/540 del prompt. GEMMA4_VALIDACION_COMPLETA cita 480/540 oficial y ~329/540 PASS REAL (~140 false passes).",
+      "causal_mechanism": "Verifier permisivo + modelo que afirma con confianza. Automatico cuenta tool-ok; humano cuenta intencion cumplida.",
+      "measurement": "417 vs 489 (2026-05-08); 480 oficial vs ~329 real (2026-05-09). Delta ~140 FALSE_PASS.",
+      "provenance": {
+        "path": "docs/investigaciones/La razon de carter/00_RESUMEN_EJECUTIVO.md",
+        "ranges": [
+          "35-40"
+        ],
+        "date": "2026-05-08",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:4b (Carter v4, citado)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Ninguna de estas cifras se reejecuto en 09.5.2. Goal 01 ya midio que el recorte de tools 'sin perder calidad' bajo 75.93%→62.96%.",
+      "validity": "historica",
+      "current_piece": "tests de comprehension (03/03B/03C) y scorer: no reutilizar 540 de Carter como gate de BAXY sin redefinir PASS",
+      "source_files": [
+        "docs/investigaciones/La razon de carter/00_RESUMEN_EJECUTIVO.md",
+        "docs/investigaciones/evidencia pruebas gemma4/GEMMA4_VALIDACION_COMPLETA.md"
+      ],
+      "repeats": [
+        "05_POR_QUE_CARTER_PODRIA_FRACASAR.md L21-22; 08_ROADMAP L14-16"
+      ]
+    },
+    {
+      "card_id": "fake-success-eje-de-tesis",
+      "claim_kind": "documental",
+      "problem": "La peor falla no es fallar: es decir que hizo algo sin haberlo hecho.",
+      "outcome": "fracaso",
+      "solution_or_failure": "Carter v4 declara verify.py + verifier_orchestrator y estados COMPLETED/PARTIAL/FAILED/UNVERIFIED/NEEDS_USER. La matrix automatica aun sobreestima.",
+      "causal_mechanism": "Verifiers superficiales (archivo existe, frame-diff, exit 0, result.ok=True) no comprueban la intencion. Abrir Steam != abrir el juego.",
+      "measurement": "489 automatico vs 417 manual; C07-29 citado: abrio Spotify tras 'no abras nada'.",
+      "provenance": {
+        "path": "docs/investigaciones/La razon de carter/05_POR_QUE_CARTER_PODRIA_FRACASAR.md",
+        "ranges": [
+          "39-50"
+        ],
+        "date": "2026-05-08",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Documental. El mute sin read-back de v2 (otra tarjeta) es el mecanismo concreto medido despues.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "Goal 04 honestidad + Baxy.Core outcome verificable; no heredar verifier que confia en result.ok",
+      "source_files": [
+        "docs/investigaciones/La razon de carter/05_POR_QUE_CARTER_PODRIA_FRACASAR.md",
+        "docs/investigaciones/La razon de carter/03_COMPARACION_TECNICA_PROFUNDA.md"
+      ],
+      "repeats": [
+        "00_RESUMEN L21-25; 01_TESIS; GEMMA4 contrato 1.2"
+      ]
+    },
+    {
+      "card_id": "gui-universal-amenaza-tesis",
+      "claim_kind": "documental",
+      "problem": "GUI moderna (CEF/Electron/Steam/Discord/Spotify) rompe UIA/OCR; VLM declarado no activo.",
+      "outcome": "inconcluso",
+      "solution_or_failure": "Cascada UIA→OCR→VLM en gui_universal.py; Agent-S gana en OSWorld/WindowsAgentArena. Carter final no necesita ganar OSWorld pero si apps comunes.",
+      "causal_mechanism": "gui.py usa pyautogui/hotkeys/frame-diff; gui_do opera sobre la ventana enfocada cuando el target no existe.",
+      "measurement": "Sin cifra nueva aqui; C13 GUI debil en reporte 540 citado. Vision tournament posterior es smoke de colores, no UI.",
+      "provenance": {
+        "path": "docs/investigaciones/La razon de carter/03_COMPARACION_TECNICA_PROFUNDA.md",
+        "ranges": [
+          "69-78"
+        ],
+        "date": "2026-05-08",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "No se ejecuto Agent-S ni GUI de BAXY en esta sesion.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "Goal 07 misiones / providers Windows (UIA) y D_ADAPTADORES_POR_APP.md; cascada aun incompleta en Goal 01",
+      "source_files": [
+        "docs/investigaciones/La razon de carter/03_COMPARACION_TECNICA_PROFUNDA.md"
+      ],
+      "repeats": [
+        "05 L14-16, L27-35; 08 riesgos"
+      ]
+    },
+    {
+      "card_id": "gemma4-contrato-innegociable",
+      "claim_kind": "documental",
+      "problem": "qwen3:4b fallaba negation, URI invention, multi-step y honestidad; se definio un contrato de 10 capacidades independiente del proveedor.",
+      "outcome": "contexto",
+      "solution_or_failure": "Contrato: function calling multi-tool, honestidad por construccion, negation, multi-step, ES/EN/PT/DE/FR, rule>few-shot, latencia Alexa-tier.",
+      "causal_mechanism": "Si Gemma 4 cumple mejor con otro formato de tools, Carter se adapta (no al reves). PASS = intencion verificable, no 'llamo una tool'.",
+      "measurement": "Targets: trivial <5s max, tool simple <8s, app open <15s. Hardware target RTX 4060 Ti 16 GB.",
+      "provenance": {
+        "path": "docs/investigaciones/evidencia pruebas gemma4/Contrato.md",
+        "ranges": [
+          "1-40"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "Gemma 4 (a evaluar)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "El Contrato.md del snapshot difiere en hash de la copia en biblioteca (DELTA). REPORTE_EXTENDIDO.md no esta en este lote.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "invariantes 2-5 y Goal 03/04/06; no copiar el contrato como respuesta fija",
+      "source_files": [
+        "docs/investigaciones/evidencia pruebas gemma4/Contrato.md"
+      ],
+      "repeats": [
+        "GEMMA4_VALIDACION_COMPLETA.md §1 duplica el contrato"
+      ]
+    },
+    {
+      "card_id": "gemma4-fase1-diez-tests",
+      "claim_kind": "documental",
+      "problem": "Hacia falta una prueba pequena antes del bench 60, con juez de intencion no de tool-call.",
+      "outcome": "exito",
+      "solution_or_failure": "10 tests del Contrato en llama.cpp Vulkan, 9 stubs. E4B-UD-IQ2_M 9/10; varios quants 8-9/10. Negation 100% PASS en esa tanda.",
+      "causal_mechanism": "FAIL frecuentes: warmup ~14s (no es el modelo), finish_reason=length en cadena read-then-paste, UD-Q2 abandona multi-step.",
+      "measurement": "E4B-IQ2_M 9/10; hola 1.1s (UD-Q2) a 7.4s (E4B-IQ2). Hardware: Vulkan, VRAM ≤6GB declarado en REPORTE.md (tensión con 16 GB del README).",
+      "provenance": {
+        "path": "docs/investigaciones/evidencia pruebas gemma4/REPORTE.md",
+        "ranges": [
+          "1-80"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "Gemma 4 E4B-UD-IQ2_M y quants E2B",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Juez = el autor del reporte (Claude), no scorer congelado. Catálogo de 9 stubs ≠ catálogo BAXY. Goal 01 re-midio E2B Q4_K_XL a 6.3-11.4 s/turno.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind y runtime Gemma; no tomar 9/10 de 10 stubs como techo 03C 114/124",
+      "source_files": [
+        "docs/investigaciones/evidencia pruebas gemma4/REPORTE.md"
+      ],
+      "repeats": [
+        "GEMMA4_VALIDACION L20: 9/10 E2B-Q5 y E4B-IQ2 justifica fase 2"
+      ]
+    },
+    {
+      "card_id": "gemma4-migrar-condicional-no-en-lote",
+      "claim_kind": "documental",
+      "problem": "La decision de migrar a Gemma 4 se declara en README pero el reporte definitivo no esta asignado a este lote.",
+      "outcome": "inconcluso",
+      "solution_or_failure": "README: ganador gemma-4-E4B-it-Q6_K (6.59 GB disco, 7.1 GB VRAM), 57/60 (95%) vs qwen3:4b 55/60 (91.6%), MIGRAR CONDICIONAL porque multi-step p99 27s viola Alexa-tier.",
+      "causal_mechanism": "Cifras viven en REPORTE_EXTENDIDO.md (fuera de docs-001). Este lote solo conserva el puntero.",
+      "measurement": "57/60 vs 55/60; p99 multi-step 27s. No reproducido aqui.",
+      "provenance": {
+        "path": "docs/investigaciones/evidencia pruebas gemma4/README.md",
+        "ranges": [
+          "21-27"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "gemma-4-E4B-it-Q6_K",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Goal 01 midio Gemma-4-E2B QAT Q4_K_XL como runtime actual (6.3-11.4 s) y 'funciona y no sirve' por thinking. No presentar E4B-Q6_K como default vigente.",
+      "validity": "requiere_remeidir",
+      "current_piece": "runtime LLM en BAXY/legacy/models (Goal 01); 09.5.5 sintetiza modelos",
+      "source_files": [
+        "docs/investigaciones/evidencia pruebas gemma4/README.md",
+        "docs/investigaciones/evidencia pruebas gemma4/GEMMA4_VALIDACION_COMPLETA.md"
+      ],
+      "repeats": [
+        "REPORTE.md es fase 1, no el 57/60"
+      ]
+    },
+    {
+      "card_id": "harness-openai-tools-sesgado",
+      "claim_kind": "documental",
+      "problem": "El torneo M11 marco phi4/gemma3/phi3.5/deepseek-r1 como tool_pass=0.00. No era el modelo: Ollama devolvia HTTP 400 antes de ejecutar.",
+      "outcome": "fracaso",
+      "solution_or_failure": "Re-bench multi-protocolo: json_direct/fenced_json. phi4 10/10 json_direct; gemma3:12b 9/10 fenced_json. Veredicto HARNESS_WAS_BIASED.",
+      "causal_mechanism": "El harness solo enviaba tools=[] nativo y leia message.tool_calls. Modelfile sin bloque {{- if .Tools }} → 400 'does not support tools'. El modelo nunca veia el prompt.",
+      "measurement": "4 modelos recuperados; hermes3:8b openai_tools 0.90 / json_direct tool 1.00. Fair composite hermes3 0.763.",
+      "provenance": {
+        "path": "legacy/Carter_v2/TOOL_CALL_COMPATIBILITY_AUDIT.md",
+        "ranges": [
+          "1-80",
+          "126-147"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "Ollama OpenAI-compat :11434",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Medicion 2026-05-02 sobre Ollama. BAXY usa llama.cpp + contratos .NET; el mecanismo (un solo canal de tools) sigue siendo una trampa de eval.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "eval de FunctionGemma / router y cualquier gate que asuma un unico protocolo de tool-calls",
+      "source_files": [
+        "legacy/Carter_v2/TOOL_CALL_COMPATIBILITY_AUDIT.md",
+        "legacy/Carter_v2/MODEL_COMPATIBILITY_BIAS_AUDIT.md",
+        "legacy/Carter_v2/RUNTIME_TOOL_PROTOCOL_WIRING_AUDIT.md"
+      ],
+      "repeats": [
+        "AUTO_MODEL_STACK_FINAL_REPORT §2-3; CONSOLIDATED.md"
+      ]
+    },
+    {
+      "card_id": "hermes3-fair-no-era-default",
+      "claim_kind": "documental",
+      "problem": "Un leaderboard 'instalado-only' y un harness sesgado hacian ganar a qwen por construccion.",
+      "outcome": "exito",
+      "solution_or_failure": "Selector por 7 perfiles VRAM con leaderboard fair. hermes3:8b gana 8-16 GB (0.763, p95 1597 ms, 4857 MiB) via json_direct. Default real se dejo en qwen3:8b por regla de no cambiar config sin confirmacion.",
+      "causal_mechanism": "qwen3:8b tool_pass fair 1.00 pero p95 31389 ms por thinking; cae a #14 (0.605). llama3.2:3b p95 915 ms. 24 GB: gpt-oss:20b.",
+      "measurement": "16 modelos × 7 protocolos × 5 casos. Disco Ollama ~165 GB. Perfil operador: 16gb RTX 4060 Ti.",
+      "provenance": {
+        "path": "legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_REPORT.md",
+        "ranges": [
+          "1-72"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "hermes3:8b vs qwen3:8b",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "hermes3 no se valido live-safe como default. Perfiles 6-24 GB contradicen el techo de producto de 4 GB VRAM (ley 4 / Identidad). Caducado como default de BAXY.",
+      "validity": "caducada",
+      "current_piece": "ley 4 (4 GB techo) y Goal 01 (Gemma E2B actual); no heredar selector de 7 perfiles como arquitectura",
+      "source_files": [
+        "legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_AUDIT.md",
+        "legacy/Carter_v2/CARTER_MODEL_LAB_REPORT.md",
+        "legacy/Carter_v2/CARTER_MODEL_RECOMMENDATION.md",
+        "legacy/Carter_v2/MODEL_CANDIDATES_BY_VRAM.md",
+        "legacy/Carter_v2/MODEL_DOWNLOAD_LOG.md",
+        "legacy/Carter_v2/MODEL_DOWNLOAD_PLAN.md",
+        "legacy/Carter_v2/MODEL_HARDWARE_PROFILES.md",
+        "legacy/Carter_v2/MODEL_LAB_AUDIT.md",
+        "legacy/Carter_v2/MODEL_LAB_WAVE2_AUDIT.md",
+        "legacy/Carter_v2/MODEL_RESEARCH_MATRIX.md",
+        "legacy/Carter_v2/MODEL_STACK_BY_VRAM.md",
+        "legacy/Carter_v2/MODEL_STORAGE_CLEANUP_PLAN.md",
+        "legacy/Carter_v2/MODEL_TOURNAMENT_REPORT.md",
+        "legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_REPORT.md",
+        "legacy/Carter_v2/TEXT_CORE_MODEL_DECISION.md",
+        "legacy/Carter_v2/audit/results/model_benchmarks_fair_runtime/CONSOLIDATED.md"
+      ],
+      "repeats": [
+        "CARTER_MODEL_RECOMMENDATION.md elige 16gb/qwen3:8b en otra oleada"
+      ]
+    },
+    {
+      "card_id": "mute-sin-readback",
+      "claim_kind": "documental",
+      "problem": "Usuario: 'mutea el pc' → 'El volumen ha sido muteado correctamente' y el PC no estaba muteado.",
+      "outcome": "fracaso",
+      "solution_or_failure": "Propuesta: _verify_mute via volume.GetMute(), analogo a _verify_volume que si hace read-back.",
+      "causal_mechanism": "system_mute usa _verify_synchronous_ok: confirmed si result.ok=True. media.py llama SetMute y devuelve ok sin leer.",
+      "measurement": "Caso #6 del transcript real. Volume-set (#5) eligio terminal+nircmd pese a existir pycaw.",
+      "provenance": {
+        "path": "legacy/Carter_v2/REAL_RUNTIME_FAILURE_AUDIT.md",
+        "ranges": [
+          "9-61"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Transcript de un usuario + auditoria de codigo v2. No se reprodujo el mute en BAXY.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "providers de audio/volumen Windows y Goal 05: verificar efecto, no result.ok",
+      "source_files": [
+        "legacy/Carter_v2/REAL_RUNTIME_FAILURE_AUDIT.md"
+      ],
+      "repeats": [
+        "05 fake success; TEXT_CORE_INVARIANTS #4"
+      ]
+    },
+    {
+      "card_id": "gui-do-timeout-fantasma",
+      "claim_kind": "documental",
+      "problem": "close/maximize/mute/frustracion disparan gui_do sobre ventana inexistente o activa; 30 s de UIA y a veces actuan sobre 'Host de ventanas emergentes'.",
+      "outcome": "fracaso",
+      "solution_or_failure": "Window capability no hace fallback a activa; el LLM cae a gui_do. Fix propuesto: si find_window_by_title es None, fail <100 ms. Window guard solo dispara si window_title contiene nouns del usuario.",
+      "causal_mechanism": "gui_do no short-circuit cuando el target no existe. Catalogo enfocado no sube system_mute. Shortcuts de Steam se ejecutan antes del hint_no_tools de inputs triviales.",
+      "measurement": "Live safe-live qwen3:8b: #6 63.8s, #7 61.2s, #8 97.2s, #13 guard correcto pero FAIL de contrato porque despacho tool.",
+      "provenance": {
+        "path": "legacy/Carter_v2/REAL_RUNTIME_LIVE_REPRO_REPORT.md",
+        "ranges": [
+          "43-75"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b Ollama",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Un harness de 13 casos. Dry-run daba 13/13 y se revoco el RC.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "Baxy.Providers.Windows GUI/UIA; no despachar click ciego si no hay ventana",
+      "source_files": [
+        "legacy/Carter_v2/REAL_RUNTIME_LIVE_REPRO_REPORT.md",
+        "legacy/Carter_v2/RESIDUAL_BACKLOG_AFTER_BLOCK.md",
+        "legacy/Carter_v2/RESIDUAL_BACKLOG_V2.md"
+      ],
+      "repeats": [
+        "REAL_RUNTIME_FAILURE_AUDIT 2.5; ULTRA_LATENCY GUI 131s"
+      ]
+    },
+    {
+      "card_id": "dry-run-no-es-live",
+      "claim_kind": "documental",
+      "problem": "Gates pytest+dry-run cerraban RC; el live LLM los desmintio.",
+      "outcome": "fracaso",
+      "solution_or_failure": "Repro live 3/13 PASS (luego taxonomia 2/13 successful + 1 honest_degraded). Dry-run 13/13 y scripted 654/654 no cuentan como evidencia de modelo.",
+      "causal_mechanism": "Dry-run es router estructural. Scripted usa modelo 'scripted'. Soak 200 turnos = 0.9 ms, caminos Python sincronos, no LLM.",
+      "measurement": "Live 3/13 (qwen3:8b); pytest 481 passed; dry-run 13/13; scripted 654/654; soak 200 turns, leak 142732 B, SOAK_PASSED.",
+      "provenance": {
+        "path": "legacy/Carter_v2/REAL_RUNTIME_LIVE_REPRO_REPORT.md",
+        "ranges": [
+          "38-41",
+          "87-99"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Numeros de mayo 2026. BAXY ya exige evidencia contemporanea (invariante 2).",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "escalera de validacion AGENTS.md: Full no se sustituye por scaffold; Goal 10 uso diario",
+      "source_files": [
+        "legacy/Carter_v2/REAL_RUNTIME_LIVE_REPRO_REPORT.md",
+        "legacy/Carter_v2/FULL_LIVE_LLM_TEST_AUDIT.md",
+        "legacy/Carter_v2/audit/results/FULL_LIVE_LLM_VALIDATION_SUMMARY.md",
+        "legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_SUMMARY.md",
+        "legacy/Carter_v2/TEXT_CORE_SOAK_TEST_REPORT.md",
+        "legacy/Carter_v2/TEXT_CORE_PERFORMANCE_FINAL.md"
+      ],
+      "repeats": [
+        "PERFORMANCE_FINAL admite que no re-midio LLM para el RC"
+      ]
+    },
+    {
+      "card_id": "contexto-inyectado-sin-gate",
+      "claim_kind": "documental",
+      "problem": "Carter no fallaba por el LLM: fallaba por lo que el codigo le daba. 'a' hablaba de mission.py; 140-154 s de barras; user_ref 'Como'.",
+      "outcome": "exito",
+      "solution_or_failure": "L1-L8: resolve_user_ref con confianza/conflicto; no inyectar active-app ni prior-turns en input trivial; detector estructural de ruido; clamp 20s; style_preference solo si confirmed.",
+      "causal_mechanism": "active_app_line en CADA turno; facts sin confidence/scope; timeout 180s; filtro de ruido solo streaming ≥12 chars; retry require_tool=True en followup.",
+      "measurement": "Probe 13/13 en qwen3:8b post-fix (documental). pytest 420/420 en el reporte L1-L8. Landing: caso 'a' 23317→10509 ms; 'a' post-GUI 32500→3195 ms. Sigue >8s en frio.",
+      "provenance": {
+        "path": "legacy/Carter_v2/LLM_CONTEXT_MEMORY_AUDIT.md",
+        "ranges": [
+          "1-50",
+          "105-146"
+        ],
+        "date": "2026-05-01",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Fixes de v2; no auditados en codigo BAXY. Landing numbers son de qwen2.5:7b en otro audit.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "mente/prompt y memoria: no inyectar ventana activa ni hechos no confirmados en turnos triviales",
+      "source_files": [
+        "legacy/Carter_v2/LLM_CONTEXT_MEMORY_AUDIT.md",
+        "legacy/Carter_v2/LLM_CONTEXT_MEMORY_REPORT.md",
+        "legacy/Carter_v2/LLM_AUTONOMY_BOUNDARY.md",
+        "legacy/Carter_v2/PRE_LLM_LATENCY_REPORT.md",
+        "legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_AUDIT.md",
+        "legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_V2_AUDIT.md"
+      ],
+      "repeats": [
+        "ULTRA_LATENCY C1.01 70s timeout; FAILURE_AUDIT 2.1 78.4s"
+      ]
+    },
+    {
+      "card_id": "taxonomia-pass-honesta-y-rebaseline",
+      "claim_kind": "documental",
+      "problem": "Round 3 publico 10/13 incluyendo un false pass en 'quien soy yo?' y mezclando exito, degradacion honesta y fail.",
+      "outcome": "exito",
+      "solution_or_failure": "Taxonomia pass_successful / pass_honest_degraded / fail. Round 4: 2/13 successful, 1 honest, 10 fail. qwen3:8b NOT_SUITABLE_AS_CURRENT_DEFAULT. qwen2.5:7b-instruct mejor (best 6/1/6 semantico; Jarvis budget 4/1/8).",
+      "causal_mechanism": "Detector de '?' demasiado amplio marcaba respuestas con pregunta de cortesia como needs_user. Harness congelado; el delta es solo de modelo.",
+      "measurement": "qwen3:8b 3 warm runs ~2/1/10. qwen2.5:7b run07 6/1/6. Jarvis budgets: chat 5s, tool 8s — casi todos miss en qwen3.",
+      "provenance": {
+        "path": "legacy/Carter_v2/audit/results/CARTER_GLOBAL_RUNTIME_AUDIT.md",
+        "ranges": [
+          "1-86"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "13 casos, no 540. qwen2.5:7b no es el modelo de BAXY. DEFAULT_SWITCH y STABILITY son la misma familia de auditorias.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "scorer 03C: no mezclar success, honest-degraded y fail; no celebrar taxonomia laxa",
+      "source_files": [
+        "legacy/Carter_v2/audit/results/CARTER_GLOBAL_RUNTIME_AUDIT.md",
+        "legacy/Carter_v2/audit/results/CARTER_MODEL_REBASELINE_AUDIT.md",
+        "legacy/Carter_v2/audit/results/CARTER_RUNTIME_STABILITY_AUDIT.md",
+        "legacy/Carter_v2/audit/results/CARTER_DEFAULT_SWITCH_AUDIT.md"
+      ],
+      "repeats": [
+        "REAL_RUNTIME_LIVE_REPRO 3/13 es oleada previa a la taxonomia"
+      ]
+    },
+    {
+      "card_id": "ultra-latency-stretch-miss",
+      "claim_kind": "documental",
+      "problem": "Contrato funcional READY 7/7 pero no cumple stretch Jarvis. Outliers 32-131 s.",
+      "outcome": "fracaso",
+      "solution_or_failure": "Plan L1-L12 (UIA budget, terminal timeout por comando, precheck filesystem, tunar Ollama, traces por etapa). Performance RC congela presupuestos de clasificador local (greet <5 ms) que no son latencia LLM.",
+      "causal_mechanism": "UIA sin time-budget; terminal timeout 60s uniforme; start de archivo inexistente espera; backend timeout 180s / num_ctx 16384 fijo; 'hola' 70s por timeout de 3 intentos.",
+      "measurement": "live_safe_postopt2: 654 casos, 452 pass / 3 fail / 199 skip. C12.13 131374 ms; C10.17 91742 ms; C1.01 70054 ms. pytest 436/436 en ese audit.",
+      "provenance": {
+        "path": "legacy/Carter_v2/ULTRA_LATENCY_AUDIT.md",
+        "ranges": [
+          "1-40"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Stretch targets de v2. Goal 01 midio 6.3-11.4 s de prosa E2B contemporanea — otro stack.",
+      "validity": "historica",
+      "current_piece": "Goal 08 primera senal y presupuesto de latencia de voz; no copiar budgets <5ms de clasificador como si fueran LLM",
+      "source_files": [
+        "legacy/Carter_v2/ULTRA_LATENCY_AUDIT.md"
+      ],
+      "repeats": [
+        "PRE_LLM 3-4s hasta primer spike GPU; TEXT_CORE_PERFORMANCE_FINAL §1"
+      ]
+    },
+    {
+      "card_id": "voz-vision-andamiaje-no-torneo",
+      "claim_kind": "documental",
+      "problem": "STT/TTS/voz no se pudieron tornear end-to-end: no habia tools de microfono ni speaker. Vision '1.00' es smoke de PNG de color, no UI.",
+      "outcome": "inconcluso",
+      "solution_or_failure": "Scaffolds: faster-whisper RTF ~0.24 CPU (tiny, 2s tone); Piper no en PATH; XTTS en venv. Vision: moondream 2127 MiB 1.00 smoke; qwen2.5vl:7b 13175 MiB grounding. Voz: NOT_EXECUTED_FULL_ENV_LIMITATION.",
+      "causal_mechanism": "Sin record_audio/speak en tool_catalog no hay WER/MOS de Carter. Vision smoke no tiene screenshots ni bbox.",
+      "measurement": "faster-whisper load 398 ms, transcribe 480 ms, RTF ~0.24. llava:7b 0.80 (fallo OCR espanol). Piper: binario ausente.",
+      "provenance": {
+        "path": "legacy/Carter_v2/MODEL_STT_TOURNAMENT_REPORT.md",
+        "ranges": [
+          "1-40"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "faster-whisper CPU (sin cuBLAS 12)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Goal 01 re-midio Parakeet TDT 0.6b v3 int8 RTF 0.065-0.087 y wake baxy.onnx. Estos scaffolds de mayo no son el stack vigente.",
+      "validity": "historica",
+      "current_piece": "Goal 09 voz/oido; no heredar Piper/XTTS como decision; Parakeet ya medido",
+      "source_files": [
+        "legacy/Carter_v2/MODEL_STT_TOURNAMENT_REPORT.md",
+        "legacy/Carter_v2/MODEL_TTS_TOURNAMENT_REPORT.md",
+        "legacy/Carter_v2/MODEL_VISION_TOURNAMENT_REPORT.md",
+        "legacy/Carter_v2/MODEL_VOICE_TOURNAMENT_REPORT.md",
+        "legacy/Carter_v2/VOICE_MODEL_RESEARCH.md",
+        "legacy/Carter_v2/VOICE_CAMERA_HANDOFF_PLAN.md"
+      ],
+      "repeats": [
+        "AUTO_MODEL_STACK_FINAL_REPORT §4-6"
+      ]
+    },
+    {
+      "card_id": "f0-prompt-hardcodes-rechazado",
+      "claim_kind": "documental",
+      "problem": "El prompt historico F0 enruta por keywords y nombres de app: IP→network_get_ip, Steam/Discord/Spotify como desktop, ACTIVE APP → gui_do.",
+      "outcome": "fracaso",
+      "solution_or_failure": "v2 documenta LLM_AUTONOMY_BOUNDARY: cero vocabulary lists, cero if Steam, cero regex de intencion. F0 queda como baseline de lo que no se hereda.",
+      "causal_mechanism": "Reglas lexicales en el system prompt. Identidad BAXY y invariante 5 prohiben respuestas/ruteo fijos.",
+      "measurement": "Plantilla 17794 bytes / 143 lineas. No es un bench.",
+      "provenance": {
+        "path": "legacy/Carter_v2/audit/baselines/historical/F0_prompt_template.txt",
+        "ranges": [
+          "1-40"
+        ],
+        "date": "historico pre-2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Baseline de auditoria, no runtime actual de Carter v2 RC (el RC afirma hardcode_count 0).",
+      "validity": "caducada",
+      "current_piece": "invariante 5 (cero respuestas visibles fijas) y catalogo tipado: la mente propone, el kernel autoriza",
+      "source_files": [
+        "legacy/Carter_v2/audit/baselines/historical/F0_prompt_template.txt"
+      ],
+      "repeats": [
+        "LLM_AUTONOMY_BOUNDARY 'must NEVER move into the code'"
+      ]
+    },
+    {
+      "card_id": "invariantes-rc-y-dieta",
+      "claim_kind": "documental",
+      "problem": "El proyecto crecia por acumulacion (probes, 1667 tests legacy, markdowns en raiz) mientras el RC afirmaba 16 invariantes.",
+      "outcome": "contexto",
+      "solution_or_failure": "Diet: archivar probes y suite legacy; src/carter_v2 'bien dimensionado'. Invariantes: no fake success, no hardcode de modelo, greet sin LLM, soak 200, pytest 481, voz fuera del text core.",
+      "causal_mechanism": "Gates JSON del RC (hardcode 0, fake_success 0, 24/25 protocol). pytest historico f8: 1454 passed; post-lab M13: 435 passed; RC: 481. Los conteos no son comparables sin el filtro -k not live.",
+      "measurement": "f8: 1454 passed in 114.81s. M13: 435 passed. RC: 481. Soak leak 142732 B < 5 MB.",
+      "provenance": {
+        "path": "legacy/Carter_v2/TEXT_CORE_INVARIANTS.md",
+        "ranges": [
+          "1-27"
+        ],
+        "date": "2026-05-02",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:8b (default RC)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Invariantes de Carter v2 text-core. pytest counts son de distintos cortes. No son tests de BAXY Definitivo.",
+      "validity": "historica",
+      "current_piece": "ley 2 (retirar la capa que sustituyes) y ley 5 (una responsabilidad); tests/Baxy.*.Tests",
+      "source_files": [
+        "legacy/Carter_v2/TEXT_CORE_INVARIANTS.md",
+        "legacy/Carter_v2/TEXT_CORE_ARCHITECTURE.md",
+        "legacy/Carter_v2/TEXT_CORE_CLEANUP_PLAN.md",
+        "legacy/Carter_v2/CARTER_TEXT_CORE_RC_AUDIT.md",
+        "legacy/Carter_v2/CARTER_TEXT_CORE_RELEASE_NOTES.md",
+        "legacy/Carter_v2/CODEBASE_DIET_PLAN.md",
+        "legacy/Carter_v2/REPO_CLEANUP_AUDIT.md",
+        "legacy/Carter_v2/README.md",
+        "legacy/Carter_v2/audit/logs/historical/f8_test_summary.txt",
+        "legacy/Carter_v2/audit/results/post_model_lab_gates_20260502-092159.txt"
+      ],
+      "repeats": [
+        "TEXT_CORE_PERFORMANCE_FINAL"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "biblioteca_same_hash_count": 15,
+  "biblioteca_delta_count": 57,
+  "notes": "Afirmaciones de benches/transcripts son documentales. Reproducido en esta sesion: HEAD Carter OS AI, hashes SHA-256 de 72/72, 15/72 identicos a biblioteca/carter. Cero archivos fuera del lote.",
+  "next_docs_batch_id": "docs-002-carter",
+  "next_prompt": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md"
+}
