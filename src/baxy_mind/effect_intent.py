@@ -4274,7 +4274,7 @@ def resolve_application_catalog_app_id(
     """Resolve one conservative provider input from the authenticated snapshot."""
 
     catalog = build_application_catalog_index(application_names)
-    folded = _fold(text)
+    folded = _strip_request_envelope(_fold(text))
     target = _authenticated_application_target(folded, catalog)
     if target is None:
         target = _authenticated_application_desired_open(folded, catalog)
@@ -13174,7 +13174,7 @@ def resolve_explicit_effects(
             folded,
         )
         if token is not None:
-            name = token.group("name")
+            name = token.group("name").rstrip(" .!?")
             if _unique_catalog_prefix_name(name, authenticated_applications) is not None:
                 return EffectIntent(("app.open",), (name,))
     if _volume_domain(folded) and _has(folded, r"\b(?:brillo|brightness)\b"):

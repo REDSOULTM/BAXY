@@ -10,8 +10,10 @@ Hecho: r130 VOID (reboot). r131 20/20 + overlay 11. In-scope **1582/144**.
 `No pude encontrarlo`: el `appId` no se resuelve (sobre sin strip en
 `resolve_application_catalog_app_id`; evidencia `steel.`).
 LastBoot `2026-08-29 21:12:42`.
-En curso: owner-fix grounding del prefijo único (Steam, no `steel.`).
-Sin empezar: r132, 808/2036/holdouts, matriz viva, ABBA, Full.
+Owner-fix: `resolve_application_catalog_app_id` strip envelope;
+evidencia del prefijo sin `steel.`. pytest 2606 ×2.
+En curso: lanzar r132 (Win32 Create + deny-power).
+Sin empezar: overlay r132, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - r130 no overlay (0 shards, reboot). Baseline r129 hasta r131 overlay.

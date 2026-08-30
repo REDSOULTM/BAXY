@@ -7079,16 +7079,23 @@ def test_truncated_catalog_prefix_resolves_one_unique_app() -> None:
 def test_punctuated_affirmation_does_not_hide_a_unique_catalog_open() -> None:
     catalog = build_application_catalog_index(("Steam", "Google Chrome"))
     available = {"app.open"}
-    assert resolve_explicit_effects(
+    yes_steel = resolve_explicit_effects(
         "Sí. Abre Steel.",
         available,
         catalog,
-    ).operations == ("app.open",)
-    assert resolve_explicit_effects(
+    )
+    yes_ste = resolve_explicit_effects(
         "Yes, open Ste",
         available,
         catalog,
-    ).operations == ("app.open",)
+    )
+    assert yes_steel.operations == ("app.open",)
+    assert yes_steel.evidence == ("steel",)
+    assert yes_ste.operations == ("app.open",)
+    assert yes_ste.evidence == ("ste",)
+    assert resolve_application_catalog_app_id("Sí. Abre Steel.", catalog) == "Steam"
+    assert resolve_application_catalog_app_id("Yes, open Ste", catalog) == "Steam"
+    assert resolve_application_catalog_app_id("steel", catalog) == "Steam"
     assert (
         resolve_explicit_clarification_intent(
             "Sí. Abre Steel.",
