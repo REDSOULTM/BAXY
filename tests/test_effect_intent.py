@@ -7076,6 +7076,28 @@ def test_truncated_catalog_prefix_resolves_one_unique_app() -> None:
     assert resolve_application_catalog_app_id("abre Steel", catalog) == "Steam"
 
 
+def test_punctuated_affirmation_does_not_hide_a_unique_catalog_open() -> None:
+    catalog = build_application_catalog_index(("Steam", "Google Chrome"))
+    available = {"app.open"}
+    assert resolve_explicit_effects(
+        "Sí. Abre Steel.",
+        available,
+        catalog,
+    ).operations == ("app.open",)
+    assert resolve_explicit_effects(
+        "Yes, open Ste",
+        available,
+        catalog,
+    ).operations == ("app.open",)
+    assert (
+        resolve_explicit_clarification_intent(
+            "Sí. Abre Steel.",
+            ("app.open",),
+        )
+        is None
+    )
+
+
 def test_named_unknown_app_open_keeps_the_spoken_label() -> None:
     catalog = build_application_catalog_index(("Google Chrome",))
     assert (

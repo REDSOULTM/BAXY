@@ -4929,6 +4929,9 @@ _REQUEST_PREFIX = (
     # ``no quiero que abras Steam`` remains a negated request and never gains
     # authority by normalization.
     r"(?:no|nop|nope)\s*[,;:.!?]+\s*|"
+    # Punctuated affirmation only before an open: ``Sí. Abre Steam``.
+    # ``Sí, sí, te oigo`` must stay social and is not a preface.
+    r"(?:si|yes|yeah)\s*[,;:.!?]+\s*(?=(?:abre|abri|abrime|open)\b)|"
     rf"(?:no me molesta|no me importa|no problem|doesn'?t bother me|dale)"
     rf"\s*[,;:.!?]+{_PREFIX_GAP}|"
     rf"(?:por favor|porfa|please)\s*[,;:.!?]?{_PREFIX_GAP}|"

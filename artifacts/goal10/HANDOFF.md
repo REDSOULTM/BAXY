@@ -8,8 +8,9 @@ con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertida
 Hecho: r129 20/20 + overlay quirúrgico 13 + 3 consent-ask→conversación.
 In-scope **1577/143** (r128 era 1576/144). `abre Steel` → Steam pasa.
 LastBoot `2026-08-27 21:25:24`.
-En curso: siguiente familia en dueño (no remake encima).
-Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
+En curso: owner-fix afirmación puntuada `Sí. Abre…` (prefijo con lookahead
+de open). pytest 2606 ×2. Siguiente: UNA remake r130.
+Sin empezar: overlay r130, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
 - Overlay no pisa journal. 205 blocked_lost_journal.
@@ -20,8 +21,8 @@ Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
   claridad. No otra remake para eso.
 - `zzqwx123` ejecuta y falla cerrado (`app_not_found`); verification
   sigue fail. No inventar éxito.
-- `Sí. Abre Steel.` no matchea el prefijo: el `Sí.` no está en el
-  sobre. Próximo dueño: afirmación puntuada.
+- Afirmación puntuada `si|yes` + `abre|open` se quita del sobre. `Sí, sí,
+  te oigo` no: el lookahead exige verbo de abrir.
 
 ## Archivos tocados
 - `artifacts/goal10/goal10-in-scope-r129.json` — 1577/143
