@@ -9,7 +9,9 @@ Hecho: r129 20/20 + overlay 16; in-scope **1577/143**. pytest 2606 ×2.
 **r130 ANULADA.** Host reboot `2026-08-29 21:12:42` (antes `2026-08-27 21:25:24`).
 0/20 shards. Marker `%LOCALAPPDATA%\BAXYRuntime\goal10\r130-VOIDED.txt`.
 Merge intacto r129 SHA `df007225…`. **No overlay r130.**
-En curso: r131 reemplazo (mismo árbol que r130, Win32 Create + deny-power).
+r131 lanzada vía Win32 Create (`launch_r131.ps1`, python 30368/8308).
+LastBoot `2026-08-29 21:12:42`. Deny-power=1.
+En curso: campaña r131 1947 (esperar 20/20 + `campaign done`).
 Sin empezar: overlay r131, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
