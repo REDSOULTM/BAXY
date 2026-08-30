@@ -1,4 +1,4 @@
-# Handoff — Goal 10 — 2026-08-30 — r132 overlay scored
+# Handoff — Goal 10 — 2026-08-30 — PAUSA, propuesta de corte
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
@@ -8,8 +8,11 @@ con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertida
 Hecho: r130 VOID. r131 1582/144. r132 20/20 + overlay 8.
 In-scope **1590/142**. `Sí. Abre Steel.` / `Sí, abre Ste.` / `abre Steel.`
 pasan (`Listo, Steam está abierto`). LastBoot `2026-08-29 21:12:42`.
-En curso: siguiente familia in-scope (app.open 8: Abrelo, terminal,
-photoshop, zzqwx fail-closed, chrome spam). (none) 63.
+**PAUSA a pedido del dueño.** Cero remakes. Propuesta:
+`artifacts/goal10/PROPUESTA_CORTE.md` (10.1 corpus, 10.2 misiones,
+10.3 identidad viva, 10.4 latencia/higiene).
+WIP sucio: `abri photoshop` en `effect_intent.py` (no commiteado, no
+verde dos veces).
 Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
@@ -33,6 +36,5 @@ Descartadas: overlay r130; r132 in-scope 0 fail.
 - pytest 2606 ×2 (pre-r132 grounding)
 
 ## Siguiente acción recomendada
-Owner-fix una familia: `abri photoshop` (token único sin hit de catálogo)
-o `Abrelo` deíctico. Tests verdes dos veces, UNA remake. No overlay
-incompleto. No system.power live.
+Dueño elige el corte (cuatro sesiones o 10.1/10.2). Hasta entonces no
+hay r133. LastBoot `2026-08-29 21:12:42`.
