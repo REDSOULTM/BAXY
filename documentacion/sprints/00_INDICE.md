@@ -1,7 +1,8 @@
 # BAXY en once goals
 
-Once goals. Cada uno se lanza en una sesión nueva, se pega entero, y **se deja
-correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
+Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, y
+**se deja correr hasta que se cumple**. Los Goals 10 y 11 son mapas: su unidad de
+ejecución son `10.1`–`10.18` y `11.1`–`11.16`, una sesión nueva por subgoal.
 
 ## Con qué modelo se lanza cada uno
 
@@ -32,12 +33,13 @@ fijas), texto visible auditado a mano. Evidencia en
 [`documentacion/base/04_HONESTIDAD.md`](../base/04_HONESTIDAD.md) y
 `artifacts/development/goal04_honesty*.json`.
 
-**Cómo se lanza uno.** Sesión nueva y limpia, `/effort high`, y el goal pegado
-entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
+**Cómo se lanza uno.** Sesión nueva y limpia, Grok 4.6, `/effort high`, y el goal
+pegado entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
 que una revisión de evidencia independiente reproduce el resultado**; si no puede
 reproducirlo, el goal sigue abierto con los huecos nombrados. Eso es exactamente el
 invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una sesión por
-goal, no una sesión para todo el día.
+goal ejecutable, no una sesión para todo el día. En 10.x/11.x el techo operativo es
+**500k tokens** y nunca se juntan dos ficheros.
 
 **El contenido no cambia entre versiones**: mismo objetivo, misma evidencia
 heredada, mismos criterios de cierre. Lo que cambia es el bloque «Cómo trabajas
@@ -59,8 +61,8 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | El uso diario | 200 turnos reales y 24 h encendido no le sacan un fallo de honestidad |
-| 11 | **La validación y el cierre** | Aguanta cuando algo va mal — producto terminado |
+| 10 | **Uso diario + aceptación** ([mapa](10_USO_DIARIO.md)) | 200 turnos y cinco×20 **sin 24 h**, más 1.947/808 e Identidad; se pega `10.1`–`10.18` |
+| 11 | **Validación y cierre** ([mapa](11_VALIDACION.md)) | 2.036 contratos por clase, deuda, errores, regresión e higiene; se pega `11.1`–`11.16` |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
 anteriores en esta máquina con piezas que ya funcionan. El 09 va casi al final por
@@ -71,6 +73,11 @@ hereda.
 que *podría* fallar: van rápido a propósito. El 11 invierte esa regla y se dedica
 exactamente a eso — los caminos de error, las fragilidades, la regresión completa
 sobre el árbol final. Es donde se cobra la deuda que los diez fueron dejando.
+
+**Ambiente no es aprobación.** Desde 10.1, una misión in-scope que necesita una
+app, cuenta, serie, contenido, permiso o dispositivo ausente cierra su sesión como
+`FALLO_DE_AMBIENTE`. El prompt deja al dueño la preparación exacta y se repite el
+mismo subgoal; no se omite la fila ni se avanza.
 
 ## Antes de nada: la identidad
 
@@ -193,10 +200,13 @@ dice cosas que ya cree. Lo que sí llevan los goals es el bloque **«Cómo traba
 aquí»**: las tools, la shell, el esfuerzo, los subagentes y dónde se deja el estado
 —que es lo que el harness no le dice—.
 
-Las versiones anteriores llevaban además un bloque de tendencias por modelo. **El de
-Grok no está escrito porque no está medido**, y aquí no se escriben bloques por
-intuición: la sesión que cerró el 03B está en disco, con 976 mensajes, en
-`~/.grok/sessions/`, y ése es el sitio donde se mide antes de escribirlo.
+Las versiones anteriores llevaban además un bloque de tendencias por modelo. Para
+10.x/11.x ya no se escribe por intuición: `10_PROTOCOLO_GROK46.md` parte de la
+sesión local del intento fallido —927 mensajes de chat, 5.065 eventos, dos rondas
+de `/goal` y cierre incompleto— y de las capacidades declaradas por el harness
+Grok Build 1.0.13. Por eso fija objetivo único, ownership, presupuesto 350k+150k,
+estado durable antes de compactar y una sola partición por sesión. No se copia como
+andamiaje a los goals antiguos que ya cerraron.
 
 Cada prompt lleva además **lo que ya se midió y se rechazó**, para que ningún
 agente pague dos veces la misma corrida. Eso no es andamiaje: es evidencia.
