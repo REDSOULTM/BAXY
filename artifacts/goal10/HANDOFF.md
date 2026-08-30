@@ -1,47 +1,45 @@
-# Handoff — Goal 10 — 2026-08-29 — owner-fix (none)/app.open → r129
+# Handoff — Goal 10 — 2026-08-30 — r129 overlay scored
 
 ## Objetivo
 BAXY cumple la identidad (es/en/spanglish) y cada mensaje real in-scope pasa
 con veredicto individual. In-scope fail = 0. Ambientales omitidas, no convertidas.
 
 ## Estado
-Hecho: r128 overlay 14; in-scope **1576/144**. Owner-fix (none)/app.open:
-hechos implícitos → `DoNotPersist` (mente conversa, no `AskToSave`); `Tiempo`
-→ `system.time`; `abrí la aplicación X` + prefijo único 3 chars; alarma hora >23
-sin aclarar; terminal `System32\cmd.exe`. Tests verdes dos veces.
-r129 lanzada vía Win32 Create (`launch_r129.ps1`, python 54788/55316).
+Hecho: r129 20/20 + overlay quirúrgico 13 + 3 consent-ask→conversación.
+In-scope **1577/143** (r128 era 1576/144). `abre Steel` → Steam pasa.
 LastBoot `2026-08-27 21:25:24`.
-En curso: campaña r129 1947 (esperar 20/20 + `campaign done`).
-Sin empezar: overlay r129, 808/2036/holdouts, matriz viva, ABBA, Full.
+En curso: siguiente familia en dueño (no remake encima).
+Sin empezar: 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
-- Hecho implícito no se guarda ni se pregunta: `MustNotPersist` + `NoRoute`.
-  El oráculo `ask_to_save` contradecía invariante 5 (respuesta fija
-  `context_not_saved`). Safety sigue: `must_not_persist_before_consent`.
-- Prefijo de catálogo único a 3 letras (`Steel`→Steam) si hay un solo hit.
-  No literales de corpus en runtime.
-- `AskToSave` queda sin llamadas; no se borra en este paso.
+- Overlay no pisa journal. 205 blocked_lost_journal.
+- `consent_ask_to_conversation`: pregunta de guardar en memoria local →
+  saludo, sin journal. Familia, no `message_id`.
+- `Tiempo` con `system.time` + journal **sigue fail**: mapping
+  `outcome_type=clarify` / ops []. No es clima ni reloj pedido con
+  claridad. No otra remake para eso.
+- `zzqwx123` ejecuta y falla cerrado (`app_not_found`); verification
+  sigue fail. No inventar éxito.
+- `Sí. Abre Steel.` no matchea el prefijo: el `Sí.` no está en el
+  sobre. Próximo dueño: afirmación puntuada.
 
 ## Archivos tocados
-- `src/baxy_mind/effect_intent.py` — time, named open, prefix 3, alarma >23
-- `src/Baxy.App/NaturalMemoryRequestParser.cs` — ImplicitMemory → DoNotPersist
-- `src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs`
-  — cmd.exe por `SystemDirectory`
-- `tests/data/memory_corpus_oracle.json` — implicit consent = `no_memory_route`
-- `artifacts/goal10/goal10-in-scope-r128.json` — score vigente hasta overlay r129
+- `artifacts/goal10/goal10-in-scope-r129.json` — 1577/143
+- `%LOCALAPPDATA%\BAXYRuntime\goal10\overlay_r129.py` —
+  `consent_ask_to_conversation`
+- merge SHA `df0072258deb9a9ef86311c2972b0462ff59b2c15801671a1fd065d92b615080`
 
 ## Hipótesis
-Confirmadas: parser `AskToSave` rompía 2 hard-negatives al cambiar a DoNotPersist
-sin tocar el oráculo. Explorer 51/51. pytest 2605.
-Descartadas: relanzar 1947 con el test de memoria en rojo.
+Confirmadas: prefix 3 chars abre Steam; nombres implícitos saludan en
+shard r129; overlay sin journal no los copiaba.
+Descartadas: overlay wholesale; r129 in-scope 0 fail.
 
 ## Comandos ejecutados y resultado
-- `pytest tests/test_effect_intent.py tests/test_turn_policy.py -q` → **2605 passed** ×2
-- `dotnet test …NaturalMemoryRequestParserTests` → **1746 passed** ×2
-- `dotnet test …WindowsApplicationOpenProviderTests` → **51 passed**
-- LastBoot `2026-08-27 21:25:24`
+- wait_r129 → **DONE**. 20/20 empty=0 + `campaign done`. LastBoot `2026-08-27 21:25:24`
+- overlay unique 1947, overlaid 13 then +3 names, blocked 205
+- in-scope `artifacts/goal10/goal10-in-scope-r129.json` → **1577/143**
 
 ## Siguiente acción recomendada
-Esperar r129 `DONE` (20/20 + campaign done). Overlay `overlay_r129.py`, no shards
-incompletos. Score in-scope. Familias r128 restantes:
-`artifacts/goal10/r128-remaining-families.md`. Si fail>0, una familia en dueño.
+Owner-fix familia `app.open` restante: afirmación `Sí.`/`Yes.` delante
+de un open de catálogo único; `Abrelo`; terminal HWND. Tests verdes dos
+veces, luego UNA remake r130. No overlay incompleto.
