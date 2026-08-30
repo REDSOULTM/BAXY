@@ -23,6 +23,15 @@ de chat, 5.065 eventos y dos rondas de `/goal`; terminó pausada sin cerrar 808,
 2.036, identidad, latencia ni Full. La lección es cortar por resultado y ownership,
 no por títulos breves.
 
+Al restaurar `8c57747`, Full descubrió además una precondición que el cierre del 09
+no había cobrado: Contracts 60/60, Kernel 137/137, Providers 451/451 y Setup
+477/477 pasan, pero Integration queda en **2.742 pass, 85 fail y 1 skip**. El
+patrón dominante de los fallos mostrados espera frases fijas mientras
+`OperationOutcomeNarration` entrega el contrato JSON estructurado que Goal 6
+necesita para que el modelo formule la prosa. `10.0_BASE_VERDE.md` clasifica los 85
+y resuelve esa costura antes de construir corpus; no se restaura la prosa fija ni
+se relaja la suite.
+
 La conclusión no es abandonar ninguna obligación. Es separar:
 
 - Goal 10: uso real + aceptación de los mensajes reales observados;

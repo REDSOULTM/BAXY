@@ -1,7 +1,7 @@
 # Goal 10 — Uso diario y aceptación del producto
 
 > **Mapa: no se lanza entero.** El Goal 10 se ejecuta en orden mediante
-> `10.1`–`10.18`. Cada fichero es un goal autónomo para **Grok 4.6 High** y cabe
+> `10.0`–`10.18`. Cada fichero es un goal autónomo para **Grok 4.6 High** y cabe
 > en una ventana operativa máxima de **500k tokens**. No se juntan dos sesiones
 > aunque una termine pronto.
 
@@ -39,7 +39,8 @@ propia aceptación.
 
 | Goal | Misión acotada | Dependencia | Cierra con |
 |---|---|---|---|
-| 10.1 | Congelar corpus, alcance y cola | Goal 09 | 1.947/808 reproducibles y partición sin solapes |
+| 10.0 | Restaurar la base verde | Goal 09 | contrato estructurado y pruebas coherentes; Full verde |
+| 10.1 | Congelar corpus, alcance y cola | 10.0 | 1.947/808 reproducibles y partición sin solapes |
 | 10.2 | Presencia y recursos | 10.1 | bandeja, arranque, readiness e idle corto medidos |
 | 10.3 | Uso real A | 10.2 | 50 turnos: 25 espontáneos + 25 repetidos |
 | 10.4 | Uso real B | 10.3 | segundo bloque de 50 |

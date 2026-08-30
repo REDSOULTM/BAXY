@@ -2,7 +2,7 @@
 
 Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, y
 **se deja correr hasta que se cumple**. Los Goals 10 y 11 son mapas: su unidad de
-ejecución son `10.1`–`10.18` y `11.1`–`11.16`, una sesión nueva por subgoal.
+ejecución son `10.0`–`10.18` y `11.1`–`11.16`, una sesión nueva por subgoal.
 
 ## Con qué modelo se lanza cada uno
 
@@ -61,7 +61,7 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
-| 10 | **Uso diario + aceptación** ([mapa](10_USO_DIARIO.md)) | 200 turnos y cinco×20 **sin 24 h**, más 1.947/808 e Identidad; se pega `10.1`–`10.18` |
+| 10 | **Uso diario + aceptación** ([mapa](10_USO_DIARIO.md)) | Base verde, 200 turnos y cinco×20 **sin 24 h**, más 1.947/808 e Identidad; se pega `10.0`–`10.18` |
 | 11 | **Validación y cierre** ([mapa](11_VALIDACION.md)) | 2.036 contratos por clase, deuda, errores, regresión e higiene; se pega `11.1`–`11.16` |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
