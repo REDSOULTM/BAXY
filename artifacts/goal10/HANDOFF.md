@@ -12,7 +12,9 @@ Hecho: r130 VOID (reboot). r131 20/20 + overlay 11. In-scope **1582/144**.
 LastBoot `2026-08-29 21:12:42`.
 Owner-fix: `resolve_application_catalog_app_id` strip envelope;
 evidencia del prefijo sin `steel.`. pytest 2606 ×2.
-En curso: lanzar r132 (Win32 Create + deny-power).
+r132 lanzada vía Win32 Create (`launch_r132.ps1`, python 32400/3464).
+LastBoot `2026-08-29 21:12:42`. Deny-power=1.
+En curso: campaña r132 1947 (esperar 20/20 + `campaign done`).
 Sin empezar: overlay r132, 808/2036/holdouts, matriz viva, ABBA, Full.
 
 ## Decisiones tomadas
