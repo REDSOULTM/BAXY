@@ -55,7 +55,7 @@ BLIND_COUNTS_BY_GROUP = {"herring": 4, "sastre": 2, "zeledon": 2}
 # Re-sealed against the current tree; this holdout has never been opened.
 # See audit_fresh_postweight_stt_sources.py for the full lineage.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b4897c73a6450e6df079300609f15520541ebeea21be21f5be57275c04b97e31"
+    "28aa1fbb4375f30e853a3d4d390d78e1fcf22afccabbc342f61250a2f2cbfe07"
 )
 NOTE_PATTERN = re.compile(
     r"^NOTE\s+(?P<recording>\S+)\s+offset=(?P<offset>\d\d:\d\d:\d\d\.\d{3})"

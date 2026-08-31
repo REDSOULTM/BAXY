@@ -485,7 +485,22 @@ function ConvertTo-BaxyCanonicalJson {
 function Get-BaxySha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
 
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    $stream = New-Object IO.FileStream(
+        $Path,
+        [IO.FileMode]::Open,
+        [IO.FileAccess]::Read,
+        [IO.FileShare]::Read,
+        1048576,
+        [IO.FileOptions]::SequentialScan)
+    try {
+        return ([BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace(
+            '-',
+            '').ToLowerInvariant()
+    } finally {
+        $stream.Dispose()
+        $algorithm.Dispose()
+    }
 }
 
 function Get-BaxyBytesSha256 {

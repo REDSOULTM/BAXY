@@ -94,7 +94,7 @@ function Get-StringSha256 {
 function Get-FileSha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
 
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    return Get-StreamedFileSha256 -Path $Path
 }
 
 function Get-StreamedFileSha256 {

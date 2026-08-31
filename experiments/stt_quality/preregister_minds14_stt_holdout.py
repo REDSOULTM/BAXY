@@ -30,7 +30,7 @@ PARQUET_REFERENCE_COMMIT = "0c617db2d3e8c3576abdd7548af4a9f5ff41d2cb"
 # Re-sealed against the current tree; this holdout has never been opened.
 # See audit_fresh_postweight_stt_sources.py for the full lineage.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b4897c73a6450e6df079300609f15520541ebeea21be21f5be57275c04b97e31"
+    "28aa1fbb4375f30e853a3d4d390d78e1fcf22afccabbc342f61250a2f2cbfe07"
 )
 PYARROW_WHEEL = {
     "version": "25.0.1",

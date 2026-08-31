@@ -44,6 +44,27 @@ function Get-RequiredProperty {
     return $property.Value
 }
 
+function Get-Sha256File {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    $stream = New-Object IO.FileStream(
+        $Path,
+        [IO.FileMode]::Open,
+        [IO.FileAccess]::Read,
+        [IO.FileShare]::Read,
+        1048576,
+        [IO.FileOptions]::SequentialScan)
+    try {
+        return ([BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace(
+            '-',
+            '').ToLowerInvariant()
+    } finally {
+        $stream.Dispose()
+        $algorithm.Dispose()
+    }
+}
+
 function Require-String {
     param(
         [Parameter(Mandatory = $true)]$Value,
@@ -174,11 +195,11 @@ if ($falseRejectRate -gt $maximumFrr -or $farUpper -gt $maximumFar -or $farConfi
     throw 'The calibration report metrics do not satisfy its promotion criteria.'
 }
 
-$actualHash = (Get-FileHash -LiteralPath $modelFull -Algorithm SHA256).Hash.ToLowerInvariant()
+$actualHash = Get-Sha256File -Path $modelFull
 if ($actualHash -ne $expectedHash) {
     throw 'The ONNX SHA-256 does not match the calibrated model.'
 }
-$reportHash = (Get-FileHash -LiteralPath $reportFull -Algorithm SHA256).Hash.ToLowerInvariant()
+$reportHash = Get-Sha256File -Path $reportFull
 
 $destination = [IO.Path]::GetFullPath($DestinationDirectory)
 $null = New-Item -ItemType Directory -Path $destination -Force
@@ -199,12 +220,12 @@ $reportTemporary = Join-Path $destination ('.baxy-' + [Guid]::NewGuid().ToString
 $manifestTemporary = Join-Path $destination ('.baxy-' + [Guid]::NewGuid().ToString('N') + '.json.tmp')
 try {
     Copy-Item -LiteralPath $modelFull -Destination $modelTemporary -ErrorAction Stop
-    $copiedModelHash = (Get-FileHash -LiteralPath $modelTemporary -Algorithm SHA256).Hash.ToLowerInvariant()
+    $copiedModelHash = Get-Sha256File -Path $modelTemporary
     if ($copiedModelHash -ne $actualHash) {
         throw 'The copied ONNX hash differs from the calibrated model.'
     }
     Copy-Item -LiteralPath $reportFull -Destination $reportTemporary -ErrorAction Stop
-    $copiedReportHash = (Get-FileHash -LiteralPath $reportTemporary -Algorithm SHA256).Hash.ToLowerInvariant()
+    $copiedReportHash = Get-Sha256File -Path $reportTemporary
     if ($copiedReportHash -ne $reportHash) {
         throw 'The copied calibration report hash differs from its approved evidence.'
     }
