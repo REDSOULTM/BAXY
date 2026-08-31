@@ -1,0 +1,617 @@
+{
+  "schema": "baxy.goal095.0957-synthesis.v1",
+  "goal": "09.5.7",
+  "closed_utc": "2026-08-31T22:00:00Z",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + artifacts/goal095/extract/_09510_requirements.json + Goal 01 map (documentacion/herencia/00_MAPA.md, D_ADAPTADORES_POR_APP.md) + Goal 05 closeout (documentacion/base/05_EJECUCION_VERIFICADA.md, 05_MATRIZ_EJECUCION.json) + Goal 07 costura (documentacion/03_COSTURAS.md planner/UIA/OCR/visión) + live ProductCatalog/tests; no biblioteca bodies; no source-tree walk",
+  "next_human_prompt": "documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md",
+  "catalog_lineage": "Histórico 67 (tool_schemas_full) → 31 (lean) → 16 (Carter v4 consolidado) → 158 (BAXY anterior, hoy linaje). Live no se encoge aquí: 170 descriptores (169 públicos + app.status interno), 158 alcanzables, sello dc0a7893… Goal 03. 67/31/16/158 son linaje, no un recorte vivo de este goal.",
+  "live_catalog_changed": false,
+  "live_providers_changed": false,
+  "live_mission_engine_changed": false,
+  "goal09_reopened": false,
+  "invariants": {
+    "catalogo_unico": true,
+    "kernel_authorization": true,
+    "invocation_bound_confirmation": true,
+    "independent_postcondition": true,
+    "skill_does_not_replace_kernel": true
+  },
+  "qwen_vl": {
+    "silenced": false,
+    "status": "rechazo_medido",
+    "piece": "Qwen-VL 2B como escalón de visión / computer-use (legacy qwen_vl.py)",
+    "metrics": "R-023: inventó juegos ambiguos; visual diff podía dar falso éxito. No es modelo de habla ni de decisión (09.5.5 lo aplazó aquí).",
+    "hardware": "Windows · BAXY legacy models · documentacion/05_FALLOS_Y_REGRESIONES.md R-023",
+    "corpus": "REG-023 corpus ambiguo/negativo; no es el Click X de Goal 07",
+    "kind": "benchmark",
+    "why_not_product": "El escalón de visión de Click X es WindowsVisibleVisionLocator (HTTPS OpenAI-compatible, BAXY_VISION_ENDPOINT). En esta máquina no está configurado; Steam no lo necesitó. Cámara/Field UI van a 09.5.8. Qwen-VL no se silencia: queda como rechazo medido, no como segundo motor de visión.",
+    "works": false,
+    "citations": [
+      {"card_id": "code_tests-436-baxy-05-legacy-models-qwen_vl.py", "batch_id": "code_tests-436-baxy"}
+    ]
+  },
+  "sparse_assets": {
+    "ref": "artifacts/goal095/extract/_09510_requirements.json",
+    "ids": ["pg4-gguf-models", "pg4-training-datasets", "pg4-training-checkpoints"],
+    "individual_hashes": "not invented",
+    "rule": "ausencia deliberada no es pérdida medida ni FALLO_DE_AMBIENTE de 09.5.7: ningún candidato de trasplante exige el blob. Si 09.5.9 nombra reutilizar uno, 09.5.10 pausa en FALLO_DE_AMBIENTE por el asset exacto"
+  },
+  "ambiente": {
+    "status": "ok_for_synthesis",
+    "approving_simulation": false,
+    "fallo_de_ambiente": [],
+    "note": "Ningún dispositivo/asset requerido para cerrar esta síntesis falta. Existir no es works. Hashes individuales de blobs dispersos: not invented."
+  },
+  "transplants": [],
+  "transplants_empty_reason": "El árbol vivo ya tiene catálogo tipado + kernel + confirmación ligada a invocationId + postcondición independiente + planner de pasos de catálogo + cascada UIA→OCR→visión sin nombre de app + skills cerradas sobre el catálogo público. Un trasplante de tools/skills/microagentes/adapters históricos o bien duplica esa responsabilidad (segundo camino vivo) o viola un invariante (catálogo en el prompt, listas por app, respuestas fijas, éxito no verificado). Sustituir SteamLocalAdapter/SpotifyDesktopAdapter por la cascada es trabajo de 09.5.9/10 y Goal 10, no un segundo provider ahora. Qwen-VL es rechazo medido (R-023), no candidato.",
+  "rejections": [
+    {
+      "pattern": "routers_en_serie",
+      "proposed": false,
+      "piece": "Tres routers en serie de Carter v4/v5 (agent loop 911–1397 líneas; flags que apagan capas)",
+      "evidence": "Goal 01 mapa: «el proyecto crece por acumulación, no por reemplazo». carter-v4-agent-loop: el LLM elige tools; el kernel BAXY autoriza. FunctionGemma planner.py no es ejecutable standalone.",
+      "coste": "10 de 16 s/turno eran sobrecarga propia (PG4). Un router extra no retira el anterior.",
+      "mecanismo_de_fracaso": "Cada router tapa el fallo del anterior. Decision fatigue se «arregla» recortando el catálogo que el LLM ve.",
+      "citations": [
+        {"card_id": "carter-v4-agent-loop", "batch_id": "code_tests-001-carter"},
+        {"card_id": "code_tests-391-functiongemma-44-router-routing-planner.py", "batch_id": "code_tests-391-functiongemma"}
+      ]
+    },
+    {
+      "pattern": "listas_hardcodeadas_por_app",
+      "proposed": false,
+      "piece": "F0 prompt (Steam/Discord/Spotify), CORE_PROMPT few-shots por app, capabilities/steam.py allowlist, adaptadores Steam/Spotify/YouTube",
+      "evidence": "f0-prompt-hardcodes-rechazado; carter-v2-hardcode-guard: el guard pasa porque las marcas se movieron a steam.py. Goal 01: 2.454 líneas que sirven a 4 apps.",
+      "coste": "Cobertura falsa: más catálogo, menos PC genérico.",
+      "mecanismo_de_fracaso": "El nombre de la app vive en el catálogo y en el adapter. Cero findings del scanner no prueba ausencia de hardcode.",
+      "citations": [
+        {"card_id": "f0-prompt-hardcodes-rechazado", "batch_id": "docs-001-carter"},
+        {"card_id": "carter-v2-hardcode-guard", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"},
+        {"card_id": "code_tests-471-baxy-baxy_tests-08-tests-Baxy.Providers.Windows.Tests-SteamLocalAdapterTests.cs", "batch_id": "code_tests-471-baxy-baxy_tests"}
+      ]
+    },
+    {
+      "pattern": "respuestas_fijas",
+      "proposed": false,
+      "piece": "CORE_PROMPT saludos fijos, regla 9 «qué necesitas?», anti-echo post-LLM, harness stubs (hora 2026-05-09T14:32:11)",
+      "evidence": "carter-v4-gemma4-core-prompt reject; carter-v4-reply-checks: post-filtros de texto para tapar un loop que ya mintió. Invariante 5.",
+      "coste": "Narración constante; Goal 04/06 ya lo vetan.",
+      "mecanismo_de_fracaso": "Una constante visible no es prosa del modelo ni un hecho verificado.",
+      "citations": [
+        {"card_id": "carter-v4-gemma4-core-prompt", "batch_id": "code_tests-001-carter"},
+        {"card_id": "carter-v4-reply-checks", "batch_id": "code_tests-001-carter"}
+      ]
+    },
+    {
+      "pattern": "exitos_no_verificados",
+      "proposed": false,
+      "piece": "verify.py «tool ok», mute sin readback, orchestrator UNVERIFIED heurístico, OpenAI-tools stubs, Qwen-VL visual-diff",
+      "evidence": "fake-success-eje-de-tesis; mute-sin-readback; carter-v4-verifier-orchestrator: no mide Windows, lee razones de texto. Goal 05: ejecutor que miente no dice «Listo».",
+      "coste": "Estados falsos: Carter v1 visión por coordenadas ciegas.",
+      "mecanismo_de_fracaso": "El recibo del ejecutor no es la postcondición. Un PASS de stub no prueba efecto en Windows.",
+      "citations": [
+        {"card_id": "fake-success-eje-de-tesis", "batch_id": "docs-001-carter"},
+        {"card_id": "mute-sin-readback", "batch_id": "docs-001-carter"},
+        {"card_id": "harness-openai-tools-stubs", "batch_id": "code_tests-001-carter"}
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": "simple-app-open-notepad",
+      "kind": "simple",
+      "text": "Abre el Bloc de notas / open notepad",
+      "operations": ["app.open"],
+      "complete": true,
+      "reconstructed": false,
+      "evidence": "Goal 05 live Core JSONL dos vueltas: app.open completed+verified, messageStartsListo. Matriz 82 observadas / 88 unverifiable.",
+      "owning_test": "tests/Baxy.Integration.Tests/Goal05CatalogExecutionMatrixTests.cs",
+      "goal10": "10.10",
+      "failure": "PID inventado lo caza WindowsApplicationOpenVerifier (Goal05LyingExecutorTests)."
+    },
+    {
+      "id": "simple-audio-volume",
+      "kind": "simple",
+      "text": "Pon el volumen a N",
+      "operations": ["audio.volume"],
+      "complete": true,
+      "reconstructed": false,
+      "evidence": "Goal 05 live dos vueltas completed+verified; GetStatus aparte del setter, tolerancia 2 puntos.",
+      "owning_test": "tests/Baxy.Integration.Tests/AudioVolumeHandlerTests.cs",
+      "goal10": "10.11",
+      "failure": "Setter que reivindica el nivel y GetStatus sigue en 55 % → failed, no «Listo»."
+    },
+    {
+      "id": "simple-note-create",
+      "kind": "simple",
+      "text": "Guarda una nota",
+      "operations": ["note.create"],
+      "complete": true,
+      "reconstructed": false,
+      "evidence": "Goal 05 live note.create+note.read; relectura del documento, no el retorno de Create.",
+      "owning_test": "tests/Baxy.Integration.Tests/CoreNotesEndToEndTests.cs",
+      "goal10": "10.14",
+      "failure": "INoteStore.Create que devuelve un registro inexistente → verification_failed."
+    },
+    {
+      "id": "chained-steam-library",
+      "kind": "chained",
+      "text": "Abre Steam y ve a la biblioteca",
+      "operations": ["app.open", "input.visible.click"],
+      "complete": true,
+      "reconstructed": false,
+      "evidence": "Goal 07: click verificado en Steam real 2026-08-23. Holdout R6 6/6 misiones, 22/22 pasos, 0 huérfanos, 0 ambiguos, sello 1ad6ecd2…. Planner + veto de conservación. ES/EN/spanglish en test_compound_missions.",
+      "owning_test": "tests/test_compound_missions.py",
+      "goal10": "10.16",
+      "failure": "Un compuesto incompleto no corre como subconjunto silencioso (apply_compound_effect_conservation_veto). Carter v2 smoke: el detector no disparaba en «abre X y luego ciérralo»."
+    },
+    {
+      "id": "chained-open-then-volume",
+      "kind": "chained",
+      "text": "Abre Y y súbele el volumen",
+      "operations": ["app.open", "audio.volume"],
+      "complete": true,
+      "reconstructed": false,
+      "evidence": "Forma típica Goal 07; ambas hojas viven y se verifican por separado (app.open + audio.volume Goal 05). El plan es lista de operaciones del catálogo.",
+      "owning_test": "tests/test_compound_missions.py",
+      "goal10": "10.16",
+      "failure": "Ejecutar sólo la hoja de audio y declarar la misión hecha es el veto de conservación."
+    },
+    {
+      "id": "historical-carter-v2-compound-smoke",
+      "kind": "chained",
+      "text": "M8.2-M4-M7 scripted (Carter v2)",
+      "operations": ["app.open"],
+      "complete": false,
+      "reconstructed": false,
+      "evidence": "carter-v2-compound-smoke: backend scripted; detector ciego al quitar conectores multilingual. No es implementación completa para Goal 10.",
+      "owning_test": "",
+      "goal10": "10.16",
+      "failure": "Marca trivial; steam_open_client hardcodeado. No se hereda el detector."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "catalogos_67_31_16_158",
+      "current_operation": "ProductCatalog (170 descriptores, 169 públicos, app.status interno; 158 alcanzables — linaje, no recorte)",
+      "owning_test": "tests/Baxy.Kernel.Tests/ProductCatalogTests.cs",
+      "best_piece": {
+        "piece": "Catálogo tipado vivo 169+1 con VerifierContractId único por operación; sello dc0a7893… Goal 03. No consolidar a 16: el benchmark 540 midió 75,93 % → 62,96 %.",
+        "evidence": "ProductCatalogTests Length=170, ToolDescriptors=169. Goal 01 §6: encoder-67 vs encoder-31 equivalentes 0,9521; la consolidación a 16 perdió calidad. matrix-540-numeros-en-conflicto.",
+        "coste": "158 alcanzables / 169 públicas. Paramétrica gana recall@5 0,871 vs 0,710 pero no sube el acierto del decisor lo bastante para pagar el recorte.",
+        "mecanismo_de_fracaso": "Recortar el catálogo que el LLM ve (carter-v4-tool-retrieval-e5) o cocerlo en pesos (FunctionGemma) no es el catálogo como datos. Un set de 16 que cubre menos que 158 no cumple Identidad."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-470-baxy-baxy_tests-21-tests-Baxy.Kernel.Tests-ProductCatalogTests.cs", "batch_id": "code_tests-470-baxy-baxy_tests"},
+        {"card_id": "matrix-540-numeros-en-conflicto", "batch_id": "docs-001-carter"},
+        {"card_id": "evidence_assets-132-baxy_schema_agent-01-documentacion-datos_crudos-schemas_16_consolidated.json", "batch_id": "evidence_assets-132-baxy_schema_agent"}
+      ]
+    },
+    {
+      "id": "tools",
+      "current_operation": "ProductCatalog.ToolDescriptors → OperationRegistry (única fuente de operaciones públicas)",
+      "owning_test": "tests/Baxy.Kernel.Tests/ProductCatalogTests.cs",
+      "best_piece": {
+        "piece": "Registro tipado + MissionEngine.ExecuteAsync. La mente propone; el kernel autoriza; el provider ejecuta.",
+        "evidence": "carter-v4-openai-tool-registry reject: universo en el prompt, autoload de 16 paquetes. harness-openai-tools-stubs: PASS contra catálogo inventado de 9+ extras.",
+        "coste": "Cero segundo registro @tool. Cambiar una operación es editar el catálogo, no reentrenar.",
+        "mecanismo_de_fracaso": "Si el LLM elige el nombre, inventa set_volume / no_query_query (FunctionGemma 4/8). El harness stub no prueba efecto Windows."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "carter-v4-openai-tool-registry", "batch_id": "code_tests-001-carter"},
+        {"card_id": "harness-openai-tools-stubs", "batch_id": "code_tests-001-carter"},
+        {"card_id": "code_tests-470-baxy-baxy_tests-14-tests-Baxy.Kernel.Tests-MissionEngineTests.cs", "batch_id": "code_tests-470-baxy-baxy_tests"}
+      ]
+    },
+    {
+      "id": "skills",
+      "current_operation": "skill_registry cerrado sobre nombres públicos de ProductCatalog (no es operación; no autoriza)",
+      "owning_test": "tests/test_skill_registry.py",
+      "best_piece": {
+        "piece": "16 skills versionadas en src/baxy_mind/skills/*/SKILL.md: instrucciones, máximo tres por turno, 12.000 caracteres, overlap de tools obligatorio. Cero memory.* en skills.",
+        "evidence": "test_every_shipped_skill_is_closed_over_the_public_catalog. Carter v5 tools/skill.py y SQLite .diag_skills.db son sidecars de bench, no autoridad.",
+        "coste": "Selección acotada; no un segundo catálogo. Retrieval exige overlap de operaciones.",
+        "mecanismo_de_fracaso": "Una skill que agregue o eleve una operación rompe invariante 1. Texto, corpus y skills no pueden autorizar. carter-v2-matrix-skills-sidecars: WAL de bench no es memoria de producto."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-467-baxy-baxy_src_baxy_mind-11-src-baxy_mind-skill_registry.py", "batch_id": "code_tests-467-baxy-baxy_src_baxy_mind"},
+        {"card_id": "code_tests-475-baxy-baxy_tests-34-tests-test_skill_registry.py", "batch_id": "code_tests-475-baxy-baxy_tests"},
+        {"card_id": "code_tests-030-carter-carter_v5-08-carter_v5-tools-skill.py", "batch_id": "code_tests-030-carter-carter_v5"}
+      ]
+    },
+    {
+      "id": "microagentes",
+      "current_operation": "ninguno — MissionEngine + operaciones de catálogo; microagentes no son un camino vivo",
+      "owning_test": "tests/Baxy.Kernel.Tests/MissionEngineTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "Carter v5 microagents/ y gemma4_agent/microagents.py existen como código histórico. No hay hueco de producto que un microagente cierre: un plan es una lista de operaciones del catálogo. Traer el loader sería un segundo ejecutor."
+      },
+      "best_piece": {
+        "piece": "Rechazo: microagentes como workers con loader propio. Conservar MissionEngine único.",
+        "evidence": "code_tests-336 microagents.py; test_microagents.py; _live_verify_microagents.py. Goal 07: «Sin motor de workflows».",
+        "coste": "Cero procesos worker extra. Un plan DAG acotado en planner.py basta.",
+        "mecanismo_de_fracaso": "Un microagente que ejecute fuera del kernel elude autorización, confirmación e invocationId. Acumulación Carter: capas que no se retiran."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-336-probando_gemma4-16-gemma4_agent-microagents.py", "batch_id": "code_tests-336-probando_gemma4"},
+        {"card_id": "code_tests-344-probando_gemma4-pg4_tests-22-gemma4_agent-tests-test_microagents.py", "batch_id": "code_tests-344-probando_gemma4-pg4_tests"},
+        {"card_id": "code_tests-470-baxy-baxy_tests-14-tests-Baxy.Kernel.Tests-MissionEngineTests.cs", "batch_id": "code_tests-470-baxy-baxy_tests"}
+      ]
+    },
+    {
+      "id": "uia_ocr_vision",
+      "current_operation": "input.visible.click (cascada UIA→OCR→visión) + ocr.read + vision.describe + capture.screenshot",
+      "owning_test": "tests/Baxy.Providers.Windows.Tests/ExternalAdaptersTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "ocr.read sigue en Tesseract 5.4.0 sin spa.traineddata (español primero). Visión de Click X (WindowsVisibleVisionLocator) sin BAXY_VISION_ENDPOINT en esta máquina; Steam no lo necesitó. Qwen-VL R-023 inventó juegos. Cámara/Field UI = 09.5.8."
+      },
+      "best_piece": {
+        "piece": "DesktopClickVisible.ps1 UIA por nombre (no sólo Button), reintento 400 ms CEF; OCR de Click X = Windows.Media.Ocr; visión último recurso HTTPS. ocr.read de catálogo = CaptureVisionAdapter/tesseract (otra pieza).",
+        "evidence": "VisibleClickCascade*: si UIA acierta no llama OCR/visión; OCR si UIA no expone; visión sólo al final. Click Steam real 2026-08-23. PG4 computer_use_pkg + 3 modos accesibilidad: se hereda el diseño, no agent.py.",
+        "coste": "Cero nombres Steam/Spotify en la cascada. Visión 0 llamadas si UIA basta. Tesseract spa.traineddata es 15 MB, no un rediseño.",
+        "mecanismo_de_fracaso": "UIA por coordenadas ciegas (Carter v1) produce estados falsos. Qwen-VL afirma un juego que no está. gui-universal-amenaza-tesis: computer-use sin postread."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-470-baxy-baxy_tests-27-tests-Baxy.Providers.Windows.Tests-ExternalAdaptersTests.cs", "batch_id": "code_tests-470-baxy-baxy_tests"},
+        {"card_id": "code_tests-032-probando_gemma4-11-gemma4_agent-computer_use_pkg-__init__.py", "batch_id": "code_tests-032-probando_gemma4"},
+        {"card_id": "code_tests-030-carter-carter_v5-12-carter_v5-tools-uia_snapshot.py", "batch_id": "code_tests-030-carter-carter_v5"},
+        {"card_id": "gui-universal-amenaza-tesis", "batch_id": "docs-001-carter"},
+        {"card_id": "code_tests-436-baxy-05-legacy-models-qwen_vl.py", "batch_id": "code_tests-436-baxy"}
+      ]
+    },
+    {
+      "id": "adapters_providers",
+      "current_operation": "Baxy.Providers.Windows (un provider por efecto; kernel elige por catálogo)",
+      "owning_test": "tests/Baxy.Providers.Windows.Tests/ExternalAdaptersTests.cs",
+      "best_piece": {
+        "piece": "Providers .NET actuales. Conservar la cascada genérica y SMTC/Core Audio. No apilar adapters Carter por app. SteamLocal/SpotifyDesktop/YouTubeMpv siguen vivos: candidatos a retiro en 09.5.9/10, no a duplicar.",
+        "evidence": "Goal 01 D_ADAPTADORES: 2.454 líneas para 4 apps. SteamLocalAdapterTests existe. DesktopMessagingAdapterTests. No se mutan en este goal.",
+        "coste": "11.918 líneas de adapters externos vs casi cero UIA genérica al medir Goal 01; Goal 07 ya subió el escalón UIA/OCR.",
+        "mecanismo_de_fracaso": "Sustituir adapters sin tocar el contrato tipado (provider=[spotify], service=[netflix…]) deja el problema. Un segundo adapter para la misma operación es ley 2."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-471-baxy-baxy_tests-08-tests-Baxy.Providers.Windows.Tests-SteamLocalAdapterTests.cs", "batch_id": "code_tests-471-baxy-baxy_tests"},
+        {"card_id": "code_tests-470-baxy-baxy_tests-26-tests-Baxy.Providers.Windows.Tests-DesktopMessagingAdapterTe", "batch_id": "code_tests-470-baxy-baxy_tests"},
+        {"card_id": "carter-v2-hardcode-guard", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"}
+      ]
+    },
+    {
+      "id": "planes",
+      "current_operation": "planner.py: DAG acotado de operaciones del catálogo; memory.* fuera; shortlist antes del LLM",
+      "owning_test": "tests/test_compound_missions.py",
+      "best_piece": {
+        "piece": "Lista de pasos en planner.py + veto apply_compound_effect_conservation_veto. Sin motor de workflows. FunctionGemma router/routing/planner.py no standalone.",
+        "evidence": "Holdout R6 6/6 22/22. test_compound_missions: abrir+ir grounds label=biblioteca. Carter test_gui_do_planner.py es computer-use, no este contrato.",
+        "coste": "Cero orquestador extra. Un plan no declara autoridad ni riesgo: los pone el catálogo.",
+        "mecanismo_de_fracaso": "Un compuesto incompleto declarado éxito. Carter v2: detector de misión ciego tras quitar conectores."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-467-baxy-baxy_src_baxy_mind-04-src-baxy_mind-planner.py", "batch_id": "code_tests-467-baxy-baxy_src_baxy_mind"},
+        {"card_id": "code_tests-474-baxy-baxy_tests-43-tests-test_planner.py", "batch_id": "code_tests-474-baxy-baxy_tests"},
+        {"card_id": "code_tests-407-baxy-21-experiments-mind_router_spike-run_compound_execution_holdout", "batch_id": "code_tests-407-baxy"}
+      ]
+    },
+    {
+      "id": "confirmacion",
+      "current_operation": "MissionEngine + InMemoryConfirmationAuthority; token ligado a fingerprint de la invocación exacta",
+      "owning_test": "tests/Baxy.Kernel.Tests/ConfirmationAuthorityTests.cs",
+      "best_piece": {
+        "piece": "confirmation_required pending; el token no autoriza otro invocationId; ConfirmationMode.Normal vs Bypass medido.",
+        "evidence": "ConfirmationAuthorityTests: recycle/expired/overflow/evicted. Goal 05: confirmation_required no asienta journal. carter-v4-agent-loop: pending_action no ligada a invocación exacta.",
+        "coste": "Cero grant cruzado. Bypass es modo, no un segundo canal.",
+        "mecanismo_de_fracaso": "Reusar el token en otro invocationId. Confirmación de texto libre que no ata parámetros."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-470-baxy-baxy_tests-11-tests-Baxy.Kernel.Tests-ConfirmationAuthorityTests.cs", "batch_id": "code_tests-470-baxy-baxy_tests"},
+        {"card_id": "carter-v4-agent-loop", "batch_id": "code_tests-001-carter"}
+      ]
+    },
+    {
+      "id": "verificacion",
+      "current_operation": "VerifierContractId por operación; observador ≠ ejecutor (Goal 05)",
+      "owning_test": "tests/Baxy.Integration.Tests/Goal05CatalogExecutionMatrixTests.cs",
+      "best_piece": {
+        "piece": "Postlecturas directas: Core Audio GetStatus, HWND/proceso, reapertura nota/CAS, SHA filesystem, clipboard segunda lectura. Cero bus de verificadores. 170 filas: 82 observadas, 88 unverifiable con razón.",
+        "evidence": "Goal05LyingExecutorTests: volumen, notepad PID inventado, note fantasma → failed, no «Listo». mute-sin-readback histórico. FileInvocationJournal: failed+effectMayHaveOccurred asienta; pending no.",
+        "coste": "Cero marco genérico. 88 no verificables no se cuentan pass (Steam sesión, CDP, SendInput, spa.traineddata, SMTC).",
+        "mecanismo_de_fracaso": "Verified=true sin EffectObserved. verify.py tool ok. Recibo simulado actualEffectsExecuted=0."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-470-baxy-baxy_tests-12-tests-Baxy.Kernel.Tests-FileInvocationJournalTests.cs", "batch_id": "code_tests-470-baxy-baxy_tests"},
+        {"card_id": "mute-sin-readback", "batch_id": "docs-001-carter"},
+        {"card_id": "fake-success-eje-de-tesis", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "steam_media",
+      "current_operation": "app.open + input.visible.click (Steam genérico); media.control / media.play.exact / media.status (SMTC); game.* (Steam adapter, sesión no gateada)",
+      "owning_test": "tests/test_compound_missions.py",
+      "proven_gap": {
+        "proven": true,
+        "text": "Goal 05: Steam/SMTC/Netflix unverifiable sin sesión. game.launch y media.play.* siguen bloqueadas-por-dependencia-externa en el censo. Click X sobre Steam sí se observó 2026-08-23."
+      },
+      "best_piece": {
+        "piece": "Misión «Abre Steam y ve a la biblioteca» via app.open + cascada, cero Steam en DesktopClickVisible. Conservar SMTC genérico (WindowsMediaSessionAdapter) quitándole menciones Spotify en 09.5.9/10. No heredar steam.py allowlist.",
+        "evidence": "SteamLocalAdapterTests. carter-v2-hardcode-guard. Holdout R6. SpotifyDesktopAdapter 212 líneas sustituible por SMTC+cascada.",
+        "coste": "925 líneas SteamLocalAdapter candidatas a retiro cuando Goal 10 cubra install/purchase con cascada+filesystem. No se retiran aquí.",
+        "mecanismo_de_fracaso": "steam_open_client hardcodeado marca trivial. Afirmar now-playing sin sesión SMTC."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-471-baxy-baxy_tests-08-tests-Baxy.Providers.Windows.Tests-SteamLocalAdapterTests.cs", "batch_id": "code_tests-471-baxy-baxy_tests"},
+        {"card_id": "carter-v2-compound-smoke", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"},
+        {"card_id": "code_tests-407-baxy-19-experiments-mind_router_spike-run_compound_execution_current", "batch_id": "code_tests-407-baxy"}
+      ]
+    },
+    {
+      "id": "archivos",
+      "current_operation": "filesystem.* (sandbox + SHA + CAS) + backup.* + note.*",
+      "owning_test": "tests/Baxy.Integration.Tests/CoreNotesEndToEndTests.cs",
+      "best_piece": {
+        "piece": "LocalFilesystemProvider + IDs opacos + hash independiente. note.create relee el documento. No heredar escritura v2 en cuarentena.",
+        "evidence": "Goal 05: filesystem.write.text hash independiente; note.create live. Censo: 11 primitivas filesystem cubiertas-y-verificadas dentro del sandbox.",
+        "coste": "Autoridad confinada a filesystem-sandbox. known.* (carpetas del usuario) unverifiable aquí a propósito.",
+        "mecanismo_de_fracaso": "Creer el retorno de Create/Write. Sobrescribir sin hash CAS."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-468-baxy-24-tests-Baxy.Integration.Tests-CoreNotesEndToEndTests.cs", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "fake-success-eje-de-tesis", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "apps",
+      "current_operation": "app.open / app.close / app.installed / window.*",
+      "owning_test": "tests/Baxy.Integration.Tests/AppOpenHandlerTests.cs",
+      "best_piece": {
+        "piece": "app.open por nombre exacto del catálogo Inicio + proceso/ventana/foco. app.close WM_CLOSE + ausencia. window.* con windowId de un uso. Conservar Notepad/Calculator como casos documentados, no como adapters eternos.",
+        "evidence": "Goal 05 live app.open/status/installed/close. AppOpenHandlerTests. Lying executor PID inventado falla. WindowsCalculatorOpenProvider 134 líneas y NotepadIdentityPolicy 175 son deuda Goal 10.10.",
+        "coste": "Cero lista de apps en runtime de Click X. IdentityPolicy de Notepad es el antipatrón a retirar, no a copiar.",
+        "mecanismo_de_fracaso": "Título ajeno / handle cero / nombre parecido (zzqwx debe fallar cerrado)."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-468-baxy-10-tests-Baxy.Integration.Tests-AppOpenHandlerTests.cs", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "gui-universal-amenaza-tesis", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "navegador",
+      "current_operation": "browser.navigate / browser.control / browser.page.read / browser.tabs.list / web.search / streaming.navigate",
+      "owning_test": "tests/Baxy.Integration.Tests/ExternalCapabilityHandlerTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "Goal 05: browser CDP y web.search unverifiable sin sesión/proveedor. Censo: bloqueada-por-dependencia-externa. WebBrowserAdapter 1.418 líneas con rutas fijas youtube/netflix/primevideo/msedge."
+      },
+      "best_piece": {
+        "piece": "Contrato CDP + resourceUri exacta + postlectura. No heredar NamedBrowserAdapter opera.exe. No segundo Playwright/worker (R-015).",
+        "evidence": "ExternalCapabilityHandlerTests. harness stubs devolvían «YouTube - Google Chrome» fijo. Carter test_e2e_agent_turn no es sesión CDP.",
+        "coste": "Falta sesión autenticada; el degradado es honesto, no un pass.",
+        "mecanismo_de_fracaso": "URL fija de netflix.com disfrazada de genérico (streaming.play.named). Dry-run no es live."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-468-baxy-29-tests-Baxy.Integration.Tests-ExternalCapabilityHandlerTests.", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "harness-openai-tools-stubs", "batch_id": "code_tests-001-carter"},
+        {"card_id": "dry-run-no-es-live", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "office",
+      "current_operation": "office.document.create / office.document.read",
+      "owning_test": "tests/Baxy.Integration.Tests/ExternalCapabilityHandlerTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "Censo: adapter Office no autenticado; bloqueada-por-dependencia-externa. Skill office-documents es guía, no autorización."
+      },
+      "best_piece": {
+        "piece": "Contrato documentId + postlectura. No COM ciego ni lista Word/Excel en el prompt.",
+        "evidence": "Skill office-documents cerrada sobre esas dos operaciones. Goal 05 no las observó (cuenta).",
+        "coste": "23 misiones históricas / 120 mensajes en el censo; sin cuenta no hay pass.",
+        "mecanismo_de_fracaso": "Afirmar create por el recibo COM sin reabrir el documento."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-475-baxy-baxy_tests-34-tests-test_skill_registry.py", "batch_id": "code_tests-475-baxy-baxy_tests"},
+        {"card_id": "code_tests-468-baxy-29-tests-Baxy.Integration.Tests-ExternalCapabilityHandlerTests.", "batch_id": "code_tests-468-baxy"}
+      ]
+    },
+    {
+      "id": "comunicacion",
+      "current_operation": "message.send / message.recipient.resolve / email.latest.read / email.latest.reply / calendar.event.create / calendar.event.list",
+      "owning_test": "tests/Baxy.Providers.Windows.Tests/DesktopMessagingAdapterTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "Goal 05: WhatsApp/Discord/correo/calendario unverifiable sin cuenta. DesktopMessagingAdapter canales fijos discord/whatsapp. Halt de «envía un mensaje» en test_compound_missions es la conducta correcta sin sesión."
+      },
+      "best_piece": {
+        "piece": "Contrato recipientId + recibo. Halt si no hay sesión. No heredar canales fijos como único camino; retirar el enum en 09.5.9/10, no apilar otro messenger.",
+        "evidence": "DesktopMessagingAdapterTests. test_compound_missions halt. Skills whatsapp-messaging / discord-messaging / calendar-events no autorizan.",
+        "coste": "999 líneas con canal en el contrato tipado.",
+        "mecanismo_de_fracaso": "Enviar por nombre de app en el prompt. Confirmar el send por el exit code del adapter."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-470-baxy-baxy_tests-26-tests-Baxy.Providers.Windows.Tests-DesktopMessagingAdapterTe", "batch_id": "code_tests-470-baxy-baxy_tests"},
+        {"card_id": "code_tests-467-baxy-baxy_src_baxy_mind-11-src-baxy_mind-skill_registry.py", "batch_id": "code_tests-467-baxy-baxy_src_baxy_mind"}
+      ]
+    },
+    {
+      "id": "sistema",
+      "current_operation": "system.status / system.time / system.identity / system.power / system.settings.* / audio.volume / audio.mute / audio.status",
+      "owning_test": "tests/Baxy.Integration.Tests/AudioVolumeHandlerTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "system.power y recyclebin.empty no restaurables (Goal 05). system.settings.status brightness WMI no corroboró dos lecturas. audio.* sí se observó live."
+      },
+      "best_piece": {
+        "piece": "Lecturas DXGI/PDH + Core Audio con postread. system.power exige confirmación work-loss. No heredar test_power_capability.py de Carter como ejecutor.",
+        "evidence": "Goal 05 live: audio.volume, system.time/identity/status/process.list. mute-sin-readback es el rechazo. ConfirmationModeTests liga system.power.",
+        "coste": "Power no se dispara en gate. Brightness queda unverifiable honesto.",
+        "mecanismo_de_fracaso": "Mute que no relee el endpoint. Shutdown hard-lock del matrix 540 (por eso existe)."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-468-baxy-16-tests-Baxy.Integration.Tests-AudioVolumeHandlerTests.cs", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "mute-sin-readback", "batch_id": "docs-001-carter"},
+        {"card_id": "code_tests-028-carter-30-Carter_v2-tests-test_power_capability.py", "batch_id": "code_tests-028-carter"}
+      ]
+    },
+    {
+      "id": "conectividad",
+      "current_operation": "network.status / network.dns.status / network.ip.list / wifi.* / bluetooth.*",
+      "owning_test": "tests/Baxy.Providers.Windows.Tests/WindowsNetworkStatusProviderTests.cs",
+      "proven_gap": {
+        "proven": true,
+        "text": "wifi connect/disconnect y bluetooth pair/radio no restaurables. network.status live Goal 05 (dos lecturas). SSID/nombres no se exponen."
+      },
+      "best_piece": {
+        "piece": "network.status: conectividad, conteo y tipos; dos lecturas coinciden. WLAN profileId + postread cuando haya hardware. No segundo stack de red.",
+        "evidence": "WindowsNetworkStatusProviderTests (card_id truncado WindowsNetworkStatusProvi). Goal 05 live network.status/dns/ip/port.",
+        "coste": "wifi/bluetooth sensibles; degradado honesto sin perfil.",
+        "mecanismo_de_fracaso": "Fail-closed por verbo extra (ya retirado Goal 04). Afirmar connect sin postread del perfil."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-471-baxy-baxy_tests-16-tests-Baxy.Providers.Windows.Tests-WindowsNetworkStatusProvi", "batch_id": "code_tests-471-baxy-baxy_tests"},
+        {"card_id": "code_tests-468-baxy-17-tests-Baxy.Integration.Tests-BluetoothRadioNarrationTests.cs", "batch_id": "code_tests-468-baxy"}
+      ]
+    },
+    {
+      "id": "mision_compuesta",
+      "current_operation": "app.open + input.visible.click (y cualquier lista de operaciones del catálogo vía planner + MissionEngine por paso)",
+      "owning_test": "tests/test_compound_missions.py",
+      "best_piece": {
+        "piece": "«Abre Steam y ve a la biblioteca» → Open App → Click X. Cada paso se verifica antes del siguiente. Veto de conservación si el compuesto queda a medias. ES/EN/spanglish.",
+        "evidence": "Holdout R6 6/6 misiones, 22/22 pasos, 0 huérfanos. Click Steam 2026-08-23. run_compound_execution_current/holdout cards. Carter v2 smoke incompleto: no se hereda.",
+        "coste": "Sin motor de workflows ni microagentes. Goal 10.16 exige C10≥74; eso no se ejecuta aquí, se inventaría. Este goal inventaría: las implementaciones completas ya medidas.",
+        "mecanismo_de_fracaso": "Éxito del plan por acertar una hoja. Paso huérfano. Detector Carter que marca trivial. Skill que «hace la misión» sin kernel."
+      },
+      "invariants": {
+        "catalogo_unico": true,
+        "kernel_authorization": true,
+        "invocation_bound_confirmation": true,
+        "independent_postcondition": true,
+        "skill_does_not_replace_kernel": true
+      },
+      "citations": [
+        {"card_id": "code_tests-407-baxy-21-experiments-mind_router_spike-run_compound_execution_holdout", "batch_id": "code_tests-407-baxy"},
+        {"card_id": "carter-v2-compound-smoke", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"},
+        {"card_id": "code_tests-467-baxy-baxy_src_baxy_mind-04-src-baxy_mind-planner.py", "batch_id": "code_tests-467-baxy-baxy_src_baxy_mind"}
+      ]
+    }
+  ]
+}

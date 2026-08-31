@@ -20,7 +20,7 @@ from scripts.goal095_0955_synthesis import (
     synthesis_path,
     validate_synthesis,
 )
-from scripts.goal095_0956_synthesis import TOOLS_PROMPT
+from scripts.goal095_0957_synthesis import RUNTIME_PROMPT
 from scripts.goal095_docs_ledger import load_json as load_json_docs
 from scripts.goal095_evidence_campaign import campaign_path as evidence_campaign_path
 from scripts.goal095_evidence_campaign import counts_for
@@ -73,7 +73,7 @@ def test_shipped_0955_ledger_points_at_synthesis_and_09_5_6() -> None:
     assert "d:\\perfil\\" not in raw
 
 
-def test_0954_campaigns_stay_closed_and_evidence_next_is_09_5_7() -> None:
+def test_0954_campaigns_stay_closed_and_evidence_next_is_09_5_8() -> None:
     queue = load_json_docs(REPO / "artifacts" / "goal095" / "queue" / "ledger.json")
     evidence = counts_for(queue)
     assert evidence["pending"] == 0
@@ -83,13 +83,14 @@ def test_0954_campaigns_stay_closed_and_evidence_next_is_09_5_7() -> None:
     assert campaign["counts"]["pending"] == 0
     assert campaign["counts"]["claimed"] == 0
     assert campaign["counts"]["complete"] == 132
-    assert campaign["next_human_prompt"] == TOOLS_PROMPT
+    assert campaign["next_human_prompt"] == RUNTIME_PROMPT
     last = load_json_docs(
         REPO / "artifacts" / "goal095" / "ledger" / "evidence_assets-132-baxy_schema_agent.json"
     )
-    assert last["next_prompt"] == TOOLS_PROMPT
+    assert last["next_prompt"] == RUNTIME_PROMPT
     assert "09.5.5_MODELOS_ROUTER_IDIOMAS.md" not in last["next_prompt"]
     assert "09.5.6_VOZ_AUDIO_PRESENCIA.md" not in last["next_prompt"]
+    assert "09.5.7_TOOLS_SKILLS_MISIONES.md" not in last["next_prompt"]
     docs = load_json_docs(REPO / "artifacts" / "goal095" / "campaigns" / "docs.json")
     code = load_json_docs(REPO / "artifacts" / "goal095" / "campaigns" / "code_tests.json")
     assert docs["counts"]["pending"] == 0 and docs["counts"]["complete"] == 25

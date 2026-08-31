@@ -117,8 +117,8 @@ Campana `evidence_assets` (09.5.4, 2026-08-31):
 - Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
 - Smoke contemporaneo omitido; resultados recuperados
 - Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
-- `next_human_prompt`: `09.5.7_TOOLS_SKILLS_MISIONES.md` (09.5.6 cerrado)
-- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md`
+- `next_human_prompt`: `09.5.8_RUNTIME_UI_RECURSOS.md` (09.5.7 cerrado)
+- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md` ni a `09.5.7_TOOLS_SKILLS_MISIONES.md`
 
 Síntesis 09.5.5 (2026-08-31):
 
@@ -136,7 +136,14 @@ Síntesis 09.5.6 (2026-08-31):
 - FAR 2,50/h (upper 5,26/h) registrado; umbral 0,5 no se toca. Qwen-ASR y Gemma-native-audio no se silencian.
 - Artefacto: `artifacts/goal095/synthesis/09.5.6_voz_audio_presencia.v1.json`
 
+Síntesis 09.5.7 (2026-08-31):
+
+- **25/25 + 477/477 + 132/132** siguen `pending=0` `claimed=0`. No relanzar 09.5.2–09.5.6.
+- 18/18 capacidades (catálogos 67/31/16/158, tools, skills, microagentes, UIA/OCR/visión, adapters, planes, confirmación, verificación, Steam/media, archivos, apps, navegador, Office, comunicación, sistema, conectividad, misión compuesta). Cero trasplantes.
+- 67/31/16/158 son linaje; el catálogo vivo 170/169/158 alcanzables no se encogió. Qwen-VL no se silencia (R-023).
+- Artefacto: `artifacts/goal095/synthesis/09.5.7_tools_skills_misiones.v1.json`
+
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.7_TOOLS_SKILLS_MISIONES.md`.
-No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5 ni 09.5.6.
+Prompt humano distinto: `documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md`.
+No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6 ni 09.5.7.

@@ -1,0 +1,23 @@
+{
+  "schema": "baxy.goal095.0957-ledger.v1",
+  "batch_id": "synthesis-09.5.7",
+  "kind": "synthesis",
+  "status": "complete",
+  "goal": "09.5.7",
+  "closed_utc": "2026-08-31T22:00:00Z",
+  "synthesis_ref": "artifacts/goal095/synthesis/09.5.7_tools_skills_misiones.v1.json",
+  "markdown_ref": "documentacion/herencia/09_5_7_SINTESIS_TOOLS.md",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + Goal 01/05/07 closeout + _09510_requirements.json + live ProductCatalog/tests",
+  "campaigns_remain_closed": {
+    "docs": "25/25 pending=0 claimed=0",
+    "code_tests": "477/477 pending=0 claimed=0",
+    "evidence_assets": "132/132 pending=0 claimed=0"
+  },
+  "live_catalog_changed": false,
+  "live_providers_changed": false,
+  "live_mission_engine_changed": false,
+  "catalog_lineage": "67 → 31 → 16 → 158 historical; live 170/169 public, 158 reachable unchanged",
+  "transplants": [],
+  "fallo_de_ambiente": [],
+  "next_prompt": "documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md"
+}
