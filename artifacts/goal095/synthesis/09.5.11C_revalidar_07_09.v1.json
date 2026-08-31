@@ -2,12 +2,12 @@
   "schema": "baxy.goal095.09511c-revalidate.v1",
   "version": "v1",
   "goal": "09.5.11C",
-  "closed_utc": "2026-08-31T15:13:06Z",
+  "closed_utc": "2026-08-31T17:32:16Z",
   "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
   "next_human_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
   "reproducibility": {
     "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
-    "result": ".\\scripts\\test_source_quality.ps1 -Mode Full -> static+dotnet passed; python-tests failed (exit -1). Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 8 passed, 7 failed (FALLO_DE_AMBIENTE silero_vad/sounddevice). Not passed.",
+    "result": "Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 15 passed in 46.70s. Full not re-run this verification.",
     "passed": false
   },
   "baseline_trace": {
@@ -51,8 +51,8 @@
   "deferred_to_goal10": [],
   "live_src_changed": true,
   "src_change": {
-    "owner": "tests/test_goal09_voice_engines.py",
-    "reason": "Goal 09 tests resolved STT/wake/TTS via shipped resolvers and fail closed on missing assets instead of pytest.skip."
+    "owner": "src/baxy_mind/voice_aec.py",
+    "reason": "AudioDucker.duck/restore catch missing comtypes so optional ducking cannot abort capture (voice.py:2515)."
   },
   "estado_del_arte_added": false,
   "corpus": {
@@ -213,13 +213,12 @@
       "engines": {
         "stt_complete": true,
         "tts_present": true,
-        "tts_neural": false,
+        "tts_neural": true,
         "wake_onnx_present": true,
         "noise_false_activation": false,
         "doubtful_question": true,
         "doubtful_command": false,
-        "holds": false,
-        "environment_failure": "py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds."
+        "holds": true
       },
       "artifacts": {
         "stt_kinds": [
@@ -237,7 +236,7 @@
         "not_dotnet": true,
         "holds": true
       },
-      "holds": false
+      "holds": true
     },
     "campaigns": {
       "artifact": "artifacts/goal095/revalidate/goal09511c_campaigns.json",
@@ -273,16 +272,14 @@
         },
         {
           "name": "test_goal09_voice_engines",
-          "passed": 2,
-          "failed": 5,
+          "passed": 7,
+          "failed": 0,
           "skipped": 0,
           "command": "py -3.12 -m pytest tests/test_goal09_voice_engines.py -q"
         }
       ],
-      "in_scope_failures_or_skips": [
-        "test_goal09_voice_engines"
-      ],
-      "holds": false
+      "in_scope_failures_or_skips": [],
+      "holds": true
     },
     "provenance": {
       "queue_evidence": {
@@ -335,7 +332,7 @@
     },
     "reproducibility": {
       "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
-      "result": ".\\scripts\\test_source_quality.ps1 -Mode Full -> static+dotnet passed; python-tests failed (exit -1). Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 8 passed, 7 failed (FALLO_DE_AMBIENTE silero_vad/sounddevice). Not passed.",
+      "result": "Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 15 passed in 46.70s. Full not re-run this verification.",
       "passed": false
     },
     "not_rerun": [
@@ -367,10 +364,10 @@
     "r6_orphan": 0,
     "first_signal_hold": true,
     "asserted_result": false,
-    "voice_hold": false,
-    "stt_complete": false,
-    "tts_neural": false,
-    "campaigns_hold": false
+    "voice_hold": true,
+    "stt_complete": true,
+    "tts_neural": true,
+    "campaigns_hold": true
   },
   "criteria": [
     {
@@ -637,8 +634,8 @@
       "command": "py -m pytest tests/test_goal09_voice_engines.py -q",
       "historical_result": "WAV inyectado + motores registrados. No micrófono vivo.",
       "scored_kind": "voice",
-      "result": "FALLO_DE_AMBIENTE stt=False tts_neural=False wake_onnx=True detail=py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds.",
-      "status": "FALLO_DE_AMBIENTE"
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
     },
     {
       "id": "09-frontera-proceso-manifiesto",
@@ -685,8 +682,8 @@
       "command": "test_end_of_speech_to_first_signal_is_under_budget",
       "historical_result": "EOU p50 0,21 s, máx 0,31 s. Revalidado con PCM inyectado.",
       "scored_kind": "voice",
-      "result": "FALLO_DE_AMBIENTE stt=False tts_neural=False wake_onnx=True detail=py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds.",
-      "status": "FALLO_DE_AMBIENTE"
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
     },
     {
       "id": "09-interrupcion",
@@ -701,8 +698,8 @@
       "command": "test_neural_speak_starts_and_cancel_stops_mid_utterance",
       "historical_result": "NeuralSpeechOutput.cancel corta. Holdout físico de altavoz, no micrófono.",
       "scored_kind": "voice",
-      "result": "FALLO_DE_AMBIENTE stt=False tts_neural=False wake_onnx=True detail=py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds.",
-      "status": "FALLO_DE_AMBIENTE"
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
     },
     {
       "id": "09-accesibilidad-sin-pantalla",

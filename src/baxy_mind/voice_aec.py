@@ -253,19 +253,20 @@ class AudioDucker:
         return getattr(device, "EndpointVolume", None) if device is not None else None
 
     def duck(self) -> bool:
-        with self._lock, _com_apartment():
+        with self._lock:
             if self._previous is not None:
                 return True
             try:
-                endpoint = self._endpoint()
-                if endpoint is None:
-                    return False
-                self._previous = float(endpoint.GetMasterVolumeLevelScalar())
-                endpoint.SetMasterVolumeLevelScalar(
-                    min(self._previous, self._target),
-                    None,
-                )
-                return True
+                with _com_apartment():
+                    endpoint = self._endpoint()
+                    if endpoint is None:
+                        return False
+                    self._previous = float(endpoint.GetMasterVolumeLevelScalar())
+                    endpoint.SetMasterVolumeLevelScalar(
+                        min(self._previous, self._target),
+                        None,
+                    )
+                    return True
             except Exception as error:  # noqa: BLE001
                 logger.debug("ducking no disponible: %s", type(error).__name__)
                 self._previous = None
@@ -276,17 +277,17 @@ class AudioDucker:
             previous = self._previous
             if previous is None:
                 return True
-            with _com_apartment():
-                try:
+            try:
+                with _com_apartment():
                     endpoint = self._endpoint()
                     if endpoint is None:
                         return False
                     endpoint.SetMasterVolumeLevelScalar(previous, None)
                     self._previous = None
                     return True
-                except Exception as error:  # noqa: BLE001
-                    logger.warning("no se pudo restaurar ducking: %s", type(error).__name__)
-                    return False
+            except Exception as error:  # noqa: BLE001
+                logger.warning("no se pudo restaurar ducking: %s", type(error).__name__)
+                return False
 
 
 __all__ = ["AudioDucker", "EchoCanceller", "LoopbackReference"]

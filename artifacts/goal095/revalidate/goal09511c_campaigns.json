@@ -32,8 +32,8 @@
     },
     {
       "name": "test_goal09_voice_engines",
-      "passed": 2,
-      "failed": 5,
+      "passed": 7,
+      "failed": 0,
       "skipped": 0,
       "command": "py -3.12 -m pytest tests/test_goal09_voice_engines.py -q"
     }
