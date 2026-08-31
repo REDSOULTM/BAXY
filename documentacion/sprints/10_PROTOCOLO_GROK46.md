@@ -2,9 +2,10 @@
 
 ## Lanzamiento
 
-Sesión nueva y limpia, modelo **Grok 4.6**, esfuerzo **High**, modo `/goal`. Pega
-un solo fichero `10.x` entero. Grok Build ya carga `AGENTS.md`; el prompt no lo
-duplica, pero sí ordena leer los documentos concretos que gobiernan el tramo.
+Sesión nueva y limpia, modelo **Grok 4.6**, esfuerzo **High**, modo `/goal`. Cada
+fichero `10.x` se pega entero **una sola vez**. Grok Build ya carga `AGENTS.md`;
+el prompt no lo duplica, pero sí ordena leer los documentos concretos que gobiernan
+el tramo.
 
 El objetivo de `/goal` es el objetivo único escrito en el fichero, no «avanza»,
 «continúa» ni «cierra rápido». El intento anterior perdió frontera cuando el goal
@@ -22,10 +23,13 @@ del subsistema y el handoff del tramo anterior. Después:
 4. mide antes de editar;
 5. corrige la causa mínima;
 6. ejecuta test dueño dos veces, medición del tramo y validación proporcional;
-7. escribe evidencia y handoff, revisa el diff, commitea y publica.
+7. si un criterio falla, corrige su owner mínimo y repite la validación dentro de
+   esta misma meta hasta dejarlo verde;
+8. escribe evidencia y handoff, revisa el diff, commitea y publica.
 
 No pauses para pedir aprobación de un plan. Pregunta sólo ante daño irreversible a
-datos personales o a otro proyecto. No trabajes en el siguiente `10.x`.
+datos personales o a otro proyecto. No trabajes en el siguiente `10.x`, no vuelvas
+a un goal anterior y no pidas relanzar este fichero.
 
 ## Las cinco leyes
 
@@ -42,10 +46,11 @@ modelo local sin salida de contenido del usuario.
 
 ## Presupuesto de contexto
 
-La sesión tiene un máximo operativo de **500k tokens**, aunque el modelo admita más.
-Reserva aproximadamente 350k para diagnóstico/implementación y 150k para
-verificación/cierre. Consulta `/context` al arrancar, después de cada campaña y
-antes de Full.
+Cada ventana tiene un máximo operativo de **500k tokens**, aunque el modelo admita
+más. Reserva aproximadamente 350k para diagnóstico/implementación y 150k para
+verificación/cierre. Si la meta necesita más, persiste estado, compacta y continúa
+en la misma tarea. Consulta `/context` al arrancar, después de cada campaña y antes
+de Full.
 
 - Abre sólo los archivos dueño y la partición asignada.
 - Nunca vuelques JSONL ni salidas completas al chat: guarda artefactos y trae
@@ -84,13 +89,13 @@ Si una petición in-scope no puede ejecutarse porque el PC no está preparado:
 1. no la omitas, no la conviertas a conversación y no uses fixture para fingir el
    efecto físico;
 2. no continúes una campaña parcial que vaya a ocultar el bloqueo;
-3. termina la sesión como **`FALLO_DE_AMBIENTE`**, por lo que el goal no está
-   cumplido y el siguiente no puede empezar;
+3. pausa la meta activa como **`FALLO_DE_AMBIENTE`**; no la marques cumplida, no
+   emitas cierre final y no abras el siguiente goal;
 4. escribe `artifacts/goal10/environment/<goal>.md` con requisito ausente, filas
    afectadas, por qué BAXY no puede resolverlo solo, preparación manual exacta,
    comprobación de que quedó listo y comando para reanudar;
-5. después de que el dueño prepare el PC, repite **el mismo fichero 10.x** en una
-   sesión limpia.
+5. después de que el dueño prepare el PC, comprueba readiness y reanuda **la misma
+   meta desde su cursor**, sin volver a pegar el fichero.
 
 «Pon la serie X» sin servicio, cuenta o contenido disponible es un fallo de
 ambiente de esa sesión, no una limitación aceptada del producto. Sólo idioma fuera
@@ -101,12 +106,14 @@ quedar fuera de alcance; el manifiesto lo justifica fila por fila.
 
 No soak, no espera de 24 h, no enseñar el examen al runtime, no regex por fallo, no
 overlay parcial, no remake con tests rojos, no convertir ambiente/idioma en pass,
-no avanzar después de `FALLO_DE_AMBIENTE`, no saltarse el ledger 09.5 y no usar el
-código del intento fallido como autoridad.
+no avanzar después de `FALLO_DE_AMBIENTE` hasta que readiness permita reanudar, no
+saltarse el ledger 09.5 y no usar el código del intento fallido como autoridad.
 
 ## Forma del cierre
 
-El goal sólo termina `cumplido` o `inalcanzable demostrado`. Entrega: criterios
-marcados, comandos y resultados exactos, artefactos/hashes, defectos corregidos,
-limitaciones reales, diff sin restos, commit publicado y el nombre exacto del
-siguiente prompt. Un resumen optimista no sustituye ninguno de esos puntos.
+El goal sólo termina `cumplido` o `inalcanzable demostrado`. Un fallo corregible o
+una regresión no son una tercera salida: se reparan y revalidan dentro de la meta.
+Entrega: criterios marcados, comandos y resultados exactos, artefactos/hashes,
+defectos corregidos, limitaciones reales, diff sin restos, commit publicado y el
+nombre exacto del siguiente prompt distinto. Un resumen optimista no sustituye
+ninguno de esos puntos.

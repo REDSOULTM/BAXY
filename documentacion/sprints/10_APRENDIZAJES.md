@@ -62,7 +62,7 @@ fuente histórica nueva se concilia allí: 10.1 congela `N10/M10` y 11.1 congela
 - Una fila fuera de español/inglés/spanglish puede quedar fuera de alcance por
   idioma con procedencia. Una fila in-scope jamás se omite por ambiente: si falta
   una app, cuenta, serie, contenido, permiso o dispositivo, el goal falla y dice
-  exactamente cómo preparar el PC para repetirlo.
+exactamente cómo preparar el PC y reanudar la misma meta desde su cursor.
 - Probar el dueño dos veces antes de una remake completa. Una remake no sustituye
   una prueba focal.
 - Cero reglas de runtime dependientes de literales del corpus. El holdout decide

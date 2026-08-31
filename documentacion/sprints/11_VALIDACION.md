@@ -1,7 +1,8 @@
 # Goal 11 — Validación, deuda y cierre
 
-> **Mapa: no se lanza entero.** Se ejecuta en `11.1`–`11.16`, una sesión nueva
-> por fichero, con Grok 4.6 High y techo operativo de 500k tokens.
+> **Mapa: no se lanza entero.** Se ejecuta en `11.1`–`11.16`; cada fichero se
+> lanza una sola vez con Grok 4.6 High. El techo de 500k tokens es por ventana:
+> una meta persiste, compacta y continúa sin pedir otro lanzamiento.
 
 ## Continuidad lógica
 
@@ -39,8 +40,8 @@ la cola quedó vacía y retira duplicación/código muerto.
 ## Ambiente
 
 Una misión in-scope que no puede ejecutarse por falta de app, cuenta, contenido,
-permiso o dispositivo hace fallar su sesión. Se publica cómo preparar el PC y se
-repite el mismo goal. No se cierra el producto convirtiendo ambiente en pass. Lo
+permiso o dispositivo pausa su meta. Se publica cómo preparar el PC y se reanuda
+la misma tarea desde el cursor. No se cierra el producto convirtiendo ambiente en pass. Lo
 expresamente diferido por `00_ALCANCE_DESARROLLO_VS_PRODUCTO.md` se informa como
 alcance futuro, nunca como capacidad certificada.
 
@@ -54,5 +55,7 @@ alcance futuro, nunca como capacidad certificada.
 - [ ] Identidad y `03_COSTURAS.md` completas; cero código muerto, duplicaciones o
       banderas que conserven versiones sustituidas.
 - [ ] Full verde, documento de cierre y origin al día.
+- [ ] Cada fichero 11.x se lanzó una vez; ninguna regresión obligó a volver a un
+      goal anterior ni ningún bloqueo pidió pegar de nuevo un prompt.
 
 Protocolo: [`11_PROTOCOLO_GROK46.md`](11_PROTOCOLO_GROK46.md).

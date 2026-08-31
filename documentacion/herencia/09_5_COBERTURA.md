@@ -1,14 +1,14 @@
 # Goal 9.5.1 — Cobertura y cola de auditoria
 
-> **Cola schema v1 obsoleta desde 2026-08-30.** Sus conteos se conservan debajo
-> como evidencia de la particion fallida, pero no autorizan reclamar otro lote.
-> Produjo 634 lanzamientos tecnicos —477 `code_tests`, 333 de ellos de
-> `Probando Gemma 4`— y traslado el bucle al dueño. El siguiente paso valido es
-> relanzar una sola vez `09.5.1_MANIFIESTO_Y_COLAS.md`: reconstruira campañas
-> reanudables, conservara por hash los terminales cerrados y devolvera cualquier
-> claim incompleta a `pending`.
+> **Particion schema v1 migrable desde 2026-08-30.** Sus conteos se conservan
+> debajo como evidencia de la particion que traslado 634 lanzamientos tecnicos al
+> dueño —477 `code_tests`, 333 de ellos de `Probando Gemma 4`—. **09.5.1 ya esta
+> cerrado y no se repite.** Los consumidores convierten estos lotes en checkpoints
+> internos de una campaña: conservan terminales por hash, reanudan claims vivas y
+> devuelven a `pending` sólo leases vencidos.
 >
-> Hasta que esa reconstruccion cierre, **no reclamar `code_tests-002`**.
+> La sesion ya activa de 09.5.3 debe reanudar `code_tests-002` y continuar sin
+> finalizar hasta vaciar `code_tests`.
 
 Generado por `scripts/build_goal095_queues.py`. Estimador: `bytes_div_2`.
 Tokenizer compatible para el arbol: ninguno (no se vuelca contenido).
@@ -97,6 +97,6 @@ Proximo lote code_tests pendiente:
 
 ## Siguiente
 
-Reconstruir la cola obsoleta ejecutando una vez
-`documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md`. No continuar con
-`code_tests-002` ni con otro lote de schema v1.
+Reanudar la meta activa de `documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md`
+en `code_tests-002` y dejarla consumir todos los checkpoints restantes. No repetir
+09.5.1 ni descartar `docs-001`/`code_tests-001`.

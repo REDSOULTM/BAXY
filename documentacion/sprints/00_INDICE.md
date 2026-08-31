@@ -40,7 +40,7 @@ fijas), texto visible auditado a mano. Evidencia en
 `artifacts/development/goal04_honesty*.json`.
 
 **Cómo se lanza uno.** Sesión nueva y limpia, Grok 4.6, `/effort high`, y el goal
-pegado entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
+pegado entero **una sola vez** con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
 que una revisión de evidencia independiente reproduce el resultado**; si no puede
 reproducirlo, el goal sigue abierto con los huecos nombrados. Eso es exactamente el
 invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una meta por
@@ -83,10 +83,11 @@ exactamente a eso — los caminos de error, las fragilidades, la regresión comp
 sobre el árbol final. Es donde se cobra la deuda que los diez fueron dejando.
 
 **Ambiente no es aprobación.** Desde 09.5.0, una fuente histórica requerida que
-falte o siga copiándose cierra `FALLO_DE_AMBIENTE`. Desde 10.1, una misión in-scope que necesita una
-app, cuenta, serie, contenido, permiso o dispositivo ausente cierra su sesión como
-`FALLO_DE_AMBIENTE`. El prompt deja al dueño la preparación exacta y se repite el
-mismo subgoal; no se omite la fila ni se avanza.
+falte o siga copiándose pausa la meta en `FALLO_DE_AMBIENTE`. Desde 10.1, una
+misión in-scope que necesita una app, cuenta, serie, contenido, permiso o dispositivo
+ausente hace lo mismo. El prompt deja al dueño la preparación y readiness exactos;
+después la misma tarea reanuda desde su cursor, sin volver a pegar el subgoal. No se
+omite la fila ni se avanza.
 
 ## Antes de nada: la identidad
 
@@ -216,7 +217,7 @@ Las versiones anteriores llevaban además un bloque de tendencias por modelo. Pa
 sesión local del intento fallido —927 mensajes de chat, 5.065 eventos, dos rondas
 de `/goal` y cierre incompleto— y de las capacidades declaradas por el harness
 Grok Build 1.0.13. Por eso fija objetivo único, ownership, presupuesto 350k+150k,
-estado durable antes de compactar y una sola partición por sesión. No se copia como
+estado durable antes de compactar y una sola partición por ventana de trabajo. No se copia como
 andamiaje a los goals antiguos que ya cerraron.
 
 Cada prompt lleva además **lo que ya se midió y se rechazó**, para que ningún

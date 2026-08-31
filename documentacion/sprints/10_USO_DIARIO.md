@@ -1,9 +1,10 @@
 # Goal 10 — Uso diario y aceptación del producto
 
 > **Mapa: no se lanza entero.** El Goal 10 se ejecuta en orden mediante
-> `10.0`–`10.18`. Cada fichero es un goal autónomo para **Grok 4.6 High** y cabe
-> en una ventana operativa máxima de **500k tokens**. No se juntan dos sesiones
-> aunque una termine pronto.
+> `10.0`–`10.18`. Cada fichero es un goal autónomo para **Grok 4.6 High**, se
+> lanza una sola vez y usa ventanas operativas máximas de **500k tokens**. Si
+> necesita más, persiste, compacta y continúa en la misma meta; nunca pide repetir
+> el fichero.
 
 ## Por qué existe
 
@@ -78,8 +79,10 @@ congelada del 10.1 es la autoridad de pertenencia.
 - [ ] `M10/M10` misiones (mínimo 808 + delta 09.5) atraviesan la tubería; fixture
       y simulación se publican como tales y nunca cuentan como efecto real.
 - [ ] Cero petición in-scope omitida por ambiente. Si falta una app, cuenta,
-      contenido, permiso o dispositivo, su sesión termina en `FALLO_DE_AMBIENTE`,
-      publica cómo preparar el PC y se repite antes de avanzar.
+      contenido, permiso o dispositivo, la meta se pausa en `FALLO_DE_AMBIENTE`,
+      publica cómo preparar el PC y reanuda desde el cursor antes de avanzar.
+- [ ] Cada fichero 10.x se lanzó una vez; fallos corregibles y regresiones se
+      resolvieron dentro de su meta, sin volver a un goal anterior.
 - [ ] Cada decisión de `00_IDENTIDAD.md` tiene evidencia viva en el mismo árbol.
 - [ ] Cada defecto/capacidad consulta primero la decisión 09.5; si existe una pieza
       heredable se reutiliza o adapta antes de construir.

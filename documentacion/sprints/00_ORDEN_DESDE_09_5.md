@@ -1,8 +1,10 @@
 # Orden para ejecutar BAXY desde el Goal 09.5
 
 Este archivo es el lanzador. Abre **un solo enlace**, copia el MD entero y pégalo
-en una sesión nueva de Grok 4.6 High con `/goal`. No pegues el mapa ni el protocolo
-por separado: cada prompt ordena leerlos desde el repositorio.
+una sola vez en una sesión nueva de Grok 4.6 High con `/goal`. No pegues el mapa
+ni el protocolo por separado: cada prompt ordena leerlos desde el repositorio. Un
+goal no se relanza: corrige y revalida dentro de la misma meta; si falta ambiente,
+se reanuda esa tarea desde su cursor.
 
 No avances si el prompt no cerró cumplido. `FALLO_DE_AMBIENTE` significa preparar
 el PC y reanudar la meta desde su cursor. Los prompts de campaña recorren sus
@@ -13,15 +15,15 @@ el enlace.
 
 1. [09.5.0 — Fuentes y ambiente](09.5.0_FUENTES_Y_AMBIENTE.md)
 2. [09.5.1 — Manifiesto y colas](09.5.1_MANIFIESTO_Y_COLAS.md)
-3. [09.5.2 — Leer documentación: repetir por cada lote docs](09.5.2_LEER_DOCUMENTACION_LOTE.md)
+3. [09.5.2 — Leer toda la campaña documental: lanzar una vez](09.5.2_LEER_DOCUMENTACION_LOTE.md)
 4. [09.5.3 — Auditar toda la campaña de código y pruebas: lanzar una vez](09.5.3_AUDITAR_CODIGO_LOTE.md)
-5. [09.5.4 — Auditar evidencia y assets: repetir por cada lote evidence_assets](09.5.4_AUDITAR_EVIDENCIA_LOTE.md)
+5. [09.5.4 — Auditar toda la campaña de evidencia y assets: lanzar una vez](09.5.4_AUDITAR_EVIDENCIA_LOTE.md)
 6. [09.5.5 — Modelos, router e idiomas](09.5.5_MODELOS_ROUTER_IDIOMAS.md)
 7. [09.5.6 — Voz, audio y presencia](09.5.6_VOZ_AUDIO_PRESENCIA.md)
 8. [09.5.7 — Tools, skills y misiones](09.5.7_TOOLS_SKILLS_MISIONES.md)
 9. [09.5.8 — Runtime, UI y recursos](09.5.8_RUNTIME_UI_RECURSOS.md)
 10. [09.5.9 — Decidir la herencia](09.5.9_DECIDIR_HERENCIA.md)
-11. [09.5.10 — Trasplantar: repetir por cada lote transplant](09.5.10_TRASPLANTAR_LOTE.md)
+11. [09.5.10 — Ejecutar toda la campaña de trasplantes: lanzar una vez](09.5.10_TRASPLANTAR_LOTE.md)
 12. [09.5.11A — Revalidar Goals 01–03C](09.5.11A_REVALIDAR_01_03C.md)
 13. [09.5.11B — Revalidar Goals 04–06](09.5.11B_REVALIDAR_04_06.md)
 14. [09.5.11C — Revalidar Goals 07–09](09.5.11C_REVALIDAR_07_09.md)
@@ -70,6 +72,10 @@ si la evidencia nueva obliga a añadir, retirar o dividir algún prompt 10.x/11.
 14. [11.14 — Regresión Goals 07–10](11.14_REGRESION_07_10.md)
 15. [11.15 — Higiene e identidad](11.15_HIGIENE_IDENTIDAD.md)
 16. [11.16 — Full y cierre final](11.16_FULL_Y_CIERRE.md)
+
+Cuando 11.16 cierra todos sus criterios, **BAXY está listo para uso diario**. No
+queda un goal oculto, una repetición del 11 ni una validación manual posterior para
+declarar terminado el producto dentro del alcance vigente.
 
 ## Mapas y protocolos de referencia — no se pegan como goal
 
