@@ -1,0 +1,28 @@
+{
+  "schema": "baxy.goal095.campaign.v1",
+  "campaign_id": "transplant",
+  "kind": "transplant",
+  "required_human_launches": 1,
+  "owner_prompt": "documentacion/sprints/09.5.10_TRASPLANTAR_LOTE.md",
+  "migrated_from": "artifacts/goal095/synthesis/09.5.9_decidir_herencia.v1.json",
+  "cursor_batch_id": null,
+  "cursor_status": "complete",
+  "counts": {
+    "pending": 0,
+    "claimed": 0,
+    "complete": 0,
+    "total": 0
+  },
+  "lots": [],
+  "empty_reason": "09.5.5–09.5.8 no hallaron pieza histórica que gane al vivo en conducta, pruebas, recursos y arquitectura a la vez. Cero reusar_exacto, cero adaptar, cero medir_antes de herencia: unload-on-idle y arranque frío son mediciones de producto del Goal 10.2 sobre el keep-warm/process_lifecycle vigentes, no un vram_manager/Ollama/ui_field que transplantar. Los GGUF/datasets/checkpoints dispersos de Probando Gemma 4 no se nombran para reutilizar (hashes not invented). Cada lote de herencia habría tenido que retirar el mecanismo vivo en el mismo cambio; no hay tal lote. Rechazos protegidos (FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído) no reentran.",
+  "next_human_prompt": "documentacion/sprints/09.5.10_TRASPLANTAR_LOTE.md",
+  "updated_utc": "2026-08-31T08:06:43Z",
+  "protected_rejects_blocked": [
+    "functiongemma-270m-ft",
+    "qwen-vl",
+    "ollama-runtime",
+    "auto_approve",
+    "soak-24h-as-requirement",
+    "gemma-native-audio"
+  ]
+}

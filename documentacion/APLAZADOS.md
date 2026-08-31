@@ -170,3 +170,9 @@ goal.
 - **El turno completo por modelo sigue en p50 ~2,5 s** — la primera señal ya no espera ese reloj; la respuesta terminada sí. Recortar esas 5–8 llamadas sin otra medición de exactitud reabre el 03B. *Goal 08.*
 - **Acción simple completa no midió mute/volumen** — son reversibles, pero pelean el audio de esta máquina. El reloj publicado es decide→core en lecturas (batería, red, hora, disco). *Goal 08.*
 - **Un clarify determinista en CPU llegó a 2,973 s de primera señal** — `act-es-01` no emite acuse porque el heurístico lo predice rápido y luego redacta. Quedó bajo 3 s. Un predictor aprendido no se escribió. *Goal 08.*
+- **FunctionGemma con catálogo cocido en pesos no reentra** — no conversa (0/3, 0/4), abstención primer split 0/3, inventa nombres. Guard 09.5.9 `functiongemma-270m-ft`. *Goal 09.5.9.*
+- **Qwen-VL (R-023) no reentra** — inventó juegos; visual-diff = falso éxito. Guard `qwen-vl`. *Goal 09.5.9.*
+- **Ollama / servicio Windows no reentra** — sidecar llama-server (ADR-0005) es el runtime. Guard `ollama-runtime`. *Goal 09.5.9.*
+- **AUTO_APPROVE no reentra** — confirmación ligada a `invocationId`. Guard `auto_approve`. *Goal 09.5.9.*
+- **Soak 24 h no es requisito** — 10.2 mide idle 15 min. Guard `soak-24h-as-requirement`. *Goal 09.5.9.*
+- **Gemma-native-audio no es el oído** — llama-server no rutea `input_audio`; Parakeet se conserva. Guard `gemma-native-audio`. *Goal 09.5.9.*

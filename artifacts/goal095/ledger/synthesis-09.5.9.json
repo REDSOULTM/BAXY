@@ -1,0 +1,36 @@
+{
+  "schema": "baxy.goal095.0959-ledger.v1",
+  "batch_id": "synthesis-09.5.9",
+  "kind": "synthesis",
+  "status": "complete",
+  "goal": "09.5.9",
+  "closed_utc": "2026-08-31T20:00:00Z",
+  "synthesis_ref": "artifacts/goal095/synthesis/09.5.9_decidir_herencia.v1.json",
+  "assignment_ref": "artifacts/goal095/synthesis/09.5.9_card_assignment.v1.json",
+  "campaign_ref": "artifacts/goal095/campaigns/transplant.json",
+  "markdown_ref": "documentacion/herencia/09_5_9_DECIDIR_HERENCIA.md",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + synthesis 09.5.5–09.5.8 JSON; no biblioteca bodies; no source-tree walk",
+  "campaigns_remain_closed": {
+    "docs": "25/25 pending=0 claimed=0",
+    "code_tests": "477/477 pending=0 claimed=0",
+    "evidence_assets": "132/132 pending=0 claimed=0"
+  },
+  "transplant": {
+    "pending": 0,
+    "claimed": 0,
+    "complete": 0,
+    "total": 0
+  },
+  "protected_rejects": [
+    "functiongemma-270m-ft",
+    "qwen-vl",
+    "ollama-runtime",
+    "auto_approve",
+    "soak-24h-as-requirement",
+    "gemma-native-audio"
+  ],
+  "live_src_changed": false,
+  "estado_del_arte_added": false,
+  "fallo_de_ambiente": [],
+  "next_prompt": "documentacion/sprints/09.5.10_TRASPLANTAR_LOTE.md"
+}

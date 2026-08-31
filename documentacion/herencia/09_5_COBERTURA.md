@@ -117,7 +117,7 @@ Campana `evidence_assets` (09.5.4, 2026-08-31):
 - Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
 - Smoke contemporaneo omitido; resultados recuperados
 - Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
-- `next_human_prompt`: `09.5.9_DECIDIR_HERENCIA.md` (09.5.8 cerrado)
+- `next_human_prompt`: `09.5.10_TRASPLANTAR_LOTE.md` (09.5.9 cerrado; 09.5.10 se ejecuta bajo la misma meta)
 - Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md` ni a `09.5.7_TOOLS_SKILLS_MISIONES.md` ni a `09.5.8_RUNTIME_UI_RECURSOS.md`
 
 Síntesis 09.5.5 (2026-08-31):
@@ -150,7 +150,15 @@ Síntesis 09.5.8 (2026-08-31):
 - Recursos/latencia conservan hardware+versión+escenario+denominador; sobrecarga propia ≠ inferencia. Soak 24 h no es requisito. Qwen-VL no se silencia (R-023).
 - Artefacto: `artifacts/goal095/synthesis/09.5.8_runtime_ui_recursos.v1.json`
 
+Síntesis 09.5.9 (2026-08-31):
+
+- **25/25 + 477/477 + 132/132** siguen `pending=0` `claimed=0`. No relanzar 09.5.2–09.5.8.
+- 100/100 responsabilidades 09.5.5–09.5.8 y 9.268/9.268 tarjetas 09.5.2–09.5.4 asignadas una vez. Cinco terminales solamente.
+- Campaña `transplant` vacía: `pending=0` `claimed=0` `total=0`. Cero `reusar_exacto`/`adaptar`/`medir_antes`.
+- Rechazos protegidos: FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído.
+- Artefacto: `artifacts/goal095/synthesis/09.5.9_decidir_herencia.v1.json`
+
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md`.
-No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6, 09.5.7 ni 09.5.8.
+Prompt humano distinto: `documentacion/sprints/09.5.10_TRASPLANTAR_LOTE.md` (esta meta lo ejecuta una vez).
+No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6, 09.5.7, 09.5.8 ni 09.5.9.
