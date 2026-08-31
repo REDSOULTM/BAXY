@@ -1,0 +1,3 @@
+batch=code_tests-058-probando_gemma4-pg4_data
+hash_ok=1 drift=0 miss=0
+OK gemma4_agent/data/traces.jsonl.1

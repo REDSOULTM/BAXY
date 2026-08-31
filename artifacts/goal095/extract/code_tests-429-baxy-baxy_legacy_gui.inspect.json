@@ -1,0 +1,369 @@
+{
+  "batch_id": "code_tests-429-baxy-baxy_legacy_gui",
+  "source_id": "baxy",
+  "source_root": "Programacion/BAXY",
+  "file_count": 28,
+  "hash_ok": 28,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "baxy_legacy_gui",
+  "subsystems": [
+    "baxy_legacy_gui"
+  ],
+  "files": [
+    {
+      "path": "legacy/gui/ui_field/dist/assets/index-K92QG2Qw.js",
+      "queued_sha256": "61f05283a9dea55b1e9397db92a81696d6ef38c08804f72a2ae7a3d0f3f11604",
+      "size_queued": 357576,
+      "exists": true,
+      "disk_sha256": "61f05283a9dea55b1e9397db92a81696d6ef38c08804f72a2ae7a3d0f3f11604",
+      "disk_size": 357576,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/dist/assets/index-K92QG2Qw.js' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/dist/index.html",
+      "queued_sha256": "9dbdb843e13ad791b438d30bbc489d4f1a905fbab9bb23d0500ce69f8990b363",
+      "size_queued": 708,
+      "exists": true,
+      "disk_sha256": "9dbdb843e13ad791b438d30bbc489d4f1a905fbab9bb23d0500ce69f8990b363",
+      "disk_size": 708,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/dist/index.html' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/eslint.config.js",
+      "queued_sha256": "cf80a7510234dcd5ae594b30b44682b8b45ba13c0fcb5bf8928bea143802aa1c",
+      "size_queued": 591,
+      "exists": true,
+      "disk_sha256": "cf80a7510234dcd5ae594b30b44682b8b45ba13c0fcb5bf8928bea143802aa1c",
+      "disk_size": 591,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/eslint.config.js' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/index.html",
+      "queued_sha256": "6c8adad43b81d8f99f1862447431a591a424472b7b5248ae4fcc308cb96c9011",
+      "size_queued": 608,
+      "exists": true,
+      "disk_sha256": "6c8adad43b81d8f99f1862447431a591a424472b7b5248ae4fcc308cb96c9011",
+      "disk_size": 608,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/index.html' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/package.json",
+      "queued_sha256": "088dfc4034614a7eb6007ec5594e881f939febe5ddf33b34117b4203e66b92b0",
+      "size_queued": 781,
+      "exists": true,
+      "disk_sha256": "088dfc4034614a7eb6007ec5594e881f939febe5ddf33b34117b4203e66b92b0",
+      "disk_size": 781,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/package.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 31,
+        "root_type": "dict",
+        "keys": [
+          "dependencies",
+          "devDependencies",
+          "name",
+          "private",
+          "scripts",
+          "type",
+          "version"
+        ],
+        "n_keys": 7,
+        "highlights": {},
+        "scalars": {
+          "name": "ui_field",
+          "private": true,
+          "version": "0.0.0",
+          "type": "module"
+        },
+        "obj_scripts_keys": [
+          "build",
+          "dev",
+          "lint",
+          "preview",
+          "test"
+        ],
+        "obj_dependencies_keys": [
+          "react",
+          "react-dom"
+        ],
+        "obj_devDependencies_keys": [
+          "@eslint/js",
+          "@types/node",
+          "@types/react",
+          "@types/react-dom",
+          "@vitejs/plugin-react",
+          "eslint",
+          "eslint-plugin-react-hooks",
+          "eslint-plugin-react-refresh",
+          "globals",
+          "typescript",
+          "typescript-eslint",
+          "vite"
+        ]
+      }
+    },
+    {
+      "path": "legacy/gui/ui_field/pnpm-lock.yaml",
+      "queued_sha256": "84066248e0637de9f5c1093aabc3953df5a3923bd63035486e054c0dfa33bd90",
+      "size_queued": 57341,
+      "exists": true,
+      "disk_sha256": "84066248e0637de9f5c1093aabc3953df5a3923bd63035486e054c0dfa33bd90",
+      "disk_size": 57341,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/pnpm-lock.yaml' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/App.tsx",
+      "queued_sha256": "c3606fcaece6db4cbdb424eeda97bd85eeaf97f8013c0897ae5d53e36b3832c8",
+      "size_queued": 33142,
+      "exists": true,
+      "disk_sha256": "c3606fcaece6db4cbdb424eeda97bd85eeaf97f8013c0897ae5d53e36b3832c8",
+      "disk_size": 33142,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/App.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/ActivityPanel.tsx",
+      "queued_sha256": "7109b6ab9dfe4b2a4aa949ece1c6a848ef8bd986c967e0812f570c5924bab245",
+      "size_queued": 5028,
+      "exists": true,
+      "disk_sha256": "7109b6ab9dfe4b2a4aa949ece1c6a848ef8bd986c967e0812f570c5924bab245",
+      "disk_size": 5028,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/ActivityPanel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/BottomBar.tsx",
+      "queued_sha256": "dcbd172e31116e73caadafe3403f96a07e88ef3ebe1bba116a849f7abae0eadf",
+      "size_queued": 723,
+      "exists": true,
+      "disk_sha256": "dcbd172e31116e73caadafe3403f96a07e88ef3ebe1bba116a849f7abae0eadf",
+      "disk_size": 723,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/BottomBar.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/ConfirmationModal.tsx",
+      "queued_sha256": "544ac923c6774fedc408e4966e85e181a09ab7ecc9489b1aa4d2409e35fc799c",
+      "size_queued": 16184,
+      "exists": true,
+      "disk_sha256": "544ac923c6774fedc408e4966e85e181a09ab7ecc9489b1aa4d2409e35fc799c",
+      "disk_size": 16184,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/ConfirmationModal.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/DocsPanel.tsx",
+      "queued_sha256": "4ca8ea7f7d79788915276839dbf0e29659afd32ea9a65f1fbceb3031bc92e21d",
+      "size_queued": 6592,
+      "exists": true,
+      "disk_sha256": "4ca8ea7f7d79788915276839dbf0e29659afd32ea9a65f1fbceb3031bc92e21d",
+      "disk_size": 6592,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/DocsPanel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/FieldCenter.tsx",
+      "queued_sha256": "33ba6a46e26dc09d0474f7f4e0d55b507567d3921f4dc02f58c6fe7accb05c7d",
+      "size_queued": 16532,
+      "exists": true,
+      "disk_sha256": "33ba6a46e26dc09d0474f7f4e0d55b507567d3921f4dc02f58c6fe7accb05c7d",
+      "disk_size": 16532,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/FieldCenter.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/Icon.tsx",
+      "queued_sha256": "0c7bee7bdc6fe5b7e1fae68eb1edb15afe6f35ce87c7c91cc117b642358cf959",
+      "size_queued": 7290,
+      "exists": true,
+      "disk_sha256": "0c7bee7bdc6fe5b7e1fae68eb1edb15afe6f35ce87c7c91cc117b642358cf959",
+      "disk_size": 7290,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/Icon.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/LogoMark.tsx",
+      "queued_sha256": "2a69970972c6a0e0c23ec9a5610c7f04885794aa914d1a6f65648f0b88c31cd7",
+      "size_queued": 1600,
+      "exists": true,
+      "disk_sha256": "2a69970972c6a0e0c23ec9a5610c7f04885794aa914d1a6f65648f0b88c31cd7",
+      "disk_size": 1600,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/LogoMark.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/MemoryPanel.tsx",
+      "queued_sha256": "2b5f15d707313363e9cd4ae6d47cb8c1b027cd2c9a6076bef45e14802841bf21",
+      "size_queued": 5892,
+      "exists": true,
+      "disk_sha256": "2b5f15d707313363e9cd4ae6d47cb8c1b027cd2c9a6076bef45e14802841bf21",
+      "disk_size": 5892,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/MemoryPanel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/NeuralGraph.tsx",
+      "queued_sha256": "6f81e480ac727ab1b0456016c4b9cb72be285557771ea8614e0146ec08fd086a",
+      "size_queued": 30180,
+      "exists": true,
+      "disk_sha256": "6f81e480ac727ab1b0456016c4b9cb72be285557771ea8614e0146ec08fd086a",
+      "disk_size": 30180,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/NeuralGraph.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/Panel.tsx",
+      "queued_sha256": "2222fccd7f10268fab7c999aac5a5bd7b87175804cc788a955e0366c193cc957",
+      "size_queued": 1130,
+      "exists": true,
+      "disk_sha256": "2222fccd7f10268fab7c999aac5a5bd7b87175804cc788a955e0366c193cc957",
+      "disk_size": 1130,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/Panel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/ParticleCluster.tsx",
+      "queued_sha256": "4085740ffd2eabbff279703ca7a5088875a2582bb4b59ea310c1d4b3f3366e73",
+      "size_queued": 2321,
+      "exists": true,
+      "disk_sha256": "4085740ffd2eabbff279703ca7a5088875a2582bb4b59ea310c1d4b3f3366e73",
+      "disk_size": 2321,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/ParticleCluster.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/PrivateResultModal.tsx",
+      "queued_sha256": "33fca761c0c89642f12fb1f9ce62f267d7d75e053b08a799e74cc0d83a4517a9",
+      "size_queued": 11652,
+      "exists": true,
+      "disk_sha256": "33fca761c0c89642f12fb1f9ce62f267d7d75e053b08a799e74cc0d83a4517a9",
+      "disk_size": 11652,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/PrivateResultModal.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/RoutineDraftModal.tsx",
+      "queued_sha256": "b188e8586fe60648ab639e78486ddedbc10ae148dcd3d3e8d3e8f6c48d1a8a16",
+      "size_queued": 8652,
+      "exists": true,
+      "disk_sha256": "b188e8586fe60648ab639e78486ddedbc10ae148dcd3d3e8d3e8f6c48d1a8a16",
+      "disk_size": 8652,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/RoutineDraftModal.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/Select.tsx",
+      "queued_sha256": "88c1b4a04101a790923eb0137f8594559192ccbe1718cfdcdbc7de4e30811715",
+      "size_queued": 1158,
+      "exists": true,
+      "disk_sha256": "88c1b4a04101a790923eb0137f8594559192ccbe1718cfdcdbc7de4e30811715",
+      "disk_size": 1158,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/Select.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/SessionsPanel.tsx",
+      "queued_sha256": "06f1a2623940e18db2a75c2ce414d8761351bab3fbf3cf4907581ec21db76224",
+      "size_queued": 7264,
+      "exists": true,
+      "disk_sha256": "06f1a2623940e18db2a75c2ce414d8761351bab3fbf3cf4907581ec21db76224",
+      "disk_size": 7264,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/SessionsPanel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/SkillsPanel.tsx",
+      "queued_sha256": "7b2e4e4b05e88e189269fdbfcb55f93029aa0866214264420b381662cf857d03",
+      "size_queued": 5304,
+      "exists": true,
+      "disk_sha256": "7b2e4e4b05e88e189269fdbfcb55f93029aa0866214264420b381662cf857d03",
+      "disk_size": 5304,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/SkillsPanel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/Slider.tsx",
+      "queued_sha256": "e58bf0e6f6d53ecba8d116fd8d68b808e5dbebd127e80ec1ca939b79a7f14787",
+      "size_queued": 943,
+      "exists": true,
+      "disk_sha256": "e58bf0e6f6d53ecba8d116fd8d68b808e5dbebd127e80ec1ca939b79a7f14787",
+      "disk_size": 943,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/Slider.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/SubstratePanel.tsx",
+      "queued_sha256": "e6b201276f48703a130dce51910f9bc106a06c0fdd4c8196c263435666487311",
+      "size_queued": 10996,
+      "exists": true,
+      "disk_sha256": "e6b201276f48703a130dce51910f9bc106a06c0fdd4c8196c263435666487311",
+      "disk_size": 10996,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/SubstratePanel.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/TitleBar.tsx",
+      "queued_sha256": "8a8fc244c1661b48154c0d79af464cd5076ef85cf1bbba9587277671bb85339a",
+      "size_queued": 4673,
+      "exists": true,
+      "disk_sha256": "8a8fc244c1661b48154c0d79af464cd5076ef85cf1bbba9587277671bb85339a",
+      "disk_size": 4673,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/TitleBar.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/ToastHost.tsx",
+      "queued_sha256": "7432770d77875a881425ebe1a8c1e58875b94c99bd0e6ccb77f5879173139bfc",
+      "size_queued": 836,
+      "exists": true,
+      "disk_sha256": "7432770d77875a881425ebe1a8c1e58875b94c99bd0e6ccb77f5879173139bfc",
+      "disk_size": 836,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/ToastHost.tsx' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/gui/ui_field/src/components/Toggle.tsx",
+      "queued_sha256": "f61b52eb75c67e929c4f3e02935a9b814719ea652bcee89e79e4b9d2821c67d8",
+      "size_queued": 627,
+      "exists": true,
+      "disk_sha256": "f61b52eb75c67e929c4f3e02935a9b814719ea652bcee89e79e4b9d2821c67d8",
+      "disk_size": 627,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/gui/ui_field/src/components/Toggle.tsx' exists on disk, but not in 'HEAD'\n"
+    }
+  ]
+}

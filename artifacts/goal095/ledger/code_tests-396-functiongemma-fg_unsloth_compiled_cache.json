@@ -1,0 +1,177 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-396-functiongemma-fg_unsloth_compiled_cache",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:46Z",
+  "closed_utc": "2026-08-31T02:46:46Z",
+  "estimated_tokens": 251013,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 4,
+  "subsystem": "fg_unsloth_compiled_cache",
+  "subsystems": [
+    "fg_unsloth_compiled_cache"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/UnslothGRPOTrainer.py",
+      "sha256": "46516f7339c6a27239c345c32b6ec61e50a87919906821ba15b03dcb229f70ab",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-4643"
+      ]
+    },
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/UnslothKTOTrainer.py",
+      "sha256": "c44e1d9c6d2a9471b722a262fdfb2eba13b75bd27253c70633b5348eff7d58a3",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-2396"
+      ]
+    },
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/UnslothNashMDTrainer.py",
+      "sha256": "b44c5e1c9bc49d55655b99c7869fb67e91137c4a742b790c21fd5368c6eebb53",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1383"
+      ]
+    },
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/UnslothORPOTrainer.py",
+      "sha256": "17e3a3085baa14304af69a0477e5d9a0cefe620ecba474b7a8926841eccbec5f",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1905"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-396-functiongemma-fg_unsloth_compiled_cache-01-finetune_llm-unsloth_compiled_cache-UnslothGRPOTrainer.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/UnslothGRPOTrainer.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/UnslothGRPOTrainer.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/UnslothGRPOTrainer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/UnslothGRPOTrainer.py",
+        "ranges": [
+          "1-4643"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-396-functiongemma-fg_unsloth_compiled_cache-02-finetune_llm-unsloth_compiled_cache-UnslothKTOTrainer.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/UnslothKTOTrainer.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/UnslothKTOTrainer.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/UnslothKTOTrainer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/UnslothKTOTrainer.py",
+        "ranges": [
+          "1-2396"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-396-functiongemma-fg_unsloth_compiled_cache-03-finetune_llm-unsloth_compiled_cache-UnslothNashMDTrainer.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/UnslothNashMDTrainer.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/UnslothNashMDTrainer.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/UnslothNashMDTrainer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/UnslothNashMDTrainer.py",
+        "ranges": [
+          "1-1383"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-396-functiongemma-fg_unsloth_compiled_cache-04-finetune_llm-unsloth_compiled_cache-UnslothORPOTrainer.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/UnslothORPOTrainer.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/UnslothORPOTrainer.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/UnslothORPOTrainer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/UnslothORPOTrainer.py",
+        "ranges": [
+          "1-1905"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=4 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-397-functiongemma-fg_unsloth_compiled_cache",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-396-functiongemma-fg_unsloth_compiled_cache.inspect.json"
+}

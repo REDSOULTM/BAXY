@@ -1,0 +1,27 @@
+batch=code_tests-008-carter-carter_legacy_Carter_v2
+hash_ok=25 drift=0 miss=0
+OK legacy/Carter_v2/scripts/maintenance/consolidate_tournament.py py_lines=156 defs=5
+OK legacy/Carter_v2/scripts/maintenance/recommend_carter_models.py py_lines=264 defs=6
+OK legacy/Carter_v2/scripts/maintenance/voice_smoke.py py_lines=96 defs=4
+OK legacy/Carter_v2/src/carter_v2/adapters/tool_call_parser.py py_lines=227 defs=8
+OK legacy/Carter_v2/src/carter_v2/adapters/tool_normalizer.py py_lines=437 defs=16
+OK legacy/Carter_v2/src/carter_v2/adapters/tools.py py_lines=2355 defs=11
+OK legacy/Carter_v2/src/carter_v2/capabilities/_dialogs.py py_lines=581 defs=28
+OK legacy/Carter_v2/src/carter_v2/capabilities/_env_persist.py py_lines=268 defs=8
+OK legacy/Carter_v2/src/carter_v2/capabilities/_graceful_close.py py_lines=241 defs=7
+OK legacy/Carter_v2/src/carter_v2/capabilities/_gui_planner.py py_lines=349 defs=9
+OK legacy/Carter_v2/src/carter_v2/capabilities/_subprocess.py py_lines=70 defs=2
+OK legacy/Carter_v2/src/carter_v2/capabilities/_vision_suggestions.py py_lines=188 defs=5
+OK legacy/Carter_v2/src/carter_v2/capabilities/app_resolver.py py_lines=202 defs=13
+OK legacy/Carter_v2/src/carter_v2/capabilities/filesystem.py py_lines=540 defs=10
+OK legacy/Carter_v2/src/carter_v2/capabilities/gui_agent.py py_lines=1363 defs=40
+OK legacy/Carter_v2/src/carter_v2/capabilities/media.py py_lines=214 defs=15
+OK legacy/Carter_v2/src/carter_v2/capabilities/memory.py py_lines=140 defs=12
+OK legacy/Carter_v2/src/carter_v2/capabilities/power.py py_lines=99 defs=8
+OK legacy/Carter_v2/src/carter_v2/capabilities/probe.py py_lines=671 defs=42
+OK legacy/Carter_v2/src/carter_v2/capabilities/process.py py_lines=738 defs=32
+OK legacy/Carter_v2/src/carter_v2/capabilities/steam.py py_lines=878 defs=36
+OK legacy/Carter_v2/src/carter_v2/capabilities/system.py py_lines=1083 defs=61
+OK legacy/Carter_v2/src/carter_v2/capabilities/terminal.py py_lines=599 defs=14
+OK legacy/Carter_v2/src/carter_v2/capabilities/vision.py py_lines=515 defs=32
+OK legacy/Carter_v2/src/carter_v2/capabilities/vision_router.py py_lines=1025 defs=50

@@ -1,0 +1,38 @@
+batch=code_tests-470-baxy-baxy_tests
+hash_ok=36 drift=0 miss=0
+OK tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+OK tests/Baxy.Integration.Tests/PrivateDataRootTestSupport.cs
+OK tests/Baxy.Integration.Tests/ProcessListHandlerTests.cs
+OK tests/Baxy.Integration.Tests/ShellTraceTests.cs
+OK tests/Baxy.Integration.Tests/SystemStatusHandlerTests.cs
+OK tests/Baxy.Integration.Tests/SystemStatusHandshakeTests.cs
+OK tests/Baxy.Integration.Tests/TaskNarrationTests.cs
+OK tests/Baxy.Integration.Tests/TestAssemblySetup.cs
+OK tests/Baxy.Integration.Tests/VisibleResponsePathMeasurementTests.cs
+OK tests/Baxy.Integration.Tests/bin/Debug/net10.0-windows10.0.19041.0/Baxy.Integration.Tests.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK tests/Baxy.Integration.Tests/bin/Debug/net10.0-windows10.0.19041.0/nunit_random_seed.tmp
+OK tests/Baxy.Integration.Tests/bin/Release/net10.0-windows10.0.19041.0/historical_exhaustive/runtime_app_route_gate_summary.json json_keys=['allCasesAccounted', 'directFailures', 'failureCases', 'schemaVersion', 'scope', 'sourceCaseSha256', 'sourceOracleSha256', 'statusCounts', 'toolsExecuted', 'uniqueRuntimeCases']
+OK tests/Baxy.Integration.Tests/bin/Release/net10.0-windows10.0.19041.0/nunit_random_seed.tmp
+OK tests/Baxy.Kernel.Tests/Baxy.Kernel.Tests.csproj
+OK tests/Baxy.Kernel.Tests/ConfirmationAuthorityTests.cs
+OK tests/Baxy.Kernel.Tests/FileInvocationJournalTests.cs
+OK tests/Baxy.Kernel.Tests/MissionEngineCancellationTests.cs
+OK tests/Baxy.Kernel.Tests/MissionEngineTests.cs
+OK tests/Baxy.Kernel.Tests/MissionPlanValidatorTests.cs
+OK tests/Baxy.Kernel.Tests/OperationCallValidationTests.cs
+OK tests/Baxy.Kernel.Tests/OperationOutcomeNarrationTests.cs
+OK tests/Baxy.Kernel.Tests/OperationRegistryTests.cs
+OK tests/Baxy.Kernel.Tests/PrivateOperationAmbiguityTests.cs
+OK tests/Baxy.Kernel.Tests/PrivateReplayAmbiguityTests.cs
+OK tests/Baxy.Kernel.Tests/ProductCatalogTests.cs
+OK tests/Baxy.Kernel.Tests/RequestFingerprintTests.cs
+OK tests/Baxy.Kernel.Tests/bin/Debug/net10.0/Baxy.Kernel.Tests.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK tests/Baxy.Kernel.Tests/bin/Debug/net10.0/nunit_random_seed.tmp
+OK tests/Baxy.Providers.Windows.Tests/Audio/WindowsAudioControlProviderPhysicalTests.cs
+OK tests/Baxy.Providers.Windows.Tests/Audio/WindowsAudioControlProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj
+OK tests/Baxy.Providers.Windows.Tests/BoundProtectedJsonCodecTests.cs
+OK tests/Baxy.Providers.Windows.Tests/DesktopMessagingAdapterTests.cs
+OK tests/Baxy.Providers.Windows.Tests/ExternalAdaptersTests.cs
+OK tests/Baxy.Providers.Windows.Tests/Infrastructure/InvocationStateCapacityPolicyTests.cs
+OK tests/Baxy.Providers.Windows.Tests/LocalFilesystemProviderTests.cs

@@ -1,0 +1,3 @@
+batch=code_tests-379-functiongemma-fg_curated
+hash_ok=1 drift=0 miss=0
+OK finetune_llm/curated/holdout.jsonl.BAK

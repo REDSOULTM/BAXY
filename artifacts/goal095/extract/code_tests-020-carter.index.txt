@@ -1,0 +1,20 @@
+batch=code_tests-020-carter
+hash_ok=18 drift=0 miss=0
+OK Carter_v1/tests/test_llm_backends.py py_lines=128 defs=22
+OK Carter_v1/tests/test_meta_tools.py py_lines=10 defs=2
+OK Carter_v1/tests/test_parser.py py_lines=194 defs=21
+OK Carter_v1/tests/test_phase6_full_compare.py py_lines=31 defs=2
+OK Carter_v1/tests/test_sandbox.py py_lines=233 defs=34
+OK Carter_v1/tests/test_task_state.py py_lines=1235 defs=54
+OK Carter_v1/tests/test_universal_benchmark.py py_lines=100 defs=5
+OK Carter_v1/universal_benchmark.py py_lines=1136 defs=53
+OK Carter_v1/vram_manager.py py_lines=206 defs=15
+OK Carter_v2/.diag_memory.db
+OK Carter_v2/.diag_skills.db
+OK Carter_v2/.env.example
+OK Carter_v2/.gitignore
+OK Carter_v2/.probe7_memory.db
+OK Carter_v2/.probe_memory_safe.db
+OK Carter_v2/.probeall_memory.db
+OK Carter_v2/.probeall_memory.db-shm shm parent_on_disk=True
+OK Carter_v2/.probeall_memory.db-wal wal parent_on_disk=True

@@ -1,0 +1,16 @@
+batch=code_tests-427-baxy
+hash_ok=14 drift=0 miss=0
+OK legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model
+OK legacy/data/tasks-v2.sqlite3
+OK legacy/data/tasks-v2.sqlite3.key
+OK legacy/data/tasks-v2.sqlite3.ready
+OK legacy/data/tooling-v2/invocations.sqlite.key
+OK legacy/data/tooling-v2/missions.sqlite.key
+OK legacy/data/tooling-v2/missions.sqlite.pre-v8-1783975297762668200.bak
+OK legacy/data/tooling-v2/policy-authority.envelope
+OK legacy/data/tooling-v2/policy-authority.key
+OK legacy/data/tooling-v2/routines.sqlite.key
+OK legacy/data/tooling-v2/runtime.ready
+OK legacy/gui/__init__.py py_lines=1 defs=0
+OK legacy/gui/health_badge.js
+OK legacy/gui/listener.py py_lines=345 defs=26

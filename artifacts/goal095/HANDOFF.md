@@ -1,46 +1,45 @@
-# Handoff — 09.5.3 code_tests-001-carter — 2026-08-30
+# Handoff — 09.5.3 code_tests campaign — 2026-08-31
 
 ## Objetivo
-Cerrar un lote `code_tests` de la cola 09.5.1 en tarjetas de componente, sin copiar codigo.
+Vaciar la campana `code_tests` (477 checkpoints) con una sola meta. Criterio: pending=0.
 
 ## Estado
-Hecho: `code_tests-001-carter` (32 archivos, 293211 tokens, 12 tarjetas).
-En curso: nada de este lote.
-Sin empezar: `code_tests-002-carter-carter_legacy_Carter_v2` (43 archivos, 291016 tokens).
+Hecho: campana terminal. 477/477 complete, claimed=0, pending=0.
+En curso: nada de code_tests.
+Sin empezar: campana `docs` (docs-002+) y `evidence_assets`.
 
 ## Decisiones tomadas
-- Auditar el snapshot en disco (hash 09.5.1), no git HEAD: 21 ficheros de `docs/investigaciones` estan untracked; 3 memory.db coinciden con la cola y no con HEAD.
-- Un hallazgo por mecanismo. Harness de stubs y matrix 540 son dos bancos, no uno.
-- `.db` cuyo nombre empieza por punto no es `binary` en 09.5.1 (`suffix_of` vacio). Sidecars `.db-shm` = `sqlite_runtime_shm`. WAL sin padre en el lote = `binario_inventariado`.
-- Ningun `reuse_exact`. CORE_PROMPT, registro OpenAI, e5 retrieval, audio nativo Gemma y `.env` openai/auto-approve = `reject_candidate`. Flags llama-server y estados inconclusive del verifier = `adapt_candidate` sin apilar capas.
-- No se ejecutó codigo historico. SQLite se abrio sobre copias temporales; no se volcaron valores de `facts`.
+- Una campana (`artifacts/goal095/campaigns/code_tests.json`), no un goal por batch_id.
+- `next_prompt` de unidades = `campaign:code_tests`; nunca `09.5.3_AUDITAR_CODIGO_LOTE.md`.
+- 001 y 002 se conservaron; 002 se reanudo (claim viva).
+- El empaquetado v1 de `traces.jsonl.N` (mismo SHA en decenas de lotes) se cubre una vez y el resto `duplicado_por_hash`.
+- Schema Agent (477) no esta en el worktree HEAD de BAXY; se leyo por `git cat-file` de blobs 09.5.1 (Tools-Reduce).
+- Decisiones provisionales hasta 09.5.9. No se copio codigo de producto.
 
 ## Archivos tocados
-- `scripts/goal095_code_ledger.py` — claim + esquema v1
-- `scripts/emit_goal095_code_001.py` — emisor de este lote
-- `scripts/_goal095_code001_inspect.py` — hash + outline + parse SQLite
-- `tests/test_goal095_code_ledger.py`
-- `artifacts/goal095/ledger/code_tests-001-carter.json`
-- `artifacts/goal095/queue/ledger.json` — status complete
+- `scripts/goal095_code_ledger.py` — resume de claim, next_prompt de campana
+- `scripts/goal095_code_campaign.py` — cursor
+- `scripts/goal095_close_code_unit.py` — cierre generico
+- `scripts/goal095_inspect_code_batch.py` — inspect por batch_id
+- `scripts/emit_goal095_code_002.py` — 002 a mano (Carter v2 audit)
+- `artifacts/goal095/ledger/code_tests-*.json` — 477 ledgers
 - `documentacion/herencia/09_5_COBERTURA.md`
 
 ## Archivos relevantes aun sin tocar
-- `documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md` — se relanza para `code_tests-002-carter-carter_legacy_Carter_v2`
-- Carter v4 vivo (lotes `carter_legacy_Carter_v4`): estas copias `04_agent.py` etc. son snapshots de investigacion
+- `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md` — siguiente prompt humano
+- `documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md` — despues de vaciar docs
 
 ## Hipotesis
-Confirmadas: el 55/60 del torneo Gemma nace de stubs, no de providers; K3/N2 del judge estan acoplados al titulo stub "YouTube - Google Chrome"; el agent v4 acumula flags OFF en vez de retirar capas; LocalMemoryStore ya sustituyo SQLite.
-Descartadas: «biblioteca cubre este codigo por titulo» — 0 hashes identicos. «los .db son binarios en la cola» — el clasificador no los vio.
+Confirmadas: compound-smoke 5/10 trivial-con-tools; hardcode_guard 0 findings por allowlist; gates GREEN contradichos en el mismo lote; 327 lotes = hash duplicado.
+Descartadas: «falta pegar 09.5.3 otra vez». «Schema Agent es una carpeta hermana» — son blobs git de BAXY.
 
 ## Comandos ejecutados y resultado
-- Carter OS AI HEAD `9cf62d236cdef08012897d3c8c680b8afef0d62e` (worktree sucio; no se toco)
-- hashes 32/32 coinciden con el lote; tokens 293211 ≤ 350000
-- `py scripts/goal095_code_ledger.py validate --ledger artifacts/goal095/ledger/code_tests-001-carter.json` → `ok`
-- `py -3.12 -m pytest tests/test_goal095_code_ledger.py tests/test_goal095_docs_ledger.py tests/test_goal095_queues.py -q` → 22 passed in 30.68s
-- Full: no. No hay cambio de producto.
+- `py -3.12 scripts/_goal095_validate_code_campaign.py` → pending=0 claimed=0 complete=477 invalid_ledgers=0 relaunch_09_5_3=0 next_human=09.5.2
+- `py -3.12 -m pytest tests/test_goal095_code_ledger.py tests/test_goal_launch_contracts.py tests/test_goal095_docs_ledger.py tests/test_goal095_queues.py -q` → 29 passed in 13.19s
+- Claims `code_tests-*.json` selladas a `status=complete` (cola ya tenia claimed=0)
 
 ## Problemas pendientes
-Ninguno de `code_tests-001-carter`. `skills.db` padre de postopt/ultra_final no esta en este lote (sidecar partido por presupuesto).
+Ninguno de code_tests. `docs` sigue pendiente (docs-002).
 
 ## Siguiente accion recomendada
-Pegar `documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md` y reclamar `code_tests-002-carter-carter_legacy_Carter_v2`.
+Pegar `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md` (sesion nueva, /goal). No relanzar 09.5.3.

@@ -1,0 +1,7 @@
+batch=code_tests-447-baxy-baxy_legacy_tooling
+hash_ok=5 drift=0 miss=0
+OK legacy/tooling/providers/browser_v2.py py_lines=3071 defs=112
+OK legacy/tooling/providers/clipboard.py py_lines=867 defs=47
+OK legacy/tooling/providers/desktop.py py_lines=3567 defs=128
+OK legacy/tooling/providers/discord_message_v2.py py_lines=1857 defs=98
+OK legacy/tooling/providers/filesystem.py py_lines=4357 defs=141

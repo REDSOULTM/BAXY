@@ -1,0 +1,688 @@
+{
+  "batch_id": "code_tests-338-probando_gemma4-pg4_scripts",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 21,
+  "hash_ok": 21,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_scripts",
+  "subsystems": [
+    "pg4_scripts"
+  ],
+  "files": [
+    {
+      "path": "scripts/_diag/_ftfail/_failmode_routing.json",
+      "queued_sha256": "01c499637164679783ed60f2c308cf53c81dafab3e1a8420e10d8bb222412cda",
+      "size_queued": 19332,
+      "exists": true,
+      "disk_sha256": "01c499637164679783ed60f2c308cf53c81dafab3e1a8420e10d8bb222412cda",
+      "disk_size": 19332,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 62,
+        "elem_keys": [
+          "cat",
+          "gt",
+          "i",
+          "lang",
+          "reply",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_gaps_full.json",
+      "queued_sha256": "60837cac079c1f2492641c7f223a852a1226428a42a31da6a8f9bcc571f91e4d",
+      "size_queued": 16446,
+      "exists": true,
+      "disk_sha256": "60837cac079c1f2492641c7f223a852a1226428a42a31da6a8f9bcc571f91e4d",
+      "disk_size": 16446,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 204,
+        "root_type": "list",
+        "n": 2,
+        "elem_keys": [
+          "diagnostico",
+          "ejemplos_nuevos",
+          "esta_en_el_plan",
+          "submodo"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_gguf_tokenizer.py",
+      "queued_sha256": "f997c25b8e0cd5a2daf77a5990e2ca565b87ea8ed26dba5415538187d3342bdc",
+      "size_queued": 2346,
+      "exists": true,
+      "disk_sha256": "f997c25b8e0cd5a2daf77a5990e2ca565b87ea8ed26dba5415538187d3342bdc",
+      "disk_size": 2346,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "outline": {
+        "lines": 64,
+        "bytes": 2346,
+        "imports": [
+          "10:import functools",
+          "18:import gguf",
+          "19:from tokenizers import Tokenizer, decoders",
+          "20:from tokenizers.models import Unigram",
+          "21:from tokenizers.pre_tokenizers import Metaspace as PreMetaspace"
+        ],
+        "defs": [
+          "17:def _build():",
+          "52:def count(text: str) -> int:"
+        ],
+        "head": [
+          "\"\"\"Reconstruye un tokenizer Unigram (SentencePiece) desde el GGUF de Gemma 4 E2B.",
+          "",
+          "El GGUF (llama_cpp 0.3.17 no conoce 'gemma4') guarda el vocab completo:",
+          "tokens, scores (unigram logprobs), token_type. Con eso armamos un",
+          "tokenizers.Tokenizer(Unigram) equivalente al SP de Gemma para CONTAR tokens",
+          "con fidelidad (no estimación 4c/token).",
+          "",
+          "token_type GGUF: 1=NORMAL 2=UNKNOWN 3=CONTROL 4=USER_DEFINED 6=BYTE.",
+          "\"\"\"",
+          "import functools",
+          "",
+          "GGUF_PATH = (r\"C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\Probando Gemma 4\"",
+          "             r\"\\models\\E2B\\gemma-4-E2B-it-Q4_K_M.gguf\")",
+          "",
+          "",
+          "@functools.lru_cache(maxsize=1)",
+          "def _build():",
+          "    import gguf",
+          "    from tokenizers import Tokenizer, decoders",
+          "    from tokenizers.models import Unigram",
+          "    from tokenizers.pre_tokenizers import Metaspace as PreMetaspace",
+          "",
+          "    r = gguf.GGUFReader(GGUF_PATH)",
+          "    f_tok = r.get_field(\"tokenizer.ggml.tokens\")",
+          "    f_sc = r.get_field(\"tokenizer.ggml.scores\")",
+          "    f_tt = r.get_field(\"tokenizer.ggml.token_type\")",
+          "",
+          "    tokens = [bytes(f_tok.parts[i]).decode(\"utf-8\", \"replace\") for i in f_tok.data]",
+          "    scores = [float(f_sc.parts[i][0]) for i in f_sc.data]",
+          "    ttypes = [int(f_tt.parts[i][0]) for i in f_tt.data]",
+          "",
+          "    # Construir el vocab Unigram. Para BYTE tokens (type 6) el string GGUF es",
+          "    # \"<0xNN>\"; el SP los trata como tokens normales con su score. Unigram de",
+          "    # HF los maneja como entradas comunes. byte_fallback=True permite que",
+          "    # cualquier byte no cubierto caiga a <0xNN>.",
+          "    vocab = list(zip(tokens, scores))",
+          "",
+          "    unk_id = None",
+          "    for i, tt in enumerate(ttypes):",
+          "        if tt == 2:  # UNKNOWN"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_006.json",
+      "queued_sha256": "14cc0142066fa34bfc6f5e539e5bbd62afd3d9b440d5b2ac6bf5933292561eed",
+      "size_queued": 30485,
+      "exists": true,
+      "disk_sha256": "14cc0142066fa34bfc6f5e539e5bbd62afd3d9b440d5b2ac6bf5933292561eed",
+      "disk_size": 30485,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_010.json",
+      "queued_sha256": "bce30f98f16a6dd8b5c81d28810bb85aa1a732cc19d60074b2119e5ca8dff746",
+      "size_queued": 31845,
+      "exists": true,
+      "disk_sha256": "bce30f98f16a6dd8b5c81d28810bb85aa1a732cc19d60074b2119e5ca8dff746",
+      "disk_size": 31845,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_012.json",
+      "queued_sha256": "3e9d3f8aea064b3288241a2e71b39a61b255194bd8008346e9ab14220c0dc386",
+      "size_queued": 26984,
+      "exists": true,
+      "disk_sha256": "3e9d3f8aea064b3288241a2e71b39a61b255194bd8008346e9ab14220c0dc386",
+      "disk_size": 26984,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_013.json",
+      "queued_sha256": "48a79bfeb872a15ae767eb507624adc4f2c86e6ae862e17598c604a0bdb6d5c5",
+      "size_queued": 29788,
+      "exists": true,
+      "disk_sha256": "48a79bfeb872a15ae767eb507624adc4f2c86e6ae862e17598c604a0bdb6d5c5",
+      "disk_size": 29788,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_014.json",
+      "queued_sha256": "52f8e343beb0a22d3c188446deee49be1ad92b8ad4145992679b3bc306853fe7",
+      "size_queued": 32745,
+      "exists": true,
+      "disk_sha256": "52f8e343beb0a22d3c188446deee49be1ad92b8ad4145992679b3bc306853fe7",
+      "disk_size": 32745,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_017.json",
+      "queued_sha256": "faab267dd2e2b07c22fed1d9be5a35ee1f54cc840a54aeaba47221172580d281",
+      "size_queued": 31831,
+      "exists": true,
+      "disk_sha256": "faab267dd2e2b07c22fed1d9be5a35ee1f54cc840a54aeaba47221172580d281",
+      "disk_size": 31831,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_020.json",
+      "queued_sha256": "c9387a8dd70836eafd41e408a832829ddaad4934d8541d06242429aad299f12f",
+      "size_queued": 32174,
+      "exists": true,
+      "disk_sha256": "c9387a8dd70836eafd41e408a832829ddaad4934d8541d06242429aad299f12f",
+      "disk_size": 32174,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_021.json",
+      "queued_sha256": "ef7147491363e660ae9904d099e3188cb14852425b5646b22203da564a644a14",
+      "size_queued": 31546,
+      "exists": true,
+      "disk_sha256": "ef7147491363e660ae9904d099e3188cb14852425b5646b22203da564a644a14",
+      "disk_size": 31546,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_022.json",
+      "queued_sha256": "5f3bba2e2a1dd13562d7fb42a90d6cc20341d1376d40932229fce7e010076a52",
+      "size_queued": 30787,
+      "exists": true,
+      "disk_sha256": "5f3bba2e2a1dd13562d7fb42a90d6cc20341d1376d40932229fce7e010076a52",
+      "disk_size": 30787,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_025.json",
+      "queued_sha256": "8798bb083c97bd534851e9b260d8bd9673267b47796a24270a7d006309fa8c30",
+      "size_queued": 32080,
+      "exists": true,
+      "disk_sha256": "8798bb083c97bd534851e9b260d8bd9673267b47796a24270a7d006309fa8c30",
+      "disk_size": 32080,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_026.json",
+      "queued_sha256": "2d5af85cb6e81db8650558284165b074d0eab78f4dc19ba1b537be534a0322d6",
+      "size_queued": 28799,
+      "exists": true,
+      "disk_sha256": "2d5af85cb6e81db8650558284165b074d0eab78f4dc19ba1b537be534a0322d6",
+      "disk_size": 28799,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_027.json",
+      "queued_sha256": "e424d4ff3d48e96e31e7ae44cc3df46da6c39b27edbeb1496281faf5bebecf0d",
+      "size_queued": 32338,
+      "exists": true,
+      "disk_sha256": "e424d4ff3d48e96e31e7ae44cc3df46da6c39b27edbeb1496281faf5bebecf0d",
+      "disk_size": 32338,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_034.json",
+      "queued_sha256": "f1b74e348b515cad8bd64e295da917f4dace1833f90d7bc3b44686584cf2e3ea",
+      "size_queued": 32064,
+      "exists": true,
+      "disk_sha256": "f1b74e348b515cad8bd64e295da917f4dace1833f90d7bc3b44686584cf2e3ea",
+      "disk_size": 32064,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_035.json",
+      "queued_sha256": "2851cd38167b7d86d5a823c532f2ce16f156f855cd1aa63ed77fbab85624b71f",
+      "size_queued": 28467,
+      "exists": true,
+      "disk_sha256": "2851cd38167b7d86d5a823c532f2ce16f156f855cd1aa63ed77fbab85624b71f",
+      "disk_size": 28467,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_036.json",
+      "queued_sha256": "700eb20f42291c4723f394644bb8f263d779c949b54f230ec5c69b832f83e327",
+      "size_queued": 30503,
+      "exists": true,
+      "disk_sha256": "700eb20f42291c4723f394644bb8f263d779c949b54f230ec5c69b832f83e327",
+      "disk_size": 30503,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_037.json",
+      "queued_sha256": "543205cf384d4aded494131cbd49efbb14d846f9476f5f90902c57b5aa2df659",
+      "size_queued": 31239,
+      "exists": true,
+      "disk_sha256": "543205cf384d4aded494131cbd49efbb14d846f9476f5f90902c57b5aa2df659",
+      "disk_size": 31239,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_039.json",
+      "queued_sha256": "d04160b45d6281be601ff9a46743599494630868aa2a0dcc3a271e7bfbc116e1",
+      "size_queued": 31385,
+      "exists": true,
+      "disk_sha256": "d04160b45d6281be601ff9a46743599494630868aa2a0dcc3a271e7bfbc116e1",
+      "disk_size": 31385,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_043.json",
+      "queued_sha256": "9f46601a4afd30169bd75780e035f3668b8058b597772c4d3d46cb381d627681",
+      "size_queued": 32333,
+      "exists": true,
+      "disk_sha256": "9f46601a4afd30169bd75780e035f3668b8058b597772c4d3d46cb381d627681",
+      "disk_size": 32333,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 1,
+        "root_type": "list",
+        "n": 80,
+        "elem_keys": [
+          "also_ok",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "sig",
+          "style",
+          "tools",
+          "user"
+        ]
+      }
+    }
+  ]
+}

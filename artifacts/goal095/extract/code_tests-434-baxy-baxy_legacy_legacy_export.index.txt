@@ -1,0 +1,14 @@
+batch=code_tests-434-baxy-baxy_legacy_legacy_export
+hash_ok=12 drift=0 miss=0
+OK legacy/legacy_export/tools_full/skills_registry.py py_lines=746 defs=27
+OK legacy/legacy_export/tools_full/steam_store.py py_lines=88 defs=8
+OK legacy/legacy_export/tools_full/subagent.py py_lines=99 defs=2
+OK legacy/legacy_export/tools_full/system_info_fast.py py_lines=130 defs=4
+OK legacy/legacy_export/tools_full/tool_descriptions.yaml
+OK legacy/legacy_export/tools_full/tool_head.py py_lines=93 defs=5
+OK legacy/legacy_export/tools_full/tool_result.py py_lines=138 defs=11
+OK legacy/legacy_export/tools_full/tool_schemas.py py_lines=126 defs=0
+OK legacy/legacy_export/tools_full/tools.py py_lines=7649 defs=213
+OK legacy/legacy_export/tools_full/vision_describe.py py_lines=113 defs=2
+OK legacy/legacy_export/tools_full/visual_click_redirect.py py_lines=63 defs=1
+OK legacy/legacy_export/tools_full/web_search.py py_lines=175 defs=6

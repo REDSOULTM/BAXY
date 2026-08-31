@@ -1,0 +1,33 @@
+batch=code_tests-456-baxy-baxy_scripts
+hash_ok=31 drift=0 miss=0
+OK scripts/build_generalization_product_holdout_r14.py py_lines=347 defs=7
+OK scripts/build_generalization_product_holdout_r15.py py_lines=350 defs=7
+OK scripts/build_generalization_product_holdout_r16.py py_lines=352 defs=7
+OK scripts/build_generalization_product_holdout_r17.py py_lines=345 defs=7
+OK scripts/build_generalization_product_holdout_r18.py py_lines=344 defs=7
+OK scripts/build_generalization_product_holdout_r19.py py_lines=347 defs=7
+OK scripts/build_generalization_product_holdout_r2.py py_lines=643 defs=7
+OK scripts/build_generalization_product_holdout_r20.py py_lines=332 defs=8
+OK scripts/build_generalization_product_holdout_r21.py py_lines=339 defs=8
+OK scripts/build_generalization_product_holdout_r3.py py_lines=682 defs=7
+OK scripts/build_generalization_product_holdout_r4.py py_lines=489 defs=2
+OK scripts/build_generalization_product_holdout_r5.py py_lines=493 defs=2
+OK scripts/build_generalization_product_holdout_r6.py py_lines=562 defs=4
+OK scripts/build_generalization_product_holdout_r7.py py_lines=600 defs=5
+OK scripts/build_generalization_product_holdout_r8.py py_lines=259 defs=5
+OK scripts/build_generalization_product_holdout_r9.py py_lines=313 defs=7
+OK scripts/build_generalization_surface_holdout.py py_lines=573 defs=13
+OK scripts/build_historical_corpus.py py_lines=2817 defs=58
+OK scripts/build_historical_runtime_hints.py py_lines=88 defs=4
+OK scripts/build_layout.ps1
+OK scripts/build_layout.py py_lines=294 defs=15
+OK scripts/build_memory_status_holdout_r1.py py_lines=191 defs=5
+OK scripts/build_memory_status_holdout_r2.py py_lines=185 defs=5
+OK scripts/build_memory_status_holdout_r3.py py_lines=190 defs=5
+OK scripts/build_mtop_turn_evidence.py py_lines=1586 defs=36
+OK scripts/build_operation_shortlist_classifier.py py_lines=421 defs=11
+OK scripts/build_presto_turn_evidence.py py_lines=343 defs=13
+OK scripts/build_product.ps1
+OK scripts/build_public_turn_evidence.py py_lines=12 defs=0
+OK scripts/build_sapi_wake_physical_holdout_v1.py py_lines=441 defs=7
+OK scripts/build_semantic_family_arbiter.py py_lines=124 defs=3

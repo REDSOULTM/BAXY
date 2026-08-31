@@ -1,0 +1,1798 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-025-carter-carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:44:08Z",
+  "closed_utc": "2026-08-31T02:44:14Z",
+  "estimated_tokens": 297337,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 85,
+  "subsystem": "carter_v2",
+  "subsystems": [
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "Carter_v2/probe_assets_run",
+      "sha256": "2d77bc69e959bc610117dca96eb1e1fc9f3b1ec22048f2bf70b51a01baef4f70",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/.gitignore",
+      "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/HEAD",
+      "sha256": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/config",
+      "sha256": "74c63b4eae3533b3ff4c0e285897778464d6c04815c33457729279ded1e2a947",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/description",
+      "sha256": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/applypatch-msg.sample",
+      "sha256": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/commit-msg.sample",
+      "sha256": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/fsmonitor-watchman.sample",
+      "sha256": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/post-update.sample",
+      "sha256": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-applypatch.sample",
+      "sha256": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-commit.sample",
+      "sha256": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-merge-commit.sample",
+      "sha256": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-push.sample",
+      "sha256": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-rebase.sample",
+      "sha256": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-receive.sample",
+      "sha256": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/prepare-commit-msg.sample",
+      "sha256": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/push-to-checkout.sample",
+      "sha256": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/sendemail-validate.sample",
+      "sha256": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/update.sample",
+      "sha256": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/info/exclude",
+      "sha256": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/2d/613bf96f4b8821045a1993896574469495cc3f",
+      "sha256": "209247830c8cdeb790f4f2a7e0a6ecdc6694042a05c272adb0b07f08014d3da6",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/58/482867c797017c25826665b8229200031a209f",
+      "sha256": "4fa7caf4f612f8dce2a61879266fc6d205f4d5b0dcc227229fe630bd3d5b3b61",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/a2/e513639741705aa52a87e19f52c4ce967c0b7c",
+      "sha256": "973d2ed2d2ea6d010ac58859049d6f298949768ed0020c8169ea9bfa99b2bdfb",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/d7/86f998a4e7f2f89c57a552dad18a377e06383a",
+      "sha256": "bf1d9eb3dcce26b6e0c69cbfe1b3c06aab9471fe2b951017b22a0165545b737f",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/f2/e72be70e4f5ee9b70b3299ea62372f5a0876b4",
+      "sha256": "36aa1d1f04578dfd530bb29f46365256c64d76827b63f8dfc79c1ac7e4ff1146",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/f4/d212b1895a3fb26028a83116848a2f960a6f62",
+      "sha256": "c92a7eb5d704c5d0d791a94ace2c1a1d0584aa3bfc2abf3fbb567d0320bd4098",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/remote.git/refs/heads/main",
+      "sha256": "af4c4f8c8b61b46791a3f796a6def94494a469c97f4867b8091a8964827c1604",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/s15_app_one/index.html",
+      "sha256": "e4985727a21bf8148e012282db031897ddb1dc8a4f3c813f80a60e6f49ab47c5",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/s15_app_two/app.py",
+      "sha256": "c4381f0528750cab7c1b421e4c5e01124fc51e680c0eba4eca18bb4597284757",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/s15_data/report.json",
+      "sha256": "3c79dea5618dd6b2af0fffaebc5d267be77f88613eb4c5801b47674134b1bcdc",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/snippet.py",
+      "sha256": "96d2ec4e4354ba4c4cb628df054478522cc18a3731d514426bd4b0b4314a1e5b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/probe-univ-code.json",
+      "sha256": "217528450ea723e72adab4ddc380415d32fbc0b24ed310e5c2137eed9afbbdd6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/probe-univ-multistep.json",
+      "sha256": "60e7cd237b4284b6613e2dff93906a2b5246c4ca1964f5f1e09b4704df4d6c8e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/s15-app-1.json",
+      "sha256": "18bac31646d0992a55d140fb150640ccfae616e5dba43871f2ca5c80eb7a524d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/s15-app-2.json",
+      "sha256": "245ddb465bb010ce10bb1487c6b292fb74f4249a3a89d67ec9a001a4befbdc16",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/s15-data-1.json",
+      "sha256": "473e7fc7ec21eee71e49c6144ee2941b9038b4bff01f7856fe0aed252ed887ac",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/s21-resource-flow.json",
+      "sha256": "9ec9e6424c8ce7d06044ae3827c570e60319a3a9cd79e28830f67947c723f251",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/universal_runs/s25-universal-intent.json",
+      "sha256": "19c3d7ca28078318581f94bc239a8bb0d48ad475c6c2d9ff8baa8479a0a87f24",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/visual_runs/s22b-visual-resume.json",
+      "sha256": "4ce506035d874619859651e63e1e8ba6e5064078d06cc1c86b7b3ad9c7ecbbed",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_carter.py",
+      "sha256": "d6e482718dab089be953d51aa28ee402aeaecb20a0b45a24a73847a4c76e64c7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-260"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_clk1_test.json",
+      "sha256": "b63c380aeb5f564cc3e86c67806c70133ac9ba76936b72a118bd939973a199f4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_environment_readiness.json",
+      "sha256": "b01b20fa4bc0f595a60e3054cb38ef4dd10048c66604ab1935455a3dd4561f2c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_intent3_recheck.json",
+      "sha256": "8a83b1ac55a74137d4a41f6789208bce120aad9343638410c2d29a6bef2b3da8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_mem_recheck.json",
+      "sha256": "cac563cea0d98759c5f4576ad7888ec81e8399f5ff066cea2461a93197b38f74",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_mem_recheck2.json",
+      "sha256": "5a1b1e442ea13f18ad180e9ed33e74b2c3c2931d3f9e622fb8eb25348940a5da",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_recheck2_results.json",
+      "sha256": "80aa00f8b3e3c0ecaa6c21cb1a46268faf4e3f44bee00861823e3bf65f705bd8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_recheck3_results.json",
+      "sha256": "cbf1df99041f8df3a3f013e8ca75aeb996d721e224cfb4a1441512f4d3196fae",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_recheck4_results.json",
+      "sha256": "64c0a43d349f2c244c0e6d7698c6bb6a51192f3f5644684f61ab654621d9fbc7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_recheck5_results.json",
+      "sha256": "3fc4d3e1f416a88d54f69da75186d80df546ef1cec011f1287dfb5833929c1fa",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_recheck6_results.json",
+      "sha256": "a56cd6d102040ed6a1c08ee03d86a232d79275545eba7308d33e27265c5c1345",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_recheck_results.json",
+      "sha256": "de0b6e3f9e70b49c64a668c771a265a9669375d92265d744362cd2479eaf1d64",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_regression_recheck.json",
+      "sha256": "eb56343157468ea4deb98412781b69fee7b54cdb93a801092f8fbf8d80d2210b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_session7.py",
+      "sha256": "5d8b14eb1f9dae24430f21a5e6cbd11e06461806df8ff402ba3deb988a3351fb",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-429"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_t01_test.json",
+      "sha256": "f197c8e446bde4f1d688c348d3749621a25c197e5745a2d64c0caf4c2016d67f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_targeted_recheck.json",
+      "sha256": "f9d8f55f0c579e6e85bafd862334a580382e83da0f59a839cde58733f2fb7d0f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_targeted_recheck2.json",
+      "sha256": "8dc74ad96db762ad4cf8d812da3a5f972a62f1ded58ce8a55e104cc85352ffb1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_targeted_recheck3.json",
+      "sha256": "c3e342cc1439e528ec3b11678c36a9d20348a3a80d277e47c12c2685b380b78f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_text_hardening.py",
+      "sha256": "2100d1e50eb2fdab652a74441b884ef79214686cf87f3b841f611f8ea7c2c88a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-556"
+      ]
+    },
+    {
+      "path": "Carter_v2/pyproject.toml",
+      "sha256": "ec658b3ffc1e93fcf9dbaa2301ccd24496a2a9dafc550c9a0e5cb8454a333f46",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "config"
+      ]
+    },
+    {
+      "path": "Carter_v2/run.py",
+      "sha256": "8d918028b3fb088d1d9e4e62669d2d13017007cbbd0b6006efa70aebbed6a05e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-14"
+      ]
+    },
+    {
+      "path": "Carter_v2/run_text_closure_gate.py",
+      "sha256": "70b70095e0023ac2405d5b9497b2aa0fded0e5d9c45b2b48c12ec19cb3574972",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-172"
+      ]
+    },
+    {
+      "path": "Carter_v2/scripts/inspect_vision.py",
+      "sha256": "aa8f6f551139e060777041666eaaa8e6b2d3d2fe67ef17d34554765b4dc72df7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-153"
+      ]
+    },
+    {
+      "path": "Carter_v2/scripts/live_carter_llm_smoke.py",
+      "sha256": "d69c58b980838077e018d8312be222e6c4472e9172e36562b0a1e93c91d09e06",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-630"
+      ]
+    },
+    {
+      "path": "Carter_v2/scripts/quantize_q2k.py",
+      "sha256": "8a0a4831697f8c92b47feac0399a5891aecd973ade102afd2529439cef38773a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-79"
+      ]
+    },
+    {
+      "path": "Carter_v2/scripts/setup_optional_probe_env.py",
+      "sha256": "0d569078e3936bb1b5ed99e79bf91c6831beb84e73b8207bcbfc710aeaf1ba1e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-121"
+      ]
+    },
+    {
+      "path": "Carter_v2/setup_ollama_optimized.ps1",
+      "sha256": "167766e916b050863a56a5818772da611ca6d53edb75202756f14c2b3cf7b7e9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/__init__.py",
+      "sha256": "dfd5e29d548bf260759799f4e5a491e2a4b49aaaccafce5f65125b83894893a1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/__main__.py",
+      "sha256": "5dceb62a6af0f78c8b7990040c96c8f62a6ee97b12336a121b0295a297f7bd78",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-4"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/adapters/__init__.py",
+      "sha256": "dd6380364bd313bc30c1145abf741642d6bef23a01483785e13138121065387f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/adapters/tool_normalizer.py",
+      "sha256": "261e5d905741dc4313afd4c3ac78cfdd0bf89f1601f6c4e4c0069df83c5c9cac",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-252"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/adapters/tools.py",
+      "sha256": "0999c65616e4538f83b422850d12490acfbd3171c06dcb1c1229b56ffb0b504d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2261"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/adapters/uia.py",
+      "sha256": "041ce17107cab0a75eead9e2b7d6e5269903efc9a434a39742db5cbaa1439c51",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-464"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/__init__.py",
+      "sha256": "4066513d46f409b7e9cb5f7f915ff9524706677d3baae647428cc35b3a8f6e3b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/_dialogs.py",
+      "sha256": "bc6e2c71b21d21db367abf093a6832aae583e8c16995b1b8bd3611f415b74208",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-538"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/_gui_planner.py",
+      "sha256": "e5cdb4837b39388e9f4bac2f3253fccca8f45a12e3700b03a5d6d2680bcc6fb8",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-165"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/_subprocess.py",
+      "sha256": "38455dc5d244cd3a6c9400ad6b212b459b0e43cee467088e69f54c30dc584966",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-60"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/app_resolver.py",
+      "sha256": "3c37b05c143551d990ded84614b8c25cbb8e46d6a97369e246951e0c6284459e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-154"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/base.py",
+      "sha256": "ed2e0d18f31f7f255d40bff08e100c99251ace19cbb26d7dcced062b5814fd85",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-18"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/calendar.py",
+      "sha256": "e0215227fab3a5c9072c4bae83b1ac772f70d3d9dc576a8fe5714abeba03ee31",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-166"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/clock.py",
+      "sha256": "7988941eb588a7674286c392ab1d64ae841ad78262a29e15d9c4c15a2432c84f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-43"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/code.py",
+      "sha256": "ca3a5a7838584ee3d79ee6d90d9f4bbc929a6750ae6ddd11f055f98dc31c5eb8",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-136"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/database.py",
+      "sha256": "03979212623d4253ea33cca99f30de623f176551a428599f2a1f3e09afa4cd88",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-147"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/desktop.py",
+      "sha256": "31b390ee7ff67adb8c4ceef3ed5c8db208a423c019db9e3e749e843f3d612896",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-207"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/download.py",
+      "sha256": "4001adda51ee7c785a09fc5a4df4c6f8fdc6ff4992564f87ff71f21d01b0a93d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-338"
+      ]
+    },
+    {
+      "path": "Carter_v2/src/carter_v2/capabilities/email.py",
+      "sha256": "557cceea1c7fb85563ff1bb80d0a5c29fd6fc4c7c2e74b33451fefff633046b3",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-317"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-025-carter-carter_v2-01-Carter_v2-probe_assets_runtime-s15_app_two",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_assets_runtime/s15_app_two (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_assets_runtime/s15_app_two: 1 archivos. Terminales leido PY print('S15 python app ready')",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/s15_app_two/app.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/s15_app_two/app.py",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-02-Carter_v2-probe_assets_runtime-s15_data",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_assets_runtime/s15_data (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_assets_runtime/s15_data: 1 archivos. Terminales parseado_completo. JSON scalars={\"total\": 17}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/s15_data/report.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/s15_data/report.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-03-Carter_v2-probe_assets_runtime-snippet.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_assets_runtime/snippet.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_assets_runtime/snippet.py: 1 archivos. Terminales leido PY print( 1+1 )",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/snippet.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/snippet.py",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-04-Carter_v2-probe_assets_runtime-universal_runs",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_assets_runtime/universal_runs (7 ficheros)",
+      "contract": "Grupo Carter_v2/probe_assets_runtime/universal_runs: 7 archivos. Terminales parseado_completo. JSON scalars={\"run_id\": \"probe-univ-code\", \"timestamp\": \"2026-04-27T00:48:32.934742+00:00\", \"schema_version\": 3}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/universal_runs/probe-univ-code.json",
+        "Carter_v2/probe_assets_runtime/universal_runs/probe-univ-multistep.json",
+        "Carter_v2/probe_assets_runtime/universal_runs/s15-app-1.json",
+        "Carter_v2/probe_assets_runtime/universal_runs/s15-app-2.json",
+        "Carter_v2/probe_assets_runtime/universal_runs/s15-data-1.json",
+        "Carter_v2/probe_assets_runtime/universal_runs/s21-resource-flow.json",
+        "Carter_v2/probe_assets_runtime/universal_runs/s25-universal-intent.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/universal_runs/probe-univ-code.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-05-Carter_v2-probe_assets_runtime-visual_runs",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_assets_runtime/visual_runs (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_assets_runtime/visual_runs: 1 archivos. Terminales parseado_completo. JSON scalars={\"run_id\": \"s22b-visual-resume\", \"timestamp\": \"2026-04-27T00:57:23.706603+00:00\", \"schema_version\": 3}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/visual_runs/s22b-visual-resume.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/visual_runs/s22b-visual-resume.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-06-Carter_v2-probe_carter.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_carter.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_carter.py: 1 archivos. Terminales leido PY \"\"\" probe_carter.py — 15 pruebas directas a Carter sin CLI interactivo.  Uso:     cd Carter_v2     python probe_carter.py  Requiere Ollama corriendo con qwen3:8b (o el modelo configurado).",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_carter.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_carter.py",
+        "ranges": [
+          "1-260"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-07-Carter_v2-probe_clk1_test.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_clk1_test.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_clk1_test.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T02:15:38.429135-04:00\", \"profile\": \"safe\", \"total\": 1, \"passed\": 1, \"failed\": 0, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v2/probe_clk1_test.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_clk1_test.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-08-Carter_v2-probe_environment_readiness.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_environment_readiness.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_environment_readiness.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-27T00:09:25.958213-04:00\", \"profile\": \"safe\", \"safe_mutation_mode\": true, \"session_actions_enabled\": false, \"external_mutations_enabled\": false}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_environment_readiness.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_environment_readiness.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-09-Carter_v2-probe_intent3_recheck.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_intent3_recheck.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_intent3_recheck.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:39:51.874296-04:00\", \"profile\": \"safe\", \"total\": 1, \"passed\": 1, \"failed\": 0, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_intent3_recheck.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_intent3_recheck.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-10-Carter_v2-probe_mem_recheck.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_mem_recheck.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_mem_recheck.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:20:22.621963-04:00\", \"profile\": \"safe\", \"total\": 2, \"passed\": 1, \"failed\": 1, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_mem_recheck.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_mem_recheck.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-11-Carter_v2-probe_mem_recheck2.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_mem_recheck2.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_mem_recheck2.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:21:59.531757-04:00\", \"profile\": \"safe\", \"total\": 2, \"passed\": 2, \"failed\": 0, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_mem_recheck2.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_mem_recheck2.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-12-Carter_v2-probe_recheck2_results.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_recheck2_results.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_recheck2_results.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T08:20:56.663912-04:00\", \"profile\": \"extended\", \"total\": 6, \"passed\": 3, \"failed\": 3, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_recheck2_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_recheck2_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-13-Carter_v2-probe_recheck3_results.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_recheck3_results.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_recheck3_results.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T08:23:08.030247-04:00\", \"profile\": \"extended\", \"total\": 5, \"passed\": 2, \"failed\": 3, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_recheck3_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_recheck3_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-14-Carter_v2-probe_recheck4_results.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_recheck4_results.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_recheck4_results.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T08:25:11.408234-04:00\", \"profile\": \"extended\", \"total\": 4, \"passed\": 1, \"failed\": 3, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_recheck4_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_recheck4_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-15-Carter_v2-probe_recheck5_results.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_recheck5_results.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_recheck5_results.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T08:27:07.952919-04:00\", \"profile\": \"extended\", \"total\": 5, \"passed\": 2, \"failed\": 3, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_recheck5_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_recheck5_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-16-Carter_v2-probe_recheck6_results.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_recheck6_results.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_recheck6_results.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T08:30:54.071719-04:00\", \"profile\": \"extended\", \"total\": 6, \"passed\": 5, \"failed\": 1, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_recheck6_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_recheck6_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-17-Carter_v2-probe_recheck_results.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_recheck_results.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_recheck_results.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T08:15:53.600995-04:00\", \"profile\": \"extended\", \"total\": 10, \"passed\": 2, \"failed\": 8, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_recheck_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_recheck_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-18-Carter_v2-probe_regression_recheck.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_regression_recheck.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_regression_recheck.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:38:34.073083-04:00\", \"profile\": \"safe\", \"total\": 29, \"passed\": 28, \"failed\": 1, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_regression_recheck.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_regression_recheck.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-19-Carter_v2-probe_session7.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_session7.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_session7.py: 1 archivos. Terminales leido PY \"\"\" probe_session7.py — Prueba real de Carter con LLM para T1-T8 de Sesion 7.  Cubre:   T1 - Resolver universal (sin hardcode de idioma)   T2 - Perception diff wired al LLM   T3 - Verification coverage completa   T4 - Memory contextual por query",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_session7.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_session7.py",
+        "ranges": [
+          "1-429"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-20-Carter_v2-probe_t01_test.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_t01_test.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_t01_test.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T01:52:18.232472-04:00\", \"profile\": \"safe\", \"total\": 0, \"passed\": 0, \"failed\": 0, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v2/probe_t01_test.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_t01_test.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-21-Carter_v2-probe_targeted_recheck.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_targeted_recheck.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_targeted_recheck.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:14:11.843111-04:00\", \"profile\": \"safe\", \"total\": 12, \"passed\": 7, \"failed\": 5, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_targeted_recheck.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_targeted_recheck.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-22-Carter_v2-probe_targeted_recheck2.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_targeted_recheck2.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_targeted_recheck2.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:18:31.813330-04:00\", \"profile\": \"safe\", \"total\": 12, \"passed\": 10, \"failed\": 2, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_targeted_recheck2.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_targeted_recheck2.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-23-Carter_v2-probe_targeted_recheck3.json",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_targeted_recheck3.json (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_targeted_recheck3.json: 1 archivos. Terminales parseado_completo. JSON scalars={\"timestamp\": \"2026-04-26T12:27:50.097804-04:00\", \"profile\": \"safe\", \"total\": 12, \"passed\": 12, \"failed\": 0, \"errors\": 0, \"skipped\": 0, \"readiness_file\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\Carter OS AI\\\\Carter_v2\\\\probe_environment_readiness.json\"}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_targeted_recheck3.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_targeted_recheck3.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-24-Carter_v2-probe_text_hardening.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_text_hardening.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_text_hardening.py: 1 archivos. Terminales leido PY \"\"\" probe_text_hardening.py — Adversarial text-agent probe for Carter v2.  Does NOT replace probe_all_tools.py. Targets text-layer failure modes:   A: Conversación pura sin tools   B: Routing básico con variaciones de fraseo   C: Anti-memory-preamble (queries no-memory que no deben tocar memory_recall)   D: Memory real (queries de hechos guardados que SÍ deben usar memory)",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_text_hardening.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_text_hardening.py",
+        "ranges": [
+          "1-556"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-25-Carter_v2-pyproject.toml",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/pyproject.toml (1 ficheros)",
+      "contract": "Grupo Carter_v2/pyproject.toml: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/pyproject.toml"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/pyproject.toml",
+        "ranges": [
+          "config"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-26-Carter_v2-run.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/run.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/run.py: 1 archivos. Terminales leido PY \"\"\"Ejecuta Carter directamente: python run.py\"\"\" import sys import os  # Fix stdout encoding for Windows terminals (cp1252 -> utf-8) if sys.stdout.encoding and sys.stdout.encoding.lower() != \"utf-8\":     sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") if sys.stderr.encoding and sys.stderr.encoding.lower() != \"utf-8\":",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/run.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/run.py",
+        "ranges": [
+          "1-14"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-27-Carter_v2-run_text_closure_gate.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/run_text_closure_gate.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/run_text_closure_gate.py: 1 archivos. Terminales leido PY \"\"\" run_text_closure_gate.py — Validation gate for Carter v2 text-agent closure.  Runs:   1. pytest (unit + regression tests) — must pass 100%   2. probe_all_tools.py  — must reach >= THRESHOLD_PROBE_ALL %   3. probe_text_hardening.py — must reach >= THRESHOLD_TEXT_HARD % ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/run_text_closure_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/run_text_closure_gate.py",
+        "ranges": [
+          "1-172"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-28-Carter_v2-scripts-inspect_vision.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/scripts/inspect_vision.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/scripts/inspect_vision.py: 1 archivos. Terminales leido PY \"\"\"Diagnostic CLI: see what Carter's vision tier detects on screen right now.  Usage examples:      python Carter_v2/scripts/inspect_vision.py         Snap the whole desktop and print every word Tesseract sees, with         its bounding box. ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/scripts/inspect_vision.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/scripts/inspect_vision.py",
+        "ranges": [
+          "1-153"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-29-Carter_v2-scripts-live_carter_llm_smoke.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/scripts/live_carter_llm_smoke.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/scripts/live_carter_llm_smoke.py: 1 archivos. Terminales leido PY from __future__ import annotations  import argparse import json import os import sys import time from dataclasses import asdict, dataclass, field",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/scripts/live_carter_llm_smoke.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/scripts/live_carter_llm_smoke.py",
+        "ranges": [
+          "1-630"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-30-Carter_v2-scripts-quantize_q2k.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/scripts/quantize_q2k.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/scripts/quantize_q2k.py: 1 archivos. Terminales leido PY #!/usr/bin/env python3 \"\"\"Re-quantize qwen3:14b Q4_K_M → Q2_K using llama-cpp-python.  Usage:     python scripts/quantize_q2k.py  Output: ~/.carter/models/qwen3-14b-q2k.gguf  (~4.5 GB) Estimated time: 15-25 minutes (CPU-bound, single-threaded).",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/scripts/quantize_q2k.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/scripts/quantize_q2k.py",
+        "ranges": [
+          "1-79"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-31-Carter_v2-scripts-setup_optional_probe_env.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/scripts/setup_optional_probe_env.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/scripts/setup_optional_probe_env.py: 1 archivos. Terminales leido PY from __future__ import annotations  import argparse import importlib.util import os import shutil import subprocess import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/scripts/setup_optional_probe_env.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/scripts/setup_optional_probe_env.py",
+        "ranges": [
+          "1-121"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-32-Carter_v2-setup_ollama_optimized.ps1",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/setup_ollama_optimized.ps1 (1 ficheros)",
+      "contract": "Grupo Carter_v2/setup_ollama_optimized.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/setup_ollama_optimized.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/setup_ollama_optimized.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-025-carter-carter_v2-33-Carter_v2-src-carter_v2",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/src/carter_v2 (19 ficheros)",
+      "contract": "Grupo Carter_v2/src/carter_v2: 19 archivos. Terminales leido PY \"\"\"Carter v2 package.\"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/src/carter_v2/__init__.py",
+        "Carter_v2/src/carter_v2/__main__.py",
+        "Carter_v2/src/carter_v2/adapters/__init__.py",
+        "Carter_v2/src/carter_v2/adapters/tool_normalizer.py",
+        "Carter_v2/src/carter_v2/adapters/tools.py",
+        "Carter_v2/src/carter_v2/adapters/uia.py",
+        "Carter_v2/src/carter_v2/capabilities/__init__.py",
+        "Carter_v2/src/carter_v2/capabilities/_dialogs.py",
+        "Carter_v2/src/carter_v2/capabilities/_gui_planner.py",
+        "Carter_v2/src/carter_v2/capabilities/_subprocess.py",
+        "Carter_v2/src/carter_v2/capabilities/app_resolver.py",
+        "Carter_v2/src/carter_v2/capabilities/base.py",
+        "Carter_v2/src/carter_v2/capabilities/calendar.py",
+        "Carter_v2/src/carter_v2/capabilities/clock.py",
+        "Carter_v2/src/carter_v2/capabilities/code.py",
+        "Carter_v2/src/carter_v2/capabilities/database.py",
+        "Carter_v2/src/carter_v2/capabilities/desktop.py",
+        "Carter_v2/src/carter_v2/capabilities/download.py",
+        "Carter_v2/src/carter_v2/capabilities/email.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/src/carter_v2/__init__.py",
+        "ranges": [
+          "1-2"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=85 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-026-carter-carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-025-carter-carter_v2.inspect.json"
+}

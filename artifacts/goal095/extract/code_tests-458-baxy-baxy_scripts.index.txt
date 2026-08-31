@@ -1,0 +1,26 @@
+batch=code_tests-458-baxy-baxy_scripts
+hash_ok=24 drift=0 miss=0
+OK scripts/run_exhaustive_runtime_model_gate.py py_lines=1179 defs=32
+OK scripts/run_exhaustive_runtime_model_gate_parallel.py py_lines=311 defs=7
+OK scripts/run_exhaustive_runtime_model_gate_resilient.py py_lines=59 defs=1
+OK scripts/run_external_adapter_gate.py py_lines=279 defs=7
+OK scripts/run_hardware_effect_gate.py py_lines=204 defs=6
+OK scripts/run_llm_plan_execution_gate.py py_lines=1000 defs=20
+OK scripts/run_mind_shell_e2e_gate.ps1
+OK scripts/run_physical_voice_to_core_gate.py py_lines=275 defs=5
+OK scripts/run_planner_corpus_gate.py py_lines=289 defs=5
+OK scripts/run_steam_launch_gate.py py_lines=96 defs=2
+OK scripts/run_turn_evidence_encoder_gate.py py_lines=1431 defs=35
+OK scripts/run_turn_linear_probe_gate.py py_lines=1431 defs=28
+OK scripts/run_turn_policy_gate.py py_lines=2866 defs=64
+OK scripts/run_user_behavior_gate.py py_lines=223 defs=4
+OK scripts/run_voice_system_gate.py py_lines=415 defs=11
+OK scripts/run_wakeword_physical_room_gate.py py_lines=542 defs=15
+OK scripts/seal_turn_evidence_final_subset.py py_lines=159 defs=6
+OK scripts/setup_mind_voice.ps1
+OK scripts/summarize_app_visible_path.py py_lines=302 defs=7
+OK scripts/test_app_open.ps1
+OK scripts/test_gate14_clean_environment.ps1
+OK scripts/test_gpu_status.ps1
+OK scripts/test_mind_router_oracles.py py_lines=142 defs=1
+OK scripts/test_mind_voice.py py_lines=346 defs=4

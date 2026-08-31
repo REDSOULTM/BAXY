@@ -1,0 +1,35 @@
+batch=code_tests-469-baxy-baxy_tests
+hash_ok=33 drift=0 miss=0
+OK tests/Baxy.Integration.Tests/HistoricalGpuStatusRoutingTests.cs
+OK tests/Baxy.Integration.Tests/HistoricalNaturalNoteRoutingTests.cs
+OK tests/Baxy.Integration.Tests/HistoricalSystemStatusRoutingTests.cs
+OK tests/Baxy.Integration.Tests/LegacyJournalMigrationTests.cs
+OK tests/Baxy.Integration.Tests/LocalJsonlSidecarProcessTests.cs
+OK tests/Baxy.Integration.Tests/MainWindowShellContractTests.cs
+OK tests/Baxy.Integration.Tests/MediaStatusNarrationTests.cs
+OK tests/Baxy.Integration.Tests/MemoryAppFlowTests.cs
+OK tests/Baxy.Integration.Tests/MemoryHandlersTests.cs
+OK tests/Baxy.Integration.Tests/MemoryOperationProtectionTests.cs
+OK tests/Baxy.Integration.Tests/MindRuntimeDiscoveryTests.cs
+OK tests/Baxy.Integration.Tests/MindRuntimeStartupOverlapBenchmarkTests.cs
+OK tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs
+OK tests/Baxy.Integration.Tests/MissionInputPipelineTests.cs
+OK tests/Baxy.Integration.Tests/MvpExternalCatalogMatrixTests.cs
+OK tests/Baxy.Integration.Tests/MvpLocalStatefulHandlerMatrixTests.cs
+OK tests/Baxy.Integration.Tests/MvpLocalTransientHandlerMatrixTests.cs
+OK tests/Baxy.Integration.Tests/MvpMemoryHandlerMatrixTests.cs
+OK tests/Baxy.Integration.Tests/NaturalAudioRequestParserTests.cs
+OK tests/Baxy.Integration.Tests/NaturalMemoryRequestParserTests.cs
+OK tests/Baxy.Integration.Tests/NaturalNoteDisambiguationEndToEndTests.cs
+OK tests/Baxy.Integration.Tests/NaturalNoteRequestParserTests.cs
+OK tests/Baxy.Integration.Tests/NaturalNoteViewModelEndToEndTests.cs
+OK tests/Baxy.Integration.Tests/NaturalSystemStatusRequestParserTests.cs
+OK tests/Baxy.Integration.Tests/NaturalSystemStatusViewModelEndToEndTests.cs
+OK tests/Baxy.Integration.Tests/NaturalSystemTimeViewModelEndToEndTests.cs
+OK tests/Baxy.Integration.Tests/NoteDisambiguationTests.cs
+OK tests/Baxy.Integration.Tests/NoteHandlerFailureSemanticsTests.cs
+OK tests/Baxy.Integration.Tests/NoteLifecycleAppContractTests.cs
+OK tests/Baxy.Integration.Tests/OperationOutcomeNarration.cs
+OK tests/Baxy.Integration.Tests/PendingNoteInteractionStateTests.cs
+OK tests/Baxy.Integration.Tests/PeripheralNarrationTests.cs
+OK tests/Baxy.Integration.Tests/PhysicalInstalledApplicationViewModelTests.cs

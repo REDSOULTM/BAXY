@@ -1,0 +1,19 @@
+batch=code_tests-032-probando_gemma4
+hash_ok=17 drift=0 miss=0
+OK gemma4_agent/agent_core/agent_runner.py py_lines=1028 defs=21
+OK gemma4_agent/agent_core/core_tools_pareto.py py_lines=223 defs=7
+OK gemma4_agent/agent_core/eager_readonly.py py_lines=397 defs=12
+OK gemma4_agent/agent_core/feature_flags.py py_lines=85 defs=5
+OK gemma4_agent/agent_core/file_routing.py py_lines=80 defs=3
+OK gemma4_agent/agent_core/lang_detect.py py_lines=216 defs=5
+OK gemma4_agent/agent_core/latency_helpers.py py_lines=138 defs=5
+OK gemma4_agent/agent_core/reply_repair.py py_lines=408 defs=14
+OK gemma4_agent/agent_core/turn_types.py py_lines=57 defs=1
+OK gemma4_agent/chat.py py_lines=23 defs=1
+OK gemma4_agent/computer_use_pkg/__init__.py py_lines=1 defs=0
+OK gemma4_agent/computer_use_pkg/gui_safety.py py_lines=290 defs=15
+OK gemma4_agent/computer_use_pkg/gui_verify.py py_lines=193 defs=9
+OK gemma4_agent/computer_use_pkg/gui_verify_winevent.py py_lines=167 defs=6
+OK gemma4_agent/computer_use_pkg/gui_vision_gate.py py_lines=104 defs=8
+OK gemma4_agent/data/abstain_head.json.bak_pre_clickvisible
+OK gemma4_agent/data/abstain_head.json.bak_pre_v3corpus_2026-06-11

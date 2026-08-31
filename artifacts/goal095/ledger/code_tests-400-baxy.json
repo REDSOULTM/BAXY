@@ -1,0 +1,2688 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-400-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:51Z",
+  "closed_utc": "2026-08-31T02:46:58Z",
+  "estimated_tokens": 236279,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 114,
+  "subsystem": "baxy_art_field-ui-4a83f2d-export",
+  "subsystems": [
+    "baxy_art_field-ui-4a83f2d-export",
+    "baxy_art_fixes",
+    "baxy_art_historical_exhaustive",
+    "baxy_art_product"
+  ],
+  "files": [
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/App.tsx",
+      "sha256": "f4657e95357355dca079820e8f23688bb94ac0a0988a435c8b62b870eded42cf",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ActivityPanel.tsx",
+      "sha256": "98d22f4d6dbf412c1c32518725441c4644dd945caea81b3fe5c85a91caed54a2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/BottomBar.tsx",
+      "sha256": "c85e283d8dbc455904b3a1df425ebc1b28744f3fcc31a55fabfd4a59663bfd6f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/FieldCenter.tsx",
+      "sha256": "6ac11e615e8b52c3e08723e2501ebc71b6282fad784cff97d56694f827e52016",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Icon.tsx",
+      "sha256": "7f070fdd0cf0940bce0654823f3c5b65f9b6e453bbc7ff77a5f37e767393a53a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/LogoMark.tsx",
+      "sha256": "4c9278ab009af139e0ce892bfb1df3971cb4b84876bb701c080c48fedbc66d9b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/MemoryPanel.tsx",
+      "sha256": "9a87d39974c27cbdc5a5ea8ab07b278949e3e1a663522ae1e2eb709ec211c46a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/NeuralGraph.tsx",
+      "sha256": "c82e9818d4922638017feceb5b71b3433026de19d5d50d389873ef85e3f010a4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Panel.tsx",
+      "sha256": "ae36d6399bc61d73abedbcff138efbaeaa101a8963b9ddb2ffcc80e416729ec5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ParticleCluster.tsx",
+      "sha256": "09e355273c47840b8284a71fc026783c9ad0a246fa6ecf68b36658aea145d25c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Select.tsx",
+      "sha256": "a0bc4cc1bf1b47fd19f4fbdbac1e3caa6031c3b9ead3fc7dba1df5cb278d3fe0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/SessionsPanel.tsx",
+      "sha256": "e7e983c603c68d1f02b48038d37c8b10fd59fdd406fb64ebf073b105ac86cc3e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/SettingsPanel.tsx",
+      "sha256": "9d1a438a5f6ca9176d8851de855012a23fec3109e79b02923e466441941dd7a0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Slider.tsx",
+      "sha256": "ccad0a2f2500feebf83a43accc3e0f1c30b56e95d4b0b6022e064682618bc32f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/SubstratePanel.tsx",
+      "sha256": "92c00d4d0c58394e4f348099ff526b089dc550dba90a42b2a62c7914b508396e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/TitleBar.tsx",
+      "sha256": "384e263158501f1adbe6afb4bfc0ad7a87e0488d83c238120f445269c78f2bab",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ToastHost.tsx",
+      "sha256": "f7aea96cc45c390b97ce1d9e34e3107841608a194e44a1992578dd9d47b57d1d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Toggle.tsx",
+      "sha256": "9d57a936ceadc1c9dbe58d896568c5e0f0b0bab0b3aedf024742ba44ed6f16ef",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ToolsPanel.tsx",
+      "sha256": "304514c553d1e68a1d3f340aa1249556d85e1a7cd439443ad3df882a6a2f10c5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/TopBar.tsx",
+      "sha256": "d952dfbeec349e24f119214a13ee6432bc6162fd301c30b317e26e146c5edc60",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/TriggersPanel.tsx",
+      "sha256": "a37f9fccae7f106bdc594957b417f9e0553f5009c34d3d7f781857b06d1e6d31",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/hooks/useClock.ts",
+      "sha256": "9c7f713382d1b4ccc0c4606e406599f3f1becc9171840c2c1e6f22dc23f63d67",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/hooks/useEventStream.ts",
+      "sha256": "2616f0cab249cace9cd5a570c1e492dde2e5d52798fb188e4a77dc189461f55d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/hooks/useToast.ts",
+      "sha256": "1269ce4119ee652c740370dc23bf65dc408291c73139d82889c9496078a50438",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/main.tsx",
+      "sha256": "e0b99899f4e3779222aec84e8086b1b7c85248b32b1dd658577629856a430158",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/styles/prototype.css",
+      "sha256": "c46e3a3ffa0da0ed2bf2881c04df391c6635a0b249fb8a8e17919696596164fd",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/styles/prototype.css.prereskin.bak",
+      "sha256": "f0f1e746287daa98cbc5131b1ff309474d9124ea93e8e7306bf727d4e1a078c3",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/types.ts",
+      "sha256": "0eaff5df76393a62ed4148c196ae88856596e57e1acbd26e44be2bd0664721a2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/utils/seededRng.ts",
+      "sha256": "1c3a6e570e23ba018da31bab7a5874cd57888d7681381e6a6bdf7145b028f101",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/probe_live_turns_preserved.py",
+      "sha256": "024fa19cfdcc5f88fc171c2276a40dc8bd8692e8ab490b6ba55f73915be53dc4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-269"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard0.jsonl.lock",
+      "sha256": "f791ad62944ccaa854ae16f7d2e7a7b8f39786bb7733038aa3f805d7081ed602",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard1.jsonl.lock",
+      "sha256": "273085a1d29cbc1e92aeec04f72fc0cedf9f87a2fa1dfc19c4f243ca52961691",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard2.jsonl.lock",
+      "sha256": "7e3babdfc9834eda5e56c07c245ef1f886cb1b25ba47920f94695c7807e0ae6d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard3.jsonl.lock",
+      "sha256": "cc7c8fd5bc72866b4986bf5950b729dad03dd8412a8b68a87bf1d97ae4609259",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard4.jsonl.lock",
+      "sha256": "38320617fba1ffdacec6d09fdd117d84132fb248d2b940a2902d7549a916899b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard5.jsonl.lock",
+      "sha256": "b5c312c4d8cee94972412b9ea785976f9dbb2c26dd11480d9f2b9b4691df1571",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard6.jsonl.lock",
+      "sha256": "daabc5d7dd36d9ee332a9fa45f00b5af77438bef04909d36bfe05d7568e97920",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard7.jsonl.lock",
+      "sha256": "40b0eaaab5ec1d73c8361fc32cd0b5c3ea24a6911e3b3c51048939f5dcbf424c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard0.jsonl.lock",
+      "sha256": "bee7b3de8f2b3c1bb25bc7853c07cfa32599af47c2d5ea7ab36f1ee80f4c6ebb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard1.jsonl.lock",
+      "sha256": "49f644a40a095398dc565abc064df9a3798841c3e172d399ef38a6567239614f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard2.jsonl.lock",
+      "sha256": "ed08b64b9418c7f7d26c82e7d187ce58ddb744bcaa7d8d91beca7060cfac2632",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard3.jsonl.lock",
+      "sha256": "a9a9ddd1bc96b47f172b971d108b7eb749ffaac1c88fbadd508c00e7cf7459c6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard4.jsonl.lock",
+      "sha256": "8ce6c39490ba757eecfc71c7deae439d50f11a973577ebedeae2a75d346ab9cd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard5.jsonl.lock",
+      "sha256": "e0262ada1b2326bfc1faf68d22f3f77aef3f08f01b12bed8b406f6c074690c1e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard6.jsonl.lock",
+      "sha256": "e45557de5e25a26781a985a1063da26aeb7fc85b4cc8b2584344ce107d08a798",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard7.jsonl.lock",
+      "sha256": "898725ef30f08aea9d3e6993de8d280c7d89af0beae73265cf3910e6a0e91258",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard0.jsonl.lock",
+      "sha256": "a3d0426c2eccc78fa4d5a466be23b10a9d8a03f423ffa36e028a0cac77866417",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard1.jsonl.lock",
+      "sha256": "1cc65541052bfe820bcb809f0fdf2897665e6bc603e283c41d4ef86dd2f2b009",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard2.jsonl.lock",
+      "sha256": "3edc5eff573613c78d52740b4b8e7b309e00d3eaae0e64a64a14640bff4506af",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard3.jsonl.lock",
+      "sha256": "8073f821021617c250d76f88135371548b828e997268781df54ad32b42c1844b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard4.jsonl.lock",
+      "sha256": "251bd8eda0a8fa3ed35bbf9fad0fb1c4ceecdcdeb5f9d2194b0efd21769043c8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard5.jsonl.lock",
+      "sha256": "2f1b2d14445ebdaeee84a6a2a99c2f3f62d9fdf26b892eb3a13d87597d6c2551",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard6.jsonl.lock",
+      "sha256": "aa80c3e28b6ebe7f515dc93693a2d76595f8b522f71f0444969721ea12559c42",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard7.jsonl.lock",
+      "sha256": "6a8df95906d00b5beea0cd10cab4089f894b6b77446d4b44431937221837895c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final2.shard0.jsonl.lock",
+      "sha256": "c4eac734abcd68809ef4efb90929a3a5fc567d128cc80b412b0d867b834a597f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final2.shard1.jsonl.lock",
+      "sha256": "4063200952234fec0e8739cbea17ae579fb6e994ed9bdc264b183578f2324789",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final3.shard0.jsonl.lock",
+      "sha256": "fd76e79043a0016ce4eeb644004fd6bceba97d82bdfa46e39ab4b29d762f05f1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final3.shard1.jsonl.lock",
+      "sha256": "755e38f8d26e9c2541840d4092887b6a0b69fed5d411a153fd6521aa0e317c7a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard0.jsonl.lock",
+      "sha256": "01643f2f24f17ebfdd209904af3da8944af35401a2cf367dc81493a5a233e1cb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard1.jsonl.lock",
+      "sha256": "9087bff4ee5a4c50553a8a9096963d8d75dea9601fee74de289bbf21bcc25608",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard2.jsonl.lock",
+      "sha256": "b5589b237e361caeb0265165571f2b446d650ae2bb2cef51c611a56697f7eb92",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard3.jsonl.lock",
+      "sha256": "253ed720e13b61f5760f5188b6656907303f1e56843bc377d11ddb7c3217ea7d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard0.jsonl.lock",
+      "sha256": "b83d50229ca3b057bf1b762e9257f5da3d18f228e608adf00e04d280d56646e5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard1.jsonl.lock",
+      "sha256": "bbb14a0bc10e89af6d47c298629a73219cd9c037ca2a9446a264f4a71545cb34",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard2.jsonl.lock",
+      "sha256": "a10327ddbb72fea26c5abbebde27c69e87dcf0c1396afc1442bf8287c73c5452",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard3.jsonl.lock",
+      "sha256": "77d32bcff35fb424c9a9fc609c5da0d9d5bb4cd6425346116c4d0dab62ba9704",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard4.jsonl.lock",
+      "sha256": "c92efefd760fb29057ba3515cb8ae559190012d12d9f2f54d258e0cc9d094865",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard5.jsonl.lock",
+      "sha256": "a8f74b845a104aed0339318c90bcd6d12866a30da1b79840e30a0d8016d0f773",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard6.jsonl.lock",
+      "sha256": "782fdfafa9ffa995a158c3f27cdfc41258f9f032fdeaadfbcb1683af9b15d363",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard7.jsonl.lock",
+      "sha256": "7b6773878d0a1183e40d700cd74591ccc1ca3e6428682134396ca65f22720d1c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard0.jsonl.lock",
+      "sha256": "611f2a456e391618e84ff53f6e853bb6ae6f146283ec2de805c693e00e11c7f3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard1.jsonl.lock",
+      "sha256": "bf068b2b2a96c397778485d89528c36ea1e9428984cabd954af48ce5b2814c48",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard6.jsonl.lock",
+      "sha256": "a3972955bf1705c69f3a2b0e814de929bd7eb17a579ca2eb22ea4f4149ebf2bb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard7.jsonl.lock",
+      "sha256": "0b8493a8fa228433ceb9f38f6d5e77422561175f615695550805307eac5e11c6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.jsonl.lock",
+      "sha256": "1a39b537c6eaf820a594091d2bd261628b46d1eaf364fe8487a68875c5e2aa69",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard0.jsonl.lock",
+      "sha256": "6017af6c686609dd487e75a27e6465c8c2e2689148ad7eb1c24eb2cabb0338a2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard1.jsonl.lock",
+      "sha256": "2a50ac545f30b02200c4f18f694ce7e0ce691e9f509c38d8beebf3b4dd046b53",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard2.jsonl.lock",
+      "sha256": "f3d9bfdb2d74b997a65bc9b8783cff1374fd3edbde5c0e1fc64322c1aa1fe9ea",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard3.jsonl.lock",
+      "sha256": "e500ee4d49d0cbbfd0c99f2c402e8b8634c99d2152cf75a01ff47c6dec88a1b3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard4.jsonl.lock",
+      "sha256": "f39b252b33df405797180a2d3fa4066d293789a8f9bac6f8fa498105f49f9f8d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard5.jsonl.lock",
+      "sha256": "0699b4fb3d5f684ee70723c7fde8948e451659e0347e51fab9e575a799c1abd7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard6.jsonl.lock",
+      "sha256": "af6131b3c6c13e9bc33bf055b9158ce8e64e65c07e0be13807b1105b74ea177c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.shard7.jsonl.lock",
+      "sha256": "e843948d6e3102bac1eda2042cd8cfd74f7fc669f63b23264ebeefd3d5612740",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/FieldUiHost/field-native-bridge.js",
+      "sha256": "051a1c2850235aaf1319ec413933164f3640ddeb243bcbf3ba05426e8e9dda2c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/SpotifyDesktopAutomation.ps1",
+      "sha256": "50c0db98d71e37be2d9885c9d2169d6b4dbc14c67a20a9058acfebd259c6bf12",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/SpotifyMediaControl.ps1",
+      "sha256": "d7a6052ba72531876f7d332d85d70cba6f879422d243ca8cad5f6f454716a7e7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-396f42ab13634a5982a7d44182d1ffe4/head-snapshot/experiments/technology_tournament/round_b/harness.ps1",
+      "sha256": "35406d1e071ab0361f6e71e2db7e02dad0f5df4354887d6426e428ed61b5def1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/DesktopClickVisible.ps1",
+      "sha256": "999c35a6112179818b9a257c03a8e55951d1c7a95fe948a974cb0fa8ada51d54",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/DesktopKeyPress.ps1",
+      "sha256": "7d7bd8caeb40c06c97350b5e63e85ea385b0e6e7a58844e1cd7117db581a1769",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/DesktopSelectAll.ps1",
+      "sha256": "e9188f471920d706fd82e093e1ccbb29abae232456ffb297363057534a8932fc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/FieldUi/assets/app.js",
+      "sha256": "379f434c1aad328a57b656d9475b2937870564f013fc5e05ee18901d1862589b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/FieldUiHost/field-native-bridge.js",
+      "sha256": "81802ae62142f0ee7185a23c7b337c59cec7710e995ed239245d73cdc8cd7799",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/KnownFileOpen.ps1",
+      "sha256": "d351b0503d1f78cd500e37a74d83ad0262a29902f79805f4de8b3496d7c2aee5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/KnownFolderOpen.ps1",
+      "sha256": "ff84e6058c60070bc405df6a27a707d365bff733c13bd57dfc1c0f3db0180774",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/SpotifyDesktopAutomation.ps1",
+      "sha256": "cdaa4ffdbfe13e3cf8ac934eeef5225ee846c7f17653df05f92a68484735fa31",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/SpotifyMediaControl.ps1",
+      "sha256": "367c4ab0e5dd71d4698fd6de7cc6313661bb6e9f250d822cf7f1593275933ee7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/WindowsScheduledNotification.ps1",
+      "sha256": "793d20536e2d902b64f353576464eba085bedf100bdfd4838d84dd1338f5cc90",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/DesktopClickVisible.ps1",
+      "sha256": "4b4f0f45f687b93390441ec111c6aef46c1ccfd852c35260d3d522810c1cbad6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/DesktopKeyPress.ps1",
+      "sha256": "add59b013cec11b25554b83ca9ec8e18c13e9b944a2daed9bbacc7d189f1e4b8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/DesktopSelectAll.ps1",
+      "sha256": "206c93ae64a291c8a6cd37aeb94e5abc55a6d5a743f85e4b2434fbfe58ab3500",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/KnownFileOpen.ps1",
+      "sha256": "ae5787e735cce6d74c3552c5a313be46b8d43dc66c5c5d65fde7e516e2b9368e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/KnownFolderOpen.ps1",
+      "sha256": "8cb728e9db97c55941a65f574685cdb212f7a785209a67b0497cf2d94bb45315",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/SpotifyDesktopAutomation.ps1",
+      "sha256": "34b791604846460a1483dd8b6266d3cafee923824590a23baedb4f7429272bb9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/SpotifyMediaControl.ps1",
+      "sha256": "c639c9a14a852e2efe735eb75acb513788ee6209b434b816d0c2468ddc6cec49",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/WindowsScheduledNotification.ps1",
+      "sha256": "f701c6e3f099436f6829d2be54feacd9d35a139179f419e47fca1e04087e2294",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/release-82e664057005/app/FieldUiHost/field-native-bridge.js",
+      "sha256": "0ff9f71222d6b50ea700398de4719a55f9fdb359d34f4a432ad20e64c1a19712",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/release-82e664057005/app/SpotifyDesktopAutomation.ps1",
+      "sha256": "ad3606258619169a0eb3d0d22874703f67b90c2b3958ee0b80830fa259bd8aed",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/release-82e664057005/app/SpotifyMediaControl.ps1",
+      "sha256": "c2b3b32a171cee9e3c51f1981c1b23cf0288b9a9a0f4426514111a8d3d952fe2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/release-9105ead/app/SpotifyDesktopAutomation.ps1",
+      "sha256": "34ac3ec04e979b1f86257f8b40da1a55bf6325464783afea4edf6e0457b70dfa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/runtime-restore-333702f9/mpv-extracted/mpv-register.bat",
+      "sha256": "e3c354d13bfe4ae2b9bafbd1b7609753c47f78a3a4989b082f34d5a938aa7a09",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "artifacts/product/build/runtime-restore-333702f9/mpv-extracted/mpv-unregister.bat",
+      "sha256": "d40f2f76e00e08287c39c15654e9350831e4418f1bd9619bc8dcff0dfb055e91",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "artifacts/product/build/update-333702f9-win-x64/app/DesktopClickVisible.ps1",
+      "sha256": "db1a9c9d81f0ad53d1a6d5b53f07da70972302f8faea0a77344a0dd83aba455e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/update-333702f9-win-x64/app/DesktopKeyPress.ps1",
+      "sha256": "04c8dffd74d8705783ac76cef4ca6cdd32dd91bcee8e6f2328091a7e0ef2d74f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/product/build/update-333702f9-win-x64/app/DesktopSelectAll.ps1",
+      "sha256": "9880d8eb6193bc3bfa5f32c170edaae5c2ce433dc5ec7e1499067b0d8f85b27d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-400-baxy-01-artifacts-field-ui-4a83f2d-export-gui",
+      "disposition": "adapt_candidate",
+      "component": "artifacts/field-ui-4a83f2d-export/gui (27 ficheros)",
+      "contract": "Grupo artifacts/field-ui-4a83f2d-export/gui: 27 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/App.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ActivityPanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/BottomBar.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/FieldCenter.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Icon.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/LogoMark.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/MemoryPanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/NeuralGraph.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Panel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ParticleCluster.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Select.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/SessionsPanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/SettingsPanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Slider.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/SubstratePanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/TitleBar.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ToastHost.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/Toggle.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/ToolsPanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/TopBar.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/components/TriggersPanel.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/hooks/useClock.ts",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/hooks/useEventStream.ts",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/hooks/useToast.ts",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/main.tsx",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/types.ts",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/utils/seededRng.ts"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/src/App.tsx",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-02-artifacts-fixes-2026-07-27-audit-remediation",
+      "disposition": "evidence_only",
+      "component": "artifacts/fixes/2026-07-27-audit-remediation (1 ficheros)",
+      "contract": "Grupo artifacts/fixes/2026-07-27-audit-remediation: 1 archivos. Terminales leido PY \"\"\"Sonda de remediación que conserva los efectos reconocidos entre turn y plan.\"\"\"  from __future__ import annotations  import argparse import json import os import shutil",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/fixes/2026-07-27-audit-remediation/probe_live_turns_preserved.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/fixes/2026-07-27-audit-remediation/probe_live_turns_preserved.py",
+        "ranges": [
+          "1-269"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-03-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-04-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-05-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard2.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard2.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard2.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard2.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-06-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard3.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard3.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard3.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard3.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-07-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard4.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard4.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard4.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard4.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-08-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard5.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard5.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard5.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard5.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-09-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard6.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard6.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard6.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard6.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-10-artifacts-historical_exhaustive-runtime_model_gate.final.sha",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final.shard7.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final.shard7.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final.shard7.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final.shard7.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-11-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-12-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-13-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard2.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard2.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard2.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard2.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-14-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard3.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard3.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard3.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard3.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-15-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard4.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard4.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard4.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard4.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-16-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard5.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard5.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard5.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard5.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-17-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard6.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard6.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard6.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard6.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-18-artifacts-historical_exhaustive-runtime_model_gate.final14.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard7.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final14.shard7.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final14.shard7.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final14.shard7.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-19-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-20-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-21-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard2.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard2.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard2.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard2.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-22-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard3.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard3.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard3.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard3.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-23-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard4.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard4.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard4.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard4.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-24-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard5.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard5.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard5.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard5.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-25-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard6.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard6.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard6.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard6.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-26-artifacts-historical_exhaustive-runtime_model_gate.final17.s",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard7.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final17.shard7.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final17.shard7.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final17.shard7.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-27-artifacts-historical_exhaustive-runtime_model_gate.final2.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final2.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final2.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final2.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final2.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-28-artifacts-historical_exhaustive-runtime_model_gate.final2.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final2.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final2.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final2.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final2.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-29-artifacts-historical_exhaustive-runtime_model_gate.final3.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final3.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final3.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final3.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final3.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-30-artifacts-historical_exhaustive-runtime_model_gate.final3.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final3.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final3.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final3.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final3.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-31-artifacts-historical_exhaustive-runtime_model_gate.final4.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final4.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final4.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-32-artifacts-historical_exhaustive-runtime_model_gate.final4.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final4.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final4.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-33-artifacts-historical_exhaustive-runtime_model_gate.final4.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard2.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final4.shard2.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final4.shard2.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard2.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-34-artifacts-historical_exhaustive-runtime_model_gate.final4.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard3.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final4.shard3.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final4.shard3.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final4.shard3.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-35-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-36-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-37-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard2.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard2.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard2.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard2.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-38-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard3.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard3.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard3.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard3.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-39-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard4.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard4.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard4.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard4.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-40-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard5.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard5.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard5.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard5.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-41-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard6.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard6.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard6.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard6.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-42-artifacts-historical_exhaustive-runtime_model_gate.final6.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard7.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final6.shard7.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final6.shard7.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final6.shard7.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-43-artifacts-historical_exhaustive-runtime_model_gate.final7.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final7.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final7.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-44-artifacts-historical_exhaustive-runtime_model_gate.final7.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final7.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final7.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-45-artifacts-historical_exhaustive-runtime_model_gate.final7.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard6.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final7.shard6.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final7.shard6.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard6.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-46-artifacts-historical_exhaustive-runtime_model_gate.final7.sh",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard7.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.final7.shard7.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=['pid', 'started']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.final7.shard7.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.final7.shard7.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-47-artifacts-historical_exhaustive-runtime_model_gate.jsonl.loc",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-48-artifacts-historical_exhaustive-runtime_model_gate.shard0.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard0.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard0.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard0.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard0.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-49-artifacts-historical_exhaustive-runtime_model_gate.shard1.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard1.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard1.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard1.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard1.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-50-artifacts-historical_exhaustive-runtime_model_gate.shard2.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard2.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard2.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard2.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard2.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-51-artifacts-historical_exhaustive-runtime_model_gate.shard3.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard3.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard3.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard3.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard3.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-52-artifacts-historical_exhaustive-runtime_model_gate.shard4.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard4.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard4.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard4.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard4.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-53-artifacts-historical_exhaustive-runtime_model_gate.shard5.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard5.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard5.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard5.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard5.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-54-artifacts-historical_exhaustive-runtime_model_gate.shard6.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard6.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard6.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard6.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard6.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-55-artifacts-historical_exhaustive-runtime_model_gate.shard7.js",
+      "disposition": "evidence_only",
+      "component": "artifacts/historical_exhaustive/runtime_model_gate.shard7.jsonl.lock (1 ficheros)",
+      "contract": "Grupo artifacts/historical_exhaustive/runtime_model_gate.shard7.jsonl.lock: 1 archivos. Terminales parseado_completo JSONL lines=1 keys=[]",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/runtime_model_gate.shard7.jsonl.lock"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/runtime_model_gate.shard7.jsonl.lock",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-400-baxy-56-artifacts-product-build",
+      "disposition": "evidence_only",
+      "component": "artifacts/product/build (29 ficheros)",
+      "contract": "Grupo artifacts/product/build: 29 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/FieldUiHost/field-native-bridge.js",
+        "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/SpotifyDesktopAutomation.ps1",
+        "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/SpotifyMediaControl.ps1",
+        "artifacts/product/build/packaging-test-396f42ab13634a5982a7d44182d1ffe4/head-snapshot/experiments/technology_tournament/round_b/harness.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/DesktopClickVisible.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/DesktopKeyPress.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/DesktopSelectAll.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/FieldUi/assets/app.js",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/FieldUiHost/field-native-bridge.js",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/KnownFileOpen.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/KnownFolderOpen.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/SpotifyDesktopAutomation.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/SpotifyMediaControl.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/WindowsScheduledNotification.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/DesktopClickVisible.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/DesktopKeyPress.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/DesktopSelectAll.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/KnownFileOpen.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/KnownFolderOpen.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/SpotifyDesktopAutomation.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/SpotifyMediaControl.ps1",
+        "artifacts/product/build/packaging-test-843637ea89aa40fd94daf7d4bb0701f4/input/app/core/WindowsScheduledNotification.ps1",
+        "artifacts/product/build/release-82e664057005/app/FieldUiHost/field-native-bridge.js",
+        "artifacts/product/build/release-82e664057005/app/SpotifyDesktopAutomation.ps1",
+        "artifacts/product/build/release-82e664057005/app/SpotifyMediaControl.ps1",
+        "artifacts/product/build/release-9105ead/app/SpotifyDesktopAutomation.ps1",
+        "artifacts/product/build/update-333702f9-win-x64/app/DesktopClickVisible.ps1",
+        "artifacts/product/build/update-333702f9-win-x64/app/DesktopKeyPress.ps1",
+        "artifacts/product/build/update-333702f9-win-x64/app/DesktopSelectAll.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/product/build/inspect-app-b2205207881a4eef8ca6318d1caa326e/FieldUiHost/field-native-bridge.js",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=114 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-401-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-400-baxy.inspect.json"
+}

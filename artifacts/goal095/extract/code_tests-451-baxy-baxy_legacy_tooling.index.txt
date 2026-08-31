@@ -1,0 +1,14 @@
+batch=code_tests-451-baxy-baxy_legacy_tooling
+hash_ok=12 drift=0 miss=0
+OK legacy/tooling/providers/uia.py py_lines=3968 defs=121
+OK legacy/tooling/providers/vision_attachment.py py_lines=1238 defs=70
+OK legacy/tooling/providers/windows_control.py py_lines=1530 defs=69
+OK legacy/tooling/registry.py py_lines=601 defs=43
+OK legacy/tooling/retrieval.py py_lines=521 defs=23
+OK legacy/tooling/routines_v2.py py_lines=1787 defs=96
+OK legacy/tooling/runtime.py py_lines=1312 defs=23
+OK legacy/tooling/schemas.py py_lines=46 defs=3
+OK legacy/tooling/secure_storage.py py_lines=20 defs=2
+OK legacy/tooling/semantic_ranker.py py_lines=265 defs=14
+OK legacy/tooling/sqlite_adapters.py py_lines=91 defs=6
+OK legacy/tooling/steam_spotify_compound.py py_lines=530 defs=17

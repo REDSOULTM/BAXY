@@ -1,0 +1,59 @@
+{
+  "batch_id": "code_tests-053-probando_gemma4-pg4_data",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 4,
+  "hash_ok": 4,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/router_exemplars.npz.stale_bak_20260530",
+      "queued_sha256": "bc5e87acc6c7c91edfa0ca0f179b6560cd64e71e5a463b8f71f0d2b38344c627",
+      "size_queued": 2498208,
+      "exists": true,
+      "disk_sha256": "bc5e87acc6c7c91edfa0ca0f179b6560cd64e71e5a463b8f71f0d2b38344c627",
+      "disk_size": 2498208,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/state.json.bak_2026_05_20",
+      "queued_sha256": "064f4f17fe125d37414f2977ff31789601ecebfab4f49254475db5d59b0c7612",
+      "size_queued": 291018,
+      "exists": true,
+      "disk_sha256": "064f4f17fe125d37414f2977ff31789601ecebfab4f49254475db5d59b0c7612",
+      "disk_size": 291018,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/tool2vec_centroids.npz.bak_pre_clickvisible",
+      "queued_sha256": "52fe8836222207e0142cf2bc0075d7ce9964ad07c4b0821ed0902580b00cede2",
+      "size_queued": 97491,
+      "exists": true,
+      "disk_sha256": "52fe8836222207e0142cf2bc0075d7ce9964ad07c4b0821ed0902580b00cede2",
+      "disk_size": 97491,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/tool2vec_centroids.npz.bak_pre_jbalvin",
+      "queued_sha256": "1e6c6e3467102275075908fb97a88192a03d6bdb31d18d6deb566e7221360f94",
+      "size_queued": 97491,
+      "exists": true,
+      "disk_sha256": "1e6c6e3467102275075908fb97a88192a03d6bdb31d18d6deb566e7221360f94",
+      "disk_size": 97491,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

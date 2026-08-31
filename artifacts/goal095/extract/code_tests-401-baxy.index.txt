@@ -1,0 +1,66 @@
+batch=code_tests-401-baxy
+hash_ok=64 drift=0 miss=0
+OK artifacts/product/build/update-333702f9-win-x64/app/FieldUi/assets/app.js
+OK artifacts/product/build/update-333702f9-win-x64/app/KnownFileOpen.ps1
+OK artifacts/product/build/update-333702f9-win-x64/app/KnownFolderOpen.ps1
+OK artifacts/product/build/update-333702f9-win-x64/app/SpotifyDesktopAutomation.ps1
+OK artifacts/product/build/update-333702f9-win-x64/app/SpotifyMediaControl.ps1
+OK artifacts/product/build/update-333702f9-win-x64/app/WindowsScheduledNotification.ps1
+OK artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/baxy_slice.py py_lines=545 defs=19
+OK artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/release/build/serde_core-493495480d391b30/out/private.rs
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core/Program.cs
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/build_round_b.ps1
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/dotnet_webview/CoreBridge.cs
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/App.xaml.cs
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/BaxyNativeWpf.csproj
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml.cs
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/Cargo.lock
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/Cargo.toml
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/rust-toolchain.toml
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/src/main.rs
+OK experiments/functiongemma_selector/benchmark_family_arbiter.py py_lines=278 defs=9
+OK experiments/functiongemma_selector/build_audio_seed.py py_lines=183 defs=3
+OK experiments/functiongemma_selector/build_contrastive_seed.py py_lines=226 defs=2
+OK experiments/functiongemma_selector/build_failure_seed.py py_lines=188 defs=2
+OK experiments/functiongemma_selector/build_r4_repair_seed.py py_lines=217 defs=2
+OK experiments/functiongemma_selector/build_reviewed_corpus.py py_lines=153 defs=2
+OK experiments/functiongemma_selector/build_targeted_seed.py py_lines=202 defs=2
+OK experiments/functiongemma_selector/build_verifier_corpus.py py_lines=192 defs=5
+OK experiments/functiongemma_selector/combine_corpora.py py_lines=70 defs=1
+OK experiments/functiongemma_selector/corpus_llm.py py_lines=188 defs=10
+OK experiments/functiongemma_selector/evaluate_family_arbiter.py py_lines=136 defs=4
+OK experiments/functiongemma_selector/evaluate_selector.py py_lines=369 defs=4
+OK experiments/functiongemma_selector/evaluate_verifier.py py_lines=174 defs=3
+OK experiments/functiongemma_selector/generate_candidates.py py_lines=352 defs=4
+OK experiments/functiongemma_selector/review_candidates.py py_lines=287 defs=5
+OK experiments/functiongemma_selector/score_verifier.py py_lines=198 defs=4
+OK experiments/functiongemma_selector/selector_common.py py_lines=146 defs=13
+OK experiments/functiongemma_selector/train_lora.py py_lines=319 defs=11
+OK experiments/mind_llm_tournament/build_eval_sets.py py_lines=146 defs=1
+OK experiments/mind_llm_tournament/run_llm_tournament.py py_lines=408 defs=14
+OK experiments/mind_router_spike/.gitignore
+OK experiments/mind_router_spike/analyze_catalog_surface_current_tree_r1.py py_lines=46 defs=2
+OK experiments/mind_router_spike/analyze_catalog_surface_current_tree_r2.py py_lines=46 defs=2
+OK experiments/mind_router_spike/analyze_catalog_surface_holdout_r22.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_catalog_surface_holdout_r23.py py_lines=44 defs=2
+OK experiments/mind_router_spike/analyze_catalog_surface_holdout_r24.py py_lines=44 defs=2
+OK experiments/mind_router_spike/analyze_catalog_surface_holdout_r25.py py_lines=44 defs=2
+OK experiments/mind_router_spike/analyze_catalog_surface_holdout_r26.py py_lines=44 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r22.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r23.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r24.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r25.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r26.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r27.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_current_tree_r28.py py_lines=47 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r10.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r11.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r12.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r13.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r14.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r15.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r16.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r17.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r18.py py_lines=43 defs=2
+OK experiments/mind_router_spike/analyze_generalization_product_holdout_r19.py py_lines=43 defs=2

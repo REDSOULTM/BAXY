@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-021-carter-carter_v2",
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_v2",
+  "subsystems": [
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "Carter_v2/Carter_v2.rar",
+      "queued_sha256": "e5b2663d37700efcd9d091c8c9fc49e8f1cf5a32a715eeecb35361fbb9726251",
+      "size_queued": 2180968,
+      "exists": true,
+      "disk_sha256": "e5b2663d37700efcd9d091c8c9fc49e8f1cf5a32a715eeecb35361fbb9726251",
+      "disk_size": 2180968,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/Carter_v2.rar' exists on disk, but not in 'HEAD'\n"
+    }
+  ]
+}

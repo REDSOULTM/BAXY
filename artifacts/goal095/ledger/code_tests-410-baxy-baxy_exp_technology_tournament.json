@@ -1,0 +1,39 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-410-baxy-baxy_exp_technology_tournament",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:47:42Z",
+  "closed_utc": "2026-08-31T02:47:42Z",
+  "estimated_tokens": 164132,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 1,
+  "subsystem": "baxy_exp_technology_tournament",
+  "subsystems": [
+    "baxy_exp_technology_tournament"
+  ],
+  "files": [
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/build/web_atoms-cbab6bc00af32595/out/generated.rs",
+      "sha256": "d00d672136bd8e5c11531db5ba89e9cf1fd27d94a8ec3c7bddf041c428064d82",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-411-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-410-baxy-baxy_exp_technology_tournament.inspect.json"
+}

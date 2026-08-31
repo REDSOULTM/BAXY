@@ -1,0 +1,71 @@
+batch=code_tests-010-carter
+hash_ok=69 drift=0 miss=0
+OK legacy/Carter_v2/src/carter_v2/turn/mission_verification.py py_lines=224 defs=10
+OK legacy/Carter_v2/src/carter_v2/turn/perception.py py_lines=185 defs=11
+OK legacy/Carter_v2/src/carter_v2/turn/tool_catalog_selection.py py_lines=316 defs=11
+OK legacy/Carter_v2/src/carter_v2/turn/types.py py_lines=54 defs=6
+OK legacy/Carter_v2/src/carter_v2/turn/verification.py py_lines=865 defs=27
+OK legacy/Carter_v2/src/carter_v2/types.py py_lines=104 defs=9
+OK legacy/Carter_v2/tests/conftest.py py_lines=51 defs=3
+OK legacy/Carter_v2/tests/integration/test_backends_compat_optin.py py_lines=283 defs=18
+OK legacy/Carter_v2/tests/integration/test_hardcode_guard.py py_lines=40 defs=2
+OK legacy/Carter_v2/tests/integration/test_model_compatibility.py py_lines=227 defs=16
+OK legacy/Carter_v2/tests/integration/test_no_app_hacks.py py_lines=78 defs=1
+OK legacy/Carter_v2/tests/integration/test_tool_call_parser.py py_lines=143 defs=16
+OK legacy/Carter_v2/tests/tools/test_app_open_gate.py py_lines=237 defs=18
+OK legacy/Carter_v2/tests/tools/test_ledger_language_neutral.py py_lines=291 defs=22
+OK legacy/Carter_v2/tests/tools/test_tool_normalizer.py py_lines=580 defs=52
+OK legacy/Carter_v2/tests/turn/test_active_app_context_gating.py py_lines=73 defs=7
+OK legacy/Carter_v2/tests/turn/test_low_information_reply_guard.py py_lines=63 defs=5
+OK legacy/Carter_v2/tests/turn/test_memory_identity_validation.py py_lines=76 defs=8
+OK legacy/Carter_v2/tests/turn/test_prior_context_dedup.py py_lines=51 defs=5
+OK legacy/Carter_v2/tests/turn/test_prompt_hygiene_and_latency.py py_lines=58 defs=3
+OK legacy/Carter_v2/tests/turn/test_user_ref_resolution.py py_lines=101 defs=11
+OK legacy/Carter_v3/.env.example
+OK legacy/Carter_v3/.gitignore
+OK legacy/Carter_v3/CURSOR_HARDCODE_SUSPECT_STATE.patch
+OK legacy/Carter_v3/REJECTED_HARDCODE_RUNTIME_ATTEMPT.patch
+OK legacy/Carter_v3/audit/compare_models.py py_lines=37 defs=0
+OK legacy/Carter_v3/audit/drain_pid_stdout.py py_lines=2 defs=0
+OK legacy/Carter_v3/audit/extract_fails.py py_lines=24 defs=0
+OK legacy/Carter_v3/audit/fase2_manual_spotcheck.sqlite3
+OK legacy/Carter_v3/audit/fase2_spotcheck_temp/reminders.sqlite3
+OK legacy/Carter_v3/audit/full_matrix_runner.py py_lines=886 defs=37
+OK legacy/Carter_v3/audit/hardcode_guard.py py_lines=277 defs=11
+OK legacy/Carter_v3/audit/inspect_matrix_outputs.py py_lines=295 defs=4
+OK legacy/Carter_v3/audit/minimum_test_cases.py py_lines=256 defs=3
+OK legacy/Carter_v3/audit/minimum_testing_runner.py py_lines=839 defs=34
+OK legacy/Carter_v3/audit/official_matrix_cases.py py_lines=421 defs=17
+OK legacy/Carter_v3/audit/repro_pending_intent_live.py py_lines=141 defs=4
+OK legacy/Carter_v3/audit/round_10_probe.py py_lines=95 defs=3
+OK legacy/Carter_v3/audit/run_matrix_to_file.py py_lines=57 defs=0
+OK legacy/Carter_v3/audit/run_validation_30.py py_lines=27 defs=0
+OK legacy/Carter_v3/audit/run_validation_cat.py py_lines=44 defs=0
+OK legacy/Carter_v3/audit/runs/fase2_manual_spotcheck_21.json json_keys=None
+OK legacy/Carter_v3/audit/runs/fase2_minimum_cat12_rerun.json json_keys=['cleanup_actions', 'elapsed_s', 'label', 'live_evidence', 'metrics', 'mode', 'model', 'results', 'smoke_ids', 'subset', 'verdict']
+OK legacy/Carter_v3/audit/runs/fase2_minimum_cat9_rerun.json json_keys=['cleanup_actions', 'elapsed_s', 'label', 'live_evidence', 'metrics', 'mode', 'model', 'results', 'smoke_ids', 'subset', 'verdict']
+OK legacy/Carter_v3/audit/runs/fase2_spotcheck_results.json json_keys=['model', 'original_volume', 'results']
+OK legacy/Carter_v3/audit/runs/gpt55_round_10_manual_repros.json json_keys=None
+OK legacy/Carter_v3/audit/runs/minimum_smoke_dryrun_probe.json json_keys=['elapsed_s', 'label', 'live_evidence', 'metrics', 'mode', 'model', 'results', 'smoke_ids', 'subset', 'verdict']
+OK legacy/Carter_v3/audit/runs/test_debug.json json_keys=['elapsed_s', 'label', 'live_evidence', 'metrics', 'mode', 'model', 'results', 'verdict']
+OK legacy/Carter_v3/audit/runs/test_live_cat1.json json_keys=['elapsed_s', 'label', 'live_evidence', 'metrics', 'mode', 'model', 'results', 'verdict']
+OK legacy/Carter_v3/audit/sample_passes.py py_lines=25 defs=0
+OK legacy/Carter_v3/audit/smoke_live_cycle_3.py py_lines=30 defs=1
+OK legacy/Carter_v3/audit/smoke_live_cycle_5.py py_lines=178 defs=6
+OK legacy/Carter_v3/audit/smoke_live_post_cleanup.py py_lines=225 defs=6
+OK legacy/Carter_v3/audit/smoke_live_strict.py py_lines=376 defs=19
+OK legacy/Carter_v3/audit/smoke_manual_equivalent.py py_lines=258 defs=14
+OK legacy/Carter_v3/audit/spotcheck_real_session.py py_lines=133 defs=2
+OK legacy/Carter_v3/configs/models.example.yml
+OK legacy/Carter_v3/configs/runtime.example.yml
+OK legacy/Carter_v3/pyproject.toml
+OK legacy/Carter_v3/run_carter_v3.ps1
+OK legacy/Carter_v3/src/carter_v3/__init__.py py_lines=6 defs=0
+OK legacy/Carter_v3/src/carter_v3/adapters/__init__.py py_lines=39 defs=0
+OK legacy/Carter_v3/src/carter_v3/adapters/failover.py py_lines=52 defs=7
+OK legacy/Carter_v3/src/carter_v3/adapters/llm_protocol.py py_lines=136 defs=13
+OK legacy/Carter_v3/src/carter_v3/adapters/ollama_adapter.py py_lines=136 defs=7
+OK legacy/Carter_v3/src/carter_v3/adapters/openai_api_adapter.py py_lines=50 defs=4
+OK legacy/Carter_v3/src/carter_v3/adapters/openai_compat_adapter.py py_lines=101 defs=6
+OK legacy/Carter_v3/src/carter_v3/adapters/scripted_adapter.py py_lines=106 defs=8
+OK legacy/Carter_v3/src/carter_v3/adapters/tool_call_parser.py py_lines=172 defs=7

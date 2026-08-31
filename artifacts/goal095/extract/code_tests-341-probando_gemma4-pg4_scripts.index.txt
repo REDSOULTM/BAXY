@@ -1,0 +1,139 @@
+batch=code_tests-341-probando_gemma4-pg4_scripts
+hash_ok=137 drift=0 miss=0
+OK scripts/_reorg_fix_relative_imports.py py_lines=127 defs=6
+OK scripts/_reorg_kill_shims.py py_lines=189 defs=6
+OK scripts/_reorg_migrate_python_m_docs.py py_lines=101 defs=3
+OK scripts/_reorg_pkg_subpackage.py py_lines=181 defs=4
+OK scripts/_reorg_tests_to_subpkg.py py_lines=106 defs=1
+OK scripts/_reset_server.py py_lines=40 defs=0
+OK scripts/_revert_live_probe.py py_lines=59 defs=0
+OK scripts/_skill_desc_recall_screenshot.py py_lines=105 defs=1
+OK scripts/_skill_desc_recall_test.py py_lines=70 defs=0
+OK scripts/_skills_autoinject_gate.py py_lines=199 defs=3
+OK scripts/_smoke_cpu_fallback.py py_lines=43 defs=0
+OK scripts/_smoke_kva_gate.py py_lines=46 defs=1
+OK scripts/_soak50.py py_lines=143 defs=3
+OK scripts/_stress_v22.py py_lines=179 defs=1
+OK scripts/_test_mbs_safety.py py_lines=101 defs=4
+OK scripts/_train_carter_throttled.py py_lines=256 defs=7
+OK scripts/_triage_parakeet_now.py py_lines=74 defs=2
+OK scripts/_validate_action_filler.py py_lines=167 defs=6
+OK scripts/_validate_app_open_floor.py py_lines=85 defs=0
+OK scripts/_validate_app_open_miss.py py_lines=85 defs=0
+OK scripts/_validate_b1_b2.py py_lines=106 defs=2
+OK scripts/_validate_b4_b6_direct.py py_lines=67 defs=1
+OK scripts/_validate_b4_b6_live.py py_lines=86 defs=1
+OK scripts/_validate_b_media_routing.py py_lines=66 defs=3
+OK scripts/_validate_b_multilang.py py_lines=73 defs=3
+OK scripts/_validate_c_negation.py py_lines=63 defs=3
+OK scripts/_validate_e_identity.py py_lines=61 defs=0
+OK scripts/_validate_e_multilang.py py_lines=58 defs=0
+OK scripts/_validate_failed_claim_guard.py py_lines=93 defs=0
+OK scripts/_validate_fg_arg_completion.py py_lines=106 defs=3
+OK scripts/_validate_filesystem_routing_live.py py_lines=100 defs=4
+OK scripts/_validate_flips_default_live.py py_lines=111 defs=4
+OK scripts/_validate_lean_broad.py py_lines=62 defs=1
+OK scripts/_validate_lean_frcot.py py_lines=107 defs=1
+OK scripts/_validate_mcp_real.py py_lines=56 defs=0
+OK scripts/_validate_peak_threshold_live.py py_lines=104 defs=4
+OK scripts/_validate_precondition_removal.py py_lines=84 defs=0
+OK scripts/_validate_reminder_routing_live.py py_lines=100 defs=4
+OK scripts/_validate_reminder_schedule.py py_lines=58 defs=0
+OK scripts/_validate_skills_autoinject_live.py py_lines=60 defs=1
+OK scripts/_validate_skills_autoinject_recall.py py_lines=138 defs=2
+OK scripts/_validate_skills_live.py py_lines=55 defs=0
+OK scripts/_validate_skills_quality_live.py py_lines=103 defs=4
+OK scripts/_validate_stream_info.py py_lines=119 defs=7
+OK scripts/_validate_stream_tts.py py_lines=146 defs=7
+OK scripts/_validate_web_fallback.py py_lines=53 defs=0
+OK scripts/_verify_a2_quality.py py_lines=122 defs=3
+OK scripts/_verify_cache_hit.py py_lines=86 defs=1
+OK scripts/_verify_fg_args_fix.py py_lines=34 defs=0
+OK scripts/_verify_frcot.py py_lines=60 defs=1
+OK scripts/_verify_frcot_media.py py_lines=80 defs=1
+OK scripts/_verify_informe.py py_lines=53 defs=0
+OK scripts/_verify_knowledge_release_live.py py_lines=128 defs=4
+OK scripts/_verify_leaked_call_fix_live.py py_lines=102 defs=3
+OK scripts/_verify_os_fix_live.py py_lines=118 defs=3
+OK scripts/_verify_schema_hint_gate.py py_lines=31 defs=1
+OK scripts/_verify_v22_defaults.py py_lines=69 defs=1
+OK scripts/analyze_traces.py py_lines=509 defs=7
+OK scripts/battery_all_caps.py py_lines=243 defs=4
+OK scripts/bench_model_speed.py py_lines=91 defs=3
+OK scripts/calibrate.py py_lines=102 defs=2
+OK scripts/computer_use_live_eval.py py_lines=170 defs=15
+OK scripts/computer_use_mission_eval.py py_lines=243 defs=5
+OK scripts/computer_use_tier_eval.py py_lines=217 defs=4
+OK scripts/download_all.ps1
+OK scripts/download_fleurs_es.py py_lines=100 defs=2
+OK scripts/enable_app_accessibility.ps1
+OK scripts/eval_profile_actions.py py_lines=121 defs=3
+OK scripts/export_encoder_onnx.py py_lines=67 defs=4
+OK scripts/extract_calib.py py_lines=86 defs=1
+OK scripts/generate_ui_sounds.py py_lines=157 defs=2
+OK scripts/gui_eval/__init__.py py_lines=1 defs=0
+OK scripts/gui_eval/_ab_ocr3.py py_lines=24 defs=2
+OK scripts/gui_eval/_calib_anchor.py py_lines=52 defs=1
+OK scripts/gui_eval/_calib_anchor3.py py_lines=36 defs=3
+OK scripts/gui_eval/_chain_execution_results.json json_keys=None
+OK scripts/gui_eval/_daily_life_results.json json_keys=None
+OK scripts/gui_eval/_e4b_q3_vram.json json_keys=None
+OK scripts/gui_eval/_exhaustive_click_results.json json_keys=None
+OK scripts/gui_eval/_exhaustive_discord_results.json json_keys=None
+OK scripts/gui_eval/_exhaustive_llm_results.json json_keys=None
+OK scripts/gui_eval/_exhaustive_results.json json_keys=['calc', 'notepad']
+OK scripts/gui_eval/_measure_4b_composes_results.json json_keys=None
+OK scripts/gui_eval/_measure_4b_plan_results.json json_keys=None
+OK scripts/gui_eval/_measure_cu_optionA_results.json json_keys=None
+OK scripts/gui_eval/_measure_latency.py py_lines=22 defs=1
+OK scripts/gui_eval/_measure_speculative.py py_lines=55 defs=0
+OK scripts/gui_eval/_measure_verify_fn.py py_lines=23 defs=0
+OK scripts/gui_eval/_mission_planning_results.json json_keys=None
+OK scripts/gui_eval/_retest_cef.py py_lines=22 defs=0
+OK scripts/gui_eval/_retest_clickbtn.py py_lines=21 defs=0
+OK scripts/gui_eval/_retest_close2.py py_lines=20 defs=0
+OK scripts/gui_eval/_retest_discord.py py_lines=28 defs=0
+OK scripts/gui_eval/_retest_mute.py py_lines=19 defs=0
+OK scripts/gui_eval/_retest_vlc.py py_lines=19 defs=0
+OK scripts/gui_eval/_retest_write.py py_lines=21 defs=0
+OK scripts/gui_eval/_test_calc_kbd.py py_lines=17 defs=1
+OK scripts/gui_eval/_test_calc_seq.py py_lines=14 defs=0
+OK scripts/gui_eval/_test_typeinto_calc.py py_lines=12 defs=0
+OK scripts/gui_eval/_toolcall_E2B_Q4_hoy.json json_keys=None
+OK scripts/gui_eval/_toolcall_IQ3_XXS.json json_keys=None
+OK scripts/gui_eval/_toolcall_Q4_baseline.json json_keys=None
+OK scripts/gui_eval/_web_execution_results.json json_keys=None
+OK scripts/gui_eval/eval_set.py py_lines=889 defs=40
+OK scripts/gui_eval/fixtures/click_target.html
+OK scripts/gui_eval/fixtures/password_form.html
+OK scripts/gui_eval/measure_chain_execution.py py_lines=79 defs=1
+OK scripts/gui_eval/measure_daily_life.py py_lines=100 defs=2
+OK scripts/gui_eval/measure_mission_planning.py py_lines=105 defs=4
+OK scripts/gui_eval/measure_web_execution.py py_lines=90 defs=2
+OK scripts/gui_eval/results_phase0.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier1_regr.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier1_regr2.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier3_retest.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_chains.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_chains2.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_chains3.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_chains4.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_chains5.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_chains6.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_clean.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_final.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_gated.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_long1.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_long2.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_long3.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_long4.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_ref.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/results_tier4_validacion_final.json json_keys=['rows', 'summary']
+OK scripts/gui_eval/run_eval.py py_lines=229 defs=4
+OK scripts/guided_commands_set2.py py_lines=72 defs=0
+OK scripts/latency_trace_summary.py py_lines=125 defs=4
+OK scripts/measure_vram_profiles.py py_lines=132 defs=4
+OK scripts/mine_tool_failures.py py_lines=240 defs=5
+OK scripts/probar_parakeet_mic.py py_lines=273 defs=8
+OK scripts/publish_model_hf.py py_lines=102 defs=1
+OK scripts/router_canary_eval.py py_lines=106 defs=1

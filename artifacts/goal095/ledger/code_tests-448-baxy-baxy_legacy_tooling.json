@@ -1,0 +1,146 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-448-baxy-baxy_legacy_tooling",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:00Z",
+  "closed_utc": "2026-08-31T02:49:01Z",
+  "estimated_tokens": 295857,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 9,
+  "subsystem": "baxy_legacy_tooling",
+  "subsystems": [
+    "baxy_legacy_tooling"
+  ],
+  "files": [
+    {
+      "path": "legacy/tooling/providers/filesystem_transfer.py",
+      "sha256": "d86754a0deb8c71660b670b766944f3a8ce79ee7cd09eaa24718c41495776dbb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2944"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/local_calendar_v2.py",
+      "sha256": "26f7e74dfe8c579f9f9255d51274886b1a051e7fe3d5f62f27a419a8dec68a9a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2342"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/local_calendar_windows.py",
+      "sha256": "8671f0506e6380ea5cc945c5c7792fbe6d54fdccfdbf4bdb47d530030fc490de",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-490"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/network.py",
+      "sha256": "9cdcc376834b60321f3e6060899247d428b2d34582cff7689a39d6c163090146",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1001"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/notes.py",
+      "sha256": "755c3d903fa302c016bed4188cd7b1005585fdc23ff31c2e80da80bbe21ae447",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2269"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/office_document_v2.py",
+      "sha256": "c673b4f221e9d9e1af2f9400ffc9a49b59277abfafa3ec250dd418914ecf9f47",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1707"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/reminders.py",
+      "sha256": "eb513a9185265e8c2e20482a002e568402b648f07e1be4c8397730459b5fbd5e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1880"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/routines.py",
+      "sha256": "d0785fcfe1191691393f61fce0e55a5e42515761fb1920e5f273f9183addf4e5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-664"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/services.py",
+      "sha256": "e35e1953b91ef35c948b4986fb5226683d9562fa4bf6f7dafbbef30526d611ac",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3001"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-448-baxy-baxy_legacy_tooling-01-legacy-tooling-providers",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/providers (9 ficheros)",
+      "contract": "Grupo legacy/tooling/providers: 9 archivos. Terminales leido PY \"\"\"Bounded, no-overwrite filesystem transfer and ZIP operations for v2.  These operations deliberately do less than ``shutil``'s broad convenience surface.  They accept only paths under the configured user roots, reject every symlink/reparse point they encounter, stream through fixed budgets, and publish new files/directories from same-parent staging without replacing an existing destination.  ZIP",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/providers/filesystem_transfer.py",
+        "legacy/tooling/providers/local_calendar_v2.py",
+        "legacy/tooling/providers/local_calendar_windows.py",
+        "legacy/tooling/providers/network.py",
+        "legacy/tooling/providers/notes.py",
+        "legacy/tooling/providers/office_document_v2.py",
+        "legacy/tooling/providers/reminders.py",
+        "legacy/tooling/providers/routines.py",
+        "legacy/tooling/providers/services.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/providers/filesystem_transfer.py",
+        "ranges": [
+          "1-2944"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=9 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-449-baxy-baxy_legacy_tooling",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-448-baxy-baxy_legacy_tooling.inspect.json"
+}

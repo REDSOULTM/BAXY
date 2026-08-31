@@ -1,0 +1,749 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-017-carter-carter_legacy_Carter_v4",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:43:19Z",
+  "closed_utc": "2026-08-31T02:43:24Z",
+  "estimated_tokens": 286390,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 61,
+  "subsystem": "carter_legacy_Carter_v4",
+  "subsystems": [
+    "carter_legacy_Carter_v4"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v4/audit/runs/C9_v5_post_steam_audit.json",
+      "sha256": "5ce79cfcc269944f3f773a9544448ed23a27ff9ce3212d3f5b148f662371bac5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C9_v7_multimonitor.json",
+      "sha256": "ca59ece55b171e13482033e32053b9b666d9e8f7e28833b5d2132e7719e6858d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C9_v8_no_planner.json",
+      "sha256": "ce8c7f63099d483d645395fbb17a6a864f538bb797f03966dbbd08f11cfff276",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/bench540.pid",
+      "sha256": "b0d39684ae0f38694e01f88ed545ca8f367cc6015e31105b084de5204a6be479",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterE_full540.json",
+      "sha256": "e8a65a7147a1a481c666d7fdcf209a40dbca42664444ac207ee30d06f4771a45",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterF_full540.json",
+      "sha256": "9a2e49326538080f9ff31afe2efb4733342bd6d6da4ad7bef3ec1b7df9b1f6c1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/llama_server_T7.pid",
+      "sha256": "0e20ba45f3003b2bdd649fac2e2bf9d59ef10693775f201662536135aa363600",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.json",
+      "sha256": "ed554d7331da33833793da8e021251f25a61e2b107af53429bb03bc8b8e693b5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v1.json",
+      "sha256": "ea246390b5111e6df82f6c34eba3a391cacfaaca0dc6d2ccdc5c9554761f4685",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v10.json",
+      "sha256": "2fa423de97703c59af5811b854ae77f47b89b96d24e9e18b5e1f075758e8980f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.json",
+      "sha256": "4854d62746702bbfa39ee3057e340e5826d6e0bafc47d8cd894b3ee013409e2a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.json",
+      "sha256": "9591196a75b3700d1854cba9a305d2970047646c4424fa51ab20584c4713e0ca",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v6.json",
+      "sha256": "1dd15f957244782d1c163d33c9c3c3095ec81c7b39723b87518e54a979796cc8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v7.json",
+      "sha256": "2a9a6ecc75b5e28e93b2a6270d08b5ac3d13ce87c6f3938e761c97545d719937",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v8.json",
+      "sha256": "61d6df97f50f5b4dd38f404c43f7acf50203bdc1d2d782a42b801f14b02b4482",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v9.json",
+      "sha256": "7c8d6a0bd75a7c66dbebee8734808891aa4b2fcd33e7227e43ab2b348d9d4ed4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v1.json",
+      "sha256": "32b9beecafe1904a330d629d531e63c9dbe59c24ca2fc6229ef18c3d33c177b6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v2.json",
+      "sha256": "d7d54b2a2e0017091acba50b5c2b6cac177e24df22f5dea9fe5452ccf51078d7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v3.json",
+      "sha256": "b9c4fa561e3f97d022de65df41a1666f86f9be21a5fda9d57d0511b795dfa035",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v1.json",
+      "sha256": "49638a758ebecfee7235eb2319942ff5619cd4ee0f3b1cfdd582ad5282353e1a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v2.json",
+      "sha256": "5de2dd629cab9cd2e3a504b130b5fd10ef8645db5d01fde8549fdd76f49e204c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v3.json",
+      "sha256": "b036875252748820e9328670698f389d72c63b33bd6becfcd6dd352d187f10dd",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v4.json",
+      "sha256": "5ba8ff2719467d8ab5fb0badaf7a3da6746de145b14300eb84e798c878e9cf26",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.json",
+      "sha256": "c5078d776478355f007dd3cbd2c1ffcedc8babf659d111070de7c9daede5451b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v1.json",
+      "sha256": "93bd650db4a8de173c7def4ab28fdeb6fd531734450f3c7df476bdd204f348e2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v2.json",
+      "sha256": "982c093a67fb3ee6efd5bb01fe891e9930602dda4e785b5f56c0a4a7beaa49d6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v3.json",
+      "sha256": "e13d336c1137a871d9059e1c242fdee2b783fcd4d853c794224ab53c70f271b7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v4.json",
+      "sha256": "e24751d65a97ec538d13226be35deffc6d85cc4258d4fefe1c0da81909589ae5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v5.json",
+      "sha256": "37ac27aa47f52f7a84357b1190b2d966e5eb1005f72c25344417e52180bbf4ef",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_smoke.json",
+      "sha256": "c886d45269018976586298af4c4ad5660634489fef9ecf2b8a6c33aab317a623",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_smoke_v2.json",
+      "sha256": "80d90f955d0c525f56f0e63dceffce9223c847bfe6368f6baacbb631ff8cb800",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/post_gemma4_migration.json",
+      "sha256": "86cb48a97ba3612feedc9347cfe458af60361ce50107b070cd8c4d24380ff284",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/post_gemma4_sanity18.json",
+      "sha256": "a345974314c6452deb6ca30067fa115c0e7caaee45f78b85c3784948bfb6edf8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_001.json",
+      "sha256": "eee496d837bf3c4327ad1e6f79785fa9161e075dfd53e39276aaf126bc0421fd",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_002.json",
+      "sha256": "64e64badd239a4bc98433e634285223f9a34e21465f48dcf71cebca8c881b30f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_003.json",
+      "sha256": "f2386b5d535683e42de6e66e85db8484d7397ac2d0b5bf530ca0f3b484f1f8b7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_004.json",
+      "sha256": "7689547d987eccb4ef47dd45916a803d1b88a224fda5246d59017aa36b1a660a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_005_c14_01.json",
+      "sha256": "cee2f2e4abd5fdd21341269fafea4e5c924529addc707abf5f0bd92b42274393",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_006_filesystem_chains.json",
+      "sha256": "8fcdbc3cdd3c6dc7dfd33530c2a49a24859dde091a16b59b59b7a2105ac57db4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_007_gui_safety.json",
+      "sha256": "ffb55de58b08da0cb74ad5f4d131d5536696074648250f501bad68230e7a2d47",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_008_apps_web.json",
+      "sha256": "c946d14ed5725684d161cef7178310e9ea57cf9fba4af1e539612e0d5903eb43",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_008_chains.json",
+      "sha256": "82284bdaf7a6582bd0aa77041c9a22f83ac9bde9317b53a088c02d730e7fde21",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_009_misiones_dev.json",
+      "sha256": "94793dbd380cb061faa26f708b66c49dc16c93b98ae9678a5596322d1768aa21",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_010_multilang.json",
+      "sha256": "70776016cdf924b3c064f1874a0846d34ab137334954cb994720fbb78fb4dc8c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_011_regresion_safety.json",
+      "sha256": "4d32b4d01cab635e17540ae06267d4d9cda8c1d8aaab9def7ed91dffec6d71fd",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_012_c14_11_recheck.json",
+      "sha256": "d0b032f74528b8348afa78abf6f4033955e0a0b669ca0da6270c2dc666738d05",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_013_conv.json",
+      "sha256": "c793f54b7954061db2ffaf29e9c2e595fee903f33053cb9d1a0b706da2c48320",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_014_steam.json",
+      "sha256": "2946928538dec04b3bdb3971a1a85e6faa66888ed5cf23fb184da6509a41645c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_015_tools.json",
+      "sha256": "952976bedef5d4f199bf4f2e3a3a4e243657be0107a2b267c1b6df74ed4793f4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_016_hard_missions.json",
+      "sha256": "3b21d3b7f05cffea04876000172c16c93ca4cb23a94bda720b28e482d31fbfa2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/smoke_misiones.py",
+      "sha256": "08b4cc24e0c558f9b791dd5d9db53b9fd3857517e0f947b454f507633f2fa449",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-141"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/smoke_post_migration.py",
+      "sha256": "94f1e38f97e24f7d6d1247185db9a1065189a1a1b884766eb0480939ac1b9a6b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-219"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/spotcheck_real_session.py",
+      "sha256": "5cf1cb5b4d499ff02cdba5f8f13bb36746af4ed9894a9b5f00f46cdea4e43189",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-123"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/results/minimum_test_gemma_results.json",
+      "sha256": "14aaf98d950ec1900ff3bf82006ba32d1b4ee2c60bec78147ea788419e4c20e9",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/scripts/minimum_test_gemma.py",
+      "sha256": "32e7a1b2d4e29f645aa1b6a6578ffdae2d319dad5aa17906ab1bd4f279dab756",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-104"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/scripts/smoke_gemma.py",
+      "sha256": "893e9c6b87906da3c75c358be0a0efb31e499faeecc26553b7007c4dbb863c77",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-95"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/scripts/start_carter_llm.ps1",
+      "sha256": "0d7cb808527c6743d6df19b6ba6387737de529e8ae70744f43a0168eb2c24206",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/__init__.py",
+      "sha256": "f142bf53ecd150372124826e335aa9a13df0571b3121b5db74c62d47b18e0865",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/adapters/__init__.py",
+      "sha256": "b436a6458640124f7fc85384cb1120bef9ce3b89922274fbb9a126ee05814496",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-117"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/adapters/llamacpp.py",
+      "sha256": "76405085444758247b7f77d30b20ae9f0ead64d48db75d05d935ffb88f7decaf",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-498"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/adapters/ollama_xml.py",
+      "sha256": "823c58a2dc6991a84f00dc255a1f6513b2235662c200a057c29fd200ff96358c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-160"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-017-carter-carter_legacy_Carter_v4-01-legacy-Carter_v4-audit",
+      "disposition": "reject_candidate",
+      "component": "legacy/Carter_v4/audit (51 ficheros)",
+      "contract": "Grupo legacy/Carter_v4/audit: 51 archivos. Terminales leido, parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v4/audit/runs/C9_v5_post_steam_audit.json",
+        "legacy/Carter_v4/audit/runs/C9_v7_multimonitor.json",
+        "legacy/Carter_v4/audit/runs/C9_v8_no_planner.json",
+        "legacy/Carter_v4/audit/runs/iterE_full540.json",
+        "legacy/Carter_v4/audit/runs/iterF_full540.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v1.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v10.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v6.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v7.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v8.json",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v9.json",
+        "legacy/Carter_v4/audit/runs/matrix_C02_v1.json",
+        "legacy/Carter_v4/audit/runs/matrix_C02_v2.json",
+        "legacy/Carter_v4/audit/runs/matrix_C02_v3.json",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v1.json",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v2.json",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v3.json",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v4.json",
+        "legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.json",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v1.json",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v2.json",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v3.json",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v4.json",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v5.json",
+        "legacy/Carter_v4/audit/runs/matrix_smoke.json",
+        "legacy/Carter_v4/audit/runs/matrix_smoke_v2.json",
+        "legacy/Carter_v4/audit/runs/post_gemma4_migration.json",
+        "legacy/Carter_v4/audit/runs/post_gemma4_sanity18.json",
+        "legacy/Carter_v4/audit/runs/smoke_001.json",
+        "legacy/Carter_v4/audit/runs/smoke_002.json",
+        "legacy/Carter_v4/audit/runs/smoke_003.json",
+        "legacy/Carter_v4/audit/runs/smoke_004.json",
+        "legacy/Carter_v4/audit/runs/smoke_005_c14_01.json",
+        "legacy/Carter_v4/audit/runs/smoke_006_filesystem_chains.json",
+        "legacy/Carter_v4/audit/runs/smoke_007_gui_safety.json",
+        "legacy/Carter_v4/audit/runs/smoke_008_apps_web.json",
+        "legacy/Carter_v4/audit/runs/smoke_008_chains.json",
+        "legacy/Carter_v4/audit/runs/smoke_009_misiones_dev.json",
+        "legacy/Carter_v4/audit/runs/smoke_010_multilang.json",
+        "legacy/Carter_v4/audit/runs/smoke_011_regresion_safety.json",
+        "legacy/Carter_v4/audit/runs/smoke_012_c14_11_recheck.json",
+        "legacy/Carter_v4/audit/runs/smoke_013_conv.json",
+        "legacy/Carter_v4/audit/runs/smoke_014_steam.json",
+        "legacy/Carter_v4/audit/runs/smoke_015_tools.json",
+        "legacy/Carter_v4/audit/runs/smoke_016_hard_missions.json",
+        "legacy/Carter_v4/audit/smoke_misiones.py",
+        "legacy/Carter_v4/audit/smoke_post_migration.py",
+        "legacy/Carter_v4/audit/spotcheck_real_session.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v4/audit/runs/C9_v5_post_steam_audit.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-017-carter-carter_legacy_Carter_v4-02-legacy-Carter_v4-results",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v4/results (1 ficheros)",
+      "contract": "Grupo legacy/Carter_v4/results: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/Carter_v4/results/minimum_test_gemma_results.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v4/results/minimum_test_gemma_results.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-017-carter-carter_legacy_Carter_v4-03-legacy-Carter_v4-scripts",
+      "disposition": "adapt_candidate",
+      "component": "legacy/Carter_v4/scripts (3 ficheros)",
+      "contract": "Grupo legacy/Carter_v4/scripts: 3 archivos. Terminales leido PY \"\"\"Minimum test: corre los 10 prompts del Contrato Gemma 4 contra el Agent real de Carter (no contra el adapter directo). Esto valida que el pipeline completo (system prompt + tool registry + ReAct loop + verifier) funciona con el modelo nuevo.  Antes de correr: llama-server debe estar corriendo en :8080. \"\"\" import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/Carter_v4/scripts/minimum_test_gemma.py",
+        "legacy/Carter_v4/scripts/smoke_gemma.py",
+        "legacy/Carter_v4/scripts/start_carter_llm.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v4/scripts/minimum_test_gemma.py",
+        "ranges": [
+          "1-104"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-017-carter-carter_legacy_Carter_v4-04-legacy-Carter_v4-src",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v4/src (4 ficheros)",
+      "contract": "Grupo legacy/Carter_v4/src: 4 archivos. Terminales leido PY \"\"\"Carter v4 — refactor radical, hermes3-native, honest-by-construction.\"\"\"  __version__ = \"4.0.0\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v4/src/carter_v4/__init__.py",
+        "legacy/Carter_v4/src/carter_v4/adapters/__init__.py",
+        "legacy/Carter_v4/src/carter_v4/adapters/llamacpp.py",
+        "legacy/Carter_v4/src/carter_v4/adapters/ollama_xml.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v4/src/carter_v4/__init__.py",
+        "ranges": [
+          "1-3"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=61 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-018-carter",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-017-carter-carter_legacy_Carter_v4.inspect.json"
+}

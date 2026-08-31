@@ -1,0 +1,6 @@
+batch=code_tests-053-probando_gemma4-pg4_data
+hash_ok=4 drift=0 miss=0
+OK gemma4_agent/data/router_exemplars.npz.stale_bak_20260530
+OK gemma4_agent/data/state.json.bak_2026_05_20
+OK gemma4_agent/data/tool2vec_centroids.npz.bak_pre_clickvisible
+OK gemma4_agent/data/tool2vec_centroids.npz.bak_pre_jbalvin

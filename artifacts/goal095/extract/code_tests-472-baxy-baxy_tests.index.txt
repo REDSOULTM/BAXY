@@ -1,0 +1,111 @@
+batch=code_tests-472-baxy-baxy_tests
+hash_ok=109 drift=0 miss=0
+OK tests/Baxy.Setup.Tests/WindowsIntegrationStoreTests.cs
+OK tests/Baxy.Setup.Tests/WindowsProductLifecycleTests.cs
+OK tests/Baxy.Setup.Tests/WindowsSetupResumeLauncherTests.cs
+OK tests/Baxy.Setup.Tests/WindowsShellLinkTests.cs
+OK tests/Baxy.Setup.Tests/WindowsUninstallRegistryTests.cs
+OK tests/Baxy.Setup.Tests/bin/Debug/net10.0-windows10.0.19041.0/Baxy.Setup.Tests.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK tests/Baxy.Setup.Tests/bin/Debug/net10.0-windows10.0.19041.0/nunit_random_seed.tmp
+OK tests/TestInfrastructure/NtfsTestJunction.cs
+OK tests/fixtures/mind_turn_contract/baxy_mind/__init__.py py_lines=1 defs=0
+OK tests/fixtures/mind_turn_contract/baxy_mind/__main__.py py_lines=353 defs=5
+OK tests/fixtures/turn_policy_e5_development/mtop_policy_map.json json_keys=['intents', 'ood_intents', 'policy', 'schema']
+OK tests/test_acquire_mdc_stt_archives.py py_lines=303 defs=16
+OK tests/test_active_decision_path_r280.py py_lines=66 defs=5
+OK tests/test_adapt_wav2vec2_hidden_wake_human_group_cv_v1.py py_lines=51 defs=3
+OK tests/test_asr_fusion.py py_lines=147 defs=10
+OK tests/test_assemble_mvp_catalog_execution_matrix.py py_lines=81 defs=5
+OK tests/test_assemble_mvp_catalog_routing_matrix.py py_lines=40 defs=2
+OK tests/test_assemble_voxcpm2_livekit_corpus.py py_lines=123 defs=5
+OK tests/test_assemble_wake_verifier_candidate_v1.py py_lines=57 defs=1
+OK tests/test_asset_resolution.py py_lines=178 defs=7
+OK tests/test_attest_bge_m3_acquisition_r232.py py_lines=32 defs=3
+OK tests/test_attest_bge_m3_prototype_r253.py py_lines=19 defs=1
+OK tests/test_attest_clinc_oos_development_r251.py py_lines=19 defs=1
+OK tests/test_attest_in_place_upgrade.py py_lines=1843 defs=27
+OK tests/test_attest_supervised_reranker_r244.py py_lines=19 defs=1
+OK tests/test_attest_turn_evidence_restoration_r234.py py_lines=31 defs=3
+OK tests/test_audit_baxy_hyperspotter_fusion_product_candidate_v1.py py_lines=132 defs=7
+OK tests/test_audit_bge_m3_r233.py py_lines=32 defs=3
+OK tests/test_audit_catalog_oracle_coverage.py py_lines=92 defs=3
+OK tests/test_audit_ccby_wake_development_faster_whisper_v1.py py_lines=66 defs=4
+OK tests/test_audit_ccby_wake_development_parakeet.py py_lines=47 defs=2
+OK tests/test_audit_ccby_wake_development_whisper_v1.py py_lines=55 defs=3
+OK tests/test_audit_livekit_negative_test_parakeet.py py_lines=58 defs=2
+OK tests/test_audit_openslr_librispeech_retained_parakeet.py py_lines=62 defs=2
+OK tests/test_audit_phoneme_teacher_cuda_product_parity_v1.py py_lines=61 defs=3
+OK tests/test_audit_piper_wake_ipa.py py_lines=68 defs=6
+OK tests/test_audit_raw_denoiser_rolling_wake_v1.py py_lines=63 defs=8
+OK tests/test_audit_voxcpm2_gguf_pilot.py py_lines=229 defs=14
+OK tests/test_audit_wake_scaf_human_localization_oracle_v1.py py_lines=30 defs=1
+OK tests/test_audit_wake_ssl_ctc_ensemble_development_v1.py py_lines=44 defs=3
+OK tests/test_audit_wav2vec2_hidden_wake_expanded_development_v1.py py_lines=52 defs=3
+OK tests/test_audit_wav2vec2_hidden_wake_layer_sweep_expanded_v1.py py_lines=56 defs=3
+OK tests/test_audit_wav2vec2_hidden_wake_product_scan_v1.py py_lines=58 defs=3
+OK tests/test_audit_wav2vec2_hidden_wake_separability_v1.py py_lines=77 defs=6
+OK tests/test_benchmark_phoneme_teacher_onnx_v1.py py_lines=31 defs=2
+OK tests/test_bge_m3_r207_operation_retrieval_r257.py py_lines=38 defs=2
+OK tests/test_bge_m3_r207_prototype_domain_r255.py py_lines=26 defs=1
+OK tests/test_bge_m3_semantic_abstention_r235.py py_lines=41 defs=3
+OK tests/test_bge_qwen_embedding_cascade_r186.py py_lines=13 defs=1
+OK tests/test_bge_reranker_r241.py py_lines=18 defs=1
+OK tests/test_build_baxy_logmel_guard_chain_rescue_verifier_v2.py py_lines=39 defs=2
+OK tests/test_build_baxy_logmel_guarded_rescue_verifier_v1.py py_lines=47 defs=3
+OK tests/test_build_baxy_wake_cascade_candidate_v1.py py_lines=147 defs=7
+OK tests/test_build_baxy_wake_routed_cascade_candidate_v2.py py_lines=176 defs=5
+OK tests/test_build_ccby_wake_holdout.py py_lines=102 defs=5
+OK tests/test_build_ccby_wake_v5_development_corpus_v1.py py_lines=59 defs=3
+OK tests/test_build_layout.py py_lines=552 defs=17
+OK tests/test_build_livekit_mel_overlap_models_v1.py py_lines=29 defs=1
+OK tests/test_build_mdtc_hard_negative_windows.py py_lines=47 defs=3
+OK tests/test_build_mswc_microset_metric_corpus_v1.py py_lines=36 defs=2
+OK tests/test_build_mswc_spanish_ctc_temporal_features_v13.py py_lines=49 defs=3
+OK tests/test_build_mswc_spanish_forced_alignment_shortlist_v1.py py_lines=81 defs=3
+OK tests/test_build_mswc_spanish_qbye_corpus_v1.py py_lines=42 defs=3
+OK tests/test_build_mswc_spanish_qbye_fresh_evaluation_v2.py py_lines=42 defs=1
+OK tests/test_build_mswc_spanish_qbye_sequence_research_v3.py py_lines=42 defs=1
+OK tests/test_build_openslr_librispeech_manifest.py py_lines=57 defs=3
+OK tests/test_build_r16_sapi_faster_whisper_hybrid_corpus_v3.py py_lines=22 defs=1
+OK tests/test_build_r16_sapi_semantic_fusion_corpus_v2.py py_lines=96 defs=3
+OK tests/test_build_r16_sapi_voice_transcript_corpus_v2.py py_lines=77 defs=3
+OK tests/test_build_sapi_wake_physical_holdout_v1.py py_lines=80 defs=7
+OK tests/test_build_setup.py py_lines=670 defs=28
+OK tests/test_build_wake_ssl_ctc_candidate_v5.py py_lines=67 defs=3
+OK tests/test_build_wav2vec2_qbyt_rir_candidate_v3.py py_lines=72 defs=4
+OK tests/test_build_wav2vec2_qbyt_wake_candidate_v1.py py_lines=37 defs=1
+OK tests/test_calibrate_baxy_hyperspotter_fusion_runtime_v2.py py_lines=82 defs=3
+OK tests/test_capture_controlled_physical_wake_corpus_v1.py py_lines=236 defs=25
+OK tests/test_capture_room_impulse_response_v1.py py_lines=101 defs=4
+OK tests/test_catalog_narration_visibility_probe.py py_lines=29 defs=1
+OK tests/test_catalog_operation_aliases.py py_lines=255 defs=12
+OK tests/test_catalog_seen_development.py py_lines=54 defs=3
+OK tests/test_catalog_seen_scenarios.py py_lines=73 defs=4
+OK tests/test_catalog_structural_discriminability_r212.py py_lines=54 defs=2
+OK tests/test_catalog_structural_signal_r211.py py_lines=19 defs=1
+OK tests/test_catalog_surface_current_tree_r2.py py_lines=217 defs=4
+OK tests/test_combine_baxy_wake_hard_negative_logmel_v1.py py_lines=90 defs=5
+OK tests/test_combine_controlled_raw_runtime_logmel_v1.py py_lines=120 defs=5
+OK tests/test_compound_execution_current_tree_r4.py py_lines=61 defs=3
+OK tests/test_compound_execution_current_tree_r5.py py_lines=73 defs=4
+OK tests/test_compound_execution_holdout_r1.py py_lines=36 defs=2
+OK tests/test_compound_execution_holdout_r2.py py_lines=35 defs=2
+OK tests/test_compound_execution_holdout_r3.py py_lines=14 defs=1
+OK tests/test_counterfactual_behind_denial_frame.py py_lines=90 defs=3
+OK tests/test_cross_encoder_r208.py py_lines=20 defs=1
+OK tests/test_cross_encoder_r210.py py_lines=18 defs=1
+OK tests/test_ctc_wake_verifier.py py_lines=138 defs=12
+OK tests/test_current_catalog_argument_fidelity_probe.py py_lines=120 defs=5
+OK tests/test_current_catalog_dependent_grounding_probe.py py_lines=67 defs=3
+OK tests/test_current_catalog_review.py py_lines=212 defs=11
+OK tests/test_current_catalog_review_probe.py py_lines=339 defs=14
+OK tests/test_current_core_catalog_snapshot_r219.py py_lines=43 defs=2
+OK tests/test_deferred_clean_environment_gates.py py_lines=96 defs=8
+OK tests/test_dependency_grounding_matrix_probe.py py_lines=57 defs=3
+OK tests/test_derive_baxy_wake_monotonic_guard_regression_v1.py py_lines=71 defs=5
+OK tests/test_derive_qbyt_threshold_candidate_v2.py py_lines=34 defs=2
+OK tests/test_desktop_interaction_script_latency.py py_lines=84 defs=6
+OK tests/test_development_entrypoint.py py_lines=124 defs=7
+OK tests/test_diagnose_baxy_contextual_false_activations_v1.py py_lines=39 defs=2
+OK tests/test_diagnose_baxy_wake_openslr_false_routes_v1.py py_lines=47 defs=2
+OK tests/test_direct_abstain_classifier_r250.py py_lines=18 defs=1

@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-410-baxy-baxy_exp_technology_tournament",
+  "source_id": "baxy",
+  "source_root": "Programacion/BAXY",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "baxy_exp_technology_tournament",
+  "subsystems": [
+    "baxy_exp_technology_tournament"
+  ],
+  "files": [
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/build/web_atoms-cbab6bc00af32595/out/generated.rs",
+      "queued_sha256": "d00d672136bd8e5c11531db5ba89e9cf1fd27d94a8ec3c7bddf041c428064d82",
+      "size_queued": 328264,
+      "exists": true,
+      "disk_sha256": "d00d672136bd8e5c11531db5ba89e9cf1fd27d94a8ec3c7bddf041c428064d82",
+      "disk_size": 328264,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/build/web_atoms-cbab6bc00af32595/out/generated.rs' exists on disk, but not in 'HEAD'\n"
+    }
+  ]
+}

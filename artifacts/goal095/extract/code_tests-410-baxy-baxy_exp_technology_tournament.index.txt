@@ -1,0 +1,3 @@
+batch=code_tests-410-baxy-baxy_exp_technology_tournament
+hash_ok=1 drift=0 miss=0
+OK experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/build/web_atoms-cbab6bc00af32595/out/generated.rs

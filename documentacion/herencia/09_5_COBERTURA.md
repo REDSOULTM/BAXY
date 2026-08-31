@@ -7,8 +7,9 @@
 > internos de una campaña: conservan terminales por hash, reanudan claims vivas y
 > devuelven a `pending` sólo leases vencidos.
 >
-> La sesion ya activa de 09.5.3 debe reanudar `code_tests-002` y continuar sin
-> finalizar hasta vaciar `code_tests`.
+> **09.5.3 `code_tests` esta terminal** (2026-08-31): `pending=0`, `claimed=0`,
+> 477/477 complete. Cursor en `artifacts/goal095/campaigns/code_tests.json`.
+> No relanzar `09.5.3_AUDITAR_CODIGO_LOTE.md`.
 
 Generado por `scripts/build_goal095_queues.py`. Estimador: `bytes_div_2`.
 Tokenizer compatible para el arbol: ninguno (no se vuelca contenido).
@@ -88,15 +89,16 @@ Primer lote code_tests:
 - subsistemas: `carter_docs` + `carter_legacy_Carter_v2`
 - faltantes/solapes globales: 0 / 0 (sin cambio)
 
-Proximo lote code_tests pendiente:
+Campana `code_tests` (09.5.3, 2026-08-31):
 
-- `batch_id`: `code_tests-002-carter-carter_legacy_Carter_v2`
-- archivos: 43
-- tokens estimados: 291016
-- salida: `artifacts/goal095/ledger/code_tests-002-carter-carter_legacy_Carter_v2.json`
+- **477/477 complete**, pending 0, claimed 0
+- Conserva 001 y 002; 002 se reanudo (lease vivo) y no se descarto
+- 327 checkpoints eran el mismo SHA-256 repetido (`traces.jsonl.1/.2/.3` y similares): `duplicado_por_hash`
+- Schema Agent (477) se leyo desde blobs git de `Programacion/BAXY` (Tools-Reduce), no del worktree HEAD
+- Cursor: `artifacts/goal095/campaigns/code_tests.json`
+- `next_human_prompt`: `09.5.2_LEER_DOCUMENTACION_LOTE.md` (`docs` sigue con pendientes)
 
 ## Siguiente
 
-Reanudar la meta activa de `documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md`
-en `code_tests-002` y dejarla consumir todos los checkpoints restantes. No repetir
-09.5.1 ni descartar `docs-001`/`code_tests-001`.
+Prompt humano distinto: `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md`
+(docs-002 en adelante). No relanzar 09.5.3 ni 09.5.1. 09.5.4 espera a que `docs` vacie.

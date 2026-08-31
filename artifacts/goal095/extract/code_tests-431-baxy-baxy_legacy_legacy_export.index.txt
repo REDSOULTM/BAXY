@@ -1,0 +1,31 @@
+batch=code_tests-431-baxy-baxy_legacy_legacy_export
+hash_ok=29 drift=0 miss=0
+OK legacy/legacy_export/computer_use/computer_use.py py_lines=1561 defs=50
+OK legacy/legacy_export/computer_use/uia_fast.py py_lines=343 defs=8
+OK legacy/legacy_export/infra/config.py py_lines=148 defs=6
+OK legacy/legacy_export/infra/events_bus.py py_lines=99 defs=8
+OK legacy/legacy_export/infra/launcher.py py_lines=721 defs=30
+OK legacy/legacy_export/infra/llama_server.py py_lines=1435 defs=38
+OK legacy/legacy_export/infra/llm_client.py py_lines=950 defs=26
+OK legacy/legacy_export/infra/profiles.py py_lines=769 defs=16
+OK legacy/legacy_export/infra/routine_runner.py py_lines=20 defs=1
+OK legacy/legacy_export/infra/server.py py_lines=1720 defs=75
+OK legacy/legacy_export/infra/task_runner.py py_lines=90 defs=4
+OK legacy/legacy_export/infra/voice_runner.py py_lines=335 defs=19
+OK legacy/legacy_export/infra/watcher_runner.py py_lines=20 defs=1
+OK legacy/legacy_export/memoria_jarvis/ambient_observer.py py_lines=227 defs=10
+OK legacy/legacy_export/memoria_jarvis/behavior_log.py py_lines=294 defs=11
+OK legacy/legacy_export/memoria_jarvis/jarvis_proactive.py py_lines=119 defs=5
+OK legacy/legacy_export/memoria_jarvis/knowledge.py py_lines=270 defs=16
+OK legacy/legacy_export/memoria_jarvis/memory.py py_lines=348 defs=17
+OK legacy/legacy_export/memoria_jarvis/memory_retrieval.py py_lines=126 defs=4
+OK legacy/legacy_export/memoria_jarvis/microagents.py py_lines=549 defs=21
+OK legacy/legacy_export/memoria_jarvis/proactive_notifier.py py_lines=157 defs=8
+OK legacy/legacy_export/memoria_jarvis/profile_intent.py py_lines=200 defs=4
+OK legacy/legacy_export/memoria_jarvis/project_context.py py_lines=95 defs=4
+OK legacy/legacy_export/memoria_jarvis/sessions.py py_lines=237 defs=18
+OK legacy/legacy_export/memoria_jarvis/taste_reflection.py py_lines=343 defs=20
+OK legacy/legacy_export/prompts/core_lean.md.BAK
+OK legacy/legacy_export/routing/action_fewshot.py py_lines=101 defs=3
+OK legacy/legacy_export/routing/arithmetic.py py_lines=175 defs=6
+OK legacy/legacy_export/routing/command_splitter.py py_lines=1357 defs=30

@@ -1,0 +1,19 @@
+batch=code_tests-030-carter-carter_v5
+hash_ok=17 drift=0 miss=0
+OK carter_v5/tools/gui.py py_lines=1150 defs=31
+OK carter_v5/tools/gui_universal.py py_lines=754 defs=21
+OK carter_v5/tools/media.py py_lines=181 defs=14
+OK carter_v5/tools/memory_tool.py py_lines=159 defs=9
+OK carter_v5/tools/office.py py_lines=287 defs=6
+OK carter_v5/tools/registry.py py_lines=154 defs=3
+OK carter_v5/tools/schemas_consolidated.json json_keys=None
+OK carter_v5/tools/skill.py py_lines=133 defs=5
+OK carter_v5/tools/steam.py py_lines=684 defs=21
+OK carter_v5/tools/system.py py_lines=359 defs=19
+OK carter_v5/tools/terminal.py py_lines=293 defs=5
+OK carter_v5/tools/uia_snapshot.py py_lines=995 defs=29
+OK carter_v5/tools/vision_tools.py py_lines=393 defs=5
+OK carter_v5/tools/web.py py_lines=246 defs=8
+OK carter_v5/verify/__init__.py py_lines=29 defs=0
+OK carter_v5/verify/core.py py_lines=423 defs=12
+OK carter_v5/verify/runtime.py py_lines=244 defs=16

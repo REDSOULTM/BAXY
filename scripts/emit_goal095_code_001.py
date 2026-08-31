@@ -18,6 +18,7 @@ from scripts.goal095_code_ledger import (
     mark_queue_complete,
     next_pending_code_tests,
     queue_paths,
+    unit_next_prompt,
 )
 HEAD = "9cf62d236cdef08012897d3c8c680b8afef0d62e"
 HW = "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0"
@@ -470,11 +471,7 @@ def main() -> int:
         "overlaps": 0,
         "hash_check": "32/32 disco=cola 09.5.1; 0 en biblioteca por hash; docs/investigaciones untracked en git",
         "next_code_tests_batch_id": next_id,
-        "next_prompt": (
-            "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md"
-            if next_id
-            else "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md"
-        ),
+        "next_prompt": unit_next_prompt(queue_ledger, next_id),
     }
     out = REPO / batch["output"]
     dump_json(out, ledger)

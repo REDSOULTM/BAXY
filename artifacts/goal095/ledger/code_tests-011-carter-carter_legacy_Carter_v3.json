@@ -1,0 +1,683 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-011-carter-carter_legacy_Carter_v3",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:43:00Z",
+  "closed_utc": "2026-08-31T02:43:04Z",
+  "estimated_tokens": 283898,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 60,
+  "subsystem": "carter_legacy_Carter_v3",
+  "subsystems": [
+    "carter_legacy_Carter_v3"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/agent.py",
+      "sha256": "d64c431c4fe3493b4f0345164e5c240d835a52fe080e253dd67cf17945b3ea33",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2626"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/cli/launcher.py",
+      "sha256": "c0c4252494a1788ea4b51345f8ceb70e6ff9d277e49b5d6369ca95159759f0a8",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-155"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/config.py",
+      "sha256": "ff13ceeec71223c288d92b010861265bb9cf9eaa132f6f97b1660277ce4d4fbd",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-127"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/context_compaction.py",
+      "sha256": "08136c702d944f338863a3b3ff2124c250968c193c67b8aba2a856ced7f2df1d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-183"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/contracts.py",
+      "sha256": "ff2ccb71edbb6e79f7323226feeebf56413b5bc25d1d9638989dc0a64821b925",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-266"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/error_taxonomy.py",
+      "sha256": "362d32b1ee2c3c3f87b84352cb0319f556cfc121cb6e20c046b8fba63c8de95d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-106"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/guards.py",
+      "sha256": "b62441eccb4a02101894a024adc4d9f82afb7009c2979817507728d7e1c6c913",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-302"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/heartbeat.py",
+      "sha256": "1387a156479eac3af87b52b77a983fc3cb738edcda40a92380da836fdf25cbea",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-83"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/llm_verbalizer.py",
+      "sha256": "c68f867d2307b8c492ac7cdda9659a03edae9a06ea8133ef3a7aecc00c31c189",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-401"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/memory/__init__.py",
+      "sha256": "a83d1d0fe91b7ce08dda7c58cc5ac8a1bb227b285eee11cfe94c996648ad234b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-4"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/memory/declarative_detector.py",
+      "sha256": "7d940d3e59193f8ec602438916bc6dd2ed9677e35308801f8747d05f3730ddc9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-58"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/memory/store.py",
+      "sha256": "5d928e548ea88c0b5ad85e8e2ad56384971332f5d640a3e3264efc53b806a4f2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-161"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/models/__init__.py",
+      "sha256": "a59f5ee3aa0c798baf34a14aa27ff8b833f816057f661fb56f86f6a7469ceae9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-4"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/models/registry.py",
+      "sha256": "91a753ceb03fd839d2520887b7ec949f24d8d95ba7635d97b6e5f87fdeedc243",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-84"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/models/selector.py",
+      "sha256": "452db44d11dc5967608bfa262a74d6ae75a5a067bcedadf4db614dc2175b16df",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-62"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/__init__.py",
+      "sha256": "c5fcf60d07e28fdba56f75bbed0004384f2a0f16580515ed1a1603c917a1fa0d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-27"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/app_resolver.py",
+      "sha256": "f00337ac029043b1e958c32df2659ef2017228867e24f2cd719f7372bd3ea0ff",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-385"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/ladder.py",
+      "sha256": "e3fb45ddd9cbc078e04218d6d1698bdfc8372c99e664038e868644392f2b5599",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-66"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/observation.py",
+      "sha256": "c28f26c3f7e2cc4f0b28970ea2c5a1d6c65c276ee26446bc7c3533b347680ee6",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-185"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/ocr.py",
+      "sha256": "b85db228dce307e5618d94c8ead721737d175e2b75a6869d09fdbaad072d4c7a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-87"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/probe.py",
+      "sha256": "1345165d45fefc9e412526a441aaca23a1e1a2830f2404f3c2710bc0b8f61072",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-200"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/perception/uia_probe.py",
+      "sha256": "9396e4620a717a30ad3461f86c6d028319393d72aabaf510dc99444354a9ba36",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-461"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/recovery.py",
+      "sha256": "8a1436a0d735e67b0ffd9e7b391ec80fa13ccea0ef14bd10e10691c742ff448c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-21"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/request_patterns.py",
+      "sha256": "0d4b56ed484be341d60d3aed89a8908b95a1311f4a4318b86cebbe984fceea52",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-592"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/resolvers/__init__.py",
+      "sha256": "b48c8e1a1b763b7bb691c653e0b98a9fd07f80bf84ea0aadfcaefffbede460e6",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-11"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/resolvers/intent_classifier.py",
+      "sha256": "d839da500b3bc87c48ab6aba0ab3a50f68e02d02ce205da49936a3e54a9f2048",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-123"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/resolvers/language_detect.py",
+      "sha256": "7afd94dc0230efa89682d0705feb6f83a9f6d4e2cdcc5fb6f2aa68523d8a1efd",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-51"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/resolvers/resource_resolver.py",
+      "sha256": "a67c550c35da5a9db732197296fafae806a81ccd6a193ebf2d9a02ba114f6e5f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-205"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/resource_guard.py",
+      "sha256": "2da003710e970e7aff83a031dd1a61b9eedb2384745465d7761c7eb21dad7534",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/response_composer.py",
+      "sha256": "21006cb61cf532681b4ed76b1a095f59e2aae3ae725403e3480b854dd40b2980",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-390"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/__init__.py",
+      "sha256": "c0910d133b8f91d901d8d9e91e50a810d82ea9c18a8a3c9e3cd49cec286642ed",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-11"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/inspectors/__init__.py",
+      "sha256": "e3e16e5afeb88edbd59c0ca8e1126888896eab4c75b3f8f26e265030779f4c73",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-20"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/inspectors/base.py",
+      "sha256": "974422bca803b0baf841b021f2c0420a0a017ced0d281056f3466e2ba205d219",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-32"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/inspectors/pipeline.py",
+      "sha256": "b85447457c8f66e598bc95814de64a27d616a2f76152c8cd6d2ea9edcd733958",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-26"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/inspectors/reflection_inspector.py",
+      "sha256": "8973a7c9c3587ae71840f9235862144606668894d19d8ef99e8d9ea6ca04858e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-120"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/inspectors/repetition_inspector.py",
+      "sha256": "e50d84e10dfa3877ff7dc13914657dd83cb05da37cf94e161847c9b0768105ba",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-48"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/inspectors/security_inspector.py",
+      "sha256": "51b7b7562463c6dbf63031de04641fbcd8bde72a3c41b4d24a712672c42842ad",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-28"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/policy.py",
+      "sha256": "10a5d956b642d4a6b05cee7aae4783fc51d48174cde8cf69e1fc2d6b50699aa2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-269"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/security/secret_filter.py",
+      "sha256": "73ebf98ffbd2fb3f2ed18e380d0301e2d32d99dbdd8ce8dfd5a9ba4faac21b3a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-133"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/session_state.py",
+      "sha256": "8690c065802767b73c34e030a0347c50bbac4187268e4af34595f24bb4c453da",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-485"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/termination.py",
+      "sha256": "17d83516d421abb2a40d2fd6ae44580acde7ecb3657f3927596c4776678bae1a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-171"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/__init__.py",
+      "sha256": "8d95b4c19d3a727849388f3b0caf948695140e3db64beddb304b8d7c69519894",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-19"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/catalog.py",
+      "sha256": "dda0c5c0e33eedd3a2ae1587d93f1ab02c36057e1873d0b4b0e46668e92108ec",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-310"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch.py",
+      "sha256": "ba7d1acf048710af71a67fcd6b5272226a3f777c993f1f3a36d84de6cfbb7d20",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-97"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_app.py",
+      "sha256": "9dd9d5cd2f89fc9b328d933a1dbfdcd357d36b547e17f40446a2880f3e0fabc3",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-261"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_filesystem.py",
+      "sha256": "4f325ef1479d821915b6fa0d92d4c14560d954affd30f274212cba86d3c56133",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-127"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_misc.py",
+      "sha256": "bf8eb12e781c57ec381907faef4e77dcb2a8aa4c8a5b4e11005327feb8c22bd5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-316"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_system.py",
+      "sha256": "adf81e245177e182b88c98e26162b1ea1f4eda94f15ea1f67ede25cc59083d3c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-83"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_terminal.py",
+      "sha256": "ed9d495d6764e5498a6ddf22da5e78ba01af34d134ac9aa5c4bcfc6f3c53ac7b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-21"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_web.py",
+      "sha256": "7a5719dcfb90b1017086f3df51fadf58ed365d36124eff2c291464283ce17ef1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-214"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/dispatch_window.py",
+      "sha256": "324145973df94206ae9bcb5cac8b095e34358282ebf77fde98efc0240ec11ea8",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-94"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/filesystem_helpers.py",
+      "sha256": "e0be754f27c9b9c2294e2b39b17960ec0ebc59cc293718fa9af697e3260c0e99",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-414"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/graceful_close.py",
+      "sha256": "9ac791041350acc3451e556f48699b42c3247fb4d0769368d51fcacdbcd3b046",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-216"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/local_reminders.py",
+      "sha256": "24d2796a231bc96ab92c974f9f20b7d9ecde2b88d87d204a82aa6974e0307b5b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-363"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/terminal_helpers.py",
+      "sha256": "5050c98d736e866bbb4387a72426c51f146b952836117439e5932973b2a2a17e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-357"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/verifier.py",
+      "sha256": "4a275a7491e387d9a24dcf0a0d621bfe763e8ead9f22f17dbddfa1fa2a48e13c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-692"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/tools/web_helpers.py",
+      "sha256": "bd066c24f8930b3d1c0f7a16fe78348f1bcd5b7a70f1bcecc731fdf344ebd8d7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-231"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/trace.py",
+      "sha256": "d0ae6a54de4997e741f092fd1979880e86d0f622265e889cbe134ac2049020b7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-94"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/src/carter_v3/turn_support.py",
+      "sha256": "f049053e5d06de112b56325d1fc67be85ef7d53404eacb345bbb2dfb03bc7425",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-594"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/tests/conftest.py",
+      "sha256": "233a2d7fbd0fea94f29ee2e4ea1f7dfc2eafb9ae0d69587e320dbb953f13b058",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-56"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-011-carter-carter_legacy_Carter_v3-01-legacy-Carter_v3-src",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v3/src (59 ficheros)",
+      "contract": "Grupo legacy/Carter_v3/src: 59 archivos. Terminales leido PY \"\"\"Carter v3 agent loop (D10).  One file, no plugin system, no mission graph.\"\"\" from __future__ import annotations  import os import json import re import shutil import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v3/src/carter_v3/agent.py",
+        "legacy/Carter_v3/src/carter_v3/cli/launcher.py",
+        "legacy/Carter_v3/src/carter_v3/config.py",
+        "legacy/Carter_v3/src/carter_v3/context_compaction.py",
+        "legacy/Carter_v3/src/carter_v3/contracts.py",
+        "legacy/Carter_v3/src/carter_v3/error_taxonomy.py",
+        "legacy/Carter_v3/src/carter_v3/guards.py",
+        "legacy/Carter_v3/src/carter_v3/heartbeat.py",
+        "legacy/Carter_v3/src/carter_v3/llm_verbalizer.py",
+        "legacy/Carter_v3/src/carter_v3/memory/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/memory/declarative_detector.py",
+        "legacy/Carter_v3/src/carter_v3/memory/store.py",
+        "legacy/Carter_v3/src/carter_v3/models/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/models/registry.py",
+        "legacy/Carter_v3/src/carter_v3/models/selector.py",
+        "legacy/Carter_v3/src/carter_v3/perception/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/perception/app_resolver.py",
+        "legacy/Carter_v3/src/carter_v3/perception/ladder.py",
+        "legacy/Carter_v3/src/carter_v3/perception/observation.py",
+        "legacy/Carter_v3/src/carter_v3/perception/ocr.py",
+        "legacy/Carter_v3/src/carter_v3/perception/probe.py",
+        "legacy/Carter_v3/src/carter_v3/perception/uia_probe.py",
+        "legacy/Carter_v3/src/carter_v3/recovery.py",
+        "legacy/Carter_v3/src/carter_v3/request_patterns.py",
+        "legacy/Carter_v3/src/carter_v3/resolvers/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/resolvers/intent_classifier.py",
+        "legacy/Carter_v3/src/carter_v3/resolvers/language_detect.py",
+        "legacy/Carter_v3/src/carter_v3/resolvers/resource_resolver.py",
+        "legacy/Carter_v3/src/carter_v3/resource_guard.py",
+        "legacy/Carter_v3/src/carter_v3/response_composer.py",
+        "legacy/Carter_v3/src/carter_v3/security/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/security/inspectors/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/security/inspectors/base.py",
+        "legacy/Carter_v3/src/carter_v3/security/inspectors/pipeline.py",
+        "legacy/Carter_v3/src/carter_v3/security/inspectors/reflection_inspector.py",
+        "legacy/Carter_v3/src/carter_v3/security/inspectors/repetition_inspector.py",
+        "legacy/Carter_v3/src/carter_v3/security/inspectors/security_inspector.py",
+        "legacy/Carter_v3/src/carter_v3/security/policy.py",
+        "legacy/Carter_v3/src/carter_v3/security/secret_filter.py",
+        "legacy/Carter_v3/src/carter_v3/session_state.py",
+        "legacy/Carter_v3/src/carter_v3/termination.py",
+        "legacy/Carter_v3/src/carter_v3/tools/__init__.py",
+        "legacy/Carter_v3/src/carter_v3/tools/catalog.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_app.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_filesystem.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_misc.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_system.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_terminal.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_web.py",
+        "legacy/Carter_v3/src/carter_v3/tools/dispatch_window.py",
+        "legacy/Carter_v3/src/carter_v3/tools/filesystem_helpers.py",
+        "legacy/Carter_v3/src/carter_v3/tools/graceful_close.py",
+        "legacy/Carter_v3/src/carter_v3/tools/local_reminders.py",
+        "legacy/Carter_v3/src/carter_v3/tools/terminal_helpers.py",
+        "legacy/Carter_v3/src/carter_v3/tools/verifier.py",
+        "legacy/Carter_v3/src/carter_v3/tools/web_helpers.py",
+        "legacy/Carter_v3/src/carter_v3/trace.py",
+        "legacy/Carter_v3/src/carter_v3/turn_support.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v3/src/carter_v3/agent.py",
+        "ranges": [
+          "1-2626"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-011-carter-carter_legacy_Carter_v3-02-legacy-Carter_v3-tests",
+      "disposition": "adapt_candidate",
+      "component": "legacy/Carter_v3/tests (1 ficheros)",
+      "contract": "Grupo legacy/Carter_v3/tests: 1 archivos. Terminales leido PY ﻿\"\"\"Pytest configuration: make ``src/`` importable.\"\"\" from __future__ import annotations import os import signal import sys from pathlib import Path  import psutil",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/Carter_v3/tests/conftest.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v3/tests/conftest.py",
+        "ranges": [
+          "1-56"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=60 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-012-carter",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-011-carter-carter_legacy_Carter_v3.inspect.json"
+}

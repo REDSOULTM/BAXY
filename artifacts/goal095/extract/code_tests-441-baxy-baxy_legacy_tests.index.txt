@@ -1,0 +1,25 @@
+batch=code_tests-441-baxy-baxy_legacy_tests
+hash_ok=23 drift=0 miss=0
+OK legacy/tests/test_tooling_mission.py py_lines=4187 defs=125
+OK legacy/tests/test_tooling_nested_provider_worker_lifecycle.py py_lines=327 defs=21
+OK legacy/tests/test_tooling_network_provider.py py_lines=678 defs=45
+OK legacy/tests/test_tooling_notes_provider.py py_lines=1396 defs=46
+OK legacy/tests/test_tooling_office_document_v2.py py_lines=827 defs=37
+OK legacy/tests/test_tooling_policy.py py_lines=973 defs=34
+OK legacy/tests/test_tooling_private_result_projection.py py_lines=336 defs=13
+OK legacy/tests/test_tooling_provenance.py py_lines=234 defs=11
+OK legacy/tests/test_tooling_read_privacy_redteam.py py_lines=325 defs=7
+OK legacy/tests/test_tooling_registry.py py_lines=272 defs=17
+OK legacy/tests/test_tooling_reminder_exact_workflow.py py_lines=77 defs=3
+OK legacy/tests/test_tooling_reminders_v2.py py_lines=871 defs=51
+OK legacy/tests/test_tooling_retrieval.py py_lines=348 defs=20
+OK legacy/tests/test_tooling_routine_exact_workflows.py py_lines=294 defs=5
+OK legacy/tests/test_tooling_routines_provider.py py_lines=703 defs=20
+OK legacy/tests/test_tooling_routines_v2.py py_lines=936 defs=40
+OK legacy/tests/test_tooling_runtime.py py_lines=1008 defs=39
+OK legacy/tests/test_tooling_runtime_calendar_optin.py py_lines=349 defs=14
+OK legacy/tests/test_tooling_semantic_ranker.py py_lines=220 defs=15
+OK legacy/tests/test_tooling_sensitive_operations_redteam.py py_lines=196 defs=3
+OK legacy/tests/test_tooling_services_provider.py py_lines=1905 defs=64
+OK legacy/tests/test_tooling_spotify_desktop.py py_lines=871 defs=67
+OK legacy/tests/test_tooling_spotify_desktop_windows.py py_lines=837 defs=55

@@ -1,0 +1,510 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-443-baxy-baxy_legacy_tests",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:55Z",
+  "closed_utc": "2026-08-31T02:48:56Z",
+  "estimated_tokens": 275119,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 13,
+  "subsystem": "baxy_legacy_tests",
+  "subsystems": [
+    "baxy_legacy_tests"
+  ],
+  "files": [
+    {
+      "path": "legacy/tests/test_tooling_store.py",
+      "sha256": "3351514df1b28db1fa86582bbcc018255c43297a468ed2e5681593a231c07e26",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-4968"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_task_exact_workflows.py",
+      "sha256": "a6792698225076968b786d5ea43b6d928f84c07cc119ca4dc8bbe08d09b56410",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-155"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_tasks_provider.py",
+      "sha256": "9b372fe187b57a25778f451d3866270f1a6c1a26700f9c6ec33ac89465d4d590",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1601"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_text_provider.py",
+      "sha256": "82f38293d88de027bade567538742d1272ed49a6b5aaff1ad553bbc5fd2d2dd4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-125"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_tts_outbox_runtime.py",
+      "sha256": "0cdafae67f3cfd8f7e180041f32f9ef52ad65c1f4192a095f2208119266a90ad",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-551"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_turn_store.py",
+      "sha256": "fd24078263bea4accae66a3faa8dff9670d07bc748bbbb41d5485a035c12c153",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-552"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_uia_exact_workflows.py",
+      "sha256": "6c21ba1dc4f6968a03c8ceb082f9c1c8ac455cdaa76a8adc2a3630e8d93d97e1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-358"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_uia_provider.py",
+      "sha256": "b9b23b5abbff2cc98d06e965359327e7bcd428f8ca3e5d145904acff50df6cd5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2558"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_v2_acceptance.py",
+      "sha256": "f8b345720bad76a7a2d7593070dcbd9f043b3a30d57ebb332e0e3206fab02dc5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-977"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_v2_activation_recall.py",
+      "sha256": "321df50c3214ca63e2b36e80b40126d476db72622dfe93ee847c50b793ef65fa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-135"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_v2_composition.py",
+      "sha256": "1ec5ff12401096e41b893c2cf4e78a39288a88333b467225e2cbd28ac286962a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1325"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_v2_confirmation_controller.py",
+      "sha256": "08862da12f76180abaac6fec2eb325c66977d7b58b265dc0ecbe42c122bf1592",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1057"
+      ]
+    },
+    {
+      "path": "legacy/tests/test_tooling_v2_executor.py",
+      "sha256": "9a7cf82dee01a5c9478ae908c86a7882ecea05c0ad885327d28c1a1747d7ca1f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1659"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-01-legacy-tests-test_tooling_store.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_store.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_store.py: 1 archivos. Terminales leido PY from __future__ import annotations  import hashlib import json import sqlite3 import threading import time from concurrent.futures import ThreadPoolExecutor",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_store.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_store.py",
+        "ranges": [
+          "1-4968"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-02-legacy-tests-test_tooling_task_exact_workflows.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_task_exact_workflows.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_task_exact_workflows.py: 1 archivos. Terminales leido PY \"\"\"Exact, fail-closed natural-language grammars for private task selection.\"\"\"  from __future__ import annotations  from collections.abc import Mapping from typing import Any  import pytest",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_task_exact_workflows.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_task_exact_workflows.py",
+        "ranges": [
+          "1-155"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-03-legacy-tests-test_tooling_tasks_provider.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_tasks_provider.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_tasks_provider.py: 1 archivos. Terminales leido PY from __future__ import annotations  import json import os import shutil import sqlite3 import sys from concurrent.futures import ThreadPoolExecutor",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_tasks_provider.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_tasks_provider.py",
+        "ranges": [
+          "1-1601"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-04-legacy-tests-test_tooling_text_provider.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_text_provider.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_text_provider.py: 1 archivos. Terminales leido PY from __future__ import annotations  import pytest  from tooling.contracts import OutcomeStatus from tooling.executor import (     InMemoryAuditSink,     InMemoryInvocationLedger,",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_text_provider.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_text_provider.py",
+        "ranges": [
+          "1-125"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-05-legacy-tests-test_tooling_tts_outbox_runtime.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_tts_outbox_runtime.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_tts_outbox_runtime.py: 1 archivos. Terminales leido PY from __future__ import annotations  import threading from concurrent.futures import ThreadPoolExecutor from pathlib import Path  import pytest ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "legacy/tests/test_tooling_tts_outbox_runtime.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_tts_outbox_runtime.py",
+        "ranges": [
+          "1-551"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-06-legacy-tests-test_tooling_turn_store.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_turn_store.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_turn_store.py: 1 archivos. Terminales leido PY from __future__ import annotations  import sqlite3 from concurrent.futures import ThreadPoolExecutor from pathlib import Path  import pytest ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_turn_store.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_turn_store.py",
+        "ranges": [
+          "1-552"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-07-legacy-tests-test_tooling_uia_exact_workflows.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_uia_exact_workflows.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_uia_exact_workflows.py: 1 archivos. Terminales leido PY \"\"\"Exact process -> UIA resolver -> guarded action workflows.\"\"\"  from __future__ import annotations  from collections.abc import Mapping  import pytest ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_uia_exact_workflows.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_uia_exact_workflows.py",
+        "ranges": [
+          "1-358"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-08-legacy-tests-test_tooling_uia_provider.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_uia_provider.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_uia_provider.py: 1 archivos. Terminales leido PY \"\"\"Offline security and robustness tests for the guarded UIA provider.\"\"\" from __future__ import annotations  import re import sys import threading import time import types",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_uia_provider.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_uia_provider.py",
+        "ranges": [
+          "1-2558"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-09-legacy-tests-test_tooling_v2_acceptance.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_v2_acceptance.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_v2_acceptance.py: 1 archivos. Terminales leido PY from __future__ import annotations  import importlib.util import json import os import subprocess import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_v2_acceptance.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_v2_acceptance.py",
+        "ranges": [
+          "1-977"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-10-legacy-tests-test_tooling_v2_activation_recall.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_v2_activation_recall.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_v2_activation_recall.py: 1 archivos. Terminales leido PY \"\"\"Offline v2 recall gate recovered from the historical 29-case corpus.  This gate deliberately separates shortlist recall from completed execution. Low-level handle workflows (screen understanding, safe app close and WhatsApp) still need the mission adapter before they count as product parity. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_v2_activation_recall.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_v2_activation_recall.py",
+        "ranges": [
+          "1-135"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-11-legacy-tests-test_tooling_v2_composition.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_v2_composition.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_v2_composition.py: 1 archivos. Terminales leido PY from __future__ import annotations  import importlib import sys from collections.abc import Mapping from dataclasses import fields from pathlib import Path from types import SimpleNamespace",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_v2_composition.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_v2_composition.py",
+        "ranges": [
+          "1-1325"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-12-legacy-tests-test_tooling_v2_confirmation_controller.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_v2_confirmation_controller.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_v2_confirmation_controller.py: 1 archivos. Terminales leido PY from __future__ import annotations  import copy import inspect import pickle import threading from dataclasses import replace from typing import Callable",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_v2_confirmation_controller.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_v2_confirmation_controller.py",
+        "ranges": [
+          "1-1057"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-443-baxy-baxy_legacy_tests-13-legacy-tests-test_tooling_v2_executor.py",
+      "disposition": "adapt_candidate",
+      "component": "legacy/tests/test_tooling_v2_executor.py (1 ficheros)",
+      "contract": "Grupo legacy/tests/test_tooling_v2_executor.py: 1 archivos. Terminales leido PY from __future__ import annotations  import copy import pickle import threading from collections.abc import Mapping, Sequence from concurrent.futures import ThreadPoolExecutor from dataclasses import replace",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "legacy/tests/test_tooling_v2_executor.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tests/test_tooling_v2_executor.py",
+        "ranges": [
+          "1-1659"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=13 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-444-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-443-baxy-baxy_legacy_tests.inspect.json"
+}

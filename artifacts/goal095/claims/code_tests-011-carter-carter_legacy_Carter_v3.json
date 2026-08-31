@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-011-carter-carter_legacy_Carter_v3",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:43:00Z",
+  "estimated_tokens": 283898,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 60,
+  "source_id": "carter",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-011-carter-carter_legacy_Carter_v3.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

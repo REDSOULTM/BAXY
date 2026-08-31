@@ -1,0 +1,296 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-004-carter-carter_legacy_Carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:42:40Z",
+  "closed_utc": "2026-08-31T02:42:41Z",
+  "estimated_tokens": 294374,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 24,
+  "subsystem": "carter_legacy_Carter_v2",
+  "subsystems": [
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-092725.json",
+      "sha256": "b4cb09a78205d732fabcf377a8b83e175de13d0e35cd0873a78aed8931880048",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_14b/20260502-092910.json",
+      "sha256": "3d0f87ba8f4e5ae639a5d7455d1a6e9462ea00511fa1a216721cab9ecc5ac9c0",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_4b/20260502-085026.json",
+      "sha256": "112e5cde0b8c2282b24f4bfed6943d46f039e3d51a6428763cb12141bdff02f4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_8b/20260502-090319.json",
+      "sha256": "33b37d0ea8afdca1521f8924f201f3343011188ed53ae0563e37f1ef90639da2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe.json",
+      "sha256": "487e7a7cb575425e5f238639020c20503b1b7de4b5bee435b7610360e56dc955",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe_fast.json",
+      "sha256": "df675e060216229ac9330607366169969c11e993cd46d1fdb03daa26101a13a8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/fair_rebench_summary.json",
+      "sha256": "3baacfb62c14f3b87a2abbec6e1e284fa7fde77a58c1f6e4ec18819f5c2b7719",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_deepseek-r1_8b_fast.json",
+      "sha256": "68c76da5846ba15f89ad66de69c341e6a6682aa9225c1148b1bea7283e926818",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_devstral_24b_fast.json",
+      "sha256": "071bbac19997a62e9417ec067c9a86e84380d89b1f95e0373d1bd00d0646c870",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_gemma3_12b_fast.json",
+      "sha256": "e0cae0cc07a62df6d50941ff14f10ff5341f803c49195965d29dd25008eae205",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_granite3.3_8b_fast.json",
+      "sha256": "5fd07ce61f7e50367bc72d37ade7de033da08c6628d3936b997578c790ef7fe4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_hermes3_8b_fast.json",
+      "sha256": "000a3077259939f98b69a291951b0af3eb850f176134f8db10a19adc30561354",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.1_8b_fast.json",
+      "sha256": "dfb3b09ac4f977d6a3c828bb406c094f057594b4252b535da7e38c526b2ede89",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.2_3b_fast.json",
+      "sha256": "d89921ffd58634fca64c0d06d774c7ccb0287367e5c0011c2f52dd6ff73c612c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_mistral-small_24b_fast.json",
+      "sha256": "afeb974a8c07fef6c583bfc5a4fdf16503f3a1e7300adfdde4c380a0b9939fa9",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_phi4_latest_fast.json",
+      "sha256": "c245dc2d19cf7a2f013d01a73766ff2ac7f86d0504f9b6aafb437eb5f71ae192",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen2.5-coder_14b_fast.json",
+      "sha256": "ef1bacf8aa3505230dc8d7e5b173845060fafc303c01d1cbc3361bc651fd43fd",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_1.7b_fast.json",
+      "sha256": "447f6c2da15cc79eea05af76a597b57ab8c8387c64606771cbc73650afa9a78a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_14b_fast.json",
+      "sha256": "097b186fee0f91fe87b161daf3e5b5fdd6cda2e3e5f58cb20b1ae195bcbdd924",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_4b_fast.json",
+      "sha256": "579a7e32a79f37dcaa358d6f7510811d6f155bc01885d8df7488eeba17f3b247",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_8b_fast.json",
+      "sha256": "8d9e62b36c29132be906e37b2ca502960e8e0a5c58c13b92bc0604fac1a8ff8c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/stability/_analyze.py",
+      "sha256": "e9d9b798cd497f3e48256b1f93785dc63cc38f6838f90ca758d7e577060db3a1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-62"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/stability/_analyze_rebaseline.py",
+      "sha256": "cedb571221559a1acaec6a5278f173d8005e4d58b58af2a42f774d932d33bd2b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-129"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/stability/run01_qwen3_8b_warm.json",
+      "sha256": "79f9209af7beaf5678d62fcffb995b256b7c3524e18d5b3af0e1393ebe188a4c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-004-carter-carter_legacy_Carter_v2-01-legacy-Carter_v2-audit",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v2/audit (24 ficheros)",
+      "contract": "Grupo legacy/Carter_v2/audit: 24 archivos. Terminales leido, parseado_completo. JSON scalars={\"model\": \"qwen3:1.7b\", \"ts_start\": 1777728445.6747148, \"ts_end\": 1777728548.640505, \"duration_s\": 103.0, \"warmup_ok\": true, \"warmup_error\": \"\", \"load_time_ms\": 9397, \"vram_before_mb\": 2090, \"vram_after_load_mb\": 3777, \"vram_after_unload_mb\": 2090, \"vram_peak_mb\": 3781, \"vram_load_delta_mb\": 1687, \"composite_score\": 0.8698}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-092725.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_14b/20260502-092910.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_4b/20260502-085026.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_8b/20260502-090319.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/fair_rebench_summary.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_deepseek-r1_8b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_devstral_24b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_gemma3_12b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_granite3.3_8b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_hermes3_8b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.1_8b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.2_3b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_mistral-small_24b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_phi4_latest_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen2.5-coder_14b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_1.7b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_14b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_4b_fast.json",
+        "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_8b_fast.json",
+        "legacy/Carter_v2/audit/results/stability/_analyze.py",
+        "legacy/Carter_v2/audit/results/stability/_analyze_rebaseline.py",
+        "legacy/Carter_v2/audit/results/stability/run01_qwen3_8b_warm.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-092725.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=24 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-005-carter-carter_legacy_Carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-004-carter-carter_legacy_Carter_v2.inspect.json"
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-465-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:34Z",
+  "estimated_tokens": 175177,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 7,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-465-baxy.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

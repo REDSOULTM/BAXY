@@ -1,0 +1,1665 @@
+{
+  "batch_id": "code_tests-015-carter-carter_legacy_Carter_v4",
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 33,
+  "hash_ok": 33,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_legacy_Carter_v4",
+  "subsystems": [
+    "carter_legacy_Carter_v4"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v4/audit/runs/C18_v4_post_audit.json",
+      "queued_sha256": "030380b93071e36ce54dacbf27074f0595cf4376ce4154bad33485854e0845e1",
+      "size_queued": 15269,
+      "exists": true,
+      "disk_sha256": "030380b93071e36ce54dacbf27074f0595cf4376ce4154bad33485854e0845e1",
+      "disk_size": 15269,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C18_v4_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 512,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "PARTIAL": 1,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C18_v5_post_steam_audit.json",
+      "queued_sha256": "9307ac6b6f5afe40615f83e84836a736f12f39749b7faaffdaf8028d4e727b0a",
+      "size_queued": 17119,
+      "exists": true,
+      "disk_sha256": "9307ac6b6f5afe40615f83e84836a736f12f39749b7faaffdaf8028d4e727b0a",
+      "disk_size": 17119,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C18_v5_post_steam_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 508,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C18_v7_multimonitor.json",
+      "queued_sha256": "9bc23e6739148f33b48b0446b36de506dcb9c3e3663323e344381361663949f7",
+      "size_queued": 16766,
+      "exists": true,
+      "disk_sha256": "9bc23e6739148f33b48b0446b36de506dcb9c3e3663323e344381361663949f7",
+      "disk_size": 16766,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C18_v7_multimonitor.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 528,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C18_v8_no_planner.json",
+      "queued_sha256": "9056a5c422e84070d986a8f6331fbdc9483aa707e40aeba8fac108f14eba1b2e",
+      "size_queued": 15907,
+      "exists": true,
+      "disk_sha256": "9056a5c422e84070d986a8f6331fbdc9483aa707e40aeba8fac108f14eba1b2e",
+      "disk_size": 15907,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C18_v8_no_planner.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 520,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "PARTIAL": 2,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v20_doc03_completo.json",
+      "queued_sha256": "b39b6b7bf8f14dbf10b61758ccb708b956dc408282fe1b96a0e06d23925f632b",
+      "size_queued": 11704,
+      "exists": true,
+      "disk_sha256": "b39b6b7bf8f14dbf10b61758ccb708b956dc408282fe1b96a0e06d23925f632b",
+      "disk_size": 11704,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v20_doc03_completo.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 420,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v2_post_fixes.json",
+      "queued_sha256": "91a68990b651f52496f6f58bc52f0ccf95baf7cb8f304252e3ad2ef8d7dd974e",
+      "size_queued": 10775,
+      "exists": true,
+      "disk_sha256": "91a68990b651f52496f6f58bc52f0ccf95baf7cb8f304252e3ad2ef8d7dd974e",
+      "disk_size": 10775,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v2_post_fixes.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 421,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v3_post_audit.json",
+      "queued_sha256": "2022e7f159e3b13108afaee7ef6eb0e209965f15ae9feaee57345f1a5189650a",
+      "size_queued": 10809,
+      "exists": true,
+      "disk_sha256": "2022e7f159e3b13108afaee7ef6eb0e209965f15ae9feaee57345f1a5189650a",
+      "disk_size": 10809,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v3_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 421,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v4_post_audit.json",
+      "queued_sha256": "64fca1bae7ea875210a265e9114a5557edbb0f6280dc3634a0815e067014c8d1",
+      "size_queued": 10406,
+      "exists": true,
+      "disk_sha256": "64fca1bae7ea875210a265e9114a5557edbb0f6280dc3634a0815e067014c8d1",
+      "disk_size": 10406,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v4_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v5_post_steam_audit.json",
+      "queued_sha256": "d1172b4bb9fe08558b87cf33f3c15ee67fa88898ff4e4b47254fbe7cdeb60487",
+      "size_queued": 10194,
+      "exists": true,
+      "disk_sha256": "d1172b4bb9fe08558b87cf33f3c15ee67fa88898ff4e4b47254fbe7cdeb60487",
+      "disk_size": 10194,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v5_post_steam_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v7_multimonitor.json",
+      "queued_sha256": "1222902a6c5c3364f675ffbcc4b1b1ff946464a4b3171884a98fe7158b481a62",
+      "size_queued": 14090,
+      "exists": true,
+      "disk_sha256": "1222902a6c5c3364f675ffbcc4b1b1ff946464a4b3171884a98fe7158b481a62",
+      "disk_size": 14090,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v7_multimonitor.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 412,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C1_v8_no_planner.json",
+      "queued_sha256": "5b6d5aa168248b93f8b210d2a9fbc92eb4aa3dbbdcf221e4b4f5a9a96bea3d7c",
+      "size_queued": 10508,
+      "exists": true,
+      "disk_sha256": "5b6d5aa168248b93f8b210d2a9fbc92eb4aa3dbbdcf221e4b4f5a9a96bea3d7c",
+      "disk_size": 10508,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C1_v8_no_planner.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 421,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v20_doc03_completo.json",
+      "queued_sha256": "5450ac0edaee4d6ba90d96a3b975a253d6ec1a0ca7483d1633e267407fd44601",
+      "size_queued": 17852,
+      "exists": true,
+      "disk_sha256": "5450ac0edaee4d6ba90d96a3b975a253d6ec1a0ca7483d1633e267407fd44601",
+      "disk_size": 17852,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v20_doc03_completo.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 420,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v2_post_fixes.json",
+      "queued_sha256": "51eb869796ea6560c661b3fb4c73039718c872ca23d8b336815316cd840ac504",
+      "size_queued": 16299,
+      "exists": true,
+      "disk_sha256": "51eb869796ea6560c661b3fb4c73039718c872ca23d8b336815316cd840ac504",
+      "disk_size": 16299,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v2_post_fixes.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 420,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v3_post_audit.json",
+      "queued_sha256": "dc2f3c45a8dea21bab2b4371235db2dc87d1fcea297b79f00ebea0ea40b0f9c8",
+      "size_queued": 16129,
+      "exists": true,
+      "disk_sha256": "dc2f3c45a8dea21bab2b4371235db2dc87d1fcea297b79f00ebea0ea40b0f9c8",
+      "disk_size": 16129,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v3_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 420,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v4_post_audit.json",
+      "queued_sha256": "e7e39b0c93ddf2e37d52f621a42c0c87a99a941500ff5eeaf7e5afe37e815db4",
+      "size_queued": 18106,
+      "exists": true,
+      "disk_sha256": "e7e39b0c93ddf2e37d52f621a42c0c87a99a941500ff5eeaf7e5afe37e815db4",
+      "disk_size": 18106,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v4_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 430,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "PARTIAL": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v5_post_steam_audit.json",
+      "queued_sha256": "ca66d52935cb1f333a40aae260f8cbdc0975fdfb762f673d83d86eda782eaef5",
+      "size_queued": 17596,
+      "exists": true,
+      "disk_sha256": "ca66d52935cb1f333a40aae260f8cbdc0975fdfb762f673d83d86eda782eaef5",
+      "disk_size": 17596,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v5_post_steam_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 418,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v7_multimonitor.json",
+      "queued_sha256": "50d12cb411d9a5406012066ebb3c8937aa52abd3189f0e3cc7e1d18f834e03c1",
+      "size_queued": 16370,
+      "exists": true,
+      "disk_sha256": "50d12cb411d9a5406012066ebb3c8937aa52abd3189f0e3cc7e1d18f834e03c1",
+      "disk_size": 16370,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v7_multimonitor.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 418,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C2_v8_no_planner.json",
+      "queued_sha256": "d313113886c0423863aecbaa55e9a133f57f8ed4b9f3414d45e0a60240710d1d",
+      "size_queued": 16230,
+      "exists": true,
+      "disk_sha256": "d313113886c0423863aecbaa55e9a133f57f8ed4b9f3414d45e0a60240710d1d",
+      "disk_size": 16230,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C2_v8_no_planner.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 418,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v20_doc03_completo.json",
+      "queued_sha256": "9dd1167f16ff9a4706ef02580ee3a2a575ce00cb50f1481ac63711f6089ff398",
+      "size_queued": 22857,
+      "exists": true,
+      "disk_sha256": "9dd1167f16ff9a4706ef02580ee3a2a575ce00cb50f1481ac63711f6089ff398",
+      "disk_size": 22857,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v20_doc03_completo.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 431,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "FAIL": 1,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v2_post_fixes.json",
+      "queued_sha256": "821b1d9abc9d12ffd4a9c5e4e48d8c9b832c9db21c4c9047fa1e7c3fa4ad28ef",
+      "size_queued": 28894,
+      "exists": true,
+      "disk_sha256": "821b1d9abc9d12ffd4a9c5e4e48d8c9b832c9db21c4c9047fa1e7c3fa4ad28ef",
+      "disk_size": 28894,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v2_post_fixes.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v3_post_audit.json",
+      "queued_sha256": "5a807494836f91832143f5141ccff063d7651ce5bc4a3bc220c01061a6d4fef9",
+      "size_queued": 28021,
+      "exists": true,
+      "disk_sha256": "5a807494836f91832143f5141ccff063d7651ce5bc4a3bc220c01061a6d4fef9",
+      "disk_size": 28021,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v3_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 420,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v4_post_audit.json",
+      "queued_sha256": "cc6ed05fa302f15f109852839fb8900969afa02c6febc28eb714864469ee56bc",
+      "size_queued": 28001,
+      "exists": true,
+      "disk_sha256": "cc6ed05fa302f15f109852839fb8900969afa02c6febc28eb714864469ee56bc",
+      "disk_size": 28001,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v4_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v5_post_steam_audit.json",
+      "queued_sha256": "dfe6e3be4f5fd5119e9ca85c636dd59b8a554f3a666014f2ec6c2031d3ee5dfd",
+      "size_queued": 28490,
+      "exists": true,
+      "disk_sha256": "dfe6e3be4f5fd5119e9ca85c636dd59b8a554f3a666014f2ec6c2031d3ee5dfd",
+      "disk_size": 28490,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v5_post_steam_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v7_multimonitor.json",
+      "queued_sha256": "f1ca8e40d32d90981770e3684d5533463d94e20d6a2e3e186fac5ba319ca3b53",
+      "size_queued": 23365,
+      "exists": true,
+      "disk_sha256": "f1ca8e40d32d90981770e3684d5533463d94e20d6a2e3e186fac5ba319ca3b53",
+      "disk_size": 23365,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v7_multimonitor.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 412,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C3_v8_no_planner.json",
+      "queued_sha256": "ac0a297de6c51bc56a2f249a9e62c28edd8ae56957f7c373c9e300a76c182f46",
+      "size_queued": 30001,
+      "exists": true,
+      "disk_sha256": "ac0a297de6c51bc56a2f249a9e62c28edd8ae56957f7c373c9e300a76c182f46",
+      "disk_size": 30001,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C3_v8_no_planner.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v20_doc03_completo.json",
+      "queued_sha256": "299153aeb1b50b5eaf4f8edb0dab859dfdf84f57361f868b1e3d007c6034659b",
+      "size_queued": 17916,
+      "exists": true,
+      "disk_sha256": "299153aeb1b50b5eaf4f8edb0dab859dfdf84f57361f868b1e3d007c6034659b",
+      "disk_size": 17916,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v20_doc03_completo.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 572,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "PARTIAL": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v2_post_fixes.json",
+      "queued_sha256": "698770ef4efbd96a2f0cc7c468f966a04b92b4249004dc72bca1e4bf996f568e",
+      "size_queued": 16788,
+      "exists": true,
+      "disk_sha256": "698770ef4efbd96a2f0cc7c468f966a04b92b4249004dc72bca1e4bf996f568e",
+      "disk_size": 16788,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v2_post_fixes.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 574,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "PARTIAL": 2,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v3_post_audit.json",
+      "queued_sha256": "1b446f2690e37d3eb85886c7848ae6dadd58953ecf61eee27464b02f2665305a",
+      "size_queued": 16650,
+      "exists": true,
+      "disk_sha256": "1b446f2690e37d3eb85886c7848ae6dadd58953ecf61eee27464b02f2665305a",
+      "disk_size": 16650,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v3_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 568,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "FAIL": 2,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v4_post_audit.json",
+      "queued_sha256": "35f67fdfe2bcb1f66ff9711a2a771e5dc9241cbc5996dd9b9b87d96fa5d09397",
+      "size_queued": 16465,
+      "exists": true,
+      "disk_sha256": "35f67fdfe2bcb1f66ff9711a2a771e5dc9241cbc5996dd9b9b87d96fa5d09397",
+      "disk_size": 16465,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v4_post_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 560,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "FAIL": 2,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v5_post_steam_audit.json",
+      "queued_sha256": "0005473170d3c94cbf86f0c4fc9015acc0c2e4c58b0340e05aa44a3f4114f1db",
+      "size_queued": 16784,
+      "exists": true,
+      "disk_sha256": "0005473170d3c94cbf86f0c4fc9015acc0c2e4c58b0340e05aa44a3f4114f1db",
+      "disk_size": 16784,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v5_post_steam_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 568,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "PARTIAL": 1,
+          "FAIL": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v7_multimonitor.json",
+      "queued_sha256": "53bd8a35d6bc615f1b6090b725e3b2a06e034cf9a7fcb05898f844196ac3ff46",
+      "size_queued": 16516,
+      "exists": true,
+      "disk_sha256": "53bd8a35d6bc615f1b6090b725e3b2a06e034cf9a7fcb05898f844196ac3ff46",
+      "disk_size": 16516,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v7_multimonitor.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 562,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 26,
+          "FAIL": 3,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C4_v8_no_planner.json",
+      "queued_sha256": "1ffd1e3ef68ec84987c5358ab915e844961ffe39eb8c8e75e3715ee3a7605658",
+      "size_queued": 16382,
+      "exists": true,
+      "disk_sha256": "1ffd1e3ef68ec84987c5358ab915e844961ffe39eb8c8e75e3715ee3a7605658",
+      "disk_size": 16382,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C4_v8_no_planner.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 568,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "PARTIAL": 1,
+          "FAIL": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C5_v20_doc03_completo.json",
+      "queued_sha256": "198a299d94e8794329a7b6aa44e4624d1f18f997f994a612d74155134f75c77d",
+      "size_queued": 21710,
+      "exists": true,
+      "disk_sha256": "198a299d94e8794329a7b6aa44e4624d1f18f997f994a612d74155134f75c77d",
+      "disk_size": 21710,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C5_v20_doc03_completo.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 526,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 24,
+          "FAIL": 4,
+          "PARTIAL": 2
+        }
+      }
+    }
+  ]
+}

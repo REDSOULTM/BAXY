@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-398-functiongemma",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:47Z",
+  "estimated_tokens": 157387,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 31,
+  "source_id": "functiongemma",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-398-functiongemma.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

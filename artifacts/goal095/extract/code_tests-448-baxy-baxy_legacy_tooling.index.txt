@@ -1,0 +1,11 @@
+batch=code_tests-448-baxy-baxy_legacy_tooling
+hash_ok=9 drift=0 miss=0
+OK legacy/tooling/providers/filesystem_transfer.py py_lines=2944 defs=88
+OK legacy/tooling/providers/local_calendar_v2.py py_lines=2342 defs=100
+OK legacy/tooling/providers/local_calendar_windows.py py_lines=490 defs=24
+OK legacy/tooling/providers/network.py py_lines=1001 defs=30
+OK legacy/tooling/providers/notes.py py_lines=2269 defs=83
+OK legacy/tooling/providers/office_document_v2.py py_lines=1707 defs=73
+OK legacy/tooling/providers/reminders.py py_lines=1880 defs=93
+OK legacy/tooling/providers/routines.py py_lines=664 defs=18
+OK legacy/tooling/providers/services.py py_lines=3001 defs=73

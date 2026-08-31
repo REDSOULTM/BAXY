@@ -1,0 +1,9 @@
+batch=code_tests-465-baxy
+hash_ok=7 drift=0 miss=0
+OK src/Baxy.Setup/bin/Debug/net10.0-windows10.0.19041.0/win-x64/Baxy.Setup.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'runtimes', 'targets']
+OK src/baxy_mind/__init__.py py_lines=10 defs=0
+OK src/baxy_mind/__main__.py py_lines=7577 defs=141
+OK src/baxy_mind/asr_fusion.py py_lines=408 defs=12
+OK src/baxy_mind/assets.py py_lines=213 defs=10
+OK src/baxy_mind/catalog_operation_aliases.py py_lines=107 defs=4
+OK src/baxy_mind/corrector.py py_lines=474 defs=11

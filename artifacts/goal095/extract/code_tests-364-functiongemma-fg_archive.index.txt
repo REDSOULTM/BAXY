@@ -1,0 +1,3 @@
+batch=code_tests-364-functiongemma-fg_archive
+hash_ok=1 drift=0 miss=0
+OK finetune_llm/archive/run1_20260615_0317/lora/chat_template.jinja

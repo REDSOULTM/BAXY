@@ -1,0 +1,5 @@
+batch=code_tests-024-carter-carter_v2
+hash_ok=3 drift=0 miss=0
+OK Carter_v2/Carter_v2.rar
+OK Carter_v2/probe_all_tools.py py_lines=2806 defs=107
+OK Carter_v2/probe_assets/.gitattributes

@@ -1,0 +1,21 @@
+batch=code_tests-442-baxy-baxy_legacy_tests
+hash_ok=19 drift=0 miss=0
+OK legacy/tests/test_tooling_spotify_optin.py py_lines=498 defs=15
+OK legacy/tests/test_tooling_spotify_play.py py_lines=825 defs=51
+OK legacy/tests/test_tooling_spotify_play_windows.py py_lines=541 defs=21
+OK legacy/tests/test_tooling_spotify_provider.py py_lines=756 defs=39
+OK legacy/tests/test_tooling_spotify_search.py py_lines=816 defs=66
+OK legacy/tests/test_tooling_spotify_search_query.py py_lines=234 defs=17
+OK legacy/tests/test_tooling_spotify_search_windows.py py_lines=1387 defs=73
+OK legacy/tests/test_tooling_spotify_stable_candidate.py py_lines=242 defs=6
+OK legacy/tests/test_tooling_spotify_windows.py py_lines=946 defs=67
+OK legacy/tests/test_tooling_sqlite_adapters.py py_lines=329 defs=13
+OK legacy/tests/test_tooling_steam_catalog_snapshot.py py_lines=978 defs=55
+OK legacy/tests/test_tooling_steam_install.py py_lines=2101 defs=143
+OK legacy/tests/test_tooling_steam_install_dialog.py py_lines=631 defs=42
+OK legacy/tests/test_tooling_steam_install_dialog_windows.py py_lines=1096 defs=82
+OK legacy/tests/test_tooling_steam_install_optin.py py_lines=417 defs=18
+OK legacy/tests/test_tooling_steam_install_tool.py py_lines=1435 defs=70
+OK legacy/tests/test_tooling_steam_install_windows.py py_lines=1136 defs=72
+OK legacy/tests/test_tooling_steam_provider.py py_lines=867 defs=53
+OK legacy/tests/test_tooling_steam_spotify_compound.py py_lines=468 defs=18

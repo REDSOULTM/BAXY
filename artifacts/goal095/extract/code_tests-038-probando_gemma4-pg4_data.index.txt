@@ -1,0 +1,6 @@
+batch=code_tests-038-probando_gemma4-pg4_data
+hash_ok=4 drift=0 miss=0
+OK gemma4_agent/data/router_corpus_curated_ft.jsonl.bak_pre_v3corpus_2026-06-11
+OK gemma4_agent/data/router_encoder_meta.json.bak_pre_clickvisible
+OK gemma4_agent/data/router_encoder_meta.json.bak_pre_jbalvin
+OK gemma4_agent/data/router_encoder_meta.json.bak_pre_v3corpus_2026-06-11

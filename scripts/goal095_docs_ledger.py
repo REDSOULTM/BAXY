@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -76,11 +77,21 @@ def load_json(path: Path) -> Any:
 
 def dump_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
+    payload = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+    tmp = path.with_name(path.name + ".tmp")
+    last_error: OSError | None = None
+    for attempt in range(6):
+        try:
+            tmp.write_text(payload, encoding="utf-8", newline="\n")
+            tmp.replace(path)
+            return
+        except OSError as exc:
+            last_error = exc
+            if tmp.is_file():
+                tmp.unlink(missing_ok=True)
+            time.sleep(0.15 * (attempt + 1))
+    if last_error is not None:
+        raise last_error
 
 
 def sha256_file(path: Path) -> str:

@@ -1,0 +1,24 @@
+batch=code_tests-019-carter-carter_v1
+hash_ok=22 drift=0 miss=0
+OK Carter_v1/carter_core.py py_lines=6741 defs=186
+OK Carter_v1/data/__init__.py py_lines=1 defs=0
+OK Carter_v1/data/universal_benchmark_cases.py py_lines=908 defs=0
+OK Carter_v1/debug_case36_state.json json_keys=['active_contract', 'active_targets', 'artifacts', 'observations', 'report', 'verified_facts']
+OK Carter_v1/dynamic_sandbox.py py_lines=704 defs=32
+OK Carter_v1/inference_benchmark.py py_lines=438 defs=10
+OK Carter_v1/kill_ollama.ps1
+OK Carter_v1/llm_backends.py py_lines=551 defs=37
+OK Carter_v1/memory.py py_lines=241 defs=15
+OK Carter_v1/phase6_full_compare.py py_lines=339 defs=12
+OK Carter_v1/phase6_stage2_resume.json json_keys=['base_profile', 'candidates', 'case_ids', 'created_at']
+OK Carter_v1/pytest.ini
+OK Carter_v1/run_tests.py py_lines=806 defs=34
+OK Carter_v1/runtime_context.py py_lines=216 defs=7
+OK Carter_v1/start_stack2_tabby.ps1
+OK Carter_v1/system_prompt.py py_lines=157 defs=0
+OK Carter_v1/task_state.py py_lines=1063 defs=48
+OK Carter_v1/telemetry.py py_lines=139 defs=11
+OK Carter_v1/tests/test_accessibility_probe.py py_lines=74 defs=4
+OK Carter_v1/tests/test_benchmark.py py_lines=174 defs=9
+OK Carter_v1/tests/test_core_logic.py py_lines=1541 defs=141
+OK Carter_v1/tests/test_inference_benchmark.py py_lines=132 defs=6

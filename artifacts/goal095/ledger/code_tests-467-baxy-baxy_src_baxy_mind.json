@@ -1,0 +1,671 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-467-baxy-baxy_src_baxy_mind",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:35Z",
+  "closed_utc": "2026-08-31T02:49:37Z",
+  "estimated_tokens": 275737,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 21,
+  "subsystem": "baxy_src_baxy_mind",
+  "subsystems": [
+    "baxy_src_baxy_mind"
+  ],
+  "files": [
+    {
+      "path": "src/baxy_mind/llm.py",
+      "sha256": "7d1512df81cca97401996df05d2103808b0c371a66ecba49c06c526c318527e3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-6968"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/llm_transport.py",
+      "sha256": "f49e469e34c0b4d44894e5c9343a5d5459976c6155b84e107864cf1a4e1e7d46",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-641"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/phonetic_es.py",
+      "sha256": "4ea022971823b109ffc41479bbbb1dd979dd4c5cd2aed5314fc978551c1c4ad6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-133"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/planner.py",
+      "sha256": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1319"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/process_lifecycle.py",
+      "sha256": "ff5ea7f87316f1383df18a5688070790447fcfb2a847c33ae70f167a2c49d4e4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-157"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/protocol.py",
+      "sha256": "81c71530f17ce009e457a8bda0742197ac23e6762c4f0f060c34f5064c58d235",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-155"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/public_turn_corpus.py",
+      "sha256": "722a855d7943bfaaff262a9ecd420dac6449b1dd868d30a614b7889c071dcd9e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-365"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/router.py",
+      "sha256": "bb81d576b6afd4660be8daca616b60949afc952715b0ca50576bc975a7ee7a9a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-945"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/router_worker.py",
+      "sha256": "face75863430f2205caf477d392912fa217ba848c71dc3f557dcd774edbba5fd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-86"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/semantic_family_arbiter.py",
+      "sha256": "90b110c8031e2b591de305ca2c4940fd440ceda9311f4d2a89e562077db59bcd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/skill_registry.py",
+      "sha256": "da76878b13e5dfbcf067b3d5ed5108457bd9bfeb1caf0821e354fae50b16c4c6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-339"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/time_budget.py",
+      "sha256": "d9b6f30569b554fddfaa4d7131070bcd78ce122b1e520bcb5bff268b95da4c99",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-41"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/tools/atomic_output.py",
+      "sha256": "ca9b6cfe299fdc45179bb19eec881df22656c1f861dbabcd354d994dd18506ff",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-52"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/tools/build_bank.py",
+      "sha256": "039417efaaa63c7085ebf9a4fb04f0b2d5b1e096422359de2bdd0f74c4aefbaf",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-114"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/tools/build_router_pool.py",
+      "sha256": "4c2e8523edd4c1ff4c613af9748ab5dee0369fce379d75ae3b28f68bbb691909",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-67"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/tools/extract_router_cases.py",
+      "sha256": "ed1515d8ee43e994827a92c6596823ea0509abd1153c96efb5cd18e3584701e4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-265"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/tools/frozen_files.py",
+      "sha256": "a1c9703d144cd6568fc8284b70eefc54113e31258852a6033d0f1771e53a536b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-90"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/tools/router_bank_sources.py",
+      "sha256": "a2fe3679dfe46a6de9c9f1721d255c2b78804d48fba0aadfb32934d29240c868",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-401"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/turn_evidence.py",
+      "sha256": "2bb879c080efc7f0699264b8d8243a7aa791a94594eaf177f20df35d3e2ad13d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1585"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/turn_evidence_contracts.py",
+      "sha256": "ed4d0acdfad5da02cb4328641b4ef42956e6c9113152ca787799a495de0c5e4a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-6"
+      ]
+    },
+    {
+      "path": "src/baxy_mind/turn_probe.py",
+      "sha256": "de4d8324b3b23cad9a82e169c3abbc5c92a677c01eca9ac3d21e5025364c2052",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-412"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-01-src-baxy_mind-llm.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/llm.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/llm.py: 1 archivos. Terminales leido PY \"\"\"LLM de conversación/tools: Qwen3-4B Q4_K_M vía llama-server (ADR-0005).  llama-server corre como subproceso del sidecar en 127.0.0.1 (puerto efímero). El Job Object kill-on-close del shell mata el árbol completo al cerrar. Fallback CPU por construcción: BAXY_MIND_NGL=0.  Config por entorno: - BAXY_MIND_LLM_GGUF: ruta del GGUF (obligatoria para levantar el LLM).",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/llm.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/llm.py",
+        "ranges": [
+          "1-6968"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-02-src-baxy_mind-llm_transport.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/llm_transport.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/llm_transport.py: 1 archivos. Terminales leido PY \"\"\"Bounded HTTP transport for the loopback llama-server chat endpoint.  Process ownership, endpoint lifecycle and request budgets belong to ``LlmRuntime``.  This adapter owns only the wire concerns: serialize one payload, acquire the current endpoint and timeout for every attempt, and retry the closed set of transient loopback failures. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/llm_transport.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/llm_transport.py",
+        "ranges": [
+          "1-641"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-03-src-baxy_mind-phonetic_es.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/phonetic_es.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/phonetic_es.py: 1 archivos. Terminales leido PY \"\"\"Spanish Metaphone (Mosquera 2012) — codificación fonética para español.  Por qué hace falta: el corrector ya usa Double Metaphone INGLÉS (jellyfish), que codifica bien anglicismos oídos en inglés. Pero Parakeet (multilingüe, sesgo español) fusiona nombres ingleses a fonología ESPAÑOLA: \"Chrome\"->\"crumb\", \"Edge\"->\"echo\", \"Zoom\"->\"su\". El Metaphone inglés no acerca esos códigos. El Spanish Metaph",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/phonetic_es.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/phonetic_es.py",
+        "ranges": [
+          "1-133"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-04-src-baxy_mind-planner.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/planner.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/planner.py: 1 archivos. Terminales leido PY \"\"\"Planner estructurado de BAXY.  El modelo propone una estructura pequeña; este módulo conserva el control:  * el catálogo del ``hello`` es la única fuente de operaciones; * ``memory.*`` nunca entra al planner general; * la shortlist se calcula antes de llamar al LLM; * un plan es un DAG acotado, sin autoridad ni riesgo declarados por el modelo;",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/planner.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/planner.py",
+        "ranges": [
+          "1-1319"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-05-src-baxy_mind-process_lifecycle.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/process_lifecycle.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/process_lifecycle.py: 1 archivos. Terminales leido PY \"\"\"Bounded, non-sensitive cleanup primitives for owned child processes.\"\"\"  from __future__ import annotations  import math import subprocess import sys import time",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/process_lifecycle.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/process_lifecycle.py",
+        "ranges": [
+          "1-157"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-06-src-baxy_mind-protocol.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/protocol.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/protocol.py: 1 archivos. Terminales leido PY \"\"\"Protocolo JSONL del sidecar mente (baxy.mind.v1).  Espejo disciplinado de baxy.local.v1: una línea = un mensaje JSON UTF-8 estricto, tope de 1 MiB por línea en ambas direcciones, fail-closed ante malformación. stdin recibe solicitudes del shell; stdout emite hello, resultados y eventos (transcripciones de voz). \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/protocol.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/protocol.py",
+        "ranges": [
+          "1-155"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-07-src-baxy_mind-public_turn_corpus.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/public_turn_corpus.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/public_turn_corpus.py: 1 archivos. Terminales leido PY \"\"\"Build provenance-preserving BAXY evidence from licensed public corpora.  This offline data adapter never assigns a capability from the wording of an utterance. It only accepts an upstream semantic label from a reviewed source map. The emitted records are advisory evidence for a turn-decider, never an operation name or execution authority. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/public_turn_corpus.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/public_turn_corpus.py",
+        "ranges": [
+          "1-365"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-08-src-baxy_mind-router.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/router.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/router.py: 1 archivos. Terminales leido PY \"\"\"Encoder multilingüe compartido y router semántico offline (ADR-0005).  El proceso usado por el runtime de producto expone únicamente embeddings. La política contextual del LLM y sus contratos cerrados son quienes deciden conversation/action/plan; el worker no dispone de una llamada de ruteo.  ``IntentRouter`` conserva la evaluación semántica del banco congelado para gates offline y compatibilid",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/router.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/router.py",
+        "ranges": [
+          "1-945"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-09-src-baxy_mind-router_worker.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/router_worker.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/router_worker.py: 1 archivos. Terminales leido PY \"\"\"Private encoder-only subprocess for the pinned E5 model.\"\"\"  from __future__ import annotations  import json import sys  from .router import (",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/router_worker.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/router_worker.py",
+        "ranges": [
+          "1-86"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-10-src-baxy_mind-semantic_family_arbiter.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/semantic_family_arbiter.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/semantic_family_arbiter.py: 1 archivos. Terminales leido PY \"\"\"Attested semantic operation-family ranks over the existing E5 embedding.\"\"\"  from __future__ import annotations  import hashlib import json from dataclasses import dataclass from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/semantic_family_arbiter.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/semantic_family_arbiter.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-11-src-baxy_mind-skill_registry.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/skill_registry.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/skill_registry.py: 1 archivos. Terminales leido PY \"\"\"Versioned procedural skills for BAXY's planner.  Skills are trusted, read-only guidance shipped with the product.  They may explain how public primitives compose, but they never add operations, execute effects, see private memory, or change risk/confirmation policy. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/skill_registry.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/skill_registry.py",
+        "ranges": [
+          "1-339"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-12-src-baxy_mind-time_budget.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/time_budget.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/time_budget.py: 1 archivos. Terminales leido PY \"\"\"Exact monotonic-budget arithmetic shared by local runtime owners.\"\"\"  from __future__ import annotations  import math import time  ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/time_budget.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/time_budget.py",
+        "ranges": [
+          "1-41"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-13-src-baxy_mind-tools",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/tools (6 ficheros)",
+      "contract": "Grupo src/baxy_mind/tools: 6 archivos. Terminales leido PY \"\"\"Durable replacement for generated tooling outputs.\"\"\"  from __future__ import annotations  import os import tempfile import time from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "src/baxy_mind/tools/atomic_output.py",
+        "src/baxy_mind/tools/build_bank.py",
+        "src/baxy_mind/tools/build_router_pool.py",
+        "src/baxy_mind/tools/extract_router_cases.py",
+        "src/baxy_mind/tools/frozen_files.py",
+        "src/baxy_mind/tools/router_bank_sources.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/tools/atomic_output.py",
+        "ranges": [
+          "1-52"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-14-src-baxy_mind-turn_evidence.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/turn_evidence.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/turn_evidence.py: 1 archivos. Terminales leido PY \"\"\"Evidencia semántica local para la política de turnos.  El corpus histórico nunca se consulta como una lista de frases ni concede autoridad. Se filtra de forma conservadora, se vectoriza localmente con el encoder ya residente y sólo aporta unos pocos ejemplos diversos al LLM que decide el turno. La ejecución continúa detrás de schemas, riesgo, confirmaciones y el core. ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/turn_evidence.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/turn_evidence.py",
+        "ranges": [
+          "1-1585"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-15-src-baxy_mind-turn_evidence_contracts.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/turn_evidence_contracts.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/turn_evidence_contracts.py: 1 archivos. Terminales leido PY \"\"\"Lightweight schema identities shared by turn-evidence tooling and runtime.\"\"\"  SCHEMA_VERSION = \"baxy.turn-evidence.v4\" EVIDENCE_RECORD_SCHEMA_VERSION = \"baxy.turn-evidence-record.v1\" TRAINING_SCHEMA_VERSION = \"baxy.turn-training.v1\" ABSTENTION_POLICY_SCHEMA_VERSION = \"baxy.turn-evidence-abstention-policy.v1\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/turn_evidence_contracts.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/turn_evidence_contracts.py",
+        "ranges": [
+          "1-6"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-467-baxy-baxy_src_baxy_mind-16-src-baxy_mind-turn_probe.py",
+      "disposition": "evidence_only",
+      "component": "src/baxy_mind/turn_probe.py (1 ficheros)",
+      "contract": "Grupo src/baxy_mind/turn_probe.py: 1 archivos. Terminales leido PY \"\"\"Safe, JSON-serializable one-sided linear probe for turn evidence.\"\"\"  from __future__ import annotations  import hashlib import json import math from dataclasses import dataclass",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "src/baxy_mind/turn_probe.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/baxy_mind/turn_probe.py",
+        "ranges": [
+          "1-412"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=21 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-468-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-467-baxy-baxy_src_baxy_mind.inspect.json"
+}

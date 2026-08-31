@@ -1,0 +1,26 @@
+batch=code_tests-004-carter-carter_legacy_Carter_v2
+hash_ok=24 drift=0 miss=0
+OK legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-092725.json json_keys=['components', 'composite_score', 'duration_s', 'hardware', 'load_time_ms', 'model', 'modes', 'text_cases', 'text_summary', 'tool_cases', 'tool_summary', 'ts_end', 'ts_start', 'vram_after_load_mb', 'vram_after_unload_mb', 'vram_before_mb', 'vram_load_delta_mb', 'vram_peak_mb', 'warmup_error', 'warmup_ok']
+OK legacy/Carter_v2/audit/results/model_benchmarks/qwen3_14b/20260502-092910.json json_keys=['components', 'composite_score', 'duration_s', 'hardware', 'load_time_ms', 'model', 'modes', 'text_cases', 'text_summary', 'tool_cases', 'tool_summary', 'ts_end', 'ts_start', 'vram_after_load_mb', 'vram_after_unload_mb', 'vram_before_mb', 'vram_load_delta_mb', 'vram_peak_mb', 'warmup_error', 'warmup_ok']
+OK legacy/Carter_v2/audit/results/model_benchmarks/qwen3_4b/20260502-085026.json json_keys=['components', 'composite_score', 'duration_s', 'hardware', 'load_time_ms', 'model', 'modes', 'text_cases', 'text_summary', 'tool_cases', 'tool_summary', 'ts_end', 'ts_start', 'vram_after_load_mb', 'vram_after_unload_mb', 'vram_before_mb', 'vram_load_delta_mb', 'vram_peak_mb', 'warmup_error', 'warmup_ok']
+OK legacy/Carter_v2/audit/results/model_benchmarks/qwen3_8b/20260502-090319.json json_keys=['components', 'composite_score', 'duration_s', 'hardware', 'load_time_ms', 'model', 'modes', 'text_cases', 'text_summary', 'tool_cases', 'tool_summary', 'ts_end', 'ts_start', 'vram_after_load_mb', 'vram_after_unload_mb', 'vram_before_mb', 'vram_load_delta_mb', 'vram_peak_mb', 'warmup_error', 'warmup_ok']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe.json json_keys=None
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe_fast.json json_keys=None
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/fair_rebench_summary.json json_keys=['histogram', 'n_models', 'rows', 'source_fair_matrix', 'source_legacy_matrix']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_deepseek-r1_8b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_devstral_24b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_gemma3_12b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_granite3.3_8b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_hermes3_8b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.1_8b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.2_3b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_mistral-small_24b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_phi4_latest_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen2.5-coder_14b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_1.7b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_14b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_4b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_8b_fast.json json_keys=['best_pass_rate', 'best_protocol', 'model', 'protocols', 'vram_after_load_mb', 'vram_before_mb']
+OK legacy/Carter_v2/audit/results/stability/_analyze.py py_lines=62 defs=0
+OK legacy/Carter_v2/audit/results/stability/_analyze_rebaseline.py py_lines=129 defs=1
+OK legacy/Carter_v2/audit/results/stability/run01_qwen3_8b_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']

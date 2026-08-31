@@ -1,0 +1,2608 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-337-probando_gemma4-pg4_scripts",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:15Z",
+  "closed_utc": "2026-08-31T02:46:17Z",
+  "estimated_tokens": 293890,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 77,
+  "subsystem": "pg4_scripts",
+  "subsystems": [
+    "pg4_scripts"
+  ],
+  "files": [
+    {
+      "path": "scripts/_diag/_audit_fires.json",
+      "sha256": "7af149aa529769c117d05faf6a957f4ed1c9c3448203f0f06c3dcd267f1795e3",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_audit_nofire.json",
+      "sha256": "88886eae5c162e9a9ad86a1754ed7ea61d23aa1a1c8e51d6a3da2f632a4f257c",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch12.json",
+      "sha256": "30b478a89e81fb207e9380f9595d90113d019a492fa63e86372c145af9ff5fe5",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch13_tmp.json",
+      "sha256": "0ee4521507c7958c0ddbd163d090f887a0a4cf680c7550bb8b15df9ee328040f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch14.json",
+      "sha256": "a84fdf705290e4ccfc32c659597b93103768cedc77a1958827b18f1593bc73cb",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch5_lote5.json",
+      "sha256": "ff900678ad4c524f00a8d55898b58c2a96442039c76898fc3cb3f020d777e80b",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch8_490_560.json",
+      "sha256": "d56a9c27f45c350c48d64232d0784e6acaa3645755e8516b8232223a8648c4c7",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch8_490_560_extract.json",
+      "sha256": "1d6667f09415aa30cfd34c3466cd5b3b0b94e4b61182e0354de99d742f6c946b",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_battery_cu_full.py",
+      "sha256": "33510d232346fa0aa80fcaddd4f93ce8fffee34defbafd967f89043024c260c4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_capture_lat.py",
+      "sha256": "52ac14c475b1aa5d4c39c2af5cfa3f9d64c846c0a3e9e5d5ffa03af64a65dcc4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-32"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_capture_replies.py",
+      "sha256": "920225a01445df63d262bc3445536ee2d89940020c13d764c1b3387e68855108",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-37"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_check_accessibility_boot.py",
+      "sha256": "c3da3c57142c2cb288ed216e31fef07b7e727be7e24314185e97f79c77232076",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-107"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_dbg_gmail_turn.py",
+      "sha256": "18eb6623fe7c8d14d16842fcba5b54cef6ea1bec0d37fcc8444a03233f1f9898",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-35"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_app_miss_turn_breakdown.py",
+      "sha256": "7ab68629c46501272974a76f89008f695bd6a44803e185f73d06f061167bf333",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-105"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_app_open_miss.py",
+      "sha256": "82e9571cc8f4bf6a2c96d669b6141cff45d5ec75a7863747bfb7660417a6019b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-79"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_app_open_score_floor.py",
+      "sha256": "7e4679b4fc473e97ba4bde73a341faf026684e284d3a9b407f101f85b58dde95",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-73"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_audit_session_turns.py",
+      "sha256": "cda676ee92bb1f19101ebab32a96979fdc20778b757741a33b569df86d938a21",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-99"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_browser_followup.py",
+      "sha256": "2f28b533b6dce5d0feb8ae6ac03639f0ba5e907dd2d0061b779725f6949b2afc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-42"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_bugA_messaging.py",
+      "sha256": "db16e90bf93f59350b06e4e4bb5aecb58cc042aa12383c16dc768ff9b0b9be1b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_bugB_antiregresion.py",
+      "sha256": "38a06e55710fc84f5ff0278f7922c0db95544949c1231d9288706870b56ee235",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-57"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_bugB_router_gamestate.py",
+      "sha256": "46a6ed3ecc4d94a2294571b55f9378591b34a4119272bf096df1e7c2afaacee9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-38"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_build_turn_dataset.py",
+      "sha256": "38479978e86e3908aeab96b59b1ac4bf6db99c4d0ad6576b2aabc56ead50de78",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-114"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_carter_score_dist.py",
+      "sha256": "73066d9dd8a33c63340a9e7a2d05fddffce24bae8a2743691e88c383fb7bfe7d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-107"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_carter_scores.py",
+      "sha256": "203031aee490d39d6542a76964288930a49b270fa9f73a32efa79d0d890f5b2a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_chain.py",
+      "sha256": "60aa7ead62e167069bdf27470dd183798a74f5983a56426d6d2d4d711e850842",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-58"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_dump_history.py",
+      "sha256": "74c67894e894555977b0039a4c593c092ba7b0366180f5378822a24a4f478f95",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-62"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_empty_reply.py",
+      "sha256": "2b1b18f9611601f2d773ea9a62c7627bbea13f87e50e9b3ad2fd175d05da05b4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-74"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_exemplar_neighbors.py",
+      "sha256": "3db4d9302c7df8d56bafa15aaf8dfb0ad134245920d6d7649a73e15f3e25fa1a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_filler_decide.py",
+      "sha256": "2f949964289d0a859ad41e76a8b5f6b118d414da1f3c746c1eec1b8f5b480384",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-48"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_finetune_dataset_eval.py",
+      "sha256": "23e4a3c16d399fd7cddb37210d80121d38801a9e876aaacaa134d662c05f0c20",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-262"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_gemma_score_dist.py",
+      "sha256": "91361cbe594aa88d3034d88f0d06f03c8245a71d2f0be2452c37e8cf102cb0e9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-107"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_guard1_on_real_dataset.py",
+      "sha256": "02483992a9adc1519470975dc6b348cf9d902e2f5cbd6b18ad48673d22ce090a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-62"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_guard1_stress.py",
+      "sha256": "aa8826465a8b6dea75dea006a31e8884af0db60e1fd8e2d6123fb7836649205d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-78"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_honesty.py",
+      "sha256": "b32d17e272d01efe083cf918597d2cad15cb0c14fd5dcc99c8fdcbd309046a82",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-24"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_hunt_tanda.py",
+      "sha256": "d7d0c07ad437bf98bab5493f27390b5608c9a021d3c6f0e60291219492dec0aa",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-175"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_intent_domain_mismatch.py",
+      "sha256": "a280a0b3f8b9d9bb9a0a9d14e8f634f7c919139adf256f0bcbc5c3c34acf379c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_latency_baseline.py",
+      "sha256": "9e9170bf28cff35b8af600502d94174d450c1e4a285d51d8e0517e932ec7acc0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-121"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_live_terse_cluster.py",
+      "sha256": "0baf1b66f4064b360bdaf9e2def88ffc99b2068db75a277dd8c852f8ad78b9cf",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-132"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_media_fabricated.py",
+      "sha256": "3bef21774d02c14f9b5952ae4d3d6f5a0c66f1cda5cf091651bc86ed2fe3d2e6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-43"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_nav_asyndeton_leakage.py",
+      "sha256": "50266b5e2d56ab4313e72783d2612c7c2e0d9cc21f7b1fcafe43d02fd6a1ca64",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-46"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_noise_floor.py",
+      "sha256": "123cf0086f5f339553a8b950aec68bcb994a914ff27cebcd1593867d4458e9c1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-196"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_non_site_hosts.py",
+      "sha256": "0ee833fc029564aa3eb3d916f9f121dbb636bbd541572b74e38463f37a6da56a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-106"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_precondition_sitefallback.py",
+      "sha256": "a6fe5c6326489213092ac84e233d4e8fde919f06113c555d6a1cf621f50ed45e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-39"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_probe_on_training.py",
+      "sha256": "34de4c73b72f090857764d02795986c36705b3a55b2f9f572502e911766e9640",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-77"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_reflection_e2e.py",
+      "sha256": "e9d9bc8d949c077215b29a5abda2cbbba2ed05ee5e2dd50b8dd1d7593e8d3db7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-90"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_reflection_live.py",
+      "sha256": "63d7d224817fd6b4a3b65f77769690f95c2c9a3d54e5e514e40275995ef604f6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-62"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_reminder_semantic.py",
+      "sha256": "41a55d16f53219dd015c25dbe05c63216c294bd692b34ddf4eda31569ab438e8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-50"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_replay_logs.py",
+      "sha256": "e800689118cda500a24a0d61807255b2ae15bfbffe13dee78ade07af94523075",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-118"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_router_probe.py",
+      "sha256": "ac27aec6668f6f9c46cd18e247f5a488a01bf6e42125e0c239e16ad9758a7174",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-84"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_site_resolver_live.py",
+      "sha256": "284c2042f38438577df59b3e2ecee28de479e0beae0740b15efc2f8381e991b2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-61"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_strip_wake_live.py",
+      "sha256": "30c416d92f5883f04a7f08d45ad2a10e9309896f579b801002c0bf72ff3dbf32",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-69"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_traces_full_audit.py",
+      "sha256": "c1aef5d8111c50d5d940e7e16aeaa88d8c42411604e7f300bcd9ec90a3dcdac5",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-100"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_verify_baxy_identity_live.py",
+      "sha256": "1294adc7520caf7755c2da7f892a06dc24f13baa4fa551b35c6c8bdbfebfd826",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-60"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_verify_fixes_live.py",
+      "sha256": "fe18c17a44f618789de7e78b9a0cab3cc21063d692c1dcdc4cdae181a74add5b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-88"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_verify_ola2_live.py",
+      "sha256": "238073d876391ab0c92cd925b9852d51d53606daf390caee789fba1fa1c08d3a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-92"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_visual_click_live.py",
+      "sha256": "caed8b062d429478acce393dc6dbbdce4520217b2b63d52f4dc314df1f8f8451",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-94"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_carter_bylang.py",
+      "sha256": "b6a92fcda2894af856d5cd8f69e7b33a6e7f6dcec0717135869f7dd963a59ae6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-100"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_heldout_validate.py",
+      "sha256": "5fc118ed022167017360987a3578402c7d5ee84fd420dd88ff27909e85018030",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-143"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_neg_probe.py",
+      "sha256": "d03576a6829528b413108cf49b121c8886343672122c6a2c0f2a40c438efc2fa",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-107"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_neg_volume.py",
+      "sha256": "a17809b412cf4864b1402dc627c9e9e1dbb40e84d04d6dc925d7829ac4da3157",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-32"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_predict_cost.py",
+      "sha256": "869687777148df3bdd78b3db14f4a59476dfac472902935815f1223a2b997673",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-50"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_recall_probe.py",
+      "sha256": "542352d6a3ba2ed5a92181404007f9f037bde5d26cccd0aea3db21f322758cdb",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-176"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_wake_strip_threshold.py",
+      "sha256": "a17d77e7a99af411177c21d63864d916c7929cebbc6daece566ca30db3303294",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_diag_window_actual_loop.py",
+      "sha256": "5c2d1ecd1446eddca9b8ee82ac752546accfa861bfc9c070139d3cfde0ff34ca",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-97"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_dump_sysprompt.py",
+      "sha256": "8ae6225d5e330ddec72bdb38d851d7bab4fdcfa1ccd0887f9bfd65dc0f482a32",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-30"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_flag_audit.py",
+      "sha256": "534a851f0a3a87165d8f6b6610786f8e7c55cadbf6a2a8fd7aaefdb98a5f68d9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-104"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_completitud_0.json",
+      "sha256": "873ccbd4bcd5cc75fbf07b906fa5e620f1c93985289ffa56169ed1f617892275",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_honestidad_0.json",
+      "sha256": "933be5d15e4171efff2c2c585b6565ae033e11bd0220fc6a5a0650fa3ea79123",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_honestidad_1.json",
+      "sha256": "570bad349d4fa4b58b2641659d446ef9091a94bef4fc6d5c284ff91e9a95d8c6",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_idioma_0.json",
+      "sha256": "bd12db601a51d9f4dc945374ea46ba00ade0162e6d36d952975fbc168e2090d1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_idioma_1.json",
+      "sha256": "ee37e8296939ffff55f10c886ca6247411be4e4a83c830696592436edb44fd74",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_routing_0.json",
+      "sha256": "e6b089284a3f824b97a3b6ec69f1a87726773c8b74627fd3c2b88e45a4698beb",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_routing_1.json",
+      "sha256": "9e517e542299c033255e19c5ab2d7191e3a8cf62733c4ccbd124f698c85f96d6",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_routing_2.json",
+      "sha256": "7eb2ef5310eb53e1cfde6170765c38f0e335858660605831142f178d551c58c2",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_cov/_routing_3.json",
+      "sha256": "a7440ff01b3efe5713f0df82f0445c05966f5296398fd580d510c4c606751f48",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_failmode_honestidad.json",
+      "sha256": "7c237a8f4c6a4d8b18f6e28f21b4a733069163fcd2370a410ae838e1ab5db4e4",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_failmode_identidad.json",
+      "sha256": "84fcb7c479e34c9d7c1943e47e13d60589ae692c0674fe5b527b82a3a5696dad",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-01-scripts-_diag-_audit_fires.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_audit_fires.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_audit_fires.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_audit_fires.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_audit_fires.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-02-scripts-_diag-_audit_nofire.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_audit_nofire.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_audit_nofire.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_audit_nofire.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_audit_nofire.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-03-scripts-_diag-_batch12.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_batch12.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_batch12.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_batch12.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_batch12.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-04-scripts-_diag-_batch13_tmp.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_batch13_tmp.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_batch13_tmp.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_batch13_tmp.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_batch13_tmp.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-05-scripts-_diag-_batch14.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_batch14.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_batch14.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_batch14.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_batch14.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-06-scripts-_diag-_batch5_lote5.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_batch5_lote5.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_batch5_lote5.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_batch5_lote5.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_batch5_lote5.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-07-scripts-_diag-_batch8_490_560.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_batch8_490_560.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_batch8_490_560.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_batch8_490_560.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_batch8_490_560.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-08-scripts-_diag-_batch8_490_560_extract.json",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_batch8_490_560_extract.json (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_batch8_490_560_extract.json: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_batch8_490_560_extract.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_batch8_490_560_extract.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-09-scripts-_diag-_battery_cu_full.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_battery_cu_full.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_battery_cu_full.py: 1 archivos. Terminales leido PY \"\"\"Batería COMPREHENSIVA de computer-use (Fase A: routing + plan, exec físico MOCKEADO). Cubre todas las categorías de accesibilidad/orquestación con varios fraseos. Imprime la tool-chain + plan + reply por caso, agrupado, para analizar qué rutea bien y qué hay que arreglar. CERO SendInput, cero side-effects reales.\"\"\" from __future__ import annotations import os, sys, re from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_battery_cu_full.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_battery_cu_full.py",
+        "ranges": [
+          "1-96"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-10-scripts-_diag-_capture_lat.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_capture_lat.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_capture_lat.py: 1 archivos. Terminales leido PY import sys, os, json, time sys.path.insert(0, os.path.abspath(\".\")) try: sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception: pass os.environ.setdefault(\"GEMMA4_DEFAULT_PROFILE\", \"vram4\") os.environ.setdefault(\"GEMMA4_DIAG\", \"1\")  # no contaminar la DB de Jarvis en pruebas os.environ.setdefault(\"GEMMA4_AGENT_SAFETY\", \"0\") from gemma4_agent.infra.profiles import get_active_p",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_capture_lat.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_capture_lat.py",
+        "ranges": [
+          "1-32"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-11-scripts-_diag-_capture_replies.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_capture_replies.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_capture_replies.py: 1 archivos. Terminales leido PY \"\"\"Captura replies crudos de comandos de acción ×idioma para juicio externo. Escribe JSONL {lang_expected, msg, reply}. run_content seguro (exec mockeado).\"\"\" import sys, os, json sys.path.insert(0, os.path.abspath(\".\")) try: sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception: pass os.environ.setdefault(\"GEMMA4_DEFAULT_PROFILE\", \"vram4\") os.environ.setdefault(\"GEMMA4_DIAG\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_capture_replies.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_capture_replies.py",
+        "ranges": [
+          "1-37"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-12-scripts-_diag-_check_accessibility_boot.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_check_accessibility_boot.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_check_accessibility_boot.py: 1 archivos. Terminales leido PY \"\"\"Verify the accessibility-mode boot fix (CLAUDE.md #3.5 — observe real behavior):  - backend /accessibility (persisted \"last config\") wins over stale localStorage  - reconciling the backend value does NOT fire a redundant PUT (no spurious    'accessibility · X' activity entry on boot)  Seeds localStorage with a STALE 'no_vidente', mocks GET /accessibility -> 'normal', counts PUT /accessibility c",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_check_accessibility_boot.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_check_accessibility_boot.py",
+        "ranges": [
+          "1-107"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-13-scripts-_diag-_dbg_gmail_turn.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_dbg_gmail_turn.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_dbg_gmail_turn.py: 1 archivos. Terminales leido PY \"\"\"Un turno: 'abrí gmail.com' con tracing de args/result de cada execute.\"\"\" import os import sys import time from pathlib import Path  ROOT = Path(__file__).resolve().parent.parent.parent sys.path.insert(0, str(ROOT))",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_dbg_gmail_turn.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_dbg_gmail_turn.py",
+        "ranges": [
+          "1-35"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-14-scripts-_diag-_diag_app_miss_turn_breakdown.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_app_miss_turn_breakdown.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_app_miss_turn_breakdown.py: 1 archivos. Terminales leido PY \"\"\"Desglose del turno \"abrí jitomatador\" (miss): ¿dónde se van los segundos? Envuelve decide / execute(tool) / client.chat con timers e imprime cada paso. Tras los fixes de tool (deep scan paralelo+memo, site cache) el turno vivo seguía en 26.6s — este diag separa LLM vs tools vs decide para el siguiente corte. \"\"\" import functools import os import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_app_miss_turn_breakdown.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_app_miss_turn_breakdown.py",
+        "ranges": [
+          "1-105"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-15-scripts-_diag-_diag_app_open_miss.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_app_open_miss.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_app_open_miss.py: 1 archivos. Terminales leido PY \"\"\"Diagnóstico: ¿dónde se van los ~14s de app.open en MISS? (medido en vivo 2026-06-10 con \"abrí jitomatador\": decide ~14s + a veces 2º scan del 4B). Mide cada loader del AppResolver por separado + el deep scan + el resolve web, y la 2ª llamada (warm) para ver qué se repaga. Sin LLM (medición de tool pura). \"\"\" import sys import time import tempfile",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_app_open_miss.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_app_open_miss.py",
+        "ranges": [
+          "1-79"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-16-scripts-_diag-_diag_app_open_score_floor.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_app_open_score_floor.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_app_open_score_floor.py: 1 archivos. Terminales leido PY \"\"\"Distribución de scores del top-match de app.open: legítimos vs basura.  Para elegir el PISO de apertura con datos (no intuición): app_open abre matches[0] con cualquier score>0 — medido en vivo que \"abre jitomatador por favor\" abrió una app aleatoria. El piso debe separar:   - LEGÍTIMOS: nombres exactos, alias builtin localizados (via canonical_query),     typos de voz/tipeo (primera letra cons",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_app_open_score_floor.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_app_open_score_floor.py",
+        "ranges": [
+          "1-73"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-17-scripts-_diag-_diag_audit_session_turns.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_audit_session_turns.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_audit_session_turns.py: 1 archivos. Terminales leido PY \"\"\"Extrae los TURNOS reales de una sesión de full.log (~/.gemma4/logs/<id>/).  Objetivo: reconstruir cada turno = (mensaje del usuario, cadena de tools ejecutadas, reply) para auditar si el agente accionó MAL respecto a lo que el usuario pidió. NO interpreta correctitud (eso lo hace el LLM/agentes del workflow); solo estructura los datos crudos para que el juicio sea sobre EVIDENCIA real, no espec",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_audit_session_turns.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_audit_session_turns.py",
+        "ranges": [
+          "1-99"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-18-scripts-_diag-_diag_browser_followup.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_browser_followup.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_browser_followup.py: 1 archivos. Terminales leido PY \"\"\"DIAGNÓSTICO (no fix): por qué el LLM elige app en vez de browser en el follow-up 'abrelo en el navegador'. Captura subset ofrecido (orden) + tool_call emitido.\"\"\" import sys, os sys.path.insert(0, os.path.abspath(\".\")) try: sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception: pass os.environ.setdefault(\"GEMMA4_DEFAULT_PROFILE\", \"vram4\") os.environ.setdefault(\"GEMMA4_DIAG",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_browser_followup.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_browser_followup.py",
+        "ranges": [
+          "1-42"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-19-scripts-_diag-_diag_bugA_messaging.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_bugA_messaging.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_bugA_messaging.py: 1 archivos. Terminales leido PY \"\"\"Mide BUG A (turno 7): \"escríbele a Juan que voy en un momento en Discord\".  ANTES del fix: extract_app_action matchea -> parse_type_action mete \"a Juan que voy en un momento\" como payload de tecleo en Discord. extract_message_to (que separa bien) nunca se llama.  Verifica: (1) extract_message_to separa contacto/cuerpo, (2) el cuerpo NO debe arrastrar \"en Discord\" (bug secundario), (3) casos de ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_bugA_messaging.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_bugA_messaging.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-20-scripts-_diag-_diag_bugB_antiregresion.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_bugB_antiregresion.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_bugB_antiregresion.py: 1 archivos. Terminales leido PY \"\"\"Anti-regresión del detector _is_local_state_question (BUG B).  DEBE ser True solo para PREGUNTAS de estado local del SO. NO debe matchear: acciones (cerrá/abrí ventana), smalltalk, ni preguntas del mundo (web). \"\"\" import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_bugB_antiregresion.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_bugB_antiregresion.py",
+        "ranges": [
+          "1-57"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-21-scripts-_diag-_diag_bugB_router_gamestate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_bugB_router_gamestate.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_bugB_router_gamestate.py: 1 archivos. Terminales leido PY \"\"\"Mide BUG B (turnos 13/14): \"¿qué juego estoy jugando?\" -> router ofrece solo [session] -> el 4B elige session.cancel_turn.  Reproduce qué tools ofrece el router (select_tool_names) para la pregunta de ESTADO LOCAL en varios fraseos (mayúscula/?/wake-leak). La tool correcta es `window` (action=active -> GetForegroundWindow). El bug: el abstain_head trata la pregunta como charla y el fallback dev",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "scripts/_diag/_diag_bugB_router_gamestate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_bugB_router_gamestate.py",
+        "ranges": [
+          "1-38"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-22-scripts-_diag-_diag_build_turn_dataset.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_build_turn_dataset.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_build_turn_dataset.py: 1 archivos. Terminales leido PY \"\"\"Construye el dataset COMPLETO de turnos reales del usuario desde traces.jsonl.  Cada turno = user_text (router_reasoning) + subset ofrecido + tools ejecutadas (tool_call/tool_result) + short-circuits + reply final (final.content) + señales de fallo (rescue_missed, forced_tool_retry, reply_anti_pattern_detected, false_confirmation_caught, tool_call_skipped_when_expected, verifier_disagrees).  Fi",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_build_turn_dataset.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_build_turn_dataset.py",
+        "ranges": [
+          "1-114"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-23-scripts-_diag-_diag_carter_score_dist.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_carter_score_dist.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_carter_score_dist.py: 1 archivos. Terminales leido PY \"\"\"Diagnostic: score distribution + per-language recall for hey_carter held-out.  Stratified across all 25 voices/13 langs. Prints histogram of raw scores and recall at several thresholds. SAFE: pure onnxruntime + throttle, CPU only. \"\"\" from __future__ import annotations  import glob",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_carter_score_dist.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_carter_score_dist.py",
+        "ranges": [
+          "1-107"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-24-scripts-_diag-_diag_carter_scores.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_carter_scores.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_carter_scores.py: 1 archivos. Terminales leido PY \"\"\"Per-phrase + score-distribution diagnostic for hey_carter universal held-out.\"\"\" from __future__ import annotations import sys, wave from collections import defaultdict from pathlib import Path sys.path.insert(0, str(Path(__file__).resolve().parent)) import _ort_throttle _ort_throttle.apply(n_threads=2)",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_carter_scores.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_carter_scores.py",
+        "ranges": [
+          "1-49"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-25-scripts-_diag-_diag_chain.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_chain.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_chain.py: 1 archivos. Terminales leido PY \"\"\"MEDIR el ENCADENAMIENTO actual (Etapa 2): comandos multi-paso / meta pasan por run_content REAL (router+4B+multi-intent split + app-action), ejecución física MOCKEADA. Captura la SECUENCIA de tools despachadas + planes de cu, para ver qué encadena bien y dónde rompe (dependencia, back-reference, decomposición implícita).\"\"\" from __future__ import annotations import os, sys from pathlib import P",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_chain.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_chain.py",
+        "ranges": [
+          "1-58"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-26-scripts-_diag-_diag_dump_history.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_dump_history.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_dump_history.py: 1 archivos. Terminales leido PY \"\"\"Causa raíz: ¿de dónde sale 'No hay ninguna acción pendiente' tras un web-search para una pregunta conceptual? Corre hasta descarrilar y vuelca la conversación interna (history) + trace events para ver qué notes se inyectaron y qué pass lo generó.\"\"\" import os import sys from pathlib import Path  sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\")",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_dump_history.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_dump_history.py",
+        "ranges": [
+          "1-62"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-27-scripts-_diag-_diag_empty_reply.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_empty_reply.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_empty_reply.py: 1 archivos. Terminales leido PY \"\"\"¿El cache fix (enable_thinking=True + budget=16 en el summary de éxito) produce REPLIES VACÍOS a veces? (vi 'abrí el bloc de notas' -> events=1 pero reply=''.) Corre app-opens con KEEP off vs on y compara: reply vacío? cache hit? calls? Si vacío SOLO con KEEP on -> regresión del fix (subir budget / fallback).    python scripts/_diag_empty_reply.py \"\"\" import os",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_empty_reply.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_empty_reply.py",
+        "ranges": [
+          "1-74"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-28-scripts-_diag-_diag_exemplar_neighbors.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_exemplar_neighbors.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_exemplar_neighbors.py: 1 archivos. Terminales leido PY \"\"\"Show the top exemplar neighbors + their labels + the abstain-vs-tool vote for a query. Throwaway diagnostic for the exemplar abstain decision.\"\"\" from __future__ import annotations import sys from pathlib import Path ROOT = Path(__file__).resolve().parent.parent sys.path.insert(0, str(ROOT)) import numpy as np",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_exemplar_neighbors.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_exemplar_neighbors.py",
+        "ranges": [
+          "1-49"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-29-scripts-_diag-_diag_filler_decide.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_filler_decide.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_filler_decide.py: 1 archivos. Terminales leido PY \"\"\"Diagnóstico: ¿qué decide _decide_turn para charla-exclamación vs acción real? Imprime mode/tools/semantic_fallback para calibrar el gate del confirm filler. Solo fase decide (no ejecuta el LLM loop); turnos benignos. \"\"\" import os import sys import time from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_filler_decide.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_filler_decide.py",
+        "ranges": [
+          "1-48"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-30-scripts-_diag-_diag_finetune_dataset_eval.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_finetune_dataset_eval.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_finetune_dataset_eval.py: 1 archivos. Terminales leido PY \"\"\"Corre los ejemplos ÚNICOS del dataset de finetuning contra el LLM+agente REAL.  MISIÓN: para cada ejemplo único del dataset curado (dataset_finetune/curated/ curated.jsonl), inyectar el user_text por run_content (LLM real, ejecución física MOCKEADA = seguro, cero SendInput) y registrar:   - latencia (s), #pasadas LLM, tools ejecutadas, reply   - tools ESPERADAS (correct_tools + also_valid del d",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_finetune_dataset_eval.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_finetune_dataset_eval.py",
+        "ranges": [
+          "1-262"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-31-scripts-_diag-_diag_gemma_score_dist.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_gemma_score_dist.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_gemma_score_dist.py: 1 archivos. Terminales leido PY \"\"\"Diagnostic: score distribution + per-language recall for hey_carter held-out.  Stratified across all 25 voices/13 langs. Prints histogram of raw scores and recall at several thresholds. SAFE: pure onnxruntime + throttle, CPU only. \"\"\" from __future__ import annotations  import glob",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_gemma_score_dist.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_gemma_score_dist.py",
+        "ranges": [
+          "1-107"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-32-scripts-_diag-_diag_guard1_on_real_dataset.py",
+      "disposition": "adapt_candidate",
+      "component": "scripts/_diag/_diag_guard1_on_real_dataset.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_guard1_on_real_dataset.py: 1 archivos. Terminales leido PY \"\"\"Mide cuántos turnos REALES del dataset (6162, ya corridos en las 4 runs) serían flageados por el guard #1. Es la prueba de falso-positivo en habla real: si flagea muchos turnos legítimos, NO ponerlo ON. Si flagea ~0 (o solo mentiras reales), es seguro.  Reconstruye por turno: user_text + reply + tools ejecutadas (de los _finetune_eval _results_*.jsonl) y aplica intent_domain_mismatch. \"\"\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_guard1_on_real_dataset.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_guard1_on_real_dataset.py",
+        "ranges": [
+          "1-62"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-33-scripts-_diag-_diag_guard1_stress.py",
+      "disposition": "adapt_candidate",
+      "component": "scripts/_diag/_diag_guard1_stress.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_guard1_stress.py: 1 archivos. Terminales leido PY \"\"\"Stress-test del guard cruzado intención↔dominio (fix #1) para decidir ON/OFF.  El riesgo de un guard de honestidad es el FALSO POSITIVO: flaguear un turno legítimo como mentira -> inyecta una corrección innecesaria que confunde al 4B el próximo turno. Antes de ponerlo ON por default, hay que probar que casi nunca flagea de más. Mide:   A) POSITIVOS reales (la mentira ventana->archivo) -> debe f",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_guard1_stress.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_guard1_stress.py",
+        "ranges": [
+          "1-78"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-34-scripts-_diag-_diag_honesty.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_honesty.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_honesty.py: 1 archivos. Terminales leido PY import os,sys from pathlib import Path ROOT=Path(__file__).resolve().parent.parent.parent; sys.path.insert(0,str(ROOT)) try: sys.stdout.reconfigure(encoding=\"utf-8\",errors=\"replace\") except Exception: pass os.environ.setdefault(\"GEMMA4_DEFAULT_PROFILE\",\"vram4\") from gemma4_agent.infra.profiles import get_active_profile,apply_profile_to_env from gemma4_agent.infra.llama_server import get_shared_man",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_honesty.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_honesty.py",
+        "ranges": [
+          "1-24"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-35-scripts-_diag-_diag_hunt_tanda.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_hunt_tanda.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_hunt_tanda.py: 1 archivos. Terminales leido PY \"\"\"Cacería profunda por TANDAS: corre N casos del dataset contra el LLM real, guarda el detalle COMPLETO de cada caso (reply entero + tools con args + latencia + passes + señales de fallo) para que un juez LLM lo evalúe caso por caso.  A diferencia de _diag_finetune_dataset_eval (que trunca el reply y solo guarda nombres de tool), este guarda lo necesario para juzgar CALIDAD/HONESTIDAD/LATENCIA.  ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_hunt_tanda.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_hunt_tanda.py",
+        "ranges": [
+          "1-175"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-36-scripts-_diag-_diag_intent_domain_mismatch.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_intent_domain_mismatch.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_intent_domain_mismatch.py: 1 archivos. Terminales leido PY \"\"\"Mide intent_domain_mismatch: debe flagear la MENTIRA \"moví la ventana y la renombré a X.txt\" (intención-ventana + tool-archivo + afirma efecto), SIN flagear casos legítimos (renombrar un archivo de verdad; mover ventana con window). \"\"\" import sys from pathlib import Path sys.path.insert(0, str(Path(__file__).resolve().parents[2])) from gemma4_agent.safety_pkg.reply_validator import intent_doma",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_intent_domain_mismatch.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_intent_domain_mismatch.py",
+        "ranges": [
+          "1-49"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-37-scripts-_diag-_diag_latency_baseline.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_latency_baseline.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_latency_baseline.py: 1 archivos. Terminales leido PY \"\"\"Baseline de LATENCIA en vivo (regla 3.5) sobre los casos de uso reales del user. Mide el camino OPTIMIZABLE (router → pasadas de LLM → finalización del reply) con la ejecución de tools MOCKEADA (synthetic success) — seguro (cero SendInput) y aísla la latencia que SÍ podemos recortar (la del LLM/agente), no la del SO abriendo apps. Reporta por caso: total, #pasadas de LLM, tiempo de cada pasada.",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_latency_baseline.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_latency_baseline.py",
+        "ranges": [
+          "1-121"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-38-scripts-_diag-_diag_live_terse_cluster.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_live_terse_cluster.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_live_terse_cluster.py: 1 archivos. Terminales leido PY \"\"\"Verificación EN VIVO (regla #3.5) del cluster terse + edge-cases del router tras el reentreno FT 3ep + regen del exemplar store + fix S3c-bis.  Corre el AGENTE REAL (agent.run_content = el path de la UI) contra el LLM real en :8080, y mira la cadena COMPLETA: router subset + qué tool elige el 4B en cada call + cadena ejecutada + reply.  SEGURIDAD (memoria, ≥3 incidentes): Claude corre como term",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_live_terse_cluster.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_live_terse_cluster.py",
+        "ranges": [
+          "1-132"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-39-scripts-_diag-_diag_media_fabricated.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_media_fabricated.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_media_fabricated.py: 1 archivos. Terminales leido PY \"\"\"Mide media_fabricated_claim: flagea \"Stranger Things en Netflix\" fabricado SIN flagear \"reproduciendo en Spotify\" cuando el user pidió Spotify. \"\"\" import sys from pathlib import Path sys.path.insert(0, str(Path(__file__).resolve().parents[2])) from gemma4_agent.safety_pkg.reply_validator import media_fabricated_claim as q ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_media_fabricated.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_media_fabricated.py",
+        "ranges": [
+          "1-43"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-40-scripts-_diag-_diag_nav_asyndeton_leakage.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_nav_asyndeton_leakage.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_nav_asyndeton_leakage.py: 1 archivos. Terminales leido PY \"\"\"MIDE el leakage del fix nav_action-asíndeton ANTES de aplicarlo.  El verificador Opus advirtió: aceptar comas (asíndeton) en _AA_NAV_ACTION para capturar \"abre notepad, escribe hola, ciérralo\" -> computer_use, TAMBIÉN capturaría operaciones de FILESYSTEM (\"abre la carpeta documentos, borra el archivo viejo\") que NO deben ir a cu. Si el leakage es real, DESCARTAR el fix.  Este script simula el r",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_nav_asyndeton_leakage.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_nav_asyndeton_leakage.py",
+        "ranges": [
+          "1-46"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-41-scripts-_diag-_diag_noise_floor.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_noise_floor.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_noise_floor.py: 1 archivos. Terminales leido PY \"\"\"Diagnóstico EN VIVO de la auto-calibración del piso de ruido del micrófono.  Mide tu micrófono REAL y muestra qué umbral elegiría la calibración — para confirmar que queda por encima del ruido de fondo (no dispara solo) y por debajo de tu voz normal (no te ignora). Usa la MISMA lógica que el pipeline en runtime.  Uso (corré esto vos; no gasta cuota de LLM):     python scripts/_diag/_diag_noise_",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_noise_floor.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_noise_floor.py",
+        "ranges": [
+          "1-196"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-42-scripts-_diag-_diag_non_site_hosts.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_non_site_hosts.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_non_site_hosts.py: 1 archivos. Terminales leido PY \"\"\"MEDICIÓN (no fix): ¿la lista _NON_SITE_HOSTS sigue cambiando decisiones del resolvedor de sitios, o el filtro estructural (match_rank>0, que exige el nombre en el DOMINIO) ya cubre el caso? Y: ¿una señal 'nombre-en-path-dominio-ajeno' reemplazaría a la lista de forma universal (incl. agregadores no-occidentales)?  Corre el resolvedor REAL con resultados de búsqueda MOCKEADOS (sin red): para cad",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_non_site_hosts.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_non_site_hosts.py",
+        "ranges": [
+          "1-106"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-43-scripts-_diag-_diag_precondition_sitefallback.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_precondition_sitefallback.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_precondition_sitefallback.py: 1 archivos. Terminales leido PY \"\"\"BEFORE/AFTER del bloqueo de la precondición de app vs el site-fallback de t_app.  BEFORE (con la precondición): execute(app.open,\"pivigames\") -> needs_user \"No encuentro esa aplicación\" SIN intentar resolver el sitio (el fix medido 47e6c14 nunca corre por esta ruta). AFTER (sin la precondición): el mismo execute llega a t_app -> app not found -> _resolve_site_by_search -> abre pivigames.blog (o",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_precondition_sitefallback.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_precondition_sitefallback.py",
+        "ranges": [
+          "1-39"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-44-scripts-_diag-_diag_probe_on_training.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_probe_on_training.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_probe_on_training.py: 1 archivos. Terminales leido PY \"\"\"Corre el MISMO scoring del probe sobre clips de TRAINING (positive_test).  Si el trainer reportó recall ~0.84 sobre estos y el probe da ~0.84 -> probe OK (el modelo sobreajusta, held-out 0.28 es real). Si el probe da ~0.28 sobre los MISMOS clips -> el PROBE está roto (padding/normalización), el 0.28 es falso. \"\"\" from __future__ import annotations import glob",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_probe_on_training.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_probe_on_training.py",
+        "ranges": [
+          "1-77"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-45-scripts-_diag-_diag_reflection_e2e.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_reflection_e2e.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_reflection_e2e.py: 1 archivos. Terminales leido PY \"\"\"E2E EN VIVO (regla 3.5) de la reflexión: seed eventos ambiente en un DB TEMPORAL (NO toca el del usuario) → maybe_refresh_async (background, 4B real) → bloque inyectado → inspect → forget. Verifica TODA la cadena del feature, no piezas aisladas.\"\"\" from __future__ import annotations import os, sys, time, tempfile from pathlib import Path ROOT = Path(__file__).resolve().parent.parent.parent sys.",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_reflection_e2e.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_reflection_e2e.py",
+        "ranges": [
+          "1-90"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-46-scripts-_diag-_diag_reflection_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_reflection_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_reflection_live.py: 1 archivos. Terminales leido PY \"\"\"Verificación EN VIVO (regla 3.5) de la reflexión por LLM (gustos finos). Mide el GATE del feature: ¿el 4B real produce insights GROUNDED y finos, y fluyen caché→bloque→inspect? Server real :8080, perfil real (o sintético si está vacío).\"\"\" from __future__ import annotations import os, sys from pathlib import Path ROOT = Path(__file__).resolve().parent.parent.parent sys.path.insert(0, str(ROOT))",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_reflection_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_reflection_live.py",
+        "ranges": [
+          "1-62"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-47-scripts-_diag-_diag_reminder_semantic.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_reminder_semantic.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_reminder_semantic.py: 1 archivos. Terminales leido PY \"\"\"Diagnóstico CPU (sin LLM): ranking semántico crudo + subset final del planner para los fraseos de reminder. Determinista, rápido, seguro. Diagnostica si el fix de descripciones movió notification/memory arriba, y si el subset final los incluye. \"\"\" import os import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "scripts/_diag/_diag_reminder_semantic.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_reminder_semantic.py",
+        "ranges": [
+          "1-50"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-48-scripts-_diag-_diag_replay_logs.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_replay_logs.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_replay_logs.py: 1 archivos. Terminales leido PY \"\"\"Re-corre los mensajes REALES del usuario (de router_corpus_real_logs.jsonl) contra el agente+LLM real para cazar bugs/latencia/calidad. Ejecución física MOCKEADA (seguro: cero SendInput/efectos). Captura por mensaje: latencia, #pasadas LLM, tools ejecutadas, reply, + DETECTA issues. Escribe incremental a _replay_results.jsonl.  Uso: python scripts/_diag/_diag_replay_logs.py [LIMIT] [OFFSET] \"\"\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_replay_logs.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_replay_logs.py",
+        "ranges": [
+          "1-118"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-49-scripts-_diag-_diag_router_probe.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_router_probe.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_router_probe.py: 1 archivos. Terminales leido PY \"\"\"Diagnostic probe: route queries through the planner layers and print where each tool subset decision is made. Throwaway — for diagnosing the FT-3ep state. NOT a keyword map; it just instruments the existing planner/encoder/head. \"\"\" from __future__ import annotations import sys from pathlib import Path ROOT = Path(__file__).resolve().parent.parent",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "scripts/_diag/_diag_router_probe.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_router_probe.py",
+        "ranges": [
+          "1-84"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-50-scripts-_diag-_diag_site_resolver_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_site_resolver_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_site_resolver_live.py: 1 archivos. Terminales leido PY \"\"\"EN VIVO (CLAUDE.md 3.5): el resolvedor de sitios sin la lista _NON_SITE_HOSTS, con la señal estructural. Corre el LLM REAL con \"ve a X\" y captura la URL que se abriría, mockeando SOLO el efecto físico (web_open_url) y la búsqueda web (para no depender de la red), pero dejando vivo TODO el routing + el resolvedor real. \"\"\" import sys, os sys.path.insert(0, os.path.abspath(\".\")) try: sys.stdout.r",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_site_resolver_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_site_resolver_live.py",
+        "ranges": [
+          "1-61"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-51-scripts-_diag-_diag_strip_wake_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_strip_wake_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_strip_wake_live.py: 1 archivos. Terminales leido PY \"\"\"Verifica strip_wake_phrase con los CASOS REALES de los logs de Baxy.  Los 3 fraseos exactos que el STT (Parakeet) produjo en la sesión 03:33 del usuario, donde dijo \"Baxy\" y el STT escribió Paxi/Bixby/Max. El supresor debe quitar el mal-oído y dejar el comando limpio para el LLM. Además: NO debe tocar comandos reales que NO empiezan con la wake word.  Uso: python scripts/_diag/_diag_strip_wake_",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_strip_wake_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_strip_wake_live.py",
+        "ranges": [
+          "1-69"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-52-scripts-_diag-_diag_traces_full_audit.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_traces_full_audit.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_traces_full_audit.py: 1 archivos. Terminales leido PY \"\"\"Extrae TODOS los turnos de traces.jsonl agrupados por turn_id, con el detalle RICO (transcripción, short-circuits, llm_response, tool_calls, tool_results, reply final, latencia). Mucho más profundo que full.log.  Objetivo: auditar cada turno REAL del usuario (sesión de voz) — reconstruir la cadena completa de decisión del agente para detectar fallos sutiles que la vista resumida de full.log ocu",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_traces_full_audit.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_traces_full_audit.py",
+        "ranges": [
+          "1-100"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-53-scripts-_diag-_diag_verify_baxy_identity_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_verify_baxy_identity_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_verify_baxy_identity_live.py: 1 archivos. Terminales leido PY \"\"\"Verifica EN VIVO (server fresco, prompt Baxy) que el fix de identidad funciona: el asistente se presenta como BAXY, no Gemma. + 2 fixes de honestidad de estado. CLAUDE.md §3.5: probar contra el LLM real.  Uso: python scripts/_diag/_diag_verify_baxy_identity_live.py \"\"\" from __future__ import annotations import os, sys, time",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_verify_baxy_identity_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_verify_baxy_identity_live.py",
+        "ranges": [
+          "1-60"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-54-scripts-_diag-_diag_verify_fixes_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_verify_fixes_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_verify_fixes_live.py: 1 archivos. Terminales leido PY \"\"\"Verifica EN VIVO (LLM real, ejecución física MOCKEADA) los fixes de esta sesión que NO dependen del prompt cacheado en el server (routing/parsing/dispatcher):    - BUG B estado-local: \"¿qué juego estoy jugando?\" -> ofrece/usa window (no cancel_turn)   - click perífrasis: \"hacé click en el botón rojo\" -> gui.click_button (no charla)   - busca_teclados crash: un handler non-dict NO tumba el turno",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_verify_fixes_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_verify_fixes_live.py",
+        "ranges": [
+          "1-88"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-55-scripts-_diag-_diag_verify_ola2_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_verify_ola2_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_verify_ola2_live.py: 1 archivos. Terminales leido PY \"\"\"Verifica EN VIVO (LLM real, ejecución física MOCKEADA) los fixes de las olas 2-3:   - terminal_as_app: \"ejecuta pytest\" -> terminal/developer, NO app (no \"abrí pytest\")   - web_as_app: \"abre esta búsqueda en Google: X\" -> browser/web, NO computer_use sobre app basura   - status_checks: \"¿Steam está abierto?\" -> system/window, NO steam (no \"abrí Steam\")   - window_vs_fs: \"mueve Notepad a la izqu",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_verify_ola2_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_verify_ola2_live.py",
+        "ranges": [
+          "1-92"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-56-scripts-_diag-_diag_visual_click_live.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_visual_click_live.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_visual_click_live.py: 1 archivos. Terminales leido PY \"\"\"EN VIVO (CLAUDE.md 3.5): bugs de las capturas 2026-06-08.  1. \"apretá el icono de Mortal Kombat\" (visible en Steam) -> antes steam(click) ->    launch_game -> callejón. AHORA debe redirigir a gui(click_text). 2. La descripción de visión NO debe volcar el OCR crudo al reply.  Corre el LLM REAL y varios fraseos (el 4B rutea distinto por fraseo). NO mockea `execute` (el fix vive dentro), solo stub",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_visual_click_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_visual_click_live.py",
+        "ranges": [
+          "1-94"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-57-scripts-_diag-_diag_wake_carter_bylang.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_carter_bylang.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_carter_bylang.py: 1 archivos. Terminales leido PY \"\"\"READ-ONLY: full per-language recall of the baseline hey_carter model.  No training. Reuses the exact scoring path from _diag_wake_heldout_validate.py but prints recall grouped by LANGUAGE (locale prefix) and per voice, so we can see precisely which languages a respelling could plausibly rescue vs which are phonetically out of reach for an espeak en-US TTS. \"\"\" from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_carter_bylang.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_carter_bylang.py",
+        "ranges": [
+          "1-100"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-58-scripts-_diag-_diag_wake_heldout_validate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_heldout_validate.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_heldout_validate.py: 1 archivos. Terminales leido PY \"\"\"One-shot validation: is carter's 0.28 held-out recall REAL or a test artifact?  Reuses the EXACT scoring path from _diag_wake_recall_probe.py (pad-at-start, sliding max, threshold 0.5) and runs it on:   - carter model vs positives_carter, broken down per phrase-id and per voice   - gemma  model vs positives        (same path) as a fairness control  If gemma reproduces ~0.74 and carter ~0.28 wit",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_heldout_validate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_heldout_validate.py",
+        "ranges": [
+          "1-143"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-59-scripts-_diag-_diag_wake_neg_probe.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_neg_probe.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_neg_probe.py: 1 archivos. Terminales leido PY \"\"\"Tiny SAFE probe: time the NEGATIVES sliding-window cost on 2 FLAC files.  This is the suspected bottleneck of the full eval. We only touch 2 files with the throttle ON to project the full 5323-file cost WITHOUT hanging. \"\"\" from __future__ import annotations  import glob",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_neg_probe.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_neg_probe.py",
+        "ranges": [
+          "1-107"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-60-scripts-_diag-_diag_wake_neg_volume.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_neg_volume.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_neg_volume.py: 1 archivos. Terminales leido PY \"\"\"Measure total negative audio duration + window count (headers only).  SAFE: reads only soundfile headers (no decode, no inference). Fast. \"\"\" import sys, glob, time from pathlib import Path import soundfile as sf ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_neg_volume.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_neg_volume.py",
+        "ranges": [
+          "1-32"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-61-scripts-_diag-_diag_wake_predict_cost.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_predict_cost.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_predict_cost.py: 1 archivos. Terminales leido PY \"\"\"Time-boxed measurement of per-predict cost for the carter wake model.  SAFE: uses the pure-onnxruntime LiveKitWakeRuntime (2 threads, no spinning) and only 3 negative clips. No full eval. Diagnostic only. \"\"\" import sys, time, glob, shutil, tempfile from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_predict_cost.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_predict_cost.py",
+        "ranges": [
+          "1-50"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-62-scripts-_diag-_diag_wake_recall_probe.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_recall_probe.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_recall_probe.py: 1 archivos. Terminales leido PY \"\"\"Fast, SAFE per-language recall probe for the Carter wake-word.  Scores the held-out positives with PURE onnxruntime + _ort_throttle (no spinning, 2 threads, affinity-capped) so it does NOT freeze the PC like the official eval (which loads 3 ONNX with no SessionOptions + 5.3k negatives = ~2h). 500 clips in ~12s here.  WHAT IT MEASURES (and why per-language matters): global recall HIDES the failu",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_recall_probe.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_recall_probe.py",
+        "ranges": [
+          "1-176"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-63-scripts-_diag-_diag_wake_strip_threshold.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_wake_strip_threshold.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_wake_strip_threshold.py: 1 archivos. Terminales leido PY \"\"\"Mide el umbral fonético para strip_wake_phrase fuzzy de 'baxy'.  Por qué: el STT (Parakeet, multilingüe) transcribe la wake word inventada \"Baxy\" como palabras reales cercanas (Paxi/Bixby/Max). El supresor strip_wake_phrase compara EXACTO -> no las quita -> el LLM recibe el nombre mal-oído como parte del comando. Este diag mide qué umbral separa los mal-oídos de \"Baxy\" (DEBEN quitarse) de los a",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/_diag/_diag_wake_strip_threshold.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_wake_strip_threshold.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-64-scripts-_diag-_diag_window_actual_loop.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_diag_window_actual_loop.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_diag_window_actual_loop.py: 1 archivos. Terminales leido PY \"\"\"Reproduce EN VIVO el loop de \"minimiza/maximiza la ventana actual\".  Boota el llama-server real, corre el agente via run_content (= la UI, seguro), con los EFECTOS FISICOS de las tools mockeados (window/input/session devuelven ok sin tocar nada). Cuenta:   - cuantas veces se llamo a client.chat (LLM)   - cuantas veces se ejecuto cada tool   - el reply final + por que se corto",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_diag_window_actual_loop.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_diag_window_actual_loop.py",
+        "ranges": [
+          "1-97"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-65-scripts-_diag-_dump_sysprompt.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_dump_sysprompt.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_dump_sysprompt.py: 1 archivos. Terminales leido PY import sys, os sys.path.insert(0, os.path.abspath(\".\")) try: sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception: pass os.environ.setdefault(\"GEMMA4_DEFAULT_PROFILE\", \"vram4\") os.environ.setdefault(\"GEMMA4_DIAG\", \"1\")  # no contaminar la DB de Jarvis en pruebas os.environ.setdefault(\"GEMMA4_AGENT_SAFETY\", \"0\") from gemma4_agent.infra.profiles import get_active_profile, appl",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "scripts/_diag/_dump_sysprompt.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_dump_sysprompt.py",
+        "ranges": [
+          "1-30"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-66-scripts-_diag-_flag_audit.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_flag_audit.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_flag_audit.py: 1 archivos. Terminales leido PY \"\"\"Auditoría de flags de entorno GEMMA4_* — clasifica cada flag y detecta los REALMENTE muertos. Reproducible, NO toca nada. Escribe documentacion/AUDITORIA_flags.md.  LECCIÓN (2026-06-01): un primer auditor ingenuo (solo `os.environ.get(\"LITERAL\")`) marcó 64 flags como \"muertos\" — pero casi todos eran LIVE leídos por OTROS patrones:   - IPC de subproceso: el padre hace env[\"GEMMA4_X\"]=... y un Po",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_flag_audit.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_flag_audit.py",
+        "ranges": [
+          "1-104"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-337-probando_gemma4-pg4_scripts-67-scripts-_diag-_ftfail",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_ftfail (11 ficheros)",
+      "contract": "Grupo scripts/_diag/_ftfail: 11 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_ftfail/_cov/_completitud_0.json",
+        "scripts/_diag/_ftfail/_cov/_honestidad_0.json",
+        "scripts/_diag/_ftfail/_cov/_honestidad_1.json",
+        "scripts/_diag/_ftfail/_cov/_idioma_0.json",
+        "scripts/_diag/_ftfail/_cov/_idioma_1.json",
+        "scripts/_diag/_ftfail/_cov/_routing_0.json",
+        "scripts/_diag/_ftfail/_cov/_routing_1.json",
+        "scripts/_diag/_ftfail/_cov/_routing_2.json",
+        "scripts/_diag/_ftfail/_cov/_routing_3.json",
+        "scripts/_diag/_ftfail/_failmode_honestidad.json",
+        "scripts/_diag/_ftfail/_failmode_identidad.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_ftfail/_cov/_completitud_0.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=77 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-338-probando_gemma4-pg4_scripts",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-337-probando_gemma4-pg4_scripts.inspect.json"
+}

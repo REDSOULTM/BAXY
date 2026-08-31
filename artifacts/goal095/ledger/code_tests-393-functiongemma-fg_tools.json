@@ -1,0 +1,251 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-393-functiongemma-fg_tools",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:44Z",
+  "closed_utc": "2026-08-31T02:46:45Z",
+  "estimated_tokens": 121320,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 6,
+  "subsystem": "fg_tools",
+  "subsystems": [
+    "fg_tools"
+  ],
+  "files": [
+    {
+      "path": "tools/domain_tools/whatsapp.py",
+      "sha256": "944a7bd7a23efe7620a7985c09185be74bd7e30fcee0a2eafb63e6f4396555ff",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1342"
+      ]
+    },
+    {
+      "path": "tools/tools_pkg/__init__.py",
+      "sha256": "f9aed7f9f1418fd014d97094472db95020688ca3794d21b01302d04b81541714",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "tools/tools_pkg/ops_tools.py",
+      "sha256": "b65de13af7a20e5a650cc6b4f32433e9ce8665cb7f3096bc7b10333f65e978f5",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-2265"
+      ]
+    },
+    {
+      "path": "tools/tools_pkg/steam_store.py",
+      "sha256": "812e88f8c96a6ce2fcec1752ad0a59dade27aaa8ecfb46609c14bf702a76f380",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-89"
+      ]
+    },
+    {
+      "path": "tools/tools_pkg/system_info_fast.py",
+      "sha256": "7292d76c8ead8f548b45551ba54145b63a6c740e146b781c0d454b1af4fec6e5",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-91"
+      ]
+    },
+    {
+      "path": "tools/tools_pkg/tool_schemas.py",
+      "sha256": "ca60e67644756dd92f1795b4ece4857ce07292089ae9909fb763dfbe26aaae0e",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-126"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-393-functiongemma-fg_tools-01-tools-domain_tools-whatsapp.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/whatsapp.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/whatsapp.py: 1 archivos. Terminales leido PY \"\"\"WhatsApp domain tool.  Módulo hermano de domain_tools/__init__.py, que re-exporta los símbolos públicos para que los callers existentes (dispatch via ToolRegistry, tests que hacen `from gemma4_agent.domain_tools import whatsapp_tool` y `patch(\"gemma4_agent.domain_tools.whatsapp.<name>\")`) sigan funcionando.  GOTCHA de mocking: los tests que parchean internos del flujo whatsapp deben",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/whatsapp.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/whatsapp.py",
+        "ranges": [
+          "1-1342"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-393-functiongemma-fg_tools-02-tools-tools_pkg-__init__.py",
+      "disposition": "evidence_only",
+      "component": "tools/tools_pkg/__init__.py (1 ficheros)",
+      "contract": "Grupo tools/tools_pkg/__init__.py: 1 archivos. Terminales leido PY \"\"\"gemma4_agent.tools_pkg subpackage (reorg 2026-05-28).\"\"\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "tools/tools_pkg/__init__.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/tools_pkg/__init__.py",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-393-functiongemma-fg_tools-03-tools-tools_pkg-ops_tools.py",
+      "disposition": "evidence_only",
+      "component": "tools/tools_pkg/ops_tools.py (1 ficheros)",
+      "contract": "Grupo tools/tools_pkg/ops_tools.py: 1 archivos. Terminales leido PY \"\"\"Higher-level local operations for the Gemma 4 Windows agent.\"\"\"  from __future__ import annotations  import atexit import hashlib import importlib.util import io",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "tools/tools_pkg/ops_tools.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/tools_pkg/ops_tools.py",
+        "ranges": [
+          "1-2265"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-393-functiongemma-fg_tools-04-tools-tools_pkg-steam_store.py",
+      "disposition": "reject_candidate",
+      "component": "tools/tools_pkg/steam_store.py (1 ficheros)",
+      "contract": "Grupo tools/tools_pkg/steam_store.py: 1 archivos. Terminales leido PY \"\"\"Helpers de Steam: AppID, URIs de protocolo y búsqueda en la tienda.  Extraído de tools.py (ratchet anti-archivo-dios, patrón sibling+shim). Funciones puras de parsing/formateo + una búsqueda HTTP en la store. `_http_get_text` y `_clean_html_text` siguen en tools.py y se importan lazy para no ciclar. \"\"\" from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "tools/tools_pkg/steam_store.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/tools_pkg/steam_store.py",
+        "ranges": [
+          "1-89"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-393-functiongemma-fg_tools-05-tools-tools_pkg-system_info_fast.py",
+      "disposition": "evidence_only",
+      "component": "tools/tools_pkg/system_info_fast.py (1 ficheros)",
+      "contract": "Grupo tools/tools_pkg/system_info_fast.py: 1 archivos. Terminales leido PY \"\"\"CPU/RAM/GPU rápido (in-process) — extraído de tools.py (2026-06-09, ratchet archivo-dios). La versión WMI (PowerShell + 3 queries CIM, Win32_VideoController es el más lento) tardaba ~2.4s. psutil da CPU/RAM in-process (~ms) y nvidia-smi la GPU (~100ms, lo que el user ve en su panel). Fallback a WMI si psutil no está.  Devuelve un dict listo para _ok(**...) o un dict con 'error' para _err(**...)",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "tools/tools_pkg/system_info_fast.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/tools_pkg/system_info_fast.py",
+        "ranges": [
+          "1-91"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-393-functiongemma-fg_tools-06-tools-tools_pkg-tool_schemas.py",
+      "disposition": "evidence_only",
+      "component": "tools/tools_pkg/tool_schemas.py (1 ficheros)",
+      "contract": "Grupo tools/tools_pkg/tool_schemas.py: 1 archivos. Terminales leido PY \"\"\"Authoritative list of compound tool schemas exposed to the LLM.  Pulled out of ``gemma4_agent.tools``. The literal stays verbatim so contract tests (test_tool_registry_contract.TestSchemasAPI) detect any drift. The action-enum decoration still happens in ``tools.py`` right after this import, against the same shared list. \"\"\" from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "tools/tools_pkg/tool_schemas.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/tools_pkg/tool_schemas.py",
+        "ranges": [
+          "1-126"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=6 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-394-functiongemma",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-393-functiongemma-fg_tools.inspect.json"
+}

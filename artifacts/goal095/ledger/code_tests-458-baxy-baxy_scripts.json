@@ -1,0 +1,917 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-458-baxy-baxy_scripts",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:17Z",
+  "closed_utc": "2026-08-31T02:49:18Z",
+  "estimated_tokens": 295192,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 24,
+  "subsystem": "baxy_scripts",
+  "subsystems": [
+    "baxy_scripts"
+  ],
+  "files": [
+    {
+      "path": "scripts/run_exhaustive_runtime_model_gate.py",
+      "sha256": "b123397344760dc83758ed3f5d8d57584d1123924268842b419f8f58492c4cb0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1179"
+      ]
+    },
+    {
+      "path": "scripts/run_exhaustive_runtime_model_gate_parallel.py",
+      "sha256": "1356121b5d865bcfa593c49c5a107d9531ecbb562d2139a66bfb4f0f91937980",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-311"
+      ]
+    },
+    {
+      "path": "scripts/run_exhaustive_runtime_model_gate_resilient.py",
+      "sha256": "0c62bf40256a2c5c7e64d5824610b2fc554b9f47b9f3c6b38ae8488d40f2d4d7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-59"
+      ]
+    },
+    {
+      "path": "scripts/run_external_adapter_gate.py",
+      "sha256": "c288dd9ef92f6e873da015822c5468636ae38d87c42d233660d5f84ededeafe3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-279"
+      ]
+    },
+    {
+      "path": "scripts/run_hardware_effect_gate.py",
+      "sha256": "481167fd1f3b5ed782bf976bfcde5d8b06ca5cfc3ed9b64f711bd747e10ff271",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-204"
+      ]
+    },
+    {
+      "path": "scripts/run_llm_plan_execution_gate.py",
+      "sha256": "bc8a47db41ca8e32ac1c23b836896632e054419398fdca73d902bcc6e581be94",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1000"
+      ]
+    },
+    {
+      "path": "scripts/run_mind_shell_e2e_gate.ps1",
+      "sha256": "e816e02ec9a6f8d0ac785dc703f912ccb8eebac058d265c5e7c5508e95464a7f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "scripts/run_physical_voice_to_core_gate.py",
+      "sha256": "7366571b6c260bd719117be03095e4c9ebfbf0db13219007d2c089f1a35443a9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-275"
+      ]
+    },
+    {
+      "path": "scripts/run_planner_corpus_gate.py",
+      "sha256": "45123990f7392560090d69331e47e53765525748594c12d5839035404cbd7af4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-289"
+      ]
+    },
+    {
+      "path": "scripts/run_steam_launch_gate.py",
+      "sha256": "f53f65a1b4b09fd2bcc0f8cfc7ff3a1b98327e841c49479c2e5fdfdcf523bacf",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ]
+    },
+    {
+      "path": "scripts/run_turn_evidence_encoder_gate.py",
+      "sha256": "d00a34802ef1ce82b8f6db8d05f0671f6a1f0997537f0545e85c45eeea5bc943",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1431"
+      ]
+    },
+    {
+      "path": "scripts/run_turn_linear_probe_gate.py",
+      "sha256": "01423b5f73bdb0d7008fa460f5e978862e48efa33197f91d5afb9e8248e1c77a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1431"
+      ]
+    },
+    {
+      "path": "scripts/run_turn_policy_gate.py",
+      "sha256": "9801f751c2d2189806000986408c3790d277c71507162dc9551bbc54195997b6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2866"
+      ]
+    },
+    {
+      "path": "scripts/run_user_behavior_gate.py",
+      "sha256": "352ec4ab201a911af71f340f2d0d8849ef2809c38d3ab38a976bff461e2ca36b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-223"
+      ]
+    },
+    {
+      "path": "scripts/run_voice_system_gate.py",
+      "sha256": "8959f03166449859c4235fd27d58726570271a23053229f9642f1e8bf3de9ac0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-415"
+      ]
+    },
+    {
+      "path": "scripts/run_wakeword_physical_room_gate.py",
+      "sha256": "1675287fb0a8337d8d4f3072c04ea31111f0040e8cae89c2e12ce8c515e70a25",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-542"
+      ]
+    },
+    {
+      "path": "scripts/seal_turn_evidence_final_subset.py",
+      "sha256": "fe00fcaea7d6ad8f78bb3465aa3202eca4291cc4458877c63eb6c417a4adcb1c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-159"
+      ]
+    },
+    {
+      "path": "scripts/setup_mind_voice.ps1",
+      "sha256": "cc270e058513d0dfea19abd11987ab20f8d442f2cb182447d23a025aa4abb34e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "scripts/summarize_app_visible_path.py",
+      "sha256": "7b2434f12cd6732a4ee4c2e5a41d325d9deceada8a5e3534ca3008aed17e07ae",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-302"
+      ]
+    },
+    {
+      "path": "scripts/test_app_open.ps1",
+      "sha256": "db33cb9dd3f4cc20b60d24c71ce3f880ab176215ad62e66c6c246b0352aa4494",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "scripts/test_gate14_clean_environment.ps1",
+      "sha256": "355ab7489fcc6372290534debac233554403950dc1731760a516571f01981014",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "scripts/test_gpu_status.ps1",
+      "sha256": "a71651a6d11727a21decfe6c7383df229ea99d4c9729478e0d8136addea41962",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "scripts/test_mind_router_oracles.py",
+      "sha256": "f93deecc785fbb89c9cf9fa574f91a758dc55fd35c1c1977faeb5f3c673f0961",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-142"
+      ]
+    },
+    {
+      "path": "scripts/test_mind_voice.py",
+      "sha256": "ddef36e3a938698523dee9e5ae3354a19655f91e8c5dba0753664a32f44002a0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-346"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-01-scripts-run_exhaustive_runtime_model_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_exhaustive_runtime_model_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_exhaustive_runtime_model_gate.py: 1 archivos. Terminales leido PY \"\"\"Replay every exact historical runtime message through the real mind sidecar.  The gate starts the same persistent ``baxy-mind`` process and local GGUF used by the desktop app, configures it with the compiled core catalog, and sends one isolated ``turn.decide`` request for every exact runtime case.  The turn result is the sole routing decision and conversational response.  A ``plan`` request is ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_exhaustive_runtime_model_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_exhaustive_runtime_model_gate.py",
+        "ranges": [
+          "1-1179"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-02-scripts-run_exhaustive_runtime_model_gate_parallel.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_exhaustive_runtime_model_gate_parallel.py (1 ficheros)",
+      "contract": "Grupo scripts/run_exhaustive_runtime_model_gate_parallel.py: 1 archivos. Terminales leido PY \"\"\"Run the exhaustive model gate against one continuously batched local server.\"\"\"  from __future__ import annotations  import argparse import json import socket import subprocess",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_exhaustive_runtime_model_gate_parallel.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_exhaustive_runtime_model_gate_parallel.py",
+        "ranges": [
+          "1-311"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-03-scripts-run_exhaustive_runtime_model_gate_resilient.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_exhaustive_runtime_model_gate_resilient.py (1 ficheros)",
+      "contract": "Grupo scripts/run_exhaustive_runtime_model_gate_resilient.py: 1 archivos. Terminales leido PY \"\"\"Resume the exhaustive model gate after native llama-server crashes.  The parallel runner writes one durable JSONL row per completed case.  A retry therefore starts a fresh server but keeps those rows, so no historical message is silently skipped or needlessly replayed. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_exhaustive_runtime_model_gate_resilient.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_exhaustive_runtime_model_gate_resilient.py",
+        "ranges": [
+          "1-59"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-04-scripts-run_external_adapter_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_external_adapter_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_external_adapter_gate.py: 1 archivos. Terminales leido PY \"\"\"Exercise BAXY external adapters through the real JSONL core boundary.  The default gate uses read-only observations plus reversible browser, Office, capture/OCR, and Spotify checks. It never pairs hardware, changes Wi-Fi or settings, prints, scans, installs/cancels Steam content, or creates cloud events. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_external_adapter_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_external_adapter_gate.py",
+        "ranges": [
+          "1-279"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-05-scripts-run_hardware_effect_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_hardware_effect_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_hardware_effect_gate.py: 1 archivos. Terminales leido PY \"\"\"Run explicitly authorized physical adapter checks with exact discovered targets.  The gate never guesses a Bluetooth device, Steam ownership, printer, scanner, Wi-Fi profile, or brightness value. It records a skipped case when the machine does not expose a target that the corresponding adapter can verify. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_hardware_effect_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_hardware_effect_gate.py",
+        "ranges": [
+          "1-204"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-06-scripts-run_llm_plan_execution_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_llm_plan_execution_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_llm_plan_execution_gate.py: 1 archivos. Terminales leido PY \"\"\"Exercise the real BAXY LLM planner through verified core execution.  This is the missing integration boundary between the planner-only corpus gate and the direct-adapter physical gates.  Every case is planned by the production sidecar, grounded from the same bounded observation projection as the app, and executed through the production JSONL core.  The matrix is intentionally limited to read-on",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_llm_plan_execution_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_llm_plan_execution_gate.py",
+        "ranges": [
+          "1-1000"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-07-scripts-run_mind_shell_e2e_gate.ps1",
+      "disposition": "evidence_only",
+      "component": "scripts/run_mind_shell_e2e_gate.ps1 (1 ficheros)",
+      "contract": "Grupo scripts/run_mind_shell_e2e_gate.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "scripts/run_mind_shell_e2e_gate.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_mind_shell_e2e_gate.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-08-scripts-run_physical_voice_to_core_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_physical_voice_to_core_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_physical_voice_to_core_gate.py: 1 archivos. Terminales leido PY \"\"\"Prove speaker -> room -> mic -> wake -> STT -> Mind -> verified Core.  The gate plays only two synthetic, preregistered read-only requests.  It keeps neither captured audio nor transcript text and grants no confirmation token. \"\"\"  from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/run_physical_voice_to_core_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_physical_voice_to_core_gate.py",
+        "ranges": [
+          "1-275"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-09-scripts-run_planner_corpus_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_planner_corpus_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_planner_corpus_gate.py: 1 archivos. Terminales leido PY \"\"\"Run every natural historical compound case through the no-effect planner.  The gate sends only ``plan`` requests to the sidecar. It never grounds a later step, calls the core operation endpoint, or confirms an effect. \"\"\"  from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_planner_corpus_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_planner_corpus_gate.py",
+        "ranges": [
+          "1-289"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-10-scripts-run_steam_launch_gate.py",
+      "disposition": "reject_candidate",
+      "component": "scripts/run_steam_launch_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_steam_launch_gate.py: 1 archivos. Terminales leido PY \"\"\"Physically verify one exact installed Steam launch, then close only its new process.\"\"\"  from __future__ import annotations  import json import os import shutil import subprocess",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_steam_launch_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_steam_launch_gate.py",
+        "ranges": [
+          "1-96"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-11-scripts-run_turn_evidence_encoder_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_turn_evidence_encoder_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_turn_evidence_encoder_gate.py: 1 archivos. Terminales leido PY \"\"\"Measure the promoted turn-evidence corpus with BAXY's real E5 encoder.  This is a read-only product gate: it loads the same ``IntentRouter`` and ``TurnEvidenceIndex`` used by the mind, builds a new isolated cache, reloads that cache, and exercises retrieval.  It never starts the core or dispatches an operation. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_turn_evidence_encoder_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_turn_evidence_encoder_gate.py",
+        "ranges": [
+          "1-1431"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-12-scripts-run_turn_linear_probe_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_turn_linear_probe_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_turn_linear_probe_gate.py: 1 archivos. Terminales leido PY \"\"\"Train/calibrate a one-sided E5 linear probe, then score a sealed final set.  Validation and final are intentionally separate commands.  The validation phase freezes all model/calibration/kNN-family choices into a JSON checkpoint. The final phase refuses to run when its output already exists and never tunes. Both phases cryptographically rebuild the blind v2 seal from the unevaluated v1 compleme",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_turn_linear_probe_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_turn_linear_probe_gate.py",
+        "ranges": [
+          "1-1431"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-13-scripts-run_turn_policy_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_turn_policy_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_turn_policy_gate.py: 1 archivos. Terminales leido PY \"\"\"Reproducible real-LLM A/B gate for BAXY's turn policy.  Both arms load the same train-only corpus candidate index. The baseline arm disables only the calibrated evidence signal; the evidence arm enables its one-sided conversation veto. Candidate expansion is therefore identical between arms and cannot masquerade as an evidence-policy improvement. Both arms send only ``turn.decide`` requests to ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_turn_policy_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_turn_policy_gate.py",
+        "ranges": [
+          "1-2866"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-14-scripts-run_user_behavior_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_user_behavior_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_user_behavior_gate.py: 1 archivos. Terminales leido PY \"\"\"Live acceptance gate for BAXY's person-facing language.  This complements the operation and historical-runtime suites.  It exercises the same local Gemma runtime used by the desktop and rejects replies that change the actor/result, expose implementation jargon, mishandle a greeting, or add a generic follow-up after a completed action. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/run_user_behavior_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_user_behavior_gate.py",
+        "ranges": [
+          "1-223"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-15-scripts-run_voice_system_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_voice_system_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_voice_system_gate.py: 1 archivos. Terminales leido PY \"\"\"Gate integral de voz: licencias, runtime, hardware y efectos acústicos.  No persiste audio ni transcripciones. El micrófono se abre físicamente y solo se guardan capacidades/estados booleanos. ``--physical-output`` hace hablar a SAPI y verifica que la cancelación corte su ciclo; se usa en la validación del equipo, no en CI silencioso. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/run_voice_system_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_voice_system_gate.py",
+        "ranges": [
+          "1-415"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-16-scripts-run_wakeword_physical_room_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/run_wakeword_physical_room_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/run_wakeword_physical_room_gate.py: 1 archivos. Terminales leido PY \"\"\"Evaluate a candidate BAXY wake model through speaker -> room -> microphone.  The gate plays existing positive and negative WAVs on one explicit output device, records one explicit input device, and sends only that captured signal through the product ``AcousticWakeDetector``.  Captured audio, transcripts and file names are never written.  ``--physical-output`` is required so this cannot make sou",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/run_wakeword_physical_room_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/run_wakeword_physical_room_gate.py",
+        "ranges": [
+          "1-542"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-17-scripts-seal_turn_evidence_final_subset.py",
+      "disposition": "evidence_only",
+      "component": "scripts/seal_turn_evidence_final_subset.py (1 ficheros)",
+      "contract": "Grupo scripts/seal_turn_evidence_final_subset.py: 1 archivos. Terminales leido PY \"\"\"Seal a deterministic final subset without reading labels or model scores.\"\"\"  from __future__ import annotations  import argparse import hashlib import json import os",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/seal_turn_evidence_final_subset.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/seal_turn_evidence_final_subset.py",
+        "ranges": [
+          "1-159"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-18-scripts-setup_mind_voice.ps1",
+      "disposition": "evidence_only",
+      "component": "scripts/setup_mind_voice.ps1 (1 ficheros)",
+      "contract": "Grupo scripts/setup_mind_voice.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/setup_mind_voice.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/setup_mind_voice.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-19-scripts-summarize_app_visible_path.py",
+      "disposition": "evidence_only",
+      "component": "scripts/summarize_app_visible_path.py (1 ficheros)",
+      "contract": "Grupo scripts/summarize_app_visible_path.py: 1 archivos. Terminales leido PY \"\"\"Summarize a run of scripts/measure_app_visible_path.ps1.  The harness writes one raw trace per launched app plus an index describing which block used which trace and in what order. This script turns that into the per-stage picture: how long a person waited, and which stage spent it, for the cold arm and the warm arm separately.  Attribution is by position inside a block, not by wall clock. With",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/summarize_app_visible_path.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/summarize_app_visible_path.py",
+        "ranges": [
+          "1-302"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-20-scripts-test_app_open.ps1",
+      "disposition": "evidence_only",
+      "component": "scripts/test_app_open.ps1 (1 ficheros)",
+      "contract": "Grupo scripts/test_app_open.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "scripts/test_app_open.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/test_app_open.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-21-scripts-test_gate14_clean_environment.ps1",
+      "disposition": "evidence_only",
+      "component": "scripts/test_gate14_clean_environment.ps1 (1 ficheros)",
+      "contract": "Grupo scripts/test_gate14_clean_environment.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "scripts/test_gate14_clean_environment.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/test_gate14_clean_environment.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-22-scripts-test_gpu_status.ps1",
+      "disposition": "evidence_only",
+      "component": "scripts/test_gpu_status.ps1 (1 ficheros)",
+      "contract": "Grupo scripts/test_gpu_status.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "scripts/test_gpu_status.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/test_gpu_status.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-23-scripts-test_mind_router_oracles.py",
+      "disposition": "adapt_candidate",
+      "component": "scripts/test_mind_router_oracles.py (1 ficheros)",
+      "contract": "Grupo scripts/test_mind_router_oracles.py: 1 archivos. Terminales leido PY \"\"\"Gate 4 — el router de PRODUCCIÓN contra los 675 casos de oráculo congelados.  Corre exactamente la clase IntentRouter de src/baxy_mind (banco versionado intent_bank.jsonl, umbrales congelados del torneo) contra los casos extraídos 1:1 de los tests de Codex (src/baxy_mind/tools/data/router_cases.jsonl).  Contratos: - Positivos: la decisión debe ser la operación esperada (scope incluido para",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "scripts/test_mind_router_oracles.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/test_mind_router_oracles.py",
+        "ranges": [
+          "1-142"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-458-baxy-baxy_scripts-24-scripts-test_mind_voice.py",
+      "disposition": "adapt_candidate",
+      "component": "scripts/test_mind_voice.py (1 ficheros)",
+      "contract": "Grupo scripts/test_mind_voice.py: 1 archivos. Terminales leido PY \"\"\"Gate 7 (parte headless) — voz al cerebro sin micrófono humano.  Genera locuciones ES/EN/spanglish con SAPI (voces de Windows), las pasa por el camino ASR del motor de voz del sidecar después de una activación ya autorizada (Silero VAD → segmentación por silencio → Parakeet int8) inyectando el audio en lugar del micrófono, y verifica que el texto transcrito coincida (normalizado, con tolerancia ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/test_mind_voice.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/test_mind_voice.py",
+        "ranges": [
+          "1-346"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=24 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-459-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-458-baxy-baxy_scripts.inspect.json"
+}

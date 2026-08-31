@@ -702,5 +702,5 @@
   "overlaps": 0,
   "hash_check": "32/32 disco=cola 09.5.1; 0 en biblioteca por hash; docs/investigaciones untracked en git",
   "next_code_tests_batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
-  "next_prompt": "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md"
+  "next_prompt": "campaign:code_tests"
 }

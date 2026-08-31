@@ -1,0 +1,44 @@
+batch=code_tests-339-probando_gemma4-pg4_scripts
+hash_ok=42 drift=0 miss=0
+OK scripts/_diag/_judge_lote13_extract.json json_keys=None
+OK scripts/_diag/_judge_lote15_slice.json json_keys=None
+OK scripts/_diag/_judge_lote3_slice.json json_keys=None
+OK scripts/_diag/_judge_slice_0_70.json json_keys=None
+OK scripts/_diag/_judge_wf.js
+OK scripts/_diag/_license_audit.py py_lines=99 defs=1
+OK scripts/_diag/_lid_red_trunc_probe.py py_lines=67 defs=1
+OK scripts/_diag/_live_arith.py py_lines=22 defs=0
+OK scripts/_diag/_live_battery.py py_lines=47 defs=0
+OK scripts/_diag/_live_canvas.py py_lines=32 defs=0
+OK scripts/_diag/_live_confirm_passthrough.py py_lines=42 defs=0
+OK scripts/_diag/_live_ctx12288_turn.py py_lines=65 defs=0
+OK scripts/_diag/_live_fix_validation_20260611.py py_lines=104 defs=2
+OK scripts/_diag/_live_ready_gate_boot.py py_lines=64 defs=1
+OK scripts/_diag/_live_smart_home_honesty.py py_lines=79 defs=0
+OK scripts/_diag/_live_titlebar_bridge.py py_lines=281 defs=15
+OK scripts/_diag/_live_wake_noise_pipeline.py py_lines=155 defs=11
+OK scripts/_diag/_lote10_slice.json json_keys=None
+OK scripts/_diag/_lote11_extract.json json_keys=None
+OK scripts/_diag/_lote11_slice_700_770.json json_keys=None
+OK scripts/_diag/_lote12_extract.json json_keys=None
+OK scripts/_diag/_lote12_slice.json json_keys=None
+OK scripts/_diag/_lote13_run3_slice.json json_keys=None
+OK scripts/_diag/_lote14_slice.json json_keys=None
+OK scripts/_diag/_lote15_slice.json json_keys=None
+OK scripts/_diag/_lote2_b2_slice.json json_keys=None
+OK scripts/_diag/_lote2_slice_view.json json_keys=None
+OK scripts/_diag/_lote4_slice.json json_keys=None
+OK scripts/_diag/_lote5_2000_slice.json json_keys=None
+OK scripts/_diag/_lote5_slice.json json_keys=None
+OK scripts/_diag/_lote6_350_420.json json_keys=None
+OK scripts/_diag/_lote7_slice.json json_keys=None
+OK scripts/_diag/_lote9_judge_slice.json json_keys=None
+OK scripts/_diag/_lote9_slice.json json_keys=None
+OK scripts/_diag/_make_ft_failmodes.py py_lines=95 defs=1
+OK scripts/_diag/_make_judge_batches.py py_lines=61 defs=0
+OK scripts/_diag/_make_judge_input.py py_lines=53 defs=0
+OK scripts/_diag/_measure_breakdown.py py_lines=50 defs=2
+OK scripts/_diag/_measure_mmproj_text_cache.py py_lines=140 defs=4
+OK scripts/_diag/_measure_parakeet_beam_hotwords.py py_lines=145 defs=4
+OK scripts/_diag/_measure_prompt_tokens.py py_lines=178 defs=4
+OK scripts/_diag/_measure_rendered_tools.py py_lines=91 defs=3

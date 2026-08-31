@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-033-probando_gemma4-pg4_data",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/experience.sqlite.bak_2026_05_20",
+      "queued_sha256": "e03431abb40d6c8844bee8d9ae1d9e51a3153881392e61042ffb348b10d5191b",
+      "size_queued": 1867776,
+      "exists": true,
+      "disk_sha256": "e03431abb40d6c8844bee8d9ae1d9e51a3153881392e61042ffb348b10d5191b",
+      "disk_size": 1867776,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

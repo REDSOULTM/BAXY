@@ -1,0 +1,80 @@
+batch=code_tests-018-carter
+hash_ok=78 drift=0 miss=0
+OK legacy/Carter_v4/src/carter_v4/agent.py py_lines=1466 defs=27
+OK legacy/Carter_v4/src/carter_v4/cli.py py_lines=124 defs=2
+OK legacy/Carter_v4/src/carter_v4/core/__init__.py py_lines=1 defs=0
+OK legacy/Carter_v4/src/carter_v4/core/prompt_loader.py py_lines=89 defs=4
+OK legacy/Carter_v4/src/carter_v4/error_classifier.py py_lines=141 defs=3
+OK legacy/Carter_v4/src/carter_v4/hardware/__init__.py py_lines=10 defs=0
+OK legacy/Carter_v4/src/carter_v4/mission_detector.py py_lines=177 defs=7
+OK legacy/Carter_v4/src/carter_v4/mission_goal.py py_lines=264 defs=12
+OK legacy/Carter_v4/src/carter_v4/models/__init__.py py_lines=27 defs=0
+OK legacy/Carter_v4/src/carter_v4/models/gemma4.py py_lines=183 defs=4
+OK legacy/Carter_v4/src/carter_v4/models/qwen3.py py_lines=51 defs=1
+OK legacy/Carter_v4/src/carter_v4/models/registry.py py_lines=51 defs=2
+OK legacy/Carter_v4/src/carter_v4/planner.py py_lines=116 defs=5
+OK legacy/Carter_v4/src/carter_v4/profiles.py py_lines=123 defs=5
+OK legacy/Carter_v4/src/carter_v4/prompt.py py_lines=342 defs=3
+OK legacy/Carter_v4/src/carter_v4/prompts/__init__.py py_lines=8 defs=0
+OK legacy/Carter_v4/src/carter_v4/prompts/gemma4_e4b_prompt.py py_lines=152 defs=0
+OK legacy/Carter_v4/src/carter_v4/prompts/qwen3_4b_prompt.py py_lines=42 defs=0
+OK legacy/Carter_v4/src/carter_v4/safety.py py_lines=177 defs=7
+OK legacy/Carter_v4/src/carter_v4/skill_store.py py_lines=255 defs=10
+OK legacy/Carter_v4/src/carter_v4/skills.py py_lines=229 defs=11
+OK legacy/Carter_v4/src/carter_v4/step_planner.py py_lines=485 defs=14
+OK legacy/Carter_v4/src/carter_v4/streaming.py py_lines=201 defs=15
+OK legacy/Carter_v4/src/carter_v4/tool_retrieval.py py_lines=331 defs=12
+OK legacy/Carter_v4/src/carter_v4/tools/__init__.py py_lines=229 defs=12
+OK legacy/Carter_v4/src/carter_v4/tools/composite_dispatcher.py py_lines=496 defs=5
+OK legacy/Carter_v4/src/carter_v4/tools/deeplink.py py_lines=129 defs=2
+OK legacy/Carter_v4/src/carter_v4/tools/schemas_consolidated.json json_keys=None
+OK legacy/Carter_v4/src/carter_v4/tools/skill.py py_lines=95 defs=4
+OK legacy/Carter_v4/src/carter_v4/tools/terminal.py py_lines=219 defs=4
+OK legacy/Carter_v4/src/carter_v4/tools/web.py py_lines=230 defs=8
+OK legacy/Carter_v4/src/carter_v4/turn_profile.py py_lines=199 defs=4
+OK legacy/Carter_v4/src/carter_v4/verifier_orchestrator.py py_lines=390 defs=5
+OK legacy/Carter_v4/src/carter_v4/verify.py py_lines=393 defs=12
+OK legacy/Carter_v4/src/carter_v4/verify_visual.py py_lines=200 defs=5
+OK legacy/Carter_v4/tests/test_agent_integration.py py_lines=233 defs=12
+OK legacy/Carter_v4/tests/test_anti_fake_success.py py_lines=48 defs=5
+OK legacy/Carter_v4/tests/test_clipboard_registry.py py_lines=99 defs=9
+OK legacy/Carter_v4/tests/test_error_classifier.py py_lines=76 defs=13
+OK legacy/Carter_v4/tests/test_files_extras.py py_lines=175 defs=12
+OK legacy/Carter_v4/tests/test_loop_detection.py py_lines=107 defs=10
+OK legacy/Carter_v4/tests/test_memory.py py_lines=107 defs=13
+OK legacy/Carter_v4/tests/test_mission_detector.py py_lines=72 defs=10
+OK legacy/Carter_v4/tests/test_mission_goal.py py_lines=168 defs=18
+OK legacy/Carter_v4/tests/test_office.py py_lines=106 defs=8
+OK legacy/Carter_v4/tests/test_profiles.py py_lines=71 defs=5
+OK legacy/Carter_v4/tests/test_safety.py py_lines=73 defs=11
+OK legacy/Carter_v4/tests/test_safety_session_allow.py py_lines=36 defs=4
+OK legacy/Carter_v4/tests/test_skill_store.py py_lines=132 defs=13
+OK legacy/Carter_v4/tests/test_skills.py py_lines=198 defs=13
+OK legacy/Carter_v4/tests/test_tools_registry.py py_lines=151 defs=8
+OK legacy/Carter_v4/tests/test_verifier_orchestrator.py py_lines=132 defs=9
+OK legacy/Carter_v4/tests/test_verify.py py_lines=134 defs=19
+OK legacy/Run_Carterv3.py py_lines=67 defs=3
+OK legacy/Run_Carterv4.py py_lines=243 defs=5
+OK legacy/etc/.gitignore
+OK legacy/etc/run_carter.bat
+OK legacy/etc/run_carter_gpu.ps1
+OK legacy/etc/run_carter_gpu.ps1.baseline
+OK legacy/etc/run_carter_gpu.ps1.pre_block_landing
+OK legacy/run_bench_chunked.py py_lines=144 defs=4
+OK legacy/spawn_llama.py py_lines=96 defs=2
+OK .gitignore
+OK Run_Carterv5.py py_lines=622 defs=9
+OK carter_core.py py_lines=1085 defs=38
+OK check_carter_gpu.ps1
+OK dynamic_sandbox.py py_lines=502 defs=24
+OK execute_tools.py py_lines=73 defs=2
+OK run_carter_gpu.ps1
+OK run_tests.py py_lines=107 defs=0
+OK runtime_context.py py_lines=336 defs=10
+OK system_prompt.py py_lines=85 defs=0
+OK scripts/install_llama_service.ps1
+OK scripts/uninstall_llama_service.ps1
+OK tests/test_core_logic.py py_lines=153 defs=22
+OK tests/test_parser.py py_lines=99 defs=19
+OK tests/test_sandbox.py py_lines=107 defs=23
+OK Carter_v1/accessibility_probe.py py_lines=274 defs=5

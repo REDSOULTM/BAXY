@@ -1,0 +1,38 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-023-carter-carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:43:33Z",
+  "closed_utc": "2026-08-31T02:43:33Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 1,
+  "subsystem": "carter_v2",
+  "subsystems": [
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "Carter_v2/Carter_v2.rar",
+      "sha256": "e5b2663d37700efcd9d091c8c9fc49e8f1cf5a32a715eeecb35361fbb9726251",
+      "source_id": "carter",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-021-carter-carter_v2:Carter_v2/Carter_v2.rar"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-024-carter-carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": null
+}

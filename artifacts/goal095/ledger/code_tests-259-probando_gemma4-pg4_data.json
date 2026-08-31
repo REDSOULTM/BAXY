@@ -1,0 +1,38 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-259-probando_gemma4-pg4_data",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:45:41Z",
+  "closed_utc": "2026-08-31T02:45:41Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/traces.jsonl.3",
+      "sha256": "66c9cf8dd217fb3f4c3d1355990a1538d52545f508bbb670633d4326ae597ea5",
+      "source_id": "probando_gemma4",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-234-probando_gemma4-pg4_data:gemma4_agent/data/traces.jsonl.3"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-260-probando_gemma4-pg4_data",
+  "next_prompt": "campaign:code_tests",
+  "inspect": null
+}

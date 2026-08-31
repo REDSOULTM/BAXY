@@ -1,0 +1,3 @@
+batch=code_tests-347-probando_gemma4-pg4_voice
+hash_ok=1 drift=0 miss=0
+OK gemma4_agent/voice/models/livekit/baxy.onnx.bak_pre_basetrain_20260618

@@ -1,0 +1,2657 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-407-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:47:24Z",
+  "closed_utc": "2026-08-31T02:47:28Z",
+  "estimated_tokens": 297416,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 71,
+  "subsystem": "baxy_exp_mind_router_spike",
+  "subsystems": [
+    "baxy_exp_mind_router_spike",
+    "baxy_exp_mission_validation"
+  ],
+  "files": [
+    {
+      "path": "experiments/mind_router_spike/probe_ranker_native_selector.py",
+      "sha256": "c37ad82a535abbc9d970812cb2dd0dd1bc15af535c401d1b41784cd8f7492035",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-241"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_runtime_manifest_r222.py",
+      "sha256": "ba463e0a3522e9e9df1fbcf07221535cf64e57a96109b792846e082a17330c5f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-64"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_runtime_manifest_r223.py",
+      "sha256": "b5105fa7bbc55b1bb575e269d647c6c760ace411fa7780431cb4db29f4e8b45c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-51"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_serial_vs_parallel_policy.py",
+      "sha256": "c82d967a1147f5f0bb351c42afa57d8de5e1f64b22f1008256ffbde377734a5a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-200"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_server_concurrency_cancel.py",
+      "sha256": "437084985ea628b7d21afebd4573f2a41b28f063f8894e35412e296aa023587f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-226"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_sibling_leaf_discrimination.py",
+      "sha256": "49683665e66edc44698b7cd2f4b6d9b8576d91b9f3ee95ee2f85f1896737f587",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-188"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_social_envelope.py",
+      "sha256": "1c3131962d0b114509eaefbd23d9286a5f366e07cd274b6a2871e46ccb1ea9ac",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-481"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_supported_turn_repairs.py",
+      "sha256": "e6491f180c7c8a0e849431397901be15f56cfefe3fe04fa85c7f6a128e934478",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-352"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_turn_retry_decomposition.py",
+      "sha256": "1c74486af1b6c7867710600909d80c2551f241d5ce64130822ea071dc4d485b8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-352"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_verified_consensus_current_review.py",
+      "sha256": "045e6147bbb6e0518a92aabd4959f88c16e3dce17ce2b1f13cd422cc316a5a26",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-303"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_verified_consensus_mtop_validation.py",
+      "sha256": "72164a46ea7218af52b10b8ca78092f1bd5f0b6a39946181e3c3172d59d1c2b3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-396"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/projected_consensus_mind_entrypoint.py",
+      "sha256": "48660e31a49e425a4b1d76d2dbd809ef4acb0ad93c961e0b8e38170192b71265",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-296"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/recover_generalization_surface_holdout_r1.py",
+      "sha256": "e1d22e51269638f4335287d9e74a1ac82a81ad129cc2f2e303341003f7c5a26c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-299"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_bge_m3_prototype_domain_r253.py",
+      "sha256": "269afe3e87e9bad35c21513133d237bb570a992a286efeca2397d5aaa59fef48",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-201"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_bge_m3_r207_operation_retrieval_r257.py",
+      "sha256": "53cdacf026c8af46416f06bf16a1044b2d63a0ea6cf1526c5c45bdd793a4ae22",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-286"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_bge_m3_r207_prototype_domain_r255.py",
+      "sha256": "674ddd78c904a3ca8a356babbeb29563aa486e311b6663345eda375b59f2e243",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-197"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_bge_m3_semantic_abstention_r236.py",
+      "sha256": "6954d359f74a9a284e275c83170b14658893e98080d993edbde39c0072a83e95",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-171"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_bge_reranker_r241.py",
+      "sha256": "05017c401ad36e0ee746e32fbdf19097c3522822f106ded30cfcbe03989ecb61",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-157"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_compound_execution_current_tree_r4.py",
+      "sha256": "970f8da34c101bd86f04dd4fd83342a4d0241ef4686d648335cca148ab81dce5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-69"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_compound_execution_current_tree_r5.py",
+      "sha256": "90909183f2ccccbe5e5a8e605ab88cbb2d114a383e378ae462dc791814e49673",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-69"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_compound_execution_holdout_r1.py",
+      "sha256": "b133e6e0c2dfa46828243dda5daef94837cff3801f5939a9d120722a620f9815",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-66"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_compound_execution_holdout_r2.py",
+      "sha256": "897b09eb477183eb6d0df1427dd6e5e1313c0dd22657134ec15047adea56ae7c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_compound_execution_holdout_r3.py",
+      "sha256": "e2ff94522fd8e3688eece13dfebc3c1cdd256c147e34ef98e6d82b76570632c3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_direct_abstain_classifier_r248.py",
+      "sha256": "bc2ada9e1c17d9c80cf76f8490a722cad7fa95870ebd2c1dcacf4ead8c46d3a0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-239"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_direct_abstain_classifier_r250.py",
+      "sha256": "37c8bbead9cc75cce27930df0253a32fdc113a9acbd1bc6cf24fa2e2d05bc838",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-166"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r265.py",
+      "sha256": "1b7d03d361dab3f848addea80f947bcefa0ea9a3f5d4ce6fc9c83b8a2307bad4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-214"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r266.py",
+      "sha256": "3eee32f9f3566f6a901e69a26639851ef10ba9604fe9cb2f119b9ba2cb759b06",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-216"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_head_only_reranker_domain_r246.py",
+      "sha256": "ff99a15e0a1e284712f97a19511eea7b77abee633141987a501845bddda7fb85",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-168"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_independent_clarification_cut_b_model_path_r276.py",
+      "sha256": "ea15f1da9c701cb6ce31f50d458f165db57413200bd546971bb05ad6110fbdb1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-343"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_independent_clarification_cut_b_recogniser_r272.py",
+      "sha256": "cb15c663a16267af423ff0f13fe6ae4f862fe1be16e518a759de9b2e913ab8d6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-199"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_mtop_current_tree_cut_d.py",
+      "sha256": "7dff939cd6b350897b5c4693cfe3d692e970e59b7af27e3681a02691278818b0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-469"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d1.py",
+      "sha256": "68165640d89c455038f48f0e9ea6e257356469078d2e9c1b46ddfdc0227410ad",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d10.py",
+      "sha256": "87571e5037621649fba011013cfe6ab5bc430df2987ad232fb4b8d632fb18802",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d11.py",
+      "sha256": "4ad84c2b91b94d8a200bc5082ecbf9f2e9f06e8f0ea9d208e25d9f8c2ab3de4a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d12.py",
+      "sha256": "64907d3f340b5f97692ac1c00cded9fd36770fe974b2068726eb9fa36221d8db",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d13.py",
+      "sha256": "3e5892c46f2c9595bfbadabcd07dd643f741a68b5cc89519909b3fcdb3aae618",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d14.py",
+      "sha256": "835e66fff093689ac394251c586c206317f54204a32554cf466b5e68d086ec83",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d2.py",
+      "sha256": "e98f683a1e86e2a66d67e41101445027912ba74a86ea808e2f241a0b2ef98f73",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d3.py",
+      "sha256": "cf8815f7812c2dcf3187b18dcbe88f78538da8fa75dfae11ad7ca0652d1cde32",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d4.py",
+      "sha256": "060090e6e39d71af65b25f7aa5097941fedddcb681b18a637dae5402c6b920f9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d5.py",
+      "sha256": "114dfdc688dafdc0eff178c31dffb372122618c3b586d13d8f82047b8a19f320",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d6.py",
+      "sha256": "a68b52ccf21beec5c21d801fc6444d05932bf2356023aa83d4a12787ca0dcd69",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d7.py",
+      "sha256": "396a10e484e15cd711b02afd8b1513e38b81e5272cd5f13d9bd3652e8f74a5b6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d8.py",
+      "sha256": "6f0c0c2a098c342006b3743d3af43fdc6122c5bc4b937d8c4eebf3aea98089b4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_open_population_honesty_d9.py",
+      "sha256": "4c21b6819284114153d4ba65fee1f1bdd3a8862c2a5bd5aebb93f425bf91487e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_situated_cut_b_model_path_r218.py",
+      "sha256": "057be3f31d73f8698ff7dc57caee1198277366b1219670247c218098552642c9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-309"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_situated_cut_b_model_path_r221.py",
+      "sha256": "d8e5bf725ce4b495c1c3127d8c34fad3bfbd6acccab94551ed73ab437b0ec9ae",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-310"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_situated_cut_b_model_path_r225.py",
+      "sha256": "7a94aedd32b71a42cedd957fb8aacfb8ad7a159debb393974224e144544f1463",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-131"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_spike.py",
+      "sha256": "365e112cf7d0284a8dd604e9c2ad4544e81e17e451465e795906df4cdd691307",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-397"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_supervised_reranker_domain_r243.py",
+      "sha256": "e694c90f9871c6d415c9c244d3a6908da83c4c706295d5b7333882ab548edf55",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-196"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v1.py",
+      "sha256": "2e5fcf624f295112134299dd92cb05877fee3068e2e72c1ebc459b8423f8ca15",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v2.py",
+      "sha256": "461bae380439e00415c4453b8f92ffc9e97c09c9e4f1648c5490d8dca0675615",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v3.py",
+      "sha256": "1ba227b571ff1edbe24d7fde6d2dc70d800093234c9c0440451ca34b743aeab0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v4.py",
+      "sha256": "4d81ca9877278a078d7fae5625b83edfba2d4460c9c464fcb020cf31ee93f26e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v5.py",
+      "sha256": "1a2ab20e863f2332f1ad1a1f4430af275506430ea972db8cbf77f99448d6d54a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v6.py",
+      "sha256": "86e1a758ec66745436508c8faeb4d7d37cce75bc6f1a4df194c5030521ce589e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-138"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v7.py",
+      "sha256": "e545154e92d6303cb3273aa45004544e05239ef5a62a866343283562908207c0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-146"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/run_veto_reach_v8.py",
+      "sha256": "4f42748030d62d8a855f6b143b076f7dcbe928d77574b0295c47f823a8ae0268",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-394"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/score_independent_clarification_cut_b_model_path_r276.py",
+      "sha256": "93e81a2b61bf0953e8422d486b5146f92b9252cc8ff75b76dd7b1569466b82e1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-273"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/score_situated_cut_b_model_path_r218.py",
+      "sha256": "276772156dc41ab354cc13694f29b39513b6d5594b450db854b5a773691deedd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-229"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/score_veto_reach_v8.py",
+      "sha256": "0184a743ea44a0f18a9f05d90b81d703b166580e1b816ada2209f6242d3fdc4e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-369"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/snapshot_current_core_catalog_r219.py",
+      "sha256": "f302947e59ea2f91e473ea8dbc9c9f2911c44dbc71586d1d51038977e7c4ac6b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-77"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/specialist_mind_entrypoint.py",
+      "sha256": "392d33ce73de964f33e3234359ac5e112f14040033cde357f071f6877984190f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-218"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/tournament_encoder.py",
+      "sha256": "a4e0402ae0ab1548d5b4a5648f0ccd84be6bc26b411aae590c11deb45b18d785",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-126"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/trace_turn_failure_mind_entrypoint.py",
+      "sha256": "ee6f442732ca20b21c0985d4af1155e83235d282de372aa591ac5a6a99de8003",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-37"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/train_evaluate_cross_encoder_r209.py",
+      "sha256": "456b26943b6e194e4ae6330af8be183c70f7247a2c93bae92d3e47bd69961007",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-129"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/train_full_catalog_operation_classifier.py",
+      "sha256": "8b00b07c466a1148f389421f75216a71a959ffba27fd48eecf612bcb68f4d15e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-445"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/train_mtop_contract_verifier.py",
+      "sha256": "327c406a54b0a3a06dc03b9aedc1f621fbf2bc00751b866ac5dfaaac3c47bc3e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-500"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/train_mtop_operation_classifier.py",
+      "sha256": "0db45fb3c1e18f4d51ccbd977bea39d51cc7fbbedc5bf0f880a7e7df883f5f6f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-972"
+      ]
+    },
+    {
+      "path": "experiments/mission_validation/certify_post_wake_repairs_v1.py",
+      "sha256": "c377ec437fe1e751f1d62170fe53d3d48d4bb1cd6b005b70417d5bd45446a3ff",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-256"
+      ]
+    },
+    {
+      "path": "experiments/mission_validation/run_physical_dependent_missions_v1.py",
+      "sha256": "c45eae6f6a0642fea18d312b077a8a845e3b7bd9123dc009439608bb69a1261c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-755"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-407-baxy-01-experiments-mind_router_spike-probe_ranker_native_selector.p",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_ranker_native_selector.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_ranker_native_selector.py: 1 archivos. Terminales leido PY \"\"\"Probe a frozen operation ranker plus Qwen's explicit no-match selector.  This development diagnostic performs tool selection only.  It never sends a plan to Core and cannot execute a provider effect. \"\"\"  from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_ranker_native_selector.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_ranker_native_selector.py",
+        "ranges": [
+          "1-241"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-02-experiments-mind_router_spike-probe_runtime_manifest_r222.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_runtime_manifest_r222.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_runtime_manifest_r222.py: 1 archivos. Terminales leido PY \"\"\"Attest only the registered runtime preflight; never start an inference process.\"\"\"  from __future__ import annotations  import hashlib import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_runtime_manifest_r222.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_runtime_manifest_r222.py",
+        "ranges": [
+          "1-64"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-03-experiments-mind_router_spike-probe_runtime_manifest_r223.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_runtime_manifest_r223.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_runtime_manifest_r223.py: 1 archivos. Terminales leido PY \"\"\"Record the corrected read-only runtime preflight after R222's schema fix.\"\"\"  from __future__ import annotations  import hashlib import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_runtime_manifest_r223.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_runtime_manifest_r223.py",
+        "ranges": [
+          "1-51"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-04-experiments-mind_router_spike-probe_serial_vs_parallel_polic",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_serial_vs_parallel_policy.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_serial_vs_parallel_policy.py: 1 archivos. Terminales leido PY \"\"\"Does overlapping the policy calls actually make the turn faster?  BAXY runs three llama-server slots so the primary policy, the semantic guard and the language detector can decode at the same time. Overlap is only worth it if the wall time of the whole group drops. The token-rate measurement says a policy token costs 14.64 ms alone and 21.33 ms while the other two share the device, so the overl",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_serial_vs_parallel_policy.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_serial_vs_parallel_policy.py",
+        "ranges": [
+          "1-200"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-05-experiments-mind_router_spike-probe_server_concurrency_cance",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_server_concurrency_cancel.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_server_concurrency_cancel.py: 1 archivos. Terminales leido PY \"\"\"Concurrency, backpressure and cancellation probes against the owned server.  Starts the registered llama-server through ``LlmRuntime`` and measures, with identical fixed prompts and budgets: per-request latency and makespan for 1/2/3 concurrent POSTs (three slots), queue wait for a fourth concurrent POST (backpressure), and recovery latency after a mid-decode client disconnect. No Core operatio",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_server_concurrency_cancel.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_server_concurrency_cancel.py",
+        "ranges": [
+          "1-226"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-06-experiments-mind_router_spike-probe_sibling_leaf_discriminat",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_sibling_leaf_discrimination.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_sibling_leaf_discrimination.py: 1 archivos. Terminales leido PY \"\"\"ABBA gate for measured near-synonym operation boundaries.  The deterministic recognizer is suspended inside the probe so these canonical development requests exercise the same model-owned path as an unseen paraphrase.  The baseline removes only the authenticated-application retrieval bridge and the five native tool-description suffixes under test.  Both arms run the same source tree, model, cat",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_sibling_leaf_discrimination.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_sibling_leaf_discrimination.py",
+        "ranges": [
+          "1-188"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-07-experiments-mind_router_spike-probe_social_envelope.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_social_envelope.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_social_envelope.py: 1 archivos. Terminales leido PY \"\"\"Can BAXY stop sending a pure social act to the primary policy?  Fifteen of the thirty frozen workload turns already avoid the model, and that is why `decision_ms` has a 21.9 ms median. Every turn removed from P is worth more than any micro-optimisation of its schema, so the question is which families are still crossing it for nothing.  Two mechanically linked gaps were measured in the determini",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_social_envelope.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_social_envelope.py",
+        "ranges": [
+          "1-481"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-08-experiments-mind_router_spike-probe_supported_turn_repairs.p",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_supported_turn_repairs.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_supported_turn_repairs.py: 1 archivos. Terminales leido PY \"\"\"Probe repaired supported turns and their nearest unsafe siblings.  The probe configures the sidecar from a freshly compiled Core catalogue and sends only ``turn.decide``.  It never asks Core to plan or execute an effect. Raw policy telemetry is required so a public success cannot hide retrieval, decision, or veto behaviour. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_supported_turn_repairs.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_supported_turn_repairs.py",
+        "ranges": [
+          "1-352"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-09-experiments-mind_router_spike-probe_turn_retry_decomposition",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_turn_retry_decomposition.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_turn_retry_decomposition.py: 1 archivos. Terminales leido PY \"\"\"Per-inference decomposition of long retry turns in the frozen GPU workload.  Driver mode spawns the real product sidecar with ``--sidecar-trace``: that child monkeypatches ``LlmRuntime._post`` to append one JSON line per wire call (label, monotonic start/end, server timings, finish_reason, content emptiness) without changing payloads, sampling, contracts or decisions.  The driver correlates tra",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_turn_retry_decomposition.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_turn_retry_decomposition.py",
+        "ranges": [
+          "1-352"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-10-experiments-mind_router_spike-probe_verified_consensus_curre",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_verified_consensus_current_review.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_verified_consensus_current_review.py: 1 archivos. Terminales leido PY \"\"\"Validate the conservative consensus cascade on current reviewed cases.\"\"\"  from __future__ import annotations  import argparse import json import os import statistics",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_verified_consensus_current_review.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_verified_consensus_current_review.py",
+        "ranges": [
+          "1-303"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-11-experiments-mind_router_spike-probe_verified_consensus_mtop_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/probe_verified_consensus_mtop_validation.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/probe_verified_consensus_mtop_validation.py: 1 archivos. Terminales leido PY \"\"\"Validate a conservative three-head consensus cascade outside MTOP R4.  The full-catalog and lexical heads may override the frozen MTOP specialist only when they agree on one of its authenticated top-three nominations. Otherwise, the native Qwen selector is called only on disagreements where the lexical choice is already inside that top three, and it must independently agree. No plan reaches Cor",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/probe_verified_consensus_mtop_validation.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/probe_verified_consensus_mtop_validation.py",
+        "ranges": [
+          "1-396"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-12-experiments-mind_router_spike-projected_consensus_mind_entry",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/projected_consensus_mind_entrypoint.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/projected_consensus_mind_entrypoint.py: 1 archivos. Terminales leido PY \"\"\"Development-only product-first consensus with completeness projection.  The production deterministic recognizers retain first refusal.  Only turns that reach the model-owned boundary receive a closed operation nomination. The nomination has no execution authority: a candidate-free semantic guard and an independent operation verifier must agree before an action is emitted. Incomplete effects bec",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/projected_consensus_mind_entrypoint.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/projected_consensus_mind_entrypoint.py",
+        "ranges": [
+          "1-296"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-13-experiments-mind_router_spike-recover_generalization_surface",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/recover_generalization_surface_holdout_r1.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/recover_generalization_surface_holdout_r1.py: 1 archivos. Terminales leido PY \"\"\"Recover R1 scoring from its complete frozen raw audit without rerunning it.  The preregistered runner completed all 310 ``turn.decide`` requests, then its reader rejected a newly present ``information_question`` policy stage.  Every terminal public decision is present in the raw audit.  This postprocessor accepts only the observed stage layouts and never starts the sidecar. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/recover_generalization_surface_holdout_r1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/recover_generalization_surface_holdout_r1.py",
+        "ranges": [
+          "1-299"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-14-experiments-mind_router_spike-run_bge_m3_prototype_domain_r2",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_bge_m3_prototype_domain_r253.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_bge_m3_prototype_domain_r253.py: 1 archivos. Terminales leido PY \"\"\"Run the sealed BGE-M3 exemplar-family and separate domain-boundary probe.\"\"\"  from __future__ import annotations  import hashlib import json import sys import time",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_bge_m3_prototype_domain_r253.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_bge_m3_prototype_domain_r253.py",
+        "ranges": [
+          "1-201"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-15-experiments-mind_router_spike-run_bge_m3_r207_operation_retr",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_bge_m3_r207_operation_retrieval_r257.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_bge_m3_r207_operation_retrieval_r257.py: 1 archivos. Terminales leido PY \"\"\"Run the sealed query-disjoint BGE-M3 operation-retrieval CUDA probe once.\"\"\"  from __future__ import annotations  import gc import hashlib import json import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_bge_m3_r207_operation_retrieval_r257.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_bge_m3_r207_operation_retrieval_r257.py",
+        "ranges": [
+          "1-286"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-16-experiments-mind_router_spike-run_bge_m3_r207_prototype_doma",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_bge_m3_r207_prototype_domain_r255.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_bge_m3_r207_prototype_domain_r255.py: 1 archivos. Terminales leido PY \"\"\"Run the sealed query-disjoint BGE-M3 prototype/domain CUDA probe once.\"\"\"  from __future__ import annotations  import gc import hashlib import json import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_bge_m3_r207_prototype_domain_r255.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_bge_m3_r207_prototype_domain_r255.py",
+        "ranges": [
+          "1-197"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-17-experiments-mind_router_spike-run_bge_m3_semantic_abstention",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_bge_m3_semantic_abstention_r236.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_bge_m3_semantic_abstention_r236.py: 1 archivos. Terminales leido PY \"\"\"Run the preregistered CPU-only BGE-M3 semantic abstention development probe.\"\"\"  from __future__ import annotations  import hashlib import json import sys import time",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_bge_m3_semantic_abstention_r236.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_bge_m3_semantic_abstention_r236.py",
+        "ranges": [
+          "1-171"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-18-experiments-mind_router_spike-run_bge_reranker_r241.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_bge_reranker_r241.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_bge_reranker_r241.py: 1 archivos. Terminales leido PY \"\"\"Run the sealed R240 GPU cross-encoder abstention development probe once.\"\"\"  from __future__ import annotations  import gc import hashlib import json import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_bge_reranker_r241.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_bge_reranker_r241.py",
+        "ranges": [
+          "1-157"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-19-experiments-mind_router_spike-run_compound_execution_current",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_compound_execution_current_tree_r4.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_compound_execution_current_tree_r4.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree Cut-C campaign exactly once.\"\"\"  from __future__ import annotations  import json import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mind_router_spike/run_compound_execution_current_tree_r4.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_compound_execution_current_tree_r4.py",
+        "ranges": [
+          "1-69"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-20-experiments-mind_router_spike-run_compound_execution_current",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_compound_execution_current_tree_r5.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_compound_execution_current_tree_r5.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree Cut-C campaign R5 exactly once.\"\"\"  from __future__ import annotations  import json import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mind_router_spike/run_compound_execution_current_tree_r5.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_compound_execution_current_tree_r5.py",
+        "ranges": [
+          "1-69"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-21-experiments-mind_router_spike-run_compound_execution_holdout",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_compound_execution_holdout_r1.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_compound_execution_holdout_r1.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed compound execution R1 campaign exactly once.\"\"\"  from __future__ import annotations  import json import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mind_router_spike/run_compound_execution_holdout_r1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_compound_execution_holdout_r1.py",
+        "ranges": [
+          "1-66"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-22-experiments-mind_router_spike-run_compound_execution_holdout",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_compound_execution_holdout_r2.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_compound_execution_holdout_r2.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed compound execution R2 campaign exactly once.\"\"\"  from __future__ import annotations  import json import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mind_router_spike/run_compound_execution_holdout_r2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_compound_execution_holdout_r2.py",
+        "ranges": [
+          "1-70"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-23-experiments-mind_router_spike-run_compound_execution_holdout",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_compound_execution_holdout_r3.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_compound_execution_holdout_r3.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed compound execution R3 campaign exactly once.\"\"\"  from __future__ import annotations  import json import sys from pathlib import Path ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mind_router_spike/run_compound_execution_holdout_r3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_compound_execution_holdout_r3.py",
+        "ranges": [
+          "1-70"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-24-experiments-mind_router_spike-run_direct_abstain_classifier_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_direct_abstain_classifier_r248.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_direct_abstain_classifier_r248.py: 1 archivos. Terminales leido PY \"\"\"Run the sealed R247 direct typed-family plus abstain classifier once on CUDA.\"\"\"  from __future__ import annotations  import gc import hashlib import json import math",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_direct_abstain_classifier_r248.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_direct_abstain_classifier_r248.py",
+        "ranges": [
+          "1-239"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-25-experiments-mind_router_spike-run_direct_abstain_classifier_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_direct_abstain_classifier_r250.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_direct_abstain_classifier_r250.py: 1 archivos. Terminales leido PY \"\"\"Run the feasible sealed R249 direct abstain classifier once on CUDA.\"\"\"  from __future__ import annotations  import gc import hashlib import json import math",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_direct_abstain_classifier_r250.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_direct_abstain_classifier_r250.py",
+        "ranges": [
+          "1-166"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-26-experiments-mind_router_spike-run_fresh_independent_cut_b_re",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r265.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r265.py: 1 archivos. Terminales leido PY \"\"\"Run exactly one read-only recogniser-reach measurement for sealed R264.\"\"\"  from __future__ import annotations  import hashlib import importlib import json from collections import Counter",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r265.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r265.py",
+        "ranges": [
+          "1-214"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-27-experiments-mind_router_spike-run_fresh_independent_cut_b_re",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r266.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r266.py: 1 archivos. Terminales leido PY \"\"\"Run one corrected read-only recogniser measurement after R265 preflight failure.\"\"\"  from __future__ import annotations  import hashlib import importlib import json from collections import Counter",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r266.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r266.py",
+        "ranges": [
+          "1-216"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-28-experiments-mind_router_spike-run_head_only_reranker_domain_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_head_only_reranker_domain_r246.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_head_only_reranker_domain_r246.py: 1 archivos. Terminales leido PY \"\"\"Run the R245 frozen-base, finite-gated domain probe once on CUDA.\"\"\"  from __future__ import annotations  import gc import hashlib import json import math",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_head_only_reranker_domain_r246.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_head_only_reranker_domain_r246.py",
+        "ranges": [
+          "1-168"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-29-experiments-mind_router_spike-run_independent_clarification_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_independent_clarification_cut_b_model_path_r276.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_independent_clarification_cut_b_model_path_r276.py: 1 archivos. Terminales leido PY \"\"\"Open R270 once through the registered no-dispatch BAXY model path.\"\"\"  from __future__ import annotations  import collections import hashlib import importlib import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_independent_clarification_cut_b_model_path_r276.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_independent_clarification_cut_b_model_path_r276.py",
+        "ranges": [
+          "1-343"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-30-experiments-mind_router_spike-run_independent_clarification_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_independent_clarification_cut_b_recogniser_r272.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_independent_clarification_cut_b_recogniser_r272.py: 1 archivos. Terminales leido PY \"\"\"Run the single read-only R272 recogniser measurement sealed by R271.\"\"\"  from __future__ import annotations  import hashlib import importlib import json from collections import Counter",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_independent_clarification_cut_b_recogniser_r272.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_independent_clarification_cut_b_recogniser_r272.py",
+        "ranges": [
+          "1-199"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-31-experiments-mind_router_spike-run_mtop_current_tree_cut_d.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_mtop_current_tree_cut_d.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_mtop_current_tree_cut_d.py: 1 archivos. Terminales leido PY \"\"\"Preregister and run MTOP official test as an aggregate-only Cut-D gate.  ``preregister`` hashes but never opens the archive.  ``evaluate`` delegates to the repository's irreversible one-shot reader; decoded rows and turn text stay in process, while only aggregate safety and cause counters are published. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_mtop_current_tree_cut_d.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_mtop_current_tree_cut_d.py",
+        "ranges": [
+          "1-469"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-32-experiments-mind_router_spike-run_open_population_honesty_d1",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d1.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d1.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D1 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d1.py",
+        "ranges": [
+          "1-96"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-33-experiments-mind_router_spike-run_open_population_honesty_d1",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d10.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d10.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D10 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d10.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d10.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-34-experiments-mind_router_spike-run_open_population_honesty_d1",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d11.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d11.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D11 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d11.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d11.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-35-experiments-mind_router_spike-run_open_population_honesty_d1",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d12.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d12.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D12 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d12.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d12.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-36-experiments-mind_router_spike-run_open_population_honesty_d1",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d13.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d13.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D13 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d13.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d13.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-37-experiments-mind_router_spike-run_open_population_honesty_d1",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d14.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d14.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D14 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d14.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d14.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-38-experiments-mind_router_spike-run_open_population_honesty_d2",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d2.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d2.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D2 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d2.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-39-experiments-mind_router_spike-run_open_population_honesty_d3",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d3.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d3.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D3 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d3.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-40-experiments-mind_router_spike-run_open_population_honesty_d4",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d4.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d4.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D4 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d4.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d4.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-41-experiments-mind_router_spike-run_open_population_honesty_d5",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d5.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d5.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D5 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d5.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d5.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-42-experiments-mind_router_spike-run_open_population_honesty_d6",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d6.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d6.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D6 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d6.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d6.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-43-experiments-mind_router_spike-run_open_population_honesty_d7",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d7.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d7.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D7 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d7.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d7.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-44-experiments-mind_router_spike-run_open_population_honesty_d8",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d8.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d8.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D8 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d8.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d8.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-45-experiments-mind_router_spike-run_open_population_honesty_d9",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_open_population_honesty_d9.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_open_population_honesty_d9.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed current-tree open-population honesty cut D9 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_open_population_honesty_d9.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_open_population_honesty_d9.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-46-experiments-mind_router_spike-run_situated_cut_b_model_path_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_situated_cut_b_model_path_r218.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_situated_cut_b_model_path_r218.py: 1 archivos. Terminales leido PY \"\"\"Open R215 once through the unmodified local BAXY model path, without dispatch.\"\"\"  from __future__ import annotations  import collections import hashlib import json import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_situated_cut_b_model_path_r218.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_situated_cut_b_model_path_r218.py",
+        "ranges": [
+          "1-309"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-47-experiments-mind_router_spike-run_situated_cut_b_model_path_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_situated_cut_b_model_path_r221.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_situated_cut_b_model_path_r221.py: 1 archivos. Terminales leido PY \"\"\"Open R215 once through the current 174-operation local model path, no dispatch.\"\"\"  from __future__ import annotations  import collections import hashlib import json import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_situated_cut_b_model_path_r221.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_situated_cut_b_model_path_r221.py",
+        "ranges": [
+          "1-310"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-48-experiments-mind_router_spike-run_situated_cut_b_model_path_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_situated_cut_b_model_path_r225.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_situated_cut_b_model_path_r225.py: 1 archivos. Terminales leido PY \"\"\"Open R215 once through the sealed corrected-runtime model path, no dispatch.\"\"\"  from __future__ import annotations  import hashlib import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_situated_cut_b_model_path_r225.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_situated_cut_b_model_path_r225.py",
+        "ranges": [
+          "1-131"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-49-experiments-mind_router_spike-run_spike.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_spike.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_spike.py: 1 archivos. Terminales leido PY \"\"\"Spike de de-riesgo: router de intención por embeddings vs oráculos congelados.  Dos preguntas separadas, dos modos:  - `--eval-coverage`: pools = anclas autoradas + textos positivos curados del   propio corpus (la configuración de producción; el regex fue escrito contra   esos mismos textos, así que esta comparación es de igual a igual). Mide   cobertura: positivos deben enrutar y negativos deb",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_spike.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_spike.py",
+        "ranges": [
+          "1-397"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-50-experiments-mind_router_spike-run_supervised_reranker_domain",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_supervised_reranker_domain_r243.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_supervised_reranker_domain_r243.py: 1 archivos. Terminales leido PY \"\"\"Run the sealed supervised reranker domain-abstention probe once on CUDA.\"\"\"  from __future__ import annotations  import gc import hashlib import json import sys",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_supervised_reranker_domain_r243.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_supervised_reranker_domain_r243.py",
+        "ranges": [
+          "1-196"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-51-experiments-mind_router_spike-run_veto_reach_v1.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v1.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V1 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v1.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-52-experiments-mind_router_spike-run_veto_reach_v2.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v2.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v2.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V2 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v2.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-53-experiments-mind_router_spike-run_veto_reach_v3.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v3.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v3.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V3 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v3.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-54-experiments-mind_router_spike-run_veto_reach_v4.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v4.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v4.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V4 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v4.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v4.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-55-experiments-mind_router_spike-run_veto_reach_v5.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v5.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v5.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V5 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v5.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v5.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-56-experiments-mind_router_spike-run_veto_reach_v6.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v6.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v6.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V6 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v6.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v6.py",
+        "ranges": [
+          "1-138"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-57-experiments-mind_router_spike-run_veto_reach_v7.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v7.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v7.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach population V7 exactly once.\"\"\"  from __future__ import annotations  import argparse import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v7.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v7.py",
+        "ranges": [
+          "1-146"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-58-experiments-mind_router_spike-run_veto_reach_v8.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/run_veto_reach_v8.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/run_veto_reach_v8.py: 1 archivos. Terminales leido PY \"\"\"Open the sealed veto-reach V8 population exactly once, without dispatch.\"\"\"  from __future__ import annotations  import collections import hashlib import json import os",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/run_veto_reach_v8.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/run_veto_reach_v8.py",
+        "ranges": [
+          "1-394"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-59-experiments-mind_router_spike-score_independent_clarificatio",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/score_independent_clarification_cut_b_model_path_r276.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/score_independent_clarification_cut_b_model_path_r276.py: 1 archivos. Terminales leido PY \"\"\"Score the sealed R276 model-path probe without granting it authority.\"\"\"  from __future__ import annotations  import re import statistics import unicodedata from collections import defaultdict",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/score_independent_clarification_cut_b_model_path_r276.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/score_independent_clarification_cut_b_model_path_r276.py",
+        "ranges": [
+          "1-273"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-60-experiments-mind_router_spike-score_situated_cut_b_model_pat",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/score_situated_cut_b_model_path_r218.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/score_situated_cut_b_model_path_r218.py: 1 archivos. Terminales leido PY \"\"\"Pure scorer for the preregistered situated Cut B model-path opening.\"\"\"  from __future__ import annotations  import re import statistics from collections import defaultdict from typing import Any",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/score_situated_cut_b_model_path_r218.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/score_situated_cut_b_model_path_r218.py",
+        "ranges": [
+          "1-229"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-61-experiments-mind_router_spike-score_veto_reach_v8.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/score_veto_reach_v8.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/score_veto_reach_v8.py: 1 archivos. Terminales leido PY \"\"\"Pure scoring for the sealed veto-reach V8 text campaign.\"\"\"  from __future__ import annotations  import re from collections import defaultdict from typing import Any ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/score_veto_reach_v8.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/score_veto_reach_v8.py",
+        "ranges": [
+          "1-369"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-62-experiments-mind_router_spike-snapshot_current_core_catalog_",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/snapshot_current_core_catalog_r219.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/snapshot_current_core_catalog_r219.py: 1 archivos. Terminales leido PY \"\"\"Record the authenticated current Core operation catalogue without model use.\"\"\"  from __future__ import annotations  import hashlib import json import sys from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "experiments/mind_router_spike/snapshot_current_core_catalog_r219.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/snapshot_current_core_catalog_r219.py",
+        "ranges": [
+          "1-77"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-63-experiments-mind_router_spike-specialist_mind_entrypoint.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/specialist_mind_entrypoint.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/specialist_mind_entrypoint.py: 1 archivos. Terminales leido PY \"\"\"Development-only mind entrypoint with an ONNX operation pulse.  The pulse replaces only the raw atomic-operation nomination.  The production catalogue, domain veto, grounding, clarification, and presentation pipeline remain unchanged.  This module is never the installed product entrypoint and must only be used by side-effect-free ``turn.decide`` probes. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/specialist_mind_entrypoint.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/specialist_mind_entrypoint.py",
+        "ranges": [
+          "1-218"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-64-experiments-mind_router_spike-tournament_encoder.py",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/tournament_encoder.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/tournament_encoder.py: 1 archivos. Terminales leido PY \"\"\"Torneo de encoders del router (protocolo: tournament_encoder_protocol.json).  Por candidato, en un proceso NUEVO cada vez (RAM limpia): 1. --dev  → congela (tau, margen) del candidato. 2. --eval-coverage y --eval-loo con esos umbrales. Luego consolida el scorecard. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/tournament_encoder.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/tournament_encoder.py",
+        "ranges": [
+          "1-126"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-65-experiments-mind_router_spike-trace_turn_failure_mind_entryp",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/trace_turn_failure_mind_entrypoint.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/trace_turn_failure_mind_entrypoint.py: 1 archivos. Terminales leido PY \"\"\"Development-only Mind entrypoint that prints caught turn tracebacks.\"\"\"  from __future__ import annotations  import sys import traceback  import baxy_mind.__main__ as mind_main",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/trace_turn_failure_mind_entrypoint.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/trace_turn_failure_mind_entrypoint.py",
+        "ranges": [
+          "1-37"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-66-experiments-mind_router_spike-train_evaluate_cross_encoder_r",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/train_evaluate_cross_encoder_r209.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/train_evaluate_cross_encoder_r209.py: 1 archivos. Terminales leido PY \"\"\"Train R208's compatibility cross-encoder and score the frozen R186 rows.\"\"\" from __future__ import annotations  import hashlib import json import random import time from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/train_evaluate_cross_encoder_r209.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/train_evaluate_cross_encoder_r209.py",
+        "ranges": [
+          "1-129"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-67-experiments-mind_router_spike-train_full_catalog_operation_c",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/train_full_catalog_operation_classifier.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/train_full_catalog_operation_classifier.py: 1 archivos. Terminales leido PY \"\"\"Train a conditional full-catalog mDeBERTa operation selector.  The model is deliberately not an open-world effect detector: it ranks one authenticated operation only after the independent effect boundary has fired. Training uses the reviewed FunctionGemma development corpus; the current catalog review remains validation-only.  No blind holdout is opened and no checkpoint is promoted by this exp",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "experiments/mind_router_spike/train_full_catalog_operation_classifier.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/train_full_catalog_operation_classifier.py",
+        "ranges": [
+          "1-445"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-68-experiments-mind_router_spike-train_mtop_contract_verifier.p",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/train_mtop_contract_verifier.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/train_mtop_contract_verifier.py: 1 archivos. Terminales leido PY \"\"\"Train a contract-conditioned verifier over frozen MTOP top-k candidates.  The operation retriever is frozen before this run.  Training reads only the hash-bound MTOP train partition plus static operation contract descriptions; validation is used for development model selection and official test remains sealed.  The verifier is advisory and never dispatches an operation. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/train_mtop_contract_verifier.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/train_mtop_contract_verifier.py",
+        "ranges": [
+          "1-500"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-69-experiments-mind_router_spike-train_mtop_operation_classifie",
+      "disposition": "evidence_only",
+      "component": "experiments/mind_router_spike/train_mtop_operation_classifier.py (1 ficheros)",
+      "contract": "Grupo experiments/mind_router_spike/train_mtop_operation_classifier.py: 1 archivos. Terminales leido PY \"\"\"Fine-tune pinned multilingual E5 for exact MTOP operation classification.  This is a development experiment.  It reads only the hash-bound MTOP ``train`` and ``validation`` partitions, excludes the predeclared structural quarantine, never opens official ``test``, and never dispatches an operation. The checkpoint is written outside Git; the repo report contains hashes and metrics but no utteranc",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/mind_router_spike/train_mtop_operation_classifier.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mind_router_spike/train_mtop_operation_classifier.py",
+        "ranges": [
+          "1-972"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-70-experiments-mission_validation-certify_post_wake_repairs_v1.",
+      "disposition": "evidence_only",
+      "component": "experiments/mission_validation/certify_post_wake_repairs_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/mission_validation/certify_post_wake_repairs_v1.py: 1 archivos. Terminales leido PY \"\"\"Certify the two preregistered post-wake repairs before physical missions.\"\"\"  from __future__ import annotations  import argparse import hashlib import json import os",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mission_validation/certify_post_wake_repairs_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mission_validation/certify_post_wake_repairs_v1.py",
+        "ranges": [
+          "1-256"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-407-baxy-71-experiments-mission_validation-run_physical_dependent_missio",
+      "disposition": "evidence_only",
+      "component": "experiments/mission_validation/run_physical_dependent_missions_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/mission_validation/run_physical_dependent_missions_v1.py: 1 archivos. Terminales leido PY \"\"\"Run preregistered dependent missions through text or physical voice.  The text and voice paths converge on the same production Mind planner and verified Core executor.  Each mission receives a fresh temporary BAXY data root; only ``note.create`` may mutate it, and the root is removed after the owned processes stop.  Voice keeps neither captured audio nor transcript text. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "experiments/mission_validation/run_physical_dependent_missions_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/mission_validation/run_physical_dependent_missions_v1.py",
+        "ranges": [
+          "1-755"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=71 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-408-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-407-baxy.inspect.json"
+}

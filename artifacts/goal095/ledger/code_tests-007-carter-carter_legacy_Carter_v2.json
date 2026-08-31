@@ -1,0 +1,513 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-007-carter-carter_legacy_Carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:42:46Z",
+  "closed_utc": "2026-08-31T02:42:49Z",
+  "estimated_tokens": 298482,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 43,
+  "subsystem": "carter_legacy_Carter_v2",
+  "subsystems": [
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_environment_readiness.json",
+      "sha256": "682726593efb6bd2a3bef8ca563e7d55da3125ee6fdda18f1fdc99765dbe9bf6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_text_hardening.py",
+      "sha256": "e7adb2d01a0a0d1d451ea90b48b3ce39d4dbe700a518a7702e1cc1b2acbdfb05",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-563"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/conftest.py",
+      "sha256": "2627f0e70be6fcaad9c6a303e21f75910e641de41b563ad6a409f81e3e65f0bb",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-67"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_a11_multilang_identity.py",
+      "sha256": "a84017d824696e9a88ebb3339afeddab842f70300a987a03a3bfe3d238390441",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-128"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_action_ledger.py",
+      "sha256": "c8fbc518adec82ba27c790d54872813617a0c4c9407b78ac99c0583f0079e4b9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-213"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_agent_intent_continuity.py",
+      "sha256": "3b7985f3cdfb262595a13899ddf60a4eb8c7cddd5b3986afeaee9007547f0efd",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-406"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_agent_misrouting_and_memory_hardening.py",
+      "sha256": "1c017fc8c4002754cc05e76e82dab3877b38d76a4f034d8c679d7f88c7817741",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_agent_turn_trace.py",
+      "sha256": "09dba7841d144da8ff762d663af50038409d90a5b59fe4cef958f6d3833394f6",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-93"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_ambiguity_resolution.py",
+      "sha256": "9ba9034eb216ee250a77eb1e32a1e18e374fafd283cd009465d766e8ac21e97e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-55"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_app_resolver.py",
+      "sha256": "4aab3462b478c5cb47e2eb0a84b0347ebf25a21e4da95ce8988d1e4450ac3331",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-173"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_brain_router_fase7.py",
+      "sha256": "f3641f3f108d90664024c6bd8391fcffca3033a43dfb8467f9909e9b55283ba0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-243"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_dialog_helpers.py",
+      "sha256": "cc79b3e09fbef3951d5d1cca6365bca5240ef1b538c167b43c8248cff04c0ed3",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-150"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_e2e_agent_turn.py",
+      "sha256": "24c6d571ee6809060ee126877a3130ae78bd155b0a271ccd5d1e216f4342e81e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-429"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_env_persist.py",
+      "sha256": "080edb3e07a9d3ec4d395dc34af00eb8f1c993977a60cd63033d568929fa908d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-319"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_fase17_vision.py",
+      "sha256": "04551d56b42f6f1c41a44e5adef8c0c8625c2933e83c56a410c68604fe3991cd",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-835"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_filesystem_extended.py",
+      "sha256": "be61bc008150dacfccc285e21dffd35834cc219cb87d8978193f31772b95fab5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-168"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_graceful_close.py",
+      "sha256": "ec6ef1c67d9907a3192a5761d9181fb82e7efc439afca54b2d53377cdcd27c7c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-256"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_gui_cross_app_pipeline.py",
+      "sha256": "25ed85e0b8fceff38727f123b1d0972f6b74503a0f46fe6fdb905a6bdf0d23c5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-332"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_gui_do_planner.py",
+      "sha256": "bd119d27278dda49edb30bcf81a0560396c284055310b5e58dc4f3a0c6a51619",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1741"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_honesty_guardrail.py",
+      "sha256": "ee1ac031b47457d5860808de77bd2c6d46ad3fd7d6c30895bcef8c02bea3ac3d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-186"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_ledger_language_neutral.py",
+      "sha256": "81ccaa23fb4d3d94114eda1ccecd43ecd72722532565f23665e38b69d52d5815",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-285"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_llama_backend.py",
+      "sha256": "7db91d29715063f63079589443d47597b52de6fd5ba451ac0a6744cc0abfbb26",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-81"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_main_jarvis.py",
+      "sha256": "20e422b0abed93d436da05ca045a6e58f9fb96184b731b9110e8dacf596d1a76",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-325"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_medium_priority.py",
+      "sha256": "fc8f3126e874d4f60307effe1e60e4fa0576356e1f0427847475ec1871222a37",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-681"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_memory_fts5_sanitize.py",
+      "sha256": "2cdf5988b6d3826ed1477d79f510c8a350d7bd5a022612a28c3c6018a8e47a94",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-118"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_mission_language_neutral.py",
+      "sha256": "0e189bf4350a2db91cdfb6cf326da811e6267b7621567c5b6eda5a6a08e6084f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_mission_observation.py",
+      "sha256": "17d67619acd50bcfecf9af9f8335ed09427553c11b97f3d4c197a01ff07fca4a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-429"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_mission_state.py",
+      "sha256": "87084385c626dcdd41c980a9059ee5de72e4149214d5761a011a95361c29bf16",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-316"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_no_app_hacks_in_agent.py",
+      "sha256": "2c353cc5d523ad357f73e86159087c9819898540e1887fe4ec81ace13c16c03e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-78"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_no_runtime_hardcodes.py",
+      "sha256": "91a64005b8423126f5223deea78d6de4ff1b0ef82baba2c28dd555ebe15085d9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-40"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_phase5_memory_hardening.py",
+      "sha256": "2d0e9e7b323653429e3889ef4489e51065b379ff70cb1eecf76a233b534f3469",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-99"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_power_capability.py",
+      "sha256": "dfa4d4dba6bdd73c8351d6d33443bc3de00a07396872c64494611d0eb8318edf",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-132"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_process_capability.py",
+      "sha256": "7bc7757fd1cdd05ecc77fa7fe713f189f2c89cfae48b09ccc613cd5b27354fdc",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-282"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_router_language_neutral.py",
+      "sha256": "858c802655ed7bcfb33d0ef09695b86d8102bc2fd4423e0516bd170eb2a49533",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-69"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_text_agent_regressions.py",
+      "sha256": "18fa13d25627c3a88806c9e65ce16ac01f8535d22cd76ae4a483c4f006ce3d92",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2122"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_tool_catalog_selection.py",
+      "sha256": "f3160fa2e71958969d4b935eb56123c65950872a3f0713c05eec237bfbf6ac69",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-248"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_tool_normalizer.py",
+      "sha256": "f531cb9e6c783c13937d1ee58880991baad1d354228f895868674b6f55584adb",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-591"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_tool_routing_contracts.py",
+      "sha256": "3e6670f6012d3f610fc6ca9b51aaf19c153b2ad7a1afa76e72c123bccc4537b5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-51"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_universal_agent_kernel.py",
+      "sha256": "127e41b3e6b4ec7e5b6934c7efc3f5804d545338d90e3c87b9decc4ce9cd27df",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1094"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_vision_router_lazy.py",
+      "sha256": "4510070b2f7bf38071248d84dd3d43d971db1909be35fb1a4f4958a3625e7a8c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-54"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/scripts/dev/_inspect_mem.py",
+      "sha256": "fc3ae2bf5a037fe5a2197c6c160851333cd7bd2ff9cdd56f2bc2ce39ab1a53c1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-12"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/scripts/maintenance/clean_corrupt_user_identity.py",
+      "sha256": "959b655adf5aa010728f68914b97f00110c40684fad5c9e68636017d4d3a2fdd",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-165"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/scripts/maintenance/consolidate_fair_tournament.py",
+      "sha256": "3302493650c7262a9c96b6801095b78d01cf0bcaebfab55b3d8adee9271650ba",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-323"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-007-carter-carter_legacy_Carter_v2-01-legacy-Carter_v2-backups",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v2/backups (40 ficheros)",
+      "contract": "Grupo legacy/Carter_v2/backups: 40 archivos. Terminales leido, parseado_completo. JSON scalars={\"timestamp\": \"2026-04-30T16:07:32.290396-04:00\", \"profile\": \"safe\", \"safe_mutation_mode\": true, \"session_actions_enabled\": false, \"external_mutations_enabled\": false}",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_environment_readiness.json",
+        "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_text_hardening.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/conftest.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_a11_multilang_identity.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_action_ledger.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_agent_intent_continuity.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_agent_misrouting_and_memory_hardening.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_agent_turn_trace.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_ambiguity_resolution.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_app_resolver.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_brain_router_fase7.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_dialog_helpers.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_e2e_agent_turn.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_env_persist.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_fase17_vision.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_filesystem_extended.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_graceful_close.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_gui_cross_app_pipeline.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_gui_do_planner.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_honesty_guardrail.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_ledger_language_neutral.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_llama_backend.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_main_jarvis.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_medium_priority.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_memory_fts5_sanitize.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_mission_language_neutral.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_mission_observation.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_mission_state.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_no_app_hacks_in_agent.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_no_runtime_hardcodes.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_phase5_memory_hardening.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_power_capability.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_process_capability.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_router_language_neutral.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_text_agent_regressions.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_tool_catalog_selection.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_tool_normalizer.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_tool_routing_contracts.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_universal_agent_kernel.py",
+        "legacy/Carter_v2/backups/tests_legacy_20260501-020549/test_vision_router_lazy.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_environment_readiness.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-007-carter-carter_legacy_Carter_v2-02-legacy-Carter_v2-scripts",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v2/scripts (3 ficheros)",
+      "contract": "Grupo legacy/Carter_v2/scripts: 3 archivos. Terminales leido PY import sqlite3, os p = os.path.expanduser(r\"~/.carter/memory.db\") print(\"DB:\", p, \"exists:\", os.path.exists(p)) if not os.path.exists(p):     raise SystemExit(0) c = sqlite3.connect(p) print(\"--- facts (name or user) ---\") for r in c.execute(\"SELECT id, entity, attribute, value, source FROM facts WHERE attribute='name' OR entity='user' ORDER BY id DESC LIMIT 50\").fetchall():",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v2/scripts/dev/_inspect_mem.py",
+        "legacy/Carter_v2/scripts/maintenance/clean_corrupt_user_identity.py",
+        "legacy/Carter_v2/scripts/maintenance/consolidate_fair_tournament.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v2/scripts/dev/_inspect_mem.py",
+        "ranges": [
+          "1-12"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=43 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-008-carter-carter_legacy_Carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-007-carter-carter_legacy_Carter_v2.inspect.json"
+}

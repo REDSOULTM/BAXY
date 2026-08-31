@@ -1,0 +1,68 @@
+batch=code_tests-430-baxy
+hash_ok=66 drift=0 miss=0
+OK legacy/gui/ui_field/src/components/ToolsPanel.tsx
+OK legacy/gui/ui_field/src/components/TriggersPanel.tsx
+OK legacy/gui/ui_field/src/hooks/useClock.ts
+OK legacy/gui/ui_field/src/hooks/useEventStream.ts
+OK legacy/gui/ui_field/src/hooks/useToast.ts
+OK legacy/gui/ui_field/src/main.tsx
+OK legacy/gui/ui_field/src/session.ts
+OK legacy/gui/ui_field/src/styles/prototype.css
+OK legacy/gui/ui_field/src/types.ts
+OK legacy/gui/ui_field/src/utils/privateResultDisplay.ts
+OK legacy/gui/ui_field/src/utils/privateResultModal.ts
+OK legacy/gui/ui_field/src/utils/privateResultRecovery.ts
+OK legacy/gui/ui_field/src/utils/reminderProtocol.ts
+OK legacy/gui/ui_field/src/utils/requestDeadline.ts
+OK legacy/gui/ui_field/src/utils/seededRng.ts
+OK legacy/gui/ui_field/src/utils/toolCatalogProtocol.ts
+OK legacy/gui/ui_field/src/utils/turnLifecycle.ts
+OK legacy/gui/ui_field/tests/attachmentFrontendPolicy.test.mjs
+OK legacy/gui/ui_field/tests/privateResultDisplay.test.mjs
+OK legacy/gui/ui_field/tests/privateResultModal.test.mjs
+OK legacy/gui/ui_field/tests/privateResultRecovery.test.mjs
+OK legacy/gui/ui_field/tests/productAttestation.test.mjs
+OK legacy/gui/ui_field/tests/reminderDist.test.mjs
+OK legacy/gui/ui_field/tests/reminderFrontendPolicy.test.mjs
+OK legacy/gui/ui_field/tests/reminderProtocol.test.mjs
+OK legacy/gui/ui_field/tests/requestContract.test.mjs
+OK legacy/gui/ui_field/tests/requestDeadline.test.mjs
+OK legacy/gui/ui_field/tests/toolCatalogProtocol.test.mjs
+OK legacy/gui/ui_field/tests/turnLifecycle.test.mjs
+OK legacy/gui/ui_field/tsconfig.app.json json_keys=None
+OK legacy/gui/ui_field/tsconfig.json json_keys=['files', 'references']
+OK legacy/gui/ui_field/tsconfig.node.json json_keys=None
+OK legacy/gui/ui_field/vite.config.ts
+OK legacy/gui/webview_launcher.py py_lines=216 defs=10
+OK legacy/jarvis/__init__.py py_lines=14 defs=0
+OK legacy/jarvis/_embed.py py_lines=44 defs=3
+OK legacy/jarvis/_llm.py py_lines=37 defs=3
+OK legacy/jarvis/ambient_observer.py py_lines=271 defs=13
+OK legacy/jarvis/behavior_log.py py_lines=296 defs=11
+OK legacy/jarvis/context.py py_lines=134 defs=7
+OK legacy/jarvis/experience.py py_lines=656 defs=19
+OK legacy/jarvis/jarvis_proactive.py py_lines=121 defs=5
+OK legacy/jarvis/memory_retrieval.py py_lines=126 defs=4
+OK legacy/jarvis/pattern_miner.py py_lines=205 defs=5
+OK legacy/jarvis/proactive_notifier.py py_lines=889 defs=43
+OK legacy/jarvis/proactive_runner.py py_lines=585 defs=22
+OK legacy/jarvis/profile_intent.py py_lines=193 defs=4
+OK legacy/jarvis/project_context.py py_lines=97 defs=4
+OK legacy/jarvis/sessions.py py_lines=245 defs=18
+OK legacy/jarvis/state.py py_lines=412 defs=27
+OK legacy/jarvis/suggestion_queue.py py_lines=128 defs=9
+OK legacy/jarvis/taste_profile.py py_lines=310 defs=14
+OK legacy/jarvis/taste_reflection.py py_lines=581 defs=32
+OK legacy/legacy_export/_ps.py py_lines=82 defs=5
+OK legacy/legacy_export/_shared.py py_lines=188 defs=6
+OK legacy/legacy_export/computer_use/accessibility.py py_lines=175 defs=6
+OK legacy/legacy_export/computer_use/caps/__init__.py py_lines=32 defs=0
+OK legacy/legacy_export/computer_use/caps/apps.py py_lines=15 defs=2
+OK legacy/legacy_export/computer_use/caps/base.py py_lines=24 defs=5
+OK legacy/legacy_export/computer_use/caps/browser.py py_lines=416 defs=16
+OK legacy/legacy_export/computer_use/caps/detector.py py_lines=180 defs=9
+OK legacy/legacy_export/computer_use/caps/discord.py py_lines=22 defs=2
+OK legacy/legacy_export/computer_use/caps/generic_ui.py py_lines=32 defs=2
+OK legacy/legacy_export/computer_use/caps/policy.py py_lines=133 defs=5
+OK legacy/legacy_export/computer_use/caps/registry.py py_lines=95 defs=4
+OK legacy/legacy_export/computer_use/caps/router.py py_lines=84 defs=6

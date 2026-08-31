@@ -1,0 +1,34 @@
+batch=code_tests-005-carter-carter_legacy_Carter_v2
+hash_ok=32 drift=0 miss=0
+OK legacy/Carter_v2/audit/results/stability/run02_qwen3_8b_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run03_qwen3_8b_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run04_qwen3_8b_cold_subset.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run05_qwen25_7b_instruct_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run06_qwen25_7b_instruct_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run07_qwen25_7b_instruct_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run08_qwen25_7b_instruct_cold_subset.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run09_qwen25_post_switch_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run10_qwen25_post_repair_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run11_qwen25_post_contract_fix_warm.json json_keys=['failed', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'score_honest_total', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run12_post_block_warm.json json_keys=['failed', 'live_evidence_disclaimer', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'router_only', 'router_only_fail', 'router_only_pass', 'score_honest_total', 'score_router_only', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run13_post_launcher_warm.json json_keys=['failed', 'live_evidence_disclaimer', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'router_only', 'router_only_fail', 'router_only_pass', 'score_honest_total', 'score_router_only', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run14a_post_jarvis_block_warm.json json_keys=['failed', 'live_evidence_disclaimer', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'router_only', 'router_only_fail', 'router_only_pass', 'score_honest_total', 'score_router_only', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/stability/run14b_post_jarvis_block_warm.json json_keys=['failed', 'live_evidence_disclaimer', 'mode', 'outcome_breakdown', 'passed', 'passed_honest_degraded', 'passed_successfully', 'records', 'router_only', 'router_only_fail', 'router_only_pass', 'score_honest_total', 'score_router_only', 'score_successful_only', 'total', 'verdict']
+OK legacy/Carter_v2/audit/results/voice_smoke_20260502-100029.json json_keys=['detected_language', 'device', 'fixture_path', 'fixture_seconds', 'load_ms', 'model', 'transcribe_ms', 'transcript', 'ts', 'vram_after_load_mb', 'vram_before_mb', 'vram_load_delta_mb']
+OK legacy/Carter_v2/audit/runners/_inspect_repro.py py_lines=11 defs=0
+OK legacy/Carter_v2/audit/runners/final_gate.py py_lines=122 defs=2
+OK legacy/Carter_v2/audit/runners/full_live_llm_cases.py py_lines=1127 defs=21
+OK legacy/Carter_v2/audit/runners/full_live_llm_validation.py py_lines=841 defs=41
+OK legacy/Carter_v2/audit/runners/llm_context_memory_probe.py py_lines=501 defs=17
+OK legacy/Carter_v2/audit/runners/model_benchmark.py py_lines=641 defs=22
+OK legacy/Carter_v2/audit/runners/model_eval_cases.py py_lines=395 defs=5
+OK legacy/Carter_v2/audit/runners/model_mission_eval_cases.py py_lines=40 defs=2
+OK legacy/Carter_v2/audit/runners/model_text_eval_cases.py py_lines=6 defs=0
+OK legacy/Carter_v2/audit/runners/model_tool_eval_cases.py py_lines=6 defs=0
+OK legacy/Carter_v2/audit/runners/model_vision_eval.py py_lines=339 defs=12
+OK legacy/Carter_v2/audit/runners/model_voice_eval.py py_lines=206 defs=7
+OK legacy/Carter_v2/audit/runners/performance_gate.py py_lines=452 defs=4
+OK legacy/Carter_v2/audit/runners/real_runtime_transcript_repro.py py_lines=1071 defs=6
+OK legacy/Carter_v2/audit/runners/runtime_tool_protocol_probe.py py_lines=306 defs=5
+OK legacy/Carter_v2/audit/runners/skipped_live_validation.py py_lines=579 defs=15
+OK legacy/Carter_v2/audit/runners/summarize_fair_rebench.py py_lines=172 defs=5

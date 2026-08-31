@@ -1,0 +1,66 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-381-functiongemma-fg_curated",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:40Z",
+  "closed_utc": "2026-08-31T02:46:40Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 1,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/train.jsonl.BAK",
+      "sha256": "a60f0c3e247be02b2be112953f6ee24e9f97e473b995fd45cca26742949a8d2b",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-381-functiongemma-fg_curated-01-finetune_llm-curated-train.jsonl.BAK",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/curated/train.jsonl.BAK (1 ficheros)",
+      "contract": "Grupo finetune_llm/curated/train.jsonl.BAK: 1 archivos. Terminales parseado_completo JSONL lines=5381 keys=['also_valid', 'category', 'confidence', 'correct_reply_style', 'correct_tools', 'dataset_part', 'lang', 'mode', 'n_steps', 'original_was_correct', 'personality_applies', 'prev_text', 'project', 'reply_is_template', 'sample_weight', 'source', 'tool_args', 'user_text']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/curated/train.jsonl.BAK"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/curated/train.jsonl.BAK",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-382-functiongemma-fg_curated",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-381-functiongemma-fg_curated.inspect.json"
+}

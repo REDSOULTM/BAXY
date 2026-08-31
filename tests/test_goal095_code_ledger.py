@@ -17,6 +17,21 @@ from scripts.goal095_code_ledger import (
 REPO = Path(__file__).resolve().parents[1]
 QUEUE = REPO / "artifacts" / "goal095" / "queue"
 BATCH_LEDGER = REPO / "artifacts" / "goal095" / "ledger" / "code_tests-001-carter.json"
+BATCH_LEDGER_002 = (
+    REPO
+    / "artifacts"
+    / "goal095"
+    / "ledger"
+    / "code_tests-002-carter-carter_legacy_Carter_v2.json"
+)
+CAMPAIGN = REPO / "artifacts" / "goal095" / "campaigns" / "code_tests.json"
+BATCH_LEDGER_477 = (
+    REPO
+    / "artifacts"
+    / "goal095"
+    / "ledger"
+    / "code_tests-477-baxy_schema_agent-baxy_schema_agent.json"
+)
 
 
 def _batch_stub(paths: list[str]) -> dict:
@@ -92,7 +107,7 @@ def _ledger(paths: list[str], *, extra: dict | None = None) -> dict:
         "missing": 0,
         "overlaps": 0,
         "next_code_tests_batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
-        "next_prompt": "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md",
+        "next_prompt": "campaign:code_tests",
     }
     for row in body["files"]:
         row.pop("item", None)
@@ -220,12 +235,13 @@ def test_published_code001_ledger_matches_schema() -> None:
         if item["batch_id"] == "code_tests-001-carter"
     )
     assert row["status"] == "complete"
-    claimed = [
+    assert ledger["next_prompt"] != "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md"
+    claimed_same = [
         item["batch_id"]
         for item in queue_ledger["batches"]
-        if item.get("status") == "claimed"
+        if item.get("status") == "claimed" and item.get("kind") == "code_tests"
     ]
-    assert claimed == []
+    assert "code_tests-001-carter" not in claimed_same
     from scripts.build_goal095_queues import load_jsonl, partition_ok
 
     partition = partition_ok(load_jsonl(QUEUE / "unified_manifest.jsonl"))
@@ -239,3 +255,134 @@ def test_published_code001_ledger_matches_schema() -> None:
         "reject_candidate",
     }
     assert all(card["provisional"] is True for card in ledger["cards"])
+
+
+def test_claim_resumes_live_claimed_batch(tmp_path: Path) -> None:
+    queue = tmp_path / "artifacts" / "goal095" / "queue"
+    queue.mkdir(parents=True)
+    (queue / "batches.json").write_text(
+        json.dumps(
+            [
+                {
+                    "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
+                    "estimated_tokens": 10,
+                    "file_count": 0,
+                    "files": [],
+                    "kind": "code_tests",
+                    "output": "x",
+                    "source_id": "carter",
+                    "token_limit": TOKEN_LIMIT,
+                    "token_target": 300000,
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (queue / "ledger.json").write_text(
+        json.dumps(
+            {
+                "batches": [
+                    {
+                        "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
+                        "kind": "code_tests",
+                        "status": "claimed",
+                        "claimed_utc": "2026-08-31T01:50:11Z",
+                    },
+                    {
+                        "batch_id": "code_tests-003-carter-carter_legacy_Carter_v2",
+                        "kind": "code_tests",
+                        "status": "pending",
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    (queue / "summary.json").write_text("{}", encoding="utf-8")
+    claims = tmp_path / "artifacts" / "goal095" / "claims"
+    claims.mkdir(parents=True)
+    existing = {
+        "schema": SCHEMA,
+        "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
+        "kind": "code_tests",
+        "status": "claimed",
+        "claimed_utc": "2026-08-31T01:50:11Z",
+    }
+    (claims / "code_tests-002-carter-carter_legacy_Carter_v2.json").write_text(
+        json.dumps(existing),
+        encoding="utf-8",
+    )
+    record = claim(tmp_path)
+    assert record["batch_id"] == "code_tests-002-carter-carter_legacy_Carter_v2"
+    assert record["claimed_utc"] == "2026-08-31T01:50:11Z"
+    queue_ledger = load_json(queue / "ledger.json")
+    assert queue_ledger["batches"][1]["status"] == "pending"
+
+
+@pytest.mark.skipif(not BATCH_LEDGER_002.is_file(), reason="code_tests-002 ledger not written")
+def test_published_code002_ledger_matches_schema() -> None:
+    batches = load_json(QUEUE / "batches.json")
+    batch = next(
+        item
+        for item in batches
+        if item["batch_id"] == "code_tests-002-carter-carter_legacy_Carter_v2"
+    )
+    ledger = load_json(BATCH_LEDGER_002)
+    errors = validate_ledger(ledger, batch)
+    assert errors == []
+    assert ledger["next_prompt"] == "campaign:code_tests"
+    raw = BATCH_LEDGER_002.read_text(encoding="utf-8").casefold()
+    assert "c:\\users\\" not in raw
+    assert "d:\\perfil\\" not in raw
+    assert "emmanuel" not in raw
+    assert all(card["provisional"] is True for card in ledger["cards"])
+    campaign = load_json(CAMPAIGN)
+    assert campaign["required_human_launches"] == 1
+    assert campaign["counts"]["complete"] >= 2
+    assert "code_tests-001-carter" in campaign["preserved_complete"]
+    assert "code_tests-002-carter-carter_legacy_Carter_v2" in campaign[
+        "preserved_complete"
+    ]
+    if campaign["counts"]["pending"] == 0:
+        assert campaign["next_human_prompt"] in {
+            "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
+            "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
+        }
+    else:
+        assert campaign["next_human_prompt"] is None
+
+
+@pytest.mark.skipif(not BATCH_LEDGER_477.is_file(), reason="code_tests-477 ledger not written")
+def test_published_code477_and_campaign_terminal() -> None:
+    batches = load_json(QUEUE / "batches.json")
+    batch = next(
+        item
+        for item in batches
+        if item["batch_id"]
+        == "code_tests-477-baxy_schema_agent-baxy_schema_agent"
+    )
+    ledger = load_json(BATCH_LEDGER_477)
+    assert validate_ledger(ledger, batch) == []
+    assert ledger["next_prompt"] == (
+        "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md"
+    )
+    assert "09.5.3_AUDITAR_CODIGO_LOTE.md" not in ledger["next_prompt"]
+    campaign = load_json(CAMPAIGN)
+    assert campaign["counts"]["pending"] == 0
+    assert campaign["counts"]["claimed"] == 0
+    assert campaign["counts"]["complete"] == 477
+    queue_ledger = load_json(QUEUE / "ledger.json")
+    claimed = [
+        item["batch_id"]
+        for item in queue_ledger["batches"]
+        if item.get("kind") == "code_tests" and item.get("status") == "claimed"
+    ]
+    assert claimed == []
+    claims_dir = REPO / "artifacts" / "goal095" / "claims"
+    orphan_claims = [
+        path.name
+        for path in claims_dir.glob("code_tests-*.json")
+        if load_json(path).get("status") == "claimed"
+    ]
+    assert orphan_claims == []
+

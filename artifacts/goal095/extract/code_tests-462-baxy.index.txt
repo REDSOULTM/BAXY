@@ -1,0 +1,68 @@
+batch=code_tests-462-baxy
+hash_ok=66 drift=0 miss=0
+OK src/Baxy.Core/Operations/TaskHandlers.cs
+OK src/Baxy.Core/Operations/TimeStatusHandler.cs
+OK src/Baxy.Core/Operations/WindowControlHandlers.cs
+OK src/Baxy.Core/Program.cs
+OK src/Baxy.Core/bin/Release/net10.0-windows10.0.19041.0/win-x64/baxy-core.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'runtimes', 'targets']
+OK src/Baxy.Core/bin/Release/net10.0-windows10.0.19041.0/win-x64/baxy-core.runtimeconfig.json json_keys=['runtimeOptions']
+OK src/Baxy.FieldUi/.gitignore
+OK src/Baxy.FieldUi/index.html
+OK src/Baxy.FieldUi/package.json json_keys=['dependencies', 'devDependencies', 'name', 'private', 'scripts', 'type', 'version']
+OK src/Baxy.FieldUi/src/App.tsx
+OK src/Baxy.FieldUi/src/components/ActivityPanel.tsx
+OK src/Baxy.FieldUi/src/components/FieldCenter.tsx
+OK src/Baxy.FieldUi/src/components/Icon.tsx
+OK src/Baxy.FieldUi/src/components/SettingsPanel.tsx
+OK src/Baxy.FieldUi/src/components/SubstratePanel.tsx
+OK src/Baxy.FieldUi/src/components/ToolsPanel.tsx
+OK src/Baxy.FieldUi/src/components/TopBar.tsx
+OK src/Baxy.FieldUi/src/components/TriggersPanel.tsx
+OK src/Baxy.FieldUi/src/hooks/useEventStream.ts
+OK src/Baxy.FieldUi/src/main.tsx
+OK src/Baxy.FieldUi/src/styles/prototype.css
+OK src/Baxy.FieldUi/src/styles/prototype.css.prereskin.bak
+OK src/Baxy.FieldUi/src/types.ts
+OK src/Baxy.Kernel/Baxy.Kernel.csproj
+OK src/Baxy.Kernel/Journal/CompletedInvocation.cs
+OK src/Baxy.Kernel/Journal/FileInvocationJournal.cs
+OK src/Baxy.Kernel/Journal/IInvocationJournal.cs
+OK src/Baxy.Kernel/Journal/InMemoryInvocationJournal.cs
+OK src/Baxy.Kernel/Journal/JournalCapacityException.cs
+OK src/Baxy.Kernel/Journal/JournalHmacAuthenticator.cs
+OK src/Baxy.Kernel/Journal/JournalIntegrityException.cs
+OK src/Baxy.Kernel/Journal/JournalJsonContext.cs
+OK src/Baxy.Kernel/Journal/JournalModels.cs
+OK src/Baxy.Kernel/Mission/IPrivateOperationEnvelopeAuthenticator.cs
+OK src/Baxy.Kernel/Mission/InMemoryConfirmationAuthority.cs
+OK src/Baxy.Kernel/Mission/MissionEngine.cs
+OK src/Baxy.Kernel/Mission/PrivateOperationBoundary.cs
+OK src/Baxy.Kernel/Mission/RequestFingerprint.cs
+OK src/Baxy.Kernel/Operations/IOperationHandler.cs
+OK src/Baxy.Kernel/Operations/IOperationResponseNarrator.cs
+OK src/Baxy.Kernel/Operations/OperationDefinition.cs
+OK src/Baxy.Kernel/Operations/OperationInvocation.cs
+OK src/Baxy.Kernel/Operations/OperationOutcome.cs
+OK src/Baxy.Kernel/Operations/OperationRegistry.cs
+OK src/Baxy.Kernel/Operations/OperationRisk.cs
+OK src/Baxy.Kernel/Operations/ProductOperationSchema.cs
+OK src/Baxy.Kernel/Planning/MissionPlanProposal.cs
+OK src/Baxy.Kernel/Policy/PolicyDecision.cs
+OK src/Baxy.Kernel/Policy/RiskPolicy.cs
+OK src/Baxy.Kernel/Properties/AssemblyInfo.cs
+OK src/Baxy.Kernel/bin/Debug/net10.0/Baxy.Kernel.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK src/Baxy.Providers.Windows/Applications/ApplicationInvocationStore.cs
+OK src/Baxy.Providers.Windows/Applications/ApplicationOpenContracts.cs
+OK src/Baxy.Providers.Windows/Applications/WindowsApplicationOpenProvider.cs
+OK src/Baxy.Providers.Windows/Applications/WindowsApplicationOpenVerifier.cs
+OK src/Baxy.Providers.Windows/AtomicFileReplacement.cs
+OK src/Baxy.Providers.Windows/Audio/AudioContracts.cs
+OK src/Baxy.Providers.Windows/Audio/AudioInvocationStore.cs
+OK src/Baxy.Providers.Windows/Audio/AudioOperationLock.cs
+OK src/Baxy.Providers.Windows/Audio/WindowsAudioControlProvider.cs
+OK src/Baxy.Providers.Windows/Audio/WindowsCoreAudioPlatform.cs
+OK src/Baxy.Providers.Windows/Baxy.Providers.Windows.csproj
+OK src/Baxy.Providers.Windows/Capture/CaptureContracts.cs
+OK src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs
+OK src/Baxy.Providers.Windows/Clipboard/ClipboardContracts.cs
+OK src/Baxy.Providers.Windows/Clipboard/WindowsClipboardProvider.cs

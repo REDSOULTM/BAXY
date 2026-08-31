@@ -1,0 +1,446 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-433-baxy-baxy_legacy_legacy_export",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:33Z",
+  "closed_utc": "2026-08-31T02:48:36Z",
+  "estimated_tokens": 291542,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 39,
+  "subsystem": "baxy_legacy_legacy_export",
+  "subsystems": [
+    "baxy_legacy_legacy_export"
+  ],
+  "files": [
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/data_analysis.py",
+      "sha256": "03a7a05b546df643e35249d184237cf182811830a5ef1468e6a69a1efa039b2f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-237"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/database.py",
+      "sha256": "5155edd91013648ab927a14d49d77d7e0b3bc1b8171646825c9e8687baa1783b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-373"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/dependency.py",
+      "sha256": "f9366b15c2fe57171f191af38c6ca88095a4539f015d68a673f83206ce562572",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-97"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/desktop_layout.py",
+      "sha256": "d02c06276f4950f5cfdec093ed47f3e1f27307e424fb3bb0f2d37011904e9008",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-224"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/developer.py",
+      "sha256": "c057685a169bcc2b13d7a4a29ffb61971361ac3307630b2b58aabd486e58fa81",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-379"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/device_settings.py",
+      "sha256": "d90650bdef747d16fa269f5fba314d22b18b6437a0893e76125e4a9d934e7adc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-186"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/document.py",
+      "sha256": "b64bdf6ffc7b253e5645a13f0c44044fe10d2df2324ba36863afd3405c942f95",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-461"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/fact_check.py",
+      "sha256": "db6d5152fb340bd1710ce122623bd62cbbbbd5ef5ff5aceebef41d51a1f4c06f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-234"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/file_process.py",
+      "sha256": "70c5d51c8f302f81badbaa6a43cce986f23be97c4e475ebc6b05a5862a7cc22a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-66"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/form_filler.py",
+      "sha256": "ef80a77ca1b3e530513e5c5111312b125f9e866652b3619d198c98438536c2fd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-263"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/game_launcher.py",
+      "sha256": "e8c6f2d9ac1fc10e8e429e8c5e503b98554935f7e5fcef611089a6406d1ddc76",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-363"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/habit_tracker.py",
+      "sha256": "93e7f57318fee7f19142567dee02f2305cf8ba1b2bb0a923e94ba2059dac61aa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-130"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/helpers.py",
+      "sha256": "cfeca1cf250edd5efba6a7b0c9054170fe7f686d6401c4bd5c967b33fe7db4b9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-270"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/job_manager.py",
+      "sha256": "b918edafaf44f1ea1ffcb9dc7011765e887c69a6716ac8e8645e6a0fb2cce6e2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-168"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/local_search.py",
+      "sha256": "7487d90b6154581733e658cab6c8b8a82b10ed94cd322910105e1758c899b872",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-149"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/maintenance.py",
+      "sha256": "7b32626184e6ad4159f0a366dcd796832f6a1bb3880eda1627518b25bb8b6cab",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-365"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/media_apps.py",
+      "sha256": "0a54670e1f93f9cdcf26f99752bfa21ce1827285f651d893c3dcde1bd829e5d4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/media_current.py",
+      "sha256": "02288227c18ebc43930dda84353d82602a4321dc940ece20dd71e2bd218865a5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-178"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/media_edit.py",
+      "sha256": "a402d3684415f544e37ba07406877b22325b12b623870c31113c180d9527eaf4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-269"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/media_now_playing_fast.py",
+      "sha256": "497d85b13a27d72fbe9c1e718b0e1a3076c4b72b7477cb02b34a5482ea3d8a51",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-71"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/network.py",
+      "sha256": "07c7a3d09e9cfa381eed249a896b7884e46a0ab3e83f28f6a776045d4e7fa48d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-285"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/notes.py",
+      "sha256": "df514eac0abe35fa8e0e8dbfd3c964746ed3f2abc2aa4cf9416bc619ca724b67",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-139"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/notifications.py",
+      "sha256": "b0589a7ec3a126d2b3f11e213c40544f9f9442b9da4794535674388b2dbf1a36",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-450"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/office.py",
+      "sha256": "f4cd1f4a15b3420323a5362fc9d0b0ea7ccbe475765834ca971133c927016815",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-231"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/peripheral.py",
+      "sha256": "748d95f41476e98fd8b85ff091b73614f0fbff90c57e31aad13aded65397c36d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-153"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/photo_library.py",
+      "sha256": "0c457e4b51b8ef2c3a74064119fe1d2929fa2f43b261c250663c8953a862c3b8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-285"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/printer_scanner.py",
+      "sha256": "27be57d6d15b6132ee5c9bf5a95b2b62c3aeb6051e176b0bc0d739280f03f2b2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-245"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/routine.py",
+      "sha256": "320ce33ed93bc2bac182746c2cf7f27d11e493145a54b4b76dd1a90c42aab5af",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-691"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/source_manager.py",
+      "sha256": "6322c7fb71fc0eb5e82a40c20ac3d68e82947adcbd17787a4be17ff0e8f0d26e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-74"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/study.py",
+      "sha256": "46d1c88df8de77fffcd82b85f4bbb4541287d66329a3451de1ae1ba53db01eed",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-255"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/watcher.py",
+      "sha256": "655d2787ba048a0144179fdef3a0abf7563c9eee1abb6342e0bec597d3ab20cc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-309"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/whatsapp.py",
+      "sha256": "34a4ca86d13fbca1d4c8fe50b6ffef84f01415946d018ec296f4f79278e87ca1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1339"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/domain_tools/wifi.py",
+      "sha256": "d88b07813a1801135380040f87590e1d1781f390b779d1c8d4e7288b3b7e4bb5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-460"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/mcp_client.py",
+      "sha256": "ff2eb06359fad70bac095228baf50c7a025f19671ae6208efaa223af0f8b4fcc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-289"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/mcp_server.py",
+      "sha256": "6e4a187006be99111e37e53aba1c418f9dd03642dfbeebadee311942ab552cf5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-344"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/multimodal.py",
+      "sha256": "5992e2a84875d7c864089d9058803cdae0bbe02691cfc3cc46903c966760d53b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-152"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/ops_tools.py",
+      "sha256": "0fa786aff9bcdead3474775ec001e4364ed0ab0deb65a08a6f48d6abcc7ddaae",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2270"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/screenshot_fast.py",
+      "sha256": "5c478e251223a425cdfb81098924d7eab82134484b91cdf0ca9f374587d7e093",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-114"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/tools_full/site_resolver.py",
+      "sha256": "4ab6565b57f1819def2ee530eb33381735ed6b7ee1b84454872d8681ba203b9b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-477"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-433-baxy-baxy_legacy_legacy_export-01-legacy-legacy_export-tools_full",
+      "disposition": "evidence_only",
+      "component": "legacy/legacy_export/tools_full (39 ficheros)",
+      "contract": "Grupo legacy/legacy_export/tools_full: 39 archivos. Terminales leido PY \"\"\"Data Analysis (CSV/Excel) domain tool — extracted from domain_tools.py.  Análisis local de CSV/XLSX via pandas + matplotlib (Agg headless). Acciones: profile, describe, query, head, to_xlsx + 3 plot kinds. NO sale a internet. Pandas/matplotlib son deps opcionales — el tool reporta needs_dependency si faltan.  Funciones extraídas (8):",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "legacy/legacy_export/tools_full/domain_tools/data_analysis.py",
+        "legacy/legacy_export/tools_full/domain_tools/database.py",
+        "legacy/legacy_export/tools_full/domain_tools/dependency.py",
+        "legacy/legacy_export/tools_full/domain_tools/desktop_layout.py",
+        "legacy/legacy_export/tools_full/domain_tools/developer.py",
+        "legacy/legacy_export/tools_full/domain_tools/device_settings.py",
+        "legacy/legacy_export/tools_full/domain_tools/document.py",
+        "legacy/legacy_export/tools_full/domain_tools/fact_check.py",
+        "legacy/legacy_export/tools_full/domain_tools/file_process.py",
+        "legacy/legacy_export/tools_full/domain_tools/form_filler.py",
+        "legacy/legacy_export/tools_full/domain_tools/game_launcher.py",
+        "legacy/legacy_export/tools_full/domain_tools/habit_tracker.py",
+        "legacy/legacy_export/tools_full/domain_tools/helpers.py",
+        "legacy/legacy_export/tools_full/domain_tools/job_manager.py",
+        "legacy/legacy_export/tools_full/domain_tools/local_search.py",
+        "legacy/legacy_export/tools_full/domain_tools/maintenance.py",
+        "legacy/legacy_export/tools_full/domain_tools/media_apps.py",
+        "legacy/legacy_export/tools_full/domain_tools/media_current.py",
+        "legacy/legacy_export/tools_full/domain_tools/media_edit.py",
+        "legacy/legacy_export/tools_full/domain_tools/media_now_playing_fast.py",
+        "legacy/legacy_export/tools_full/domain_tools/network.py",
+        "legacy/legacy_export/tools_full/domain_tools/notes.py",
+        "legacy/legacy_export/tools_full/domain_tools/notifications.py",
+        "legacy/legacy_export/tools_full/domain_tools/office.py",
+        "legacy/legacy_export/tools_full/domain_tools/peripheral.py",
+        "legacy/legacy_export/tools_full/domain_tools/photo_library.py",
+        "legacy/legacy_export/tools_full/domain_tools/printer_scanner.py",
+        "legacy/legacy_export/tools_full/domain_tools/routine.py",
+        "legacy/legacy_export/tools_full/domain_tools/source_manager.py",
+        "legacy/legacy_export/tools_full/domain_tools/study.py",
+        "legacy/legacy_export/tools_full/domain_tools/watcher.py",
+        "legacy/legacy_export/tools_full/domain_tools/whatsapp.py",
+        "legacy/legacy_export/tools_full/domain_tools/wifi.py",
+        "legacy/legacy_export/tools_full/mcp_client.py",
+        "legacy/legacy_export/tools_full/mcp_server.py",
+        "legacy/legacy_export/tools_full/multimodal.py",
+        "legacy/legacy_export/tools_full/ops_tools.py",
+        "legacy/legacy_export/tools_full/screenshot_fast.py",
+        "legacy/legacy_export/tools_full/site_resolver.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/legacy_export/tools_full/domain_tools/data_analysis.py",
+        "ranges": [
+          "1-237"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=39 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-434-baxy-baxy_legacy_legacy_export",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-433-baxy-baxy_legacy_legacy_export.inspect.json"
+}

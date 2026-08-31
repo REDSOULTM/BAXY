@@ -1,0 +1,8 @@
+batch=code_tests-397-functiongemma-fg_unsloth_compiled_cache
+hash_ok=6 drift=0 miss=0
+OK finetune_llm/unsloth_compiled_cache/UnslothOnlineDPOTrainer.py py_lines=2436 defs=42
+OK finetune_llm/unsloth_compiled_cache/UnslothPPOTrainer.py py_lines=1677 defs=26
+OK finetune_llm/unsloth_compiled_cache/UnslothPRMTrainer.py py_lines=1152 defs=20
+OK finetune_llm/unsloth_compiled_cache/UnslothRLOOTrainer.py py_lines=2863 defs=44
+OK finetune_llm/unsloth_compiled_cache/UnslothRewardTrainer.py py_lines=1370 defs=30
+OK finetune_llm/unsloth_compiled_cache/UnslothSFTTrainer.py py_lines=1708 defs=30

@@ -1,0 +1,33 @@
+batch=code_tests-398-functiongemma
+hash_ok=31 drift=0 miss=0
+OK finetune_llm/unsloth_compiled_cache/UnslothXPOTrainer.py py_lines=1428 defs=29
+OK finetune_llm/unsloth_compiled_cache/moe_utils.py py_lines=1564 defs=36
+OK finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_gemma3.py py_lines=1076 defs=58
+OK finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_siglip.py py_lines=443 defs=32
+OK finetune_llm/validate_dataset.py py_lines=103 defs=2
+OK baxy_speech.py py_lines=124 defs=3
+OK build_kva_gate.py py_lines=211 defs=1
+OK chat.ps1
+OK decompose_tools.py py_lines=165 defs=4
+OK describe_screen.py py_lines=42 defs=0
+OK fg_argeval.py py_lines=176 defs=8
+OK fg_bench.py py_lines=38 defs=1
+OK fg_chain_client.py py_lines=87 defs=4
+OK fg_chat.py py_lines=38 defs=0
+OK fg_contam_probe.py py_lines=55 defs=2
+OK fg_corrections_eval.py py_lines=65 defs=1
+OK fg_diag.py py_lines=39 defs=1
+OK fg_diag2.py py_lines=33 defs=1
+OK fg_e2e_eval.py py_lines=72 defs=2
+OK fg_e2e_test.py py_lines=76 defs=3
+OK fg_handlers.py py_lines=180 defs=19
+OK fg_probe_broad.py py_lines=83 defs=2
+OK fg_probe_knowledge.py py_lines=55 defs=2
+OK fg_probe_multiling.py py_lines=71 defs=2
+OK fg_probe_notool.py py_lines=63 defs=2
+OK fg_repl.py py_lines=117 defs=3
+OK fg_router.py py_lines=177 defs=6
+OK fg_router_ft.py py_lines=228 defs=7
+OK fg_threshold_curve.py py_lines=59 defs=3
+OK kva_gate_infer.py py_lines=49 defs=4
+OK sim_split.py py_lines=79 defs=4

@@ -1,0 +1,77 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-057-probando_gemma4-pg4_data",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:44:44Z",
+  "closed_utc": "2026-08-31T02:44:44Z",
+  "estimated_tokens": 112425,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 2,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_llm_2026-06-07",
+      "sha256": "a1ee3d7fd8a96ced72bf93c6ab1a2b4ef4aa3da5af6f1cb6a6b417981293689f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+muestras"
+      ]
+    },
+    {
+      "path": "gemma4_agent/data/tool2vec_queries.short.done",
+      "sha256": "43df4f1676b282f517a31993235946510a6aa6dde003aad52d5934731cf45c4b",
+      "source_id": "probando_gemma4",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-057-probando_gemma4-pg4_data-01-gemma4_agent-data-tool2vec_queries.jsonl.bak_pre_llm_2026-06",
+      "disposition": "evidence_only",
+      "component": "gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_llm_2026-06-07 (1 ficheros)",
+      "contract": "Grupo gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_llm_2026-06-07: 1 archivos. Terminales parseado_completo JSONL lines=3860 keys=['q', 'tool']",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_llm_2026-06-07"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_llm_2026-06-07",
+        "ranges": [
+          "jsonl:schema+counts+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=2 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-058-probando_gemma4-pg4_data",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-057-probando_gemma4-pg4_data.inspect.json"
+}

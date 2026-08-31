@@ -1,0 +1,32 @@
+batch=code_tests-436-baxy
+hash_ok=30 drift=0 miss=0
+OK legacy/models/fgemma4_qat.py py_lines=1536 defs=76
+OK legacy/models/function_gemma.py py_lines=2280 defs=86
+OK legacy/models/gemma4_stt.py py_lines=286 defs=14
+OK legacy/models/qwen_asr.py py_lines=717 defs=29
+OK legacy/models/qwen_vl.py py_lines=736 defs=27
+OK legacy/models/strict_sse.py py_lines=4 defs=0
+OK legacy/observability/__init__.py py_lines=10 defs=0
+OK legacy/observability/log_recorder.py py_lines=626 defs=41
+OK legacy/observability/route_telemetry.py py_lines=258 defs=15
+OK legacy/observability/tracing.py py_lines=234 defs=11
+OK legacy/privacy/__init__.py py_lines=51 defs=0
+OK legacy/privacy/models.py py_lines=240 defs=17
+OK legacy/privacy/service.py py_lines=1263 defs=44
+OK legacy/pytest.ini
+OK legacy/rag/__init__.py py_lines=4 defs=0
+OK legacy/rag/rag_service.py py_lines=356 defs=20
+OK legacy/scripts/build_encoder_dataset_9tools.py py_lines=184 defs=4
+OK legacy/scripts/export_fg_catalog.py py_lines=57 defs=1
+OK legacy/scripts/gemma4_acceptance.py py_lines=560 defs=17
+OK legacy/scripts/gemma4_long_soak.py py_lines=1285 defs=31
+OK legacy/scripts/gemma4_soak.py py_lines=1342 defs=30
+OK legacy/scripts/gemma4_stt_eval.py py_lines=650 defs=22
+OK legacy/scripts/gemma4_vram_pressure.py py_lines=1863 defs=44
+OK legacy/scripts/gemma4_vram_pressure_helper.cu
+OK legacy/scripts/gen_synthetic_queries.py py_lines=142 defs=2
+OK legacy/scripts/git-hooks/pre-commit
+OK legacy/scripts/ingest_docs.py py_lines=88 defs=2
+OK legacy/scripts/install_hooks.py py_lines=41 defs=1
+OK legacy/scripts/mine_misroutes.py py_lines=121 defs=2
+OK legacy/scripts/rebuild_artifacts_9tools.py py_lines=151 defs=3

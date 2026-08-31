@@ -1,0 +1,33 @@
+batch=code_tests-455-baxy-baxy_scripts
+hash_ok=31 drift=0 miss=0
+OK scripts/attest_in_place_upgrade.ps1
+OK scripts/audit_all_historical_missions.py py_lines=332 defs=5
+OK scripts/audit_catalog_oracle_coverage.py py_lines=374 defs=10
+OK scripts/audit_planner_corpus.py py_lines=131 defs=2
+OK scripts/audit_turn_policy_v51_failures.py py_lines=505 defs=6
+OK scripts/baxy-wakeword-production.yaml
+OK scripts/baxy_runtime_config.py py_lines=307 defs=14
+OK scripts/blind_reset_turn_evidence_final_seal.py py_lines=674 defs=21
+OK scripts/blind_reset_turn_evidence_final_seal_v3.py py_lines=716 defs=15
+OK scripts/blind_reset_turn_evidence_final_seal_v4.py py_lines=762 defs=11
+OK scripts/bootstrap.ps1
+OK scripts/build_catalog_operation_aliases.py py_lines=128 defs=4
+OK scripts/build_catalog_seen_development_r1.py py_lines=170 defs=6
+OK scripts/build_catalog_seen_scenarios_r1.py py_lines=155 defs=4
+OK scripts/build_catalog_surface_holdout_r22.py py_lines=255 defs=5
+OK scripts/build_catalog_surface_holdout_r23.py py_lines=79 defs=3
+OK scripts/build_catalog_surface_holdout_r24.py py_lines=86 defs=3
+OK scripts/build_catalog_surface_holdout_r25.py py_lines=93 defs=3
+OK scripts/build_catalog_surface_holdout_r26.py py_lines=89 defs=3
+OK scripts/build_compound_execution_holdout_r1.py py_lines=247 defs=8
+OK scripts/build_compound_execution_holdout_r2.py py_lines=231 defs=5
+OK scripts/build_compound_execution_holdout_r3.py py_lines=227 defs=5
+OK scripts/build_current_catalog_review.py py_lines=455 defs=10
+OK scripts/build_exhaustive_message_ledger.py py_lines=745 defs=24
+OK scripts/build_exhaustive_runtime_language_scope.py py_lines=174 defs=4
+OK scripts/build_exhaustive_runtime_oracle.py py_lines=3552 defs=26
+OK scripts/build_family_classifier.py py_lines=237 defs=6
+OK scripts/build_generalization_product_holdout_r10.py py_lines=320 defs=7
+OK scripts/build_generalization_product_holdout_r11.py py_lines=312 defs=7
+OK scripts/build_generalization_product_holdout_r12.py py_lines=313 defs=7
+OK scripts/build_generalization_product_holdout_r13.py py_lines=314 defs=7

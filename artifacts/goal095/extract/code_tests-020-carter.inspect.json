@@ -1,0 +1,1568 @@
+{
+  "batch_id": "code_tests-020-carter",
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 18,
+  "hash_ok": 18,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_v1",
+  "subsystems": [
+    "carter_v1",
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "Carter_v1/tests/test_llm_backends.py",
+      "queued_sha256": "75667e99782f404c865796073542ea59859b340886c449db2f3a298b98b75f27",
+      "size_queued": 4195,
+      "exists": true,
+      "disk_sha256": "75667e99782f404c865796073542ea59859b340886c449db2f3a298b98b75f27",
+      "disk_size": 4195,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_llm_backends.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 128,
+        "bytes": 4195,
+        "imports": [
+          "1:from types import SimpleNamespace",
+          "3:from llm_backends import ("
+        ],
+        "defs": [
+          "14:def test_build_openai_endpoint_accepts_root_base_url():",
+          "18:def test_build_openai_endpoint_accepts_v1_base_url():",
+          "22:def test_normalize_backend_name_maps_openai_aliases():",
+          "26:def test_resolve_runtime_backend_kind_prefers_explicit_backend():",
+          "31:def test_resolve_runtime_backend_kind_uses_port_heuristic_when_unreachable():",
+          "36:def test_create_backend_adapter_builds_ollama_adapter():",
+          "50:def test_create_backend_adapter_builds_openai_adapter():",
+          "64:class _FakeHttpResponse:",
+          "65:def __init__(self, payload):",
+          "68:def raise_for_status(self):",
+          "71:def json(self):",
+          "75:class _FakeHttpClient:",
+          "76:def __init__(self, payload):",
+          "80:def post(self, url, json=None, timeout=None):",
+          "84:def close(self):",
+          "88:def test_detect_openai_runtime_flavor_detects_tabby(monkeypatch):",
+          "89:class _Client:",
+          "90:def __init__(self, *args, **kwargs):",
+          "93:def __enter__(self):",
+          "96:def __exit__(self, exc_type, exc, tb):",
+          "99:def get(self, url):",
+          "106:def test_openai_adapter_uses_json_mode_for_tabby_and_strips_think_tags(monkeypatch):"
+        ],
+        "head": [
+          "from types import SimpleNamespace",
+          "",
+          "from llm_backends import (",
+          "    OpenAICompatibleBackendAdapter,",
+          "    OllamaBackendAdapter,",
+          "    build_openai_endpoint,",
+          "    create_backend_adapter,",
+          "    detect_openai_runtime_flavor,",
+          "    normalize_backend_name,",
+          "    resolve_runtime_backend_kind,",
+          ")",
+          "",
+          "",
+          "def test_build_openai_endpoint_accepts_root_base_url():",
+          "    assert build_openai_endpoint(\"http://127.0.0.1:1234\", \"chat/completions\") == \"http://127.0.0.1:1234/v1/chat/completions\"",
+          "",
+          "",
+          "def test_build_openai_endpoint_accepts_v1_base_url():",
+          "    assert build_openai_endpoint(\"http://127.0.0.1:1234/v1\", \"models\") == \"http://127.0.0.1:1234/v1/models\"",
+          "",
+          "",
+          "def test_normalize_backend_name_maps_openai_aliases():",
+          "    assert normalize_backend_name(\"openai-compatible\") == \"openai\"",
+          "",
+          "",
+          "def test_resolve_runtime_backend_kind_prefers_explicit_backend():",
+          "    assert resolve_runtime_backend_kind(\"http://127.0.0.1:1234\", \"openai\") == \"openai\"",
+          "    assert resolve_runtime_backend_kind(\"http://127.0.0.1:11434\", \"ollama\") == \"ollama\"",
+          "",
+          "",
+          "def test_resolve_runtime_backend_kind_uses_port_heuristic_when_unreachable():",
+          "    assert resolve_runtime_backend_kind(\"http://127.0.0.1:11434\", \"auto\", timeout=0.01) == \"ollama\"",
+          "    assert resolve_runtime_backend_kind(\"http://127.0.0.1:1234\", \"auto\", timeout=0.01) == \"openai\"",
+          "",
+          "",
+          "def test_create_backend_adapter_builds_ollama_adapter():",
+          "    config = SimpleNamespace(",
+          "        llm_base_url=\"http://127.0.0.1:11434\",",
+          "        llm_backend=\"ollama\",",
+          "        llm_api_key=\"not-needed\","
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/tests/test_meta_tools.py",
+      "queued_sha256": "a4d31ae21f8f2e6e861a1795d418c140e7bc851fba9fee024b3c687523563ff5",
+      "size_queued": 221,
+      "exists": true,
+      "disk_sha256": "a4d31ae21f8f2e6e861a1795d418c140e7bc851fba9fee024b3c687523563ff5",
+      "disk_size": 221,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_meta_tools.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 10,
+        "bytes": 221,
+        "imports": [
+          "1:import unittest"
+        ],
+        "defs": [
+          "3:class TestMetaTools(unittest.TestCase):",
+          "5:def test_meta_tool_example(self):"
+        ],
+        "head": [
+          "import unittest",
+          "",
+          "class TestMetaTools(unittest.TestCase):",
+          "",
+          "    def test_meta_tool_example(self):",
+          "        # Example test for a meta tool",
+          "        self.assertTrue(True)",
+          "",
+          "if __name__ == \"__main__\":",
+          "    unittest.main()"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/tests/test_parser.py",
+      "queued_sha256": "348896080377dbb7954d4bba3447978ffa74fbfddd98b2f2704aacfa6abcbd74",
+      "size_queued": 10279,
+      "exists": true,
+      "disk_sha256": "348896080377dbb7954d4bba3447978ffa74fbfddd98b2f2704aacfa6abcbd74",
+      "disk_size": 10279,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_parser.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 194,
+        "bytes": 10279,
+        "imports": [
+          "3:from carter_core import ("
+        ],
+        "defs": [
+          "11:class TestStripThinking:",
+          "12:def test_removes_think_tags(self):",
+          "16:def test_no_think_tags_unchanged(self):",
+          "21:class TestTryFixJson:",
+          "22:def test_fixes_literal_newlines(self):",
+          "28:def test_returns_none_for_garbage(self):",
+          "31:def test_does_not_rescue_legacy_blob_by_regex(self):",
+          "36:class TestParseLLMResponse:",
+          "37:def test_clean_task_cycle_json(self):",
+          "52:def test_chat_mode(self):",
+          "59:def test_normalizes_chat_response_with_spurious_chat_cycle(self):",
+          "69:def test_normalizes_mixed_chat_task_into_task_cycle(self):",
+          "82:def test_normalizes_task_with_spurious_chat_response(self):",
+          "94:def test_normalizes_target_operator_and_empty_min_stability(self):",
+          "109:def test_json_in_code_block(self):",
+          "120:def test_accepts_verification_target_filters(self):",
+          "135:def test_autofills_completion_contract_from_verification_targets(self):",
+          "151:def test_rewrites_completion_requirements_that_do_not_match_targets(self):",
+          "165:def test_parses_structured_visual_analysis(self):",
+          "180:def test_rejects_legacy_schema(self):",
+          "186:def test_recovers_missing_grounded_inputs_in_task_cycle(self):"
+        ],
+        "head": [
+          "\"\"\"Tests de regresion para el parser estricto del ciclo.\"\"\"",
+          "",
+          "from carter_core import (",
+          "    parse_llm_response,",
+          "    parse_visual_analysis_response,",
+          "    _try_fix_json,",
+          "    _strip_thinking_tags,",
+          ")",
+          "",
+          "",
+          "class TestStripThinking:",
+          "    def test_removes_think_tags(self):",
+          "        text = '<think>razonamiento interno</think>{\"mode\":\"TASK\",\"chat_response\":null,\"task_cycle\":null}'",
+          "        assert _strip_thinking_tags(text) == '{\"mode\":\"TASK\",\"chat_response\":null,\"task_cycle\":null}'",
+          "",
+          "    def test_no_think_tags_unchanged(self):",
+          "        text = '{\"mode\":\"CHAT\",\"chat_response\":\"hola\",\"task_cycle\":null}'",
+          "        assert _strip_thinking_tags(text) == text",
+          "",
+          "",
+          "class TestTryFixJson:",
+          "    def test_fixes_literal_newlines(self):",
+          "        raw = '{\"mode\":\"TASK\",\"chat_response\":null,\"task_cycle\":{\"phase\":\"ACT\",\"purpose\":\"test\",\"grounded_inputs\":[],\"verification_targets\":[],\"completion_contract\":null,\"action\":{\"language\":\"python\",\"code\":\"line1\\nline2\"}}}'",
+          "        result = _try_fix_json(raw)",
+          "        assert result is not None",
+          "        assert \"task_cycle\" in result",
+          "",
+          "    def test_returns_none_for_garbage(self):",
+          "        assert _try_fix_json(\"esto no es JSON\") is None",
+          "",
+          "    def test_does_not_rescue_legacy_blob_by_regex(self):",
+          "        raw = '{\"action\":{\"language\":\"python\",\"code\":\"print(1)\",\"purpose\":\"legacy\"}'",
+          "        assert _try_fix_json(raw) is None",
+          "",
+          "",
+          "class TestParseLLMResponse:",
+          "    def test_clean_task_cycle_json(self):",
+          "        raw = (",
+          "            '{\"mode\":\"TASK\",\"chat_response\":null,\"task_cycle\":'",
+          "            '{\"phase\":\"ACT\",\"purpose\":\"crear archivo\",\"grounded_inputs\":[],'"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/tests/test_phase6_full_compare.py",
+      "queued_sha256": "841b581cadf70ee83697da0278a0805f1ef99a9375970df7607f866b00cae467",
+      "size_queued": 951,
+      "exists": true,
+      "disk_sha256": "841b581cadf70ee83697da0278a0805f1ef99a9375970df7607f866b00cae467",
+      "disk_size": 951,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_phase6_full_compare.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 31,
+        "bytes": 951,
+        "imports": [
+          "1:from phase6_full_compare import _score_row, _select_stage2_ids"
+        ],
+        "defs": [
+          "4:def test_select_stage2_ids_keeps_baseline_and_top_finalists():",
+          "14:def test_score_row_penalizes_false_positives_and_latency():"
+        ],
+        "head": [
+          "from phase6_full_compare import _score_row, _select_stage2_ids",
+          "",
+          "",
+          "def test_select_stage2_ids_keeps_baseline_and_top_finalists():",
+          "    ranked = [\"devstral-24b\", \"qwen25-coder\", \"qwen25-32b\", \"qwen3-baseline\"]",
+          "    assert _select_stage2_ids(ranked, top_n=3, baseline_id=\"qwen3-baseline\") == [",
+          "        \"qwen3-baseline\",",
+          "        \"devstral-24b\",",
+          "        \"qwen25-coder\",",
+          "        \"qwen25-32b\",",
+          "    ]",
+          "",
+          "",
+          "def test_score_row_penalizes_false_positives_and_latency():",
+          "    row_fast = {",
+          "        \"pass_rate\": 0.5,",
+          "        \"factual_success_rate\": 0.5,",
+          "        \"false_positive_rate\": 0.0,",
+          "        \"avg_close\": 20.0,",
+          "        \"avg_first_action\": 5.0,",
+          "        \"avg_llm_calls\": 2.0,",
+          "    }",
+          "    row_false_positive = {",
+          "        \"pass_rate\": 0.5,",
+          "        \"factual_success_rate\": 0.5,",
+          "        \"false_positive_rate\": 0.2,",
+          "        \"avg_close\": 20.0,",
+          "        \"avg_first_action\": 5.0,",
+          "        \"avg_llm_calls\": 2.0,",
+          "    }",
+          "    assert _score_row(row_fast) > _score_row(row_false_positive)"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/tests/test_sandbox.py",
+      "queued_sha256": "812066837af0c208437ecbc2f933a34d92b53b95b31a1cbc777287076125d2f8",
+      "size_queued": 9520,
+      "exists": true,
+      "disk_sha256": "812066837af0c208437ecbc2f933a34d92b53b95b31a1cbc777287076125d2f8",
+      "disk_size": 9520,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_sandbox.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 233,
+        "bytes": 9520,
+        "imports": [
+          "3:import json",
+          "4:import os",
+          "6:import pytest",
+          "7:from dynamic_sandbox import DynamicSandbox, EVENT_PREFIX, ExecutionResult"
+        ],
+        "defs": [
+          "11:def sandbox():",
+          "15:class TestExecutionResult:",
+          "16:def test_success_detection(self):",
+          "20:def test_failure_detection(self):",
+          "24:def test_timeout_is_failure(self):",
+          "28:def test_task_complete_detection(self):",
+          "33:def test_no_task_complete(self):",
+          "38:def test_screenshot_detection(self):",
+          "43:def test_structured_fact_event_detection(self):",
+          "59:def test_structured_artifact_event_detection(self):",
+          "66:def test_structured_event_accepts_raw_json_line_without_prefix(self):",
+          "72:def test_structured_artifact_infers_screenshot_kind_from_path(self):",
+          "79:def test_structured_fact_with_screenshot_probe_becomes_visual_source(self):",
+          "89:def test_structured_event_parses_python_literal_payload(self):",
+          "100:def test_structured_event_parses_mixed_python_literal_with_json_bools(self):",
+          "111:def test_structured_event_accepts_string_entity(self):",
+          "120:def test_structured_event_parses_windows_path_payload(self):",
+          "130:def test_llm_context_with_output(self):",
+          "135:def test_llm_context_hides_machine_markers(self):",
+          "149:def test_llm_context_no_output(self):",
+          "154:def test_llm_context_timeout(self):",
+          "160:class TestSandboxPython:",
+          "161:def test_python_ok(self, sandbox):",
+          "168:def test_python_error(self, sandbox):",
+          "173:def test_python_timeout(self, sandbox):",
+          "178:def test_python_multiline(self, sandbox):",
+          "184:def test_python_structured_event_parsing(self, sandbox):",
+          "205:class TestSandboxPowerShell:",
+          "206:def test_powershell_ok(self, sandbox):",
+          "211:def test_powershell_error(self, sandbox):",
+          "216:class TestSandboxIsolation:",
+          "217:def test_sanitized_env(self, sandbox):",
+          "224:def test_isolated_cwd(self, sandbox):",
+          "230:def test_history_tracked(self, sandbox):"
+        ],
+        "head": [
+          "\"\"\"Tests de regresion para el sandbox de ejecucion.\"\"\"",
+          "",
+          "import json",
+          "import os",
+          "",
+          "import pytest",
+          "from dynamic_sandbox import DynamicSandbox, EVENT_PREFIX, ExecutionResult",
+          "",
+          "",
+          "@pytest.fixture",
+          "def sandbox():",
+          "    return DynamicSandbox(timeout_seconds=10)",
+          "",
+          "",
+          "class TestExecutionResult:",
+          "    def test_success_detection(self):",
+          "        r = ExecutionResult(exit_code=0, timed_out=False)",
+          "        assert r.success is True",
+          "",
+          "    def test_failure_detection(self):",
+          "        r = ExecutionResult(exit_code=1, timed_out=False)",
+          "        assert r.success is False",
+          "",
+          "    def test_timeout_is_failure(self):",
+          "        r = ExecutionResult(exit_code=0, timed_out=True)",
+          "        assert r.success is False",
+          "",
+          "    def test_task_complete_detection(self):",
+          "        r = ExecutionResult(stdout=\"TASK_COMPLETE: todo listo\")",
+          "        assert r.task_complete is True",
+          "        assert r.task_result == \"todo listo\"",
+          "",
+          "    def test_no_task_complete(self):",
+          "        r = ExecutionResult(stdout=\"resultado normal\")",
+          "        assert r.task_complete is False",
+          "        assert r.task_result is None",
+          "",
+          "    def test_screenshot_detection(self):",
+          "        r = ExecutionResult(stdout=\"SCREENSHOT_CAPTURED: screen.png\", work_dir=\"/tmp\")",
+          "        assert r.has_screenshot is True"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/tests/test_task_state.py",
+      "queued_sha256": "29432e174245b552c40e80b1160b89ee2e2ee19d22a240e7e483cf05a5494f9a",
+      "size_queued": 49246,
+      "exists": true,
+      "disk_sha256": "29432e174245b552c40e80b1160b89ee2e2ee19d22a240e7e483cf05a5494f9a",
+      "disk_size": 49246,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_task_state.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 1235,
+        "bytes": 49246,
+        "imports": [
+          "3:from task_state import ("
+        ],
+        "defs": [
+          "12:def _entity(label: str, platform: str = \"steam\") -> dict:",
+          "20:class TestTaskState:",
+          "21:def test_stores_verified_fact_by_task(self):",
+          "35:def test_builds_constraints_prompt(self):",
+          "51:def test_compact_constraints_prompt_is_smaller(self):",
+          "78:def test_detects_simple_contradiction(self):",
+          "102:def test_ignores_contradiction_against_volatile_fact(self):",
+          "126:def test_detects_input_without_false_contradiction_when_value_wrapper_matches(self):",
+          "149:def test_ignores_metadata_only_grounded_input_value_for_contradictions(self):",
+          "172:def test_ignores_target_metadata_wrapped_in_grounded_input_value(self):",
+          "195:def test_ignores_action_descriptor_wrapped_in_grounded_input_value(self):",
+          "218:def test_detects_input_without_false_contradiction_when_nested_value_matches(self):",
+          "241:def test_ignores_boolean_data_wrapper_when_grounded_input_matches_fact(self):",
+          "264:def test_ignores_unknown_grounded_input_value_for_contradictions(self):",
+          "287:def test_ignores_metadata_only_grounded_input_value_with_expected_operator(self):",
+          "310:def test_ignores_metadata_only_grounded_input_value_with_type_source_and_evidence(self):",
+          "333:def test_records_cycle_history(self):",
+          "346:def test_extracts_verified_facts_from_stdout(self):",
+          "356:def test_extracts_verified_facts_from_events(self):",
+          "371:def test_extracts_verified_facts_from_events_default_to_observed_stability(self):",
+          "383:def test_extracts_verified_facts_normalizes_source_and_value_wrappers(self):",
+          "398:def test_normalizes_boolean_and_string_single_key_wrappers(self):",
+          "408:def test_normalizes_plain_string_booleans_and_gui_alias(self):",
+          "419:def test_normalizes_structured_evidence_visit_wrapper_to_none(self):",
+          "430:def test_normalizes_uri_value_and_system_state_source(self):",
+          "441:def test_completion_accepts_browser_source_aliases(self):",
+          "468:def test_completion_accepts_screenshot_alias_as_visual_source(self):",
+          "495:def test_completion_accepts_window_alias_sources(self):",
+          "526:def test_completion_normalizes_equal_operator_alias(self):",
+          "553:def test_visual_targets_accept_window_and_gui_observation_interchangeably(self):",
+          "580:def test_visual_state_attributes_are_treated_as_compatible(self):",
+          "607:def test_completion_treats_operator_is_without_expected_as_true_for_boolean_attribute(self):",
+          "632:def test_completion_accepts_compatible_entity_without_exact_same_selectors(self):",
+          "661:def test_completion_accepts_software_and_application_kind_variants(self):",
+          "686:def test_newer_observed_fact_can_supersede_older_non_final_fact(self):",
+          "714:def test_records_artifacts_and_observations(self):",
+          "731:def test_visual_evidence_count_includes_gui_artifacts_without_entity(self):",
+          "741:def test_visual_evidence_count_includes_window_source(self):",
+          "760:def test_visual_targets_default_to_window_and_gui_sources(self):",
+          "783:def test_completion_contract_all_of_with_verified_facts(self):",
+          "839:def test_negative_process_target_defaults_to_volatile_stability(self):",
+          "862:def test_negative_process_target_accepts_volatile_false_fact(self):",
+          "897:def test_rejects_completion_when_evidence_missing(self):",
+          "936:def test_rejects_completion_when_source_or_stability_do_not_match(self):",
+          "969:def test_completion_accepts_present_operator_with_stdout_fact(self):",
+          "1001:def test_contains_operator_is_case_insensitive_for_strings(self):",
+          "1030:def test_visual_target_accepts_overlapping_label_tokens(self):",
+          "1056:def test_visual_target_accepts_partial_title_selector_match(self):",
+          "1082:def test_observation_and_artifact_can_participate_when_explicitly_modeled(self):",
+          "1136:def test_rejects_completion_when_only_screenshot_artifact_exists(self):",
+          "1168:def test_legacy_fallback_allowed_without_active_contract(self):",
+          "1186:def test_legacy_fallback_blocked_when_structured_evidence_exists(self):",
+          "1200:def test_records_legacy_fact_fallback_usage(self):",
+          "1206:def test_non_visual_verified_fact_flow_still_works(self):"
+        ],
+        "head": [
+          "\"\"\"Tests para task_state y contradicciones simples.\"\"\"",
+          "",
+          "from task_state import (",
+          "    TaskCycleRecord,",
+          "    TaskState,",
+          "    VerifiedFact,",
+          "    extract_verified_facts_from_events,",
+          "    extract_verified_facts_from_stdout,",
+          ")",
+          "",
+          "",
+          "def _entity(label: str, platform: str = \"steam\") -> dict:",
+          "    return {",
+          "        \"kind\": \"application\",",
+          "        \"label\": label,",
+          "        \"selectors\": {\"platform\": platform},",
+          "    }",
+          "",
+          "",
+          "class TestTaskState:",
+          "    def test_stores_verified_fact_by_task(self):",
+          "        state = TaskState(task_id=\"task_1\", goal=\"instalar juego\")",
+          "        fact = VerifiedFact(",
+          "            task_id=\"task_1\",",
+          "            entity=_entity(\"Fall Guys\"),",
+          "            attribute=\"appid\",",
+          "            value=1097150,",
+          "            source=\"web_lookup\",",
+          "            cycle=1,",
+          "        )",
+          "        contradictions = state.ingest_verified_facts([fact])",
+          "        assert contradictions == []",
+          "        assert len(state.verified_facts) == 1",
+          "",
+          "    def test_builds_constraints_prompt(self):",
+          "        state = TaskState(task_id=\"task_1\", goal=\"instalar juego\")",
+          "        state.ingest_verified_facts([",
+          "            VerifiedFact(",
+          "                task_id=\"task_1\",",
+          "                entity=_entity(\"Fall Guys\"),"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/tests/test_universal_benchmark.py",
+      "queued_sha256": "bbe1fca939168d3d5e39791f8ad29acb2d6f090ff5866c5ac67d58ca6cc3e9c7",
+      "size_queued": 3672,
+      "exists": true,
+      "disk_sha256": "bbe1fca939168d3d5e39791f8ad29acb2d6f090ff5866c5ac67d58ca6cc3e9c7",
+      "disk_size": 3672,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/tests/test_universal_benchmark.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 100,
+        "bytes": 3672,
+        "imports": [
+          "1:from universal_benchmark import ("
+        ],
+        "defs": [
+          "9:def _report(**overrides):",
+          "24:def test_load_universal_cases_has_full_declared_set():",
+          "34:def test_validate_universal_report_accepts_honest_failure_case():",
+          "41:def test_summarize_universal_results_tracks_flaky_and_pending_counts():",
+          "99:def test_recovery_sample_has_representative_categories():"
+        ],
+        "head": [
+          "from universal_benchmark import (",
+          "    RECOVERY_SAMPLE_CASE_IDS,",
+          "    _validate_universal_report,",
+          "    load_universal_cases,",
+          "    summarize_universal_results,",
+          ")",
+          "",
+          "",
+          "def _report(**overrides):",
+          "    payload = {",
+          "        \"mode\": \"TASK\",",
+          "        \"success\": True,",
+          "        \"completion_route\": \"factual_contract\",",
+          "        \"legacy_fallback_used\": False,",
+          "        \"legacy_verified_fact_fallback_count\": 0,",
+          "        \"visual_evidence_count\": 0,",
+          "        \"time_to_first_action_seconds\": 1.2,",
+          "        \"total_duration_seconds\": 5.0,",
+          "    }",
+          "    payload.update(overrides)",
+          "    return payload",
+          "",
+          "",
+          "def test_load_universal_cases_has_full_declared_set():",
+          "    cases = load_universal_cases()",
+          "    assert len(cases) == 72",
+          "    assert cases[0].test_id == \"01\"",
+          "    assert cases[-1].test_id == \"72\"",
+          "    assert any(case.automation_mode == \"manual\" for case in cases)",
+          "    assert any(case.automation_mode == \"guided\" for case in cases)",
+          "    assert any(case.automation_mode == \"auto_safe\" for case in cases)",
+          "",
+          "",
+          "def test_validate_universal_report_accepts_honest_failure_case():",
+          "    case = next(case for case in load_universal_cases() if case.test_id == \"58\")",
+          "    ok, reason = _validate_universal_report(case, _report(success=False, completion_route=\"failure\"))",
+          "    assert ok is True",
+          "    assert \"honest failure\" in reason",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/universal_benchmark.py",
+      "queued_sha256": "220625872ea8d186e92efd6d056643271d47b1bd09dcc67969cda42715ef0106",
+      "size_queued": 42340,
+      "exists": true,
+      "disk_sha256": "220625872ea8d186e92efd6d056643271d47b1bd09dcc67969cda42715ef0106",
+      "disk_size": 42340,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/universal_benchmark.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 1136,
+        "bytes": 42340,
+        "imports": [
+          "10:from __future__ import annotations",
+          "12:import csv",
+          "13:import ctypes",
+          "14:import io",
+          "15:import json",
+          "16:import os",
+          "17:import re",
+          "18:import shutil",
+          "19:import socket",
+          "20:import subprocess",
+          "21:import time",
+          "22:from importlib import import_module",
+          "23:from dataclasses import dataclass, field",
+          "24:from datetime import datetime",
+          "25:from pathlib import Path",
+          "26:from typing import Any, Callable",
+          "28:from carter_core import ("
+        ],
+        "defs": [
+          "62:def _process_running(name: str) -> bool:",
+          "74:def _kill_process(name: str) -> None:",
+          "78:def _tasklist_rows(name: str) -> list[list[str]]:",
+          "95:def _window_titles(process_names: list[str]) -> list[str]:",
+          "105:def _normalize_text(text: str) -> str:",
+          "121:def _category_for_section(section: str) -> str:",
+          "125:def _response_indicates_presence(text: str) -> bool:",
+          "158:def _response_indicates_absence(text: str) -> bool:",
+          "177:def _resolve_path_template(raw_path: str) -> Path:",
+          "191:class MEMORYSTATUSEX(ctypes.Structure):",
+          "205:def _get_total_ram_gb() -> float:",
+          "212:def _get_gpu_names() -> list[str]:",
+          "246:def _get_free_space_gb() -> float:",
+          "251:def _run_powershell_json(script: str) -> Any:",
+          "266:def _get_top_process_names(sort_key: str) -> list[str]:",
+          "285:def _get_screen_resolution() -> tuple[int, int]:",
+          "290:def _extract_size_gb_candidates(text: str) -> list[float]:",
+          "305:def _gpu_name_tokens(name: str) -> set[str]:",
+          "315:class UniversalSnapshot:",
+          "321:def capture(",
+          "336:class UniversalCase:",
+          "359:def from_dict(cls, raw: dict[str, Any]) -> \"UniversalCase\":",
+          "383:def resolved_snapshot_paths(self) -> list[Path]:",
+          "387:def load_universal_cases() -> list[UniversalCase]:",
+          "392:def _setup_cleanup_desktop_cartertest() -> None:",
+          "398:def _setup_cleanup_desktop_hola_txt() -> None:",
+          "404:def _setup_cleanup_downloads_carterprueba() -> None:",
+          "413:def _setup_prepare_downloads_carterprueba() -> None:",
+          "418:def _setup_prepare_desktop_hola_txt() -> None:",
+          "423:def _setup_cleanup_desktop_screenshot_candidates() -> None:",
+          "440:def _run_setup_ids(setup_ids: list[str]) -> list[str]:",
+          "457:def _validate_chat_non_executive(",
+          "472:def _validate_process_state(",
+          "490:def _validate_path_state(",
+          "517:def _validate_download_search(",
+          "537:def _validate_ram_query(",
+          "550:def _validate_gpu_query(",
+          "566:def _validate_disk_free_query(",
+          "579:def _validate_top_processes(",
+          "595:def _validate_screen_resolution(",
+          "609:def _validate_screenshot_saved(",
+          "629:def _validate_browser_title(",
+          "647:def _validate_noop(",
+          "672:def _validate_universal_report(case: UniversalCase, report: dict[str, Any] | None) -> tuple[bool, str]:",
+          "698:def build_profile_config(profile_id: str, *, base_url: str = \"http://127.0.0.1:11434\") -> CarterConfig:",
+          "710:def _classify_case_result(",
+          "723:def _append_run_log(run_data: dict[str, Any]) -> None:",
+          "731:def run_universal_benchmark(",
+          "844:def summarize_universal_results(",
+          "963:def print_universal_summary(",
+          "1044:def run_universal_benchmark_for_profile(",
+          "1075:def run_recovery_validation_sample(",
+          "1091:def run_universal_benchmark_matrix("
+        ],
+        "head": [
+          "\"\"\"",
+          "Carter OS - Universal PC benchmark runner.",
+          "",
+          "This suite is intentionally declarative:",
+          "- all benchmark cases live in data/universal_benchmark_cases.json",
+          "- the runner applies generic validators only",
+          "- intrusive cases can be marked as guided/manual without changing Carter core",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import csv",
+          "import ctypes",
+          "import io",
+          "import json",
+          "import os",
+          "import re",
+          "import shutil",
+          "import socket",
+          "import subprocess",
+          "import time",
+          "from importlib import import_module",
+          "from dataclasses import dataclass, field",
+          "from datetime import datetime",
+          "from pathlib import Path",
+          "from typing import Any, Callable",
+          "",
+          "from carter_core import (",
+          "    MODEL_PROFILES,",
+          "    CarterConfig,",
+          "    CarterCore,",
+          "    apply_model_profile,",
+          "    build_model_doctor_report,",
+          "    resolve_model_profile,",
+          ")",
+          "",
+          "PROJECT_DIR = Path(__file__).resolve().parent",
+          "RUNS_LOG = PROJECT_DIR / \"runs_log.jsonl\"",
+          "",
+          "HOME = Path.home()"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v1/vram_manager.py",
+      "queued_sha256": "20d8dab36627df3ad3312cdb5c5e1c1fb245af8c1c7bbf14ac0e6451c48fa079",
+      "size_queued": 7392,
+      "exists": true,
+      "disk_sha256": "20d8dab36627df3ad3312cdb5c5e1c1fb245af8c1c7bbf14ac0e6451c48fa079",
+      "disk_size": 7392,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v1/vram_manager.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 206,
+        "bytes": 7392,
+        "imports": [
+          "13:from __future__ import annotations",
+          "15:import time",
+          "16:import threading",
+          "17:import logging",
+          "18:from enum import Enum",
+          "160:import subprocess",
+          "183:import httpx",
+          "197:import httpx"
+        ],
+        "defs": [
+          "23:class VRAMState(Enum):",
+          "41:class VRAMManager:",
+          "49:def __init__(",
+          "69:def state(self) -> VRAMState:",
+          "72:def notify_use(self) -> None:",
+          "78:def start_watchdog(self) -> None:",
+          "93:def stop_watchdog(self) -> None:",
+          "98:def ensure_hot(self) -> bool:",
+          "110:def evict_to_warm(self) -> None:",
+          "117:def evict_to_cold(self) -> None:",
+          "127:def _watchdog_loop(self) -> None:",
+          "134:def _check_and_manage(self) -> None:",
+          "157:def _detect_game_running() -> bool:",
+          "180:def _load_model(self) -> bool:",
+          "194:def _unload_model(self, keep_alive: str = \"0\") -> bool:"
+        ],
+        "head": [
+          "\"\"\"",
+          "Carter OS — VRAM Manager",
+          "Gestion inteligente de VRAM para proteger rendimiento de juegos.",
+          "",
+          "Idea rescatada del proyecto anterior: estados HOT/WARM/COLD.",
+          "Implementacion minima pero funcional sobre Ollama.",
+          "",
+          "HOT  = Modelo cargado en VRAM (inferencia inmediata)",
+          "WARM = Modelo en RAM del sistema (Ollama lo descargo de GPU)",
+          "COLD = Modelo descargado completamente",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import time",
+          "import threading",
+          "import logging",
+          "from enum import Enum",
+          "",
+          "logger = logging.getLogger(\"carter.vram\")",
+          "",
+          "",
+          "class VRAMState(Enum):",
+          "    HOT = \"hot\"      # En VRAM, listo para inferencia",
+          "    WARM = \"warm\"    # En RAM, necesita recarga a GPU",
+          "    COLD = \"cold\"    # Descargado",
+          "    UNKNOWN = \"unknown\"",
+          "",
+          "",
+          "# Procesos que indican que un juego esta corriendo",
+          "_GAME_INDICATORS = {",
+          "    # Juegos comunes (nombres de proceso, NO launchers)",
+          "    # NOTA: steamwebhelper y epicgameslauncher son procesos del launcher, NO juegos",
+          "    \"doom\", \"doometernel\", \"valorant-win64-shipping\", \"fortnite\",",
+          "    \"csgo\", \"cs2\", \"gta5\", \"gtav\", \"rdr2\", \"cyberpunk2077\",",
+          "    \"eldenring\", \"hogwartslegacy\", \"baldursgate3\", \"starfield\",",
+          "    \"helldivers2\", \"palworld\", \"lethal company\",",
+          "}",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/.diag_memory.db",
+      "queued_sha256": "1378a744ba1c7c695f61f97ae85b4a6978746f9f6adc4b5a7148ceee78d9e43d",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "1378a744ba1c7c695f61f97ae85b4a6978746f9f6adc4b5a7148ceee78d9e43d",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.diag_memory.db' exists on disk, but not in 'HEAD'\n",
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 0,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "Carter_v2/.diag_skills.db",
+      "queued_sha256": "2cd8f201bb377bea69b1c5da152462a9bac392a37d17d74abb561a854d624cd4",
+      "size_queued": 16384,
+      "exists": true,
+      "disk_sha256": "2cd8f201bb377bea69b1c5da152462a9bac392a37d17d74abb561a854d624cd4",
+      "disk_size": 16384,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.diag_skills.db' exists on disk, but not in 'HEAD'\n",
+      "sqlite": {
+        "tables": [
+          {
+            "name": "skills",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "intent_kind",
+              "slots_json",
+              "capability",
+              "action",
+              "params_json",
+              "score",
+              "use_count",
+              "last_used"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 0,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          }
+        ],
+        "table_count": 2
+      }
+    },
+    {
+      "path": "Carter_v2/.env.example",
+      "queued_sha256": "053f79d4d0b6de6520b943798cb692c897b963db2efba080530c06929a4f2baa",
+      "size_queued": 3578,
+      "exists": true,
+      "disk_sha256": "053f79d4d0b6de6520b943798cb692c897b963db2efba080530c06929a4f2baa",
+      "disk_size": 3578,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.env.example' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "Carter_v2/.gitignore",
+      "queued_sha256": "c83569d7c4c2b9ccb15c0b0629273ff7f66a21dc1edfdec9121387bee309ac21",
+      "size_queued": 586,
+      "exists": true,
+      "disk_sha256": "c83569d7c4c2b9ccb15c0b0629273ff7f66a21dc1edfdec9121387bee309ac21",
+      "disk_size": 586,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.gitignore' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "Carter_v2/.probe7_memory.db",
+      "queued_sha256": "5c35f414ebf8ff9124e94e21500709217367214157d2cf8ceddbb81389bc8fbe",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "5c35f414ebf8ff9124e94e21500709217367214157d2cf8ceddbb81389bc8fbe",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.probe7_memory.db' exists on disk, but not in 'HEAD'\n",
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 6,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "Carter_v2/.probe_memory_safe.db",
+      "queued_sha256": "bf492bb17605eaf03181556736b67dc248dc47d9696c65025f5dc551e41d60cb",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "bf492bb17605eaf03181556736b67dc248dc47d9696c65025f5dc551e41d60cb",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.probe_memory_safe.db' exists on disk, but not in 'HEAD'\n",
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 2,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "Carter_v2/.probeall_memory.db",
+      "queued_sha256": "9480d028ecde1e83f82c1d7fde0a04a3b33634c9b2ab094b280baaa47e2979ad",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "9480d028ecde1e83f82c1d7fde0a04a3b33634c9b2ab094b280baaa47e2979ad",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.probeall_memory.db' exists on disk, but not in 'HEAD'\n",
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 81,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "Carter_v2/.probeall_memory.db-shm",
+      "queued_sha256": "82c03725f0bf5286829b9fa72cd6d49e8fed08ee8e5f6a0f729667e8cb553322",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "82c03725f0bf5286829b9fa72cd6d49e8fed08ee8e5f6a0f729667e8cb553322",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.probeall_memory.db-shm' exists on disk, but not in 'HEAD'\n",
+      "parent_on_disk": true,
+      "parent_path": "Carter_v2/.probeall_memory.db",
+      "parent_in_batch": true,
+      "parent_sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 81,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "Carter_v2/.probeall_memory.db-wal",
+      "queued_sha256": "50d3bc9741f7a81fa801dc3e6e3242d7f0bab8ad3bd25fa3ba57d14ab291d85e",
+      "size_queued": 119512,
+      "exists": true,
+      "disk_sha256": "50d3bc9741f7a81fa801dc3e6e3242d7f0bab8ad3bd25fa3ba57d14ab291d85e",
+      "disk_size": 119512,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'Carter_v2/.probeall_memory.db-wal' exists on disk, but not in 'HEAD'\n",
+      "parent_on_disk": true,
+      "parent_path": "Carter_v2/.probeall_memory.db",
+      "parent_in_batch": true,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "size": 119512
+      },
+      "parent_sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 81,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    }
+  ]
+}

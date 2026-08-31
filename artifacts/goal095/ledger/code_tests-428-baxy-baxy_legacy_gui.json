@@ -1,0 +1,151 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-428-baxy-baxy_legacy_gui",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:21Z",
+  "closed_utc": "2026-08-31T02:48:22Z",
+  "estimated_tokens": 160197,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 4,
+  "subsystem": "baxy_legacy_gui",
+  "subsystems": [
+    "baxy_legacy_gui"
+  ],
+  "files": [
+    {
+      "path": "legacy/gui/server.py",
+      "sha256": "d8482d3d29df5f448188dbf2d307c15beeec9e0c5b46fc24c6bd67022eba27e3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-6133"
+      ]
+    },
+    {
+      "path": "legacy/gui/session_security.py",
+      "sha256": "00fd41d6ec680fffb773d793246c3d657fb86f638ebefce5bfbc8949832e21d8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-500"
+      ]
+    },
+    {
+      "path": "legacy/gui/tkinter_gui.py",
+      "sha256": "07aa6a5a45e1c60c54f0631742e6ca7ed909367c250163e97dbacfa21cebcce6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-609"
+      ]
+    },
+    {
+      "path": "legacy/gui/ui_field/dist/assets/index-BEnlHwLF.css",
+      "sha256": "09bb8d681fe0c51dc304e5be5de04ba8d8a340749e819c4c36198bfbd870fa7f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-428-baxy-baxy_legacy_gui-01-legacy-gui-server.py",
+      "disposition": "evidence_only",
+      "component": "legacy/gui/server.py (1 ficheros)",
+      "contract": "Grupo legacy/gui/server.py: 1 archivos. Terminales leido PY \"\"\"Backend de la GUI real de BAXY (la web ui_field del proyecto anterior).  El frontend React (gui/ui_field/dist, copiado compilado) habla el MISMO contrato que el server viejo (infra/server.py):    - WS /events   — eventos {type: state|activity|tokens|model|ctx|surfaces|                    session|agent|boot_stage|metric ...} + heartbeat.   - POST /turn   — {text, attachments} -> 'accepted'; la r",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/gui/server.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/gui/server.py",
+        "ranges": [
+          "1-6133"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-428-baxy-baxy_legacy_gui-02-legacy-gui-session_security.py",
+      "disposition": "evidence_only",
+      "component": "legacy/gui/session_security.py (1 ficheros)",
+      "contract": "Grupo legacy/gui/session_security.py: 1 archivos. Terminales leido PY \"\"\"In-memory security boundary for BAXY's loopback GUI.  The browser receives a short-lived, one-use bootstrap secret in the URL fragment.  Fragments are not sent in HTTP requests, so the frontend must exchange it explicitly before any API endpoint becomes available.  The exchange creates an HttpOnly session cookie and returns a CSRF token which is kept only in browser/server memory. ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/gui/session_security.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/gui/session_security.py",
+        "ranges": [
+          "1-500"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-428-baxy-baxy_legacy_gui-03-legacy-gui-tkinter_gui.py",
+      "disposition": "evidence_only",
+      "component": "legacy/gui/tkinter_gui.py (1 ficheros)",
+      "contract": "Grupo legacy/gui/tkinter_gui.py: 1 archivos. Terminales leido PY \"\"\"GUI de respaldo en tkinter (cero dependencias externas).  La GUI principal de BAXY es la web ui_field (gui/server.py + pywebview), exportada del proyecto anterior. Esta ventana tkinter existe como fallback liviano para máquinas sin fastapi/pywebview y para las pruebas del flujo (FASE 10). Patrón estándar tkinter + hilos: el turno corre en un worker y el resultado vuelve al hilo de UI vía queue ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/gui/tkinter_gui.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/gui/tkinter_gui.py",
+        "ranges": [
+          "1-609"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=4 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-429-baxy-baxy_legacy_gui",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-428-baxy-baxy_legacy_gui.inspect.json"
+}

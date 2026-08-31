@@ -1,0 +1,39 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-347-probando_gemma4-pg4_voice",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:30Z",
+  "closed_utc": "2026-08-31T02:46:30Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "subsystem": "pg4_voice",
+  "subsystems": [
+    "pg4_voice"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/voice/models/livekit/baxy.onnx.bak_pre_basetrain_20260618",
+      "sha256": "70704b6b5ef18dcb91471533b9c41b88e69829299c07c9ee90ed600a204bac3a",
+      "source_id": "probando_gemma4",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-348-probando_gemma4-pg4_voice",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-347-probando_gemma4-pg4_voice.inspect.json"
+}

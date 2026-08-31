@@ -1,0 +1,1843 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-392-functiongemma",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:43Z",
+  "closed_utc": "2026-08-31T02:46:44Z",
+  "estimated_tokens": 277768,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 49,
+  "subsystem": "fg_scripts",
+  "subsystems": [
+    "fg_scripts",
+    "fg_tools"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/scripts/_compare_dims.py",
+      "sha256": "f828322d2be960514b4ee1594262e8ad461e66290035b4d1cecad763c6a073c8",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-47"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_debug_value_guard_live.py",
+      "sha256": "483dcf6d0792257f4bb77139dce0a6649561e1e5da16925071642895bed33773",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-64"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_eval_functiongemma.py",
+      "sha256": "fe10f215aad51ec079c1b140cca9b8cf8546a3670d576a57d3cf2c97080c86ab",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-87"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_extract_wf_findings.py",
+      "sha256": "897d8de5ba20d01d7ff7de2bdc71c3c114bd47b4187a3d5586d3a8d6f1417041",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-64"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_final_compare.py",
+      "sha256": "045480121a23f249bd0d42088f8699b59a0d31ae79e97ef37252cf87eef4d5a1",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-89"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_fix_audit_blockers.py",
+      "sha256": "6e8328d20d4718ab9b9068859741c1b0d6772c8e52b84f565015ec9ca3815362",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-63"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_fix_concrete_time_replies.py",
+      "sha256": "55608436d45f01dd1579141b1e8aa7c862964ae63e9ed3b07510aaed91844a12",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-81"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_fix_coverage_args.py",
+      "sha256": "3185833400c1bc3087e907f850153b5b4dd31c5f4927d1263b5749d8df7340c2",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-71"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_fix_slots_v2.py",
+      "sha256": "6f34e58cc671f804f20b55a0adae6668f1ab7b3d223a90fe00683eda67d9d6a7",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-27"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_fix_template_replies.py",
+      "sha256": "ca8f8fa5f1e97395ca007c5e2ff0f04aa401213cd2e6d90dacfa94d7608a9583",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-29"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_fix_tool_serialization.py",
+      "sha256": "5a842df5f79511fc3ad7d0c6b5d33e4e28c4e301f900e6259ece64087875ba76",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-83"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_g4_it_stability.py",
+      "sha256": "a9644c60f66d90a26b11e4e8fbb720852e84e567a570378105aad5210cddb2fc",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-37"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_gate_acceptance_v3.py",
+      "sha256": "67bd0f6d553bf1f139210cc14b1ef4c8a189d9ccd3504f72bdaef8efad128a55",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-217"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_gen_cov_dev.py",
+      "sha256": "72a14dfc511fc2f8ee03a6c22f66d961572222fef67dbe996d30a8ebcd71df7f",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-337"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_gen_ms_productivity.py",
+      "sha256": "f07f0c5b0cfc882c55fa96d66266fc1e70ae00a8f9222c2e56676d36e65e6549",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-188"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_gen_synthetic_chains.py",
+      "sha256": "1a38b048fc7981d5106afae33f0bbc1ee1988a84d02c9091cec7baad464e7ed5",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-407"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_headtohead_e2b_vs_fg.py",
+      "sha256": "ec68b7bb028c6fea133ddf8638310fe6231d578da5fe6422f129c38f43397f55",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-76"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_merge_lora_standalone.py",
+      "sha256": "8deefbedb3b53918b9116e00ea849810d5f40f90a7bb5790107143b1998a680b",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_paso0_holdout_router.py",
+      "sha256": "750433d698eda2990c56bdb72b974c2bc17b0871ac54bfdba790a575b38bb4e1",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-45"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_paso0_router_chitchat.py",
+      "sha256": "9bd6541c65cec6d2ec673086797c6a3e697f3e69a44ea0ce87b5a619ab29bcd4",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-55"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_probe_with_tools.py",
+      "sha256": "e7c27bd2ae7d5144198e2d7b3c40df5318d596102a1d3ccec83924bf6afea898",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-58"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_test_mask_v3.py",
+      "sha256": "0347b5de0b48ad16643dd0b8fe28b5de895cd1d4f6b00a4d0d282ca6c4cf8224",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-97"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_validate_leans_live.py",
+      "sha256": "53ee484da53b4730a09956fcebd5671e20be1660c307ef82f4f6f57a8dc4aa71",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-63"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/_validate_personality.py",
+      "sha256": "72acc51eaa289a57210a4a19390ea6cc2608604f3dc4713a7d8ee6dfa4fc0b50",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-24"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/boot_eval_model.py",
+      "sha256": "8f0e2c71e2ff4c9e909aca8b0abaa94b5c90f3fc0a695afbe7c7cc1bd7875d67",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-66"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/build_v3.py",
+      "sha256": "09f746f3e5cdfa6fcc3dec4e0dde5472e81cc97bb8c8b1679e6768831ca87871",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-2213"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/consolidate.py",
+      "sha256": "3c1bc39bbb07eedc585670c89e35dd1294748fa87774440750107d663a0f3c79",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-159"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/eval_ft_vs_baseline.py",
+      "sha256": "107e853c7d0061008890db4a992d35322a1ef9260f2cb927164716700b76638b",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-148"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/eval_full_dimensions.py",
+      "sha256": "4c3479912bf808619328a6567d0fedf2cdf202d4ce83e39048a0897efb0efb30",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-109"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/eval_router_multiling.py",
+      "sha256": "dd1e72d115160f3d2dadd0fcfb6157c39ce050c7d1c107d4b070a1c39013fb2b",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-64"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/eval_sample_http.py",
+      "sha256": "1e1eb7c817833f14874d2c07c6e47de340bc0e4cbf5e4a58208bf309b7d3a6a0",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-199"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/extract_history.py",
+      "sha256": "915eed018ad2c1b1a084a82bfd6488d480c4bec568783534c102fe4654d335a9",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-243"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/fetch_external.py",
+      "sha256": "448a32b7b50403ea339ae58712a5f9c72670137cd1aec944c79bf079739f7f71",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-138"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/make_imatrix_corpus.py",
+      "sha256": "e2c3109000038938baca419adb294f1f2a72efc11a0e4b58a0bf227390fed286",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-70"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/mask_v3.py",
+      "sha256": "9caaf631b778e78bcb98a23689d2ba4ca661c063cb7ef6ca43943994b2373c77",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-26"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/quantize_gguf.py",
+      "sha256": "110a38b999421fea2370cc623ac4e9c001862ffe709bc1e84676cab9a068d4a2",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-93"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/schema.py",
+      "sha256": "23ec73bad8f62d619dd76c1642e3f1ddedae50d36c111f9e7e64bc4f726c0a06",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/split_and_weight.py",
+      "sha256": "56bfd7f2e2caf7b6cc180497cc4d4a7408e7f7f629490974699f74e846d409ea",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-78"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/to_router_corpus.py",
+      "sha256": "a7a2cd29f4308844dc459409e3153e5465b970030fc5eb4bc6058d2d3115f71f",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-66"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/train_ft.py",
+      "sha256": "111e8dc4b673c35801cb303dff28362c8528afa89794410d419c2b3756176272",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-387"
+      ]
+    },
+    {
+      "path": "finetune_llm/scripts/validate_v3.py",
+      "sha256": "6e88c27832aaf1d349853c2998dedcdc242896287485e9341aebf8f2b43cde25",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-307"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/__init__.py",
+      "sha256": "26b1e35f7bf23a44b0a98f6cdf01df144f05a19012a03a180111e6cb8e07b97b",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-3080"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/audio_devices.py",
+      "sha256": "fa6e6b9e052c789d6e62bbdaf79fbe266c73114fe00feefe95e412b650da0b08",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-321"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/bluetooth.py",
+      "sha256": "69ef401e8f56c73ec0a174be42b46189f7bb9b0052ce7a19af1ad9f0bfd8e89e",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-72"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/dependency.py",
+      "sha256": "cb21d789d52db9dca2732ba50377ffe50e57220905d91234ce13c3f86d2b0463",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/device_settings.py",
+      "sha256": "f7437d8363fccf7421c08f5da4075587ad18b89b9213a9282518f2d7c6d7e74c",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-181"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/notifications.py",
+      "sha256": "03c56e19b0717b71db7f4abaa3e1a2967bdc1f0895a62a42b090a414dfb7033c",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-368"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/routine.py",
+      "sha256": "fbb359d1a22ee9a4fac956151e1fe50a7c90ab5097f84d790735dea1a47b9718",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-691"
+      ]
+    },
+    {
+      "path": "tools/domain_tools/source_manager.py",
+      "sha256": "1c5ce5a298638134581e3a75fcc64d8e134343b75d16d07e6ca0de768faed0e6",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-75"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-392-functiongemma-01-finetune_llm-scripts-_compare_dims.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_compare_dims.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_compare_dims.py: 1 archivos. Terminales leido PY \"\"\"Gate 3: comparar hit-rate de tool por idioma FT vs baseline (mismas 200 filas).\"\"\" import json import sys from collections import defaultdict from pathlib import Path  sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") sys.path.insert(0, str(Path(__file__).resolve().parent))",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_compare_dims.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_compare_dims.py",
+        "ranges": [
+          "1-47"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-02-finetune_llm-scripts-_debug_value_guard_live.py",
+      "disposition": "adapt_candidate",
+      "component": "finetune_llm/scripts/_debug_value_guard_live.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_debug_value_guard_live.py: 1 archivos. Terminales leido PY \"\"\"¿Por qué el value-guard no reparó \"Battery level is 85%\"? Instrumenta el detector y el repair para ver si el flujo los invoca y con qué evidencia.\"\"\" import json import os import sys from pathlib import Path  sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\")",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_debug_value_guard_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_debug_value_guard_live.py",
+        "ranges": [
+          "1-64"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-03-finetune_llm-scripts-_eval_functiongemma.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_eval_functiongemma.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_eval_functiongemma.py: 1 archivos. Terminales leido PY \"\"\"Evalúa FunctionGemma 270M como EMISOR de tool-calls vs el E2B.  Corre los 52 casos de la batería nativa contra un llama-server con FunctionGemma (puerto 8081), con los 31 tool-schemas lean de Baxy. Mide: ¿emite tool-call?, ¿el tool correcto?, ¿abstiene en smalltalk? Compara con el E2B (tool-miss 6%). NO toca el runtime de Baxy: experimento aislado. \"\"\" import os, re, sys, json, urllib.request",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_eval_functiongemma.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_eval_functiongemma.py",
+        "ranges": [
+          "1-87"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-04-finetune_llm-scripts-_extract_wf_findings.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_extract_wf_findings.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_extract_wf_findings.py: 1 archivos. Terminales leido PY \"\"\"Extrae los hallazgos finales de los agentes de los workflows (incl. los que fallaron en la síntesis). Lee cada agent-*.jsonl, toma el último texto sustancial del asistente (su conclusión) y lo vuelca para consolidación manual.\"\"\" import json, sys from pathlib import Path try:     sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception:",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_extract_wf_findings.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_extract_wf_findings.py",
+        "ranges": [
+          "1-64"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-05-finetune_llm-scripts-_final_compare.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_final_compare.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_final_compare.py: 1 archivos. Terminales leido PY \"\"\"Tabla comparativa final: FT (E4B) vs baseline (E2B), mismo matcher, por dimensión.\"\"\" import sys, json from pathlib import Path from collections import defaultdict sys.path.insert(0, str(Path(__file__).resolve().parent)) try:     sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception:",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_final_compare.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_final_compare.py",
+        "ranges": [
+          "1-89"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-06-finetune_llm-scripts-_fix_audit_blockers.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_fix_audit_blockers.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_fix_audit_blockers.py: 1 archivos. Terminales leido PY \"\"\"Arregla los 3 bloqueantes de la auditoría 100%: 1. tool_args.action 'start_dev' -> 'start_dev_server' (developer) 2. tool_args.action 'cancel' -> 'cancel_job' (printer_scanner) 3. ~75 replies con placeholders de slot sin marcar reply_is_template -> marcarlos True    (los conditional-instruction brackets [Si no:] sin slot de DATO pueden quedar) Aplica sobre train/holdout/curated y re-verifica.\"\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_fix_audit_blockers.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_fix_audit_blockers.py",
+        "ranges": [
+          "1-63"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-07-finetune_llm-scripts-_fix_concrete_time_replies.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_fix_concrete_time_replies.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_fix_concrete_time_replies.py: 1 archivos. Terminales leido PY \"\"\"Marca reply_is_template=True en ejemplos cuyo reply afirma una HORA CONCRETA fabricada (\"Son las 20:47.\", \"Son las 1:46 PM.\") que NO viene del user_text.  Complemento de _fix_template_replies.py: aquel neutralizó los PLACEHOLDERS ('Son las HH:MM.', '{hora}', '(hora actual)'), pero las horas CONCRETAS pasaron con reply_is_template=False y se entrenaron VERBATIM. Como build_messages no incluye to",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_fix_concrete_time_replies.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_fix_concrete_time_replies.py",
+        "ranges": [
+          "1-81"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-08-finetune_llm-scripts-_fix_coverage_args.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_fix_coverage_args.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_fix_coverage_args.py: 1 archivos. Terminales leido PY \"\"\"Corrige los tool_args de la cobertura que NO existen en el schema real de la tool. Mapea nombres inventados por los agentes -> nombres canónicos del schema. Si un arg no tiene equivalente, lo descarta (mejor sin arg que con un arg falso que enseña uso erróneo).\"\"\" import sys, json, glob from pathlib import Path sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent)) from gemma4_a",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_fix_coverage_args.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_fix_coverage_args.py",
+        "ranges": [
+          "1-71"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-09-finetune_llm-scripts-_fix_slots_v2.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_fix_slots_v2.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_fix_slots_v2.py: 1 archivos. Terminales leido PY \"\"\"Fix v2 AMPLIO de replies con slots de dato sin marcar reply_is_template. Detector amplio: cualquier [..], (fecha/hora actual), <descripcion>, hh:mm, {x} es un slot de dato, EXCEPTO instrucciones condicionales puras [Si no:]/[If none:]. No toca oasst1.\"\"\" import json, re from pathlib import Path ROOT = Path(__file__).resolve().parent.parent  SLOT = re.compile(r\"\\[[^\\]]{2,60}\\]|\\((?:fecha|hora ac",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_fix_slots_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_fix_slots_v2.py",
+        "ranges": [
+          "1-27"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-10-finetune_llm-scripts-_fix_template_replies.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_fix_template_replies.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_fix_template_replies.py: 1 archivos. Terminales leido PY \"\"\"Marca como reply_is_template=True los ejemplos cuyo reply tiene placeholders sin rellenar (hh:mm, {hora}, {pct}%, <si/no>...). El training NO entrena el loss sobre el reply de estos (solo el tool-call), evitando enseñar al modelo a decir literal 'son las hh:mm'. Los que NO tienen tool (el reply-plantilla es lo único) se ELIMINAN (no aportan).\"\"\" import json, re from pathlib import Path  ROOT = ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_fix_template_replies.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_fix_template_replies.py",
+        "ranges": [
+          "1-29"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-11-finetune_llm-scripts-_fix_tool_serialization.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_fix_tool_serialization.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_fix_tool_serialization.py: 1 archivos. Terminales leido PY \"\"\"Arregla tools mal serializados: strings como \"['media']\" o \"['app', 'web']\" que quedaron anidados en correct_tools/also_valid (bug de curación arrastrado de varias fuentes). Los des-serializa a las tools reales. Limpia dataset + corpus del router.  Detección: un 'tool' que contiene [ ] ' o \" no es un nombre de tool válido (los nombres son [a-z_]+). Se intenta ast.literal_eval para recuperar la ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_fix_tool_serialization.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_fix_tool_serialization.py",
+        "ranges": [
+          "1-83"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-12-finetune_llm-scripts-_g4_it_stability.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_g4_it_stability.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_g4_it_stability.py: 1 archivos. Terminales leido PY \"\"\"¿\"chi sei?\" → cancel_turn es estable o flake? 6 corridas contra el server activo.\"\"\" import os import sys from pathlib import Path  sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") ROOT = Path(__file__).resolve().parent.parent.parent sys.path.insert(0, str(ROOT))",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_g4_it_stability.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_g4_it_stability.py",
+        "ranges": [
+          "1-37"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-13-finetune_llm-scripts-_gate_acceptance_v3.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_gate_acceptance_v3.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_gate_acceptance_v3.py: 1 archivos. Terminales leido PY \"\"\"Gates de aceptación 2, 4 y 6 del FT v3 — EN VIVO contra el server activo (boot_eval_model.py ft|baseline en :8080), agente REAL + router REAL.  Gate 2 (grounding): 50 prompts de hora/fecha/batería/RAM/CPU en 6 idiomas.   system es REAL (read-only). FALLA si el reply contiene un número/hora que no   está en (tool_result ∪ user_text). Criterio: 0 fabricaciones. Gate 4 (identidad): \"quién eres\" en",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_gate_acceptance_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_gate_acceptance_v3.py",
+        "ranges": [
+          "1-217"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-14-finetune_llm-scripts-_gen_cov_dev.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_gen_cov_dev.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_gen_cov_dev.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Genera cov_dev.jsonl: 72 ejemplos de cobertura para 6 tools tecnicas. 12 por tool, 2 por idioma (es,en,pt,fr,de,it). Comandos NATURALES de voz. Esquema exacto pedido por el usuario. JSON validado al escribir. \"\"\" import json import os ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_gen_cov_dev.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_gen_cov_dev.py",
+        "ranges": [
+          "1-337"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-15-finetune_llm-scripts-_gen_ms_productivity.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_gen_ms_productivity.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_gen_ms_productivity.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Genera ms_productivity.jsonl: ejemplos FT de FLUJOS MULTI-PASO.  6 flujos verificados contra gemma4_agent/tools_pkg/tool_schemas.py:   form_filler  : discover -> plan -> apply -> submit            (4 pasos)   study(deck)  : deck_create -> card_add x3                     (4 pasos)   study(due)   : due -> review                                  (2 pasos)   knowledge    : i",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_gen_ms_productivity.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_gen_ms_productivity.py",
+        "ranges": [
+          "1-188"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-16-finetune_llm-scripts-_gen_synthetic_chains.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_gen_synthetic_chains.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_gen_synthetic_chains.py: 1 archivos. Terminales leido PY #!/usr/bin/env python # -*- coding: utf-8 -*- \"\"\"Genera ejemplos de ENCADENAMIENTO (multi-paso) para fine-tuning de Gemma4.  Enseña al agente a NO detenerse en el primer paso. Dos patrones validos:   (A) Orquestacion / dentro-de-app / instalar+abrir / navegar multi-paso       -> computer_use con el GOAL completo.   (B) Acciones INDEPENDIENTES de distinto dominio",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_gen_synthetic_chains.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_gen_synthetic_chains.py",
+        "ranges": [
+          "1-407"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-17-finetune_llm-scripts-_headtohead_e2b_vs_fg.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_headtohead_e2b_vs_fg.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_headtohead_e2b_vs_fg.py: 1 archivos. Terminales leido PY \"\"\"Head-to-head BASE vs BASE: gemma-4-E2B-it (:8083) vs FunctionGemma-270m (:8082). Sin fine-tuning, mismos tools limpios, en la tarea REAL de Baxy: acción (multilingüe), conocimiento (conversar) y smalltalk (abstención). Responde: ¿cuál sirve mejor a Baxy? \"\"\" import json, re, urllib.request, urllib.error  TOOLS = [  {\"type\":\"function\",\"function\":{\"name\":\"system\",\"description\":\"Get system info: t",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_headtohead_e2b_vs_fg.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_headtohead_e2b_vs_fg.py",
+        "ranges": [
+          "1-76"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-18-finetune_llm-scripts-_merge_lora_standalone.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_merge_lora_standalone.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_merge_lora_standalone.py: 1 archivos. Terminales leido PY \"\"\"Merge standalone del LoRA -> merged-bf16 (proceso FRESCO, full VRAM).  El merge dentro de train_ft.py falló por OOM: corría en el mismo proceso que aún tenía la memoria del training (4-bit + optimizer) -> al cargar el bf16 encima pidió offload del audio_tower. En proceso fresco solo carga el bf16 (~10GB) -> entra en 16GB.  Replica EXACTO el merge de train_ft.py (gotchas: Unsloth bf16 + merge_an",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_merge_lora_standalone.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_merge_lora_standalone.py",
+        "ranges": [
+          "1-49"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-19-finetune_llm-scripts-_paso0_holdout_router.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_paso0_holdout_router.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_paso0_holdout_router.py: 1 archivos. Terminales leido PY \"\"\"PASO 0 (completo): over-firing REAL con el router, sobre TODO el holdout.  Para cada ejemplo no-tool del holdout, pregunta al ROUTER si ofrecería tools. Si el router devuelve [] en los casos no-tool, el over-firing del LLM es irrelevante (nunca recibe tools). Mide el no-tool keep CON router (la métrica de prod), no cruda. \"\"\" import sys, json from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "finetune_llm/scripts/_paso0_holdout_router.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_paso0_holdout_router.py",
+        "ranges": [
+          "1-45"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-20-finetune_llm-scripts-_paso0_router_chitchat.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_paso0_router_chitchat.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_paso0_router_chitchat.py: 1 archivos. Terminales leido PY \"\"\"PASO 0 del plan maestro: ¿el ROUTER de prod (planner.py) filtra el over-firing?  Mi eval crudo le pasó las 63 tools al LLM directo. Pero en prod, el router (abstain head) decide PRIMERO qué tools ofrecer. Si en chitchat devuelve [] (vacío), el LLM nunca puede disparar una tool → el over-firing que medí NO ocurriría en producción.  Esto mide select_tool_names() sobre los casos exactos de over-fi",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "finetune_llm/scripts/_paso0_router_chitchat.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_paso0_router_chitchat.py",
+        "ranges": [
+          "1-55"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-21-finetune_llm-scripts-_probe_with_tools.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_probe_with_tools.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_probe_with_tools.py: 1 archivos. Terminales leido PY \"\"\"Prueba decisiva: ¿el FT usa nombres CANÓNICOS cuando se le pasa el array de tools (como hace prod) en vez de inventarlos? Compara con/sin el array tools en el request.\"\"\" import json, re, urllib.request, sys from pathlib import Path try:     sys.stdout.reconfigure(encoding=\"utf-8\", errors=\"replace\") except Exception:     pass",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_probe_with_tools.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_probe_with_tools.py",
+        "ranges": [
+          "1-58"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-22-finetune_llm-scripts-_test_mask_v3.py",
+      "disposition": "adapt_candidate",
+      "component": "finetune_llm/scripts/_test_mask_v3.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_test_mask_v3.py: 1 archivos. Terminales leido PY \"\"\"Test de la máscara tool_response (v3) + roundtrip de render/tokenización.  Corre en el venv 3.10 (sin Unsloth): valida que mask_tool_response_spans cubre exactamente los bloques [<|tool_response>..<tool_response|>] (delimitadores incluidos), multi-bloque, y que sobre una fila v3 REAL renderizada y tokenizada con el tokenizer del modelo: (a) el span del result queda -100, (b) el reply final y el",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "finetune_llm/scripts/_test_mask_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_test_mask_v3.py",
+        "ranges": [
+          "1-97"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-23-finetune_llm-scripts-_validate_leans_live.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_validate_leans_live.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_validate_leans_live.py: 1 archivos. Terminales leido PY \"\"\"Validación VIVA A/B de los .lean.md: ¿comprimir las reglas degradó el routing/args? Corre el agente REAL (run_content) con GEMMA4_LEAN_RULES on vs off sobre frases que ejercen las tools recién leanizadas. Compara la tool elegida y si hay reply. Acepta los leans solo si lean-ON no es PEOR que lean-OFF (full). Regla #3.5: validar en vivo, no asumir.  Lanzar con el server ya arrancado (modelo FT e",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_validate_leans_live.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_validate_leans_live.py",
+        "ranges": [
+          "1-63"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-24-finetune_llm-scripts-_validate_personality.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/_validate_personality.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/_validate_personality.py: 1 archivos. Terminales leido PY import json, os valid = {'accessibility','app','audio','audio_device','backup_sync','browser','browser_real','clipboard','computer_use','contacts','container','creative_local','data_analysis','database','dependency','desktop_layout','developer','device_settings','document','download','email','env','fact_check','filesystem','form_filler','game_launcher','gui','habit_tracker','input','job_manager','",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/_validate_personality.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/_validate_personality.py",
+        "ranges": [
+          "1-24"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-25-finetune_llm-scripts-boot_eval_model.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/boot_eval_model.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/boot_eval_model.py: 1 archivos. Terminales leido PY \"\"\"FASE 6f (boot) — Arranca el llama-server apuntando a un GGUF ELEGIDO (FT o baseline).  Reusa el perfil vram4 (flags correctos: context, vision lazy, router mode) PERO sobreescribe el model_path DESPUÉS de apply_profile_to_env (que si no, pisa GEMMA4_MODEL_PATH con el E2B-Q4 de prod — profiles.py:619).  Uso:   python dataset_finetune/scripts/boot_eval_model.py ft        # el GGUF fine-tuneado",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/boot_eval_model.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/boot_eval_model.py",
+        "ranges": [
+          "1-66"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-26-finetune_llm-scripts-build_v3.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/build_v3.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/build_v3.py: 1 archivos. Terminales leido PY \"\"\"Construye train_v3.jsonl: el dataset con TOOL-RESULTS y replies GROUNDED.  FALLA ESTRUCTURAL que corrige (medida en vivo 2026-06-10/11): el formato v1/v2 ([user, assistant(tool_calls + reply)]) NO incluye el turno de tool-result, así que el modelo aprendió a responder DATOS sin mirar ningún resultado — de ahí el atractor \"decir la hora\" (\"Es las 10:42 de la mañana.\" con hora real 21:56) y los \"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/build_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/build_v3.py",
+        "ranges": [
+          "1-2213"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-27-finetune_llm-scripts-consolidate.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/consolidate.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/consolidate.py: 1 archivos. Terminales leido PY \"\"\"FASE 2b — Consolidar TODO el dataset curado en curated/curated.jsonl.  Une: lotes curados (_batch_*_out.jsonl) + piloto (_pilot_output.jsonl) + encadenamiento sintético (synthetic_chains.jsonl) + personalidad (personality_examples.jsonl). Normaliza el esquema, valida vocab (63 tools), dedup, y reporta stats globales (idioma, categoría, n_steps, original_was_correct, fuente).  Robusto: tolera ca",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/consolidate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/consolidate.py",
+        "ranges": [
+          "1-159"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-28-finetune_llm-scripts-eval_ft_vs_baseline.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/eval_ft_vs_baseline.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/eval_ft_vs_baseline.py: 1 archivos. Terminales leido PY \"\"\"FASE 6f — Validación HONESTA del modelo fine-tuneado vs el actual (baseline).  Compara, sobre el holdout (1120 ej que el FT NUNCA vio) + frases en vivo, dos modelos:   - baseline: el GGUF actual de prod (E2B-Q4, perfil vram4)   - ft:       el GGUF fine-tuneado (gemma4-E4B-ft-Q4_K_M.gguf)  Mide POR IDIOMA y POR PERFIL a11y (regla #7 anti-regresión: ningún subgrupo fuerte debe degradarse). NO dec",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/eval_ft_vs_baseline.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/eval_ft_vs_baseline.py",
+        "ranges": [
+          "1-148"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-29-finetune_llm-scripts-eval_full_dimensions.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/eval_full_dimensions.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/eval_full_dimensions.py: 1 archivos. Terminales leido PY \"\"\"FASE 6f — Eval por DIMENSIONES sobre el holdout, condiciones de prod.  Corre cada ejemplo contra el server (con array de tools + thinking off = prod) y guarda TODO crudo: tool emitido (estructurado o texto), reply, esperado, idioma, perfil. Robusto a caídas del server (reintenta 1 vez; marca is_error). Sin matcher de sinónimos acá — guardamos crudo para que el análisis (humano/agente) juzgue co",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/eval_full_dimensions.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/eval_full_dimensions.py",
+        "ranges": [
+          "1-109"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-30-finetune_llm-scripts-eval_router_multiling.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/eval_router_multiling.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/eval_router_multiling.py: 1 archivos. Terminales leido PY \"\"\"FASE 4 — Eval HONESTO del router multilingüe sobre el holdout balanceado.  El eval estándar (router_eval.py) usa el corpus viejo 98% ES → no mide multilingüe con significancia. Este script evalúa el router (con el encoder actual) sobre NUESTRO holdout balanceado (dataset_finetune/curated/holdout.jsonl, 100+ por idioma) y reporta recall POR IDIOMA.  Mide: ¿el subset que el router ofrece contiene",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "finetune_llm/scripts/eval_router_multiling.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/eval_router_multiling.py",
+        "ranges": [
+          "1-64"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-31-finetune_llm-scripts-eval_sample_http.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/eval_sample_http.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/eval_sample_http.py: 1 archivos. Terminales leido PY \"\"\"FASE 6f — Eval por MUESTRA vía HTTP directo al llama-server (FT o baseline).  Consulta el server con el MISMO contrato que prod (enable_thinking=false) y extrae el tool-call que el modelo emite (formato nativo `<|tool_call>call:NAME{...}<tool_call|>`), parseándolo igual que el runtime. Mide recall de tool por idioma + por perfil a11y sobre una MUESTRA estratificada del holdout (que el FT nunca ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/eval_sample_http.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/eval_sample_http.py",
+        "ranges": [
+          "1-199"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-32-finetune_llm-scripts-extract_history.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/extract_history.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/extract_history.py: 1 archivos. Terminales leido PY \"\"\"FASE 0 v2 — Recolección unificada EXHAUSTIVA: TODO Carter (v1-v5) + Gemma4.  Cubre los formatos distintos de cada versión de Carter + Gemma4 traces + corpus. Dedup por (project, prompt_normalizado) para no repetir las re-corridas de los 540.  NO cura — extrae crudo. tools_called/reply/status reflejan lo que PASÓ (puede estar mal); la curación (FASE 2) los re-evalúa. Solo lo curado-correcto entr",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/extract_history.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/extract_history.py",
+        "ranges": [
+          "1-243"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-33-finetune_llm-scripts-fetch_external.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/fetch_external.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/fetch_external.py: 1 archivos. Terminales leido PY \"\"\"FASE 6b — Descargar y adaptar datasets externos SELLABLES al formato del FT.  Solo los aprobados en DATASETS_EXTERNOS.md (licencia comercial-OK, sin taint OpenAI):   - Salesforce/xlam-function-calling-60k (CC-BY-4.0) → señal de tool-calling+args   - CohereLabs/aya_dataset (Apache) → calidad multilingüe es/pt/fr/de/it   - OpenAssistant/oasst1 (Apache) → conversacional multi-idioma  Adapta cada u",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/fetch_external.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/fetch_external.py",
+        "ranges": [
+          "1-138"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-34-finetune_llm-scripts-make_imatrix_corpus.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/make_imatrix_corpus.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/make_imatrix_corpus.py: 1 archivos. Terminales leido PY \"\"\"FASE 6e (prep) — Corpus de calibración multilingüe para imatrix.  El imatrix (importance matrix) de llama.cpp mide qué pesos son críticos usando texto representativo. Si el corpus es solo inglés, la cuantización Q4 degrada los otros idiomas (es/pt/fr/de/it) — justo lo contrario de nuestro objetivo multi-usuario.  Construimos el corpus a partir del DOMINIO REAL (holdout + train), balanceado por ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/make_imatrix_corpus.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/make_imatrix_corpus.py",
+        "ranges": [
+          "1-70"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-35-finetune_llm-scripts-mask_v3.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/mask_v3.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/mask_v3.py: 1 archivos. Terminales leido PY \"\"\"Máscara de loss para los bloques <|tool_response>...<tool_response|> (v3).  Separado de train_ft.py para poder testearlo sin el venv de Unsloth: el formato v3 mete tool_call + tool_response + reply en UN solo turno model, y train_on_responses_only dejaría loss sobre el result inyectado — entrenaría al modelo a GENERAR resultados. En deploy esos tokens son SIEMPRE prefill. \"\"\" from __future__ im",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/mask_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/mask_v3.py",
+        "ranges": [
+          "1-26"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-36-finetune_llm-scripts-quantize_gguf.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/quantize_gguf.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/quantize_gguf.py: 1 archivos. Terminales leido PY \"\"\"FASE 6e (final) — merged-bf16 HF → GGUF bf16 → imatrix → Q4_K_M.  Sigue METODO_FINETUNE.md (gotchas #1, #5, #6):   1. convert_hf_to_gguf.py merged-bf16 --outtype bf16   (NO f16 — f16 borra el FT, issue #7062)   2. llama-imatrix sobre el corpus multilingüe (out/imatrix_corpus.txt)   3. llama-quantize --imatrix ... Q4_K_M   (para los 4GB del usuario final)  Usa el converter del COMMIT 5757c4dcb (",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/quantize_gguf.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/quantize_gguf.py",
+        "ranges": [
+          "1-93"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-37-finetune_llm-scripts-schema.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/schema.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/schema.py: 1 archivos. Terminales leido PY \"\"\"FASE 1 — Esquema del ejemplo CURADO + mapeo de tools Carter → Gemma4.  El dataset curado (lo que SÍ entrena) tiene este esquema. Cada ejemplo representa \"cómo el asistente DEBIÓ responder\" a un mensaje del usuario — corregido si el histórico estuvo mal. NUNCA se entrena con la respuesta incorrecta original.  VOCABULARIO VÁLIDO = las 63 tools reales de Gemma4 (routing/semantic_router.TOOL_DESCRI",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/schema.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/schema.py",
+        "ranges": [
+          "1-108"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-38-finetune_llm-scripts-split_and_weight.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/split_and_weight.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/split_and_weight.py: 1 archivos. Terminales leido PY \"\"\"FASE 3 final — Holdout determinístico + pesos de muestreo anti-overfit.  Decisión del usuario (2026-06-02): ES dominante (refleja uso real) + otros idiomas con masa suficiente + PESOS DE MUESTREO en el entrenamiento (sobre-muestrear minoritarios sin descartar ES ni sobre-corregir). NO igualar a uniforme (degradaría el español).  Produce:   curated/train.jsonl   — split de entrenamiento (80%) co",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/split_and_weight.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/split_and_weight.py",
+        "ranges": [
+          "1-78"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-39-finetune_llm-scripts-to_router_corpus.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/to_router_corpus.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/to_router_corpus.py: 1 archivos. Terminales leido PY \"\"\"FASE 4 — Convertir el dataset curado al formato del router-FT del repo.  El router espera filas {q, expected, source, label_origin, prev?}. Convertimos nuestros curados (correct_tools = la tool CORREGIDA correcta) a ese formato.  CLAVE anti-overfit del router: NO contaminamos el holdout del router con ejemplos que luego evaluamos. Usamos solo el TRAIN split nuestro como datos nuevos, y dejamos ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "finetune_llm/scripts/to_router_corpus.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/to_router_corpus.py",
+        "ranges": [
+          "1-66"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-40-finetune_llm-scripts-train_ft.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/train_ft.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/train_ft.py: 1 archivos. Terminales leido PY \"\"\"FASE 6e — Fine-tune Gemma 4 E4B-it con LoRA-16bit (Unsloth).  Sigue METODO_FINETUNE.md al pie de la letra:   - Base: google/gemma-4-E4B-it (instruct), LoRA r=16 alpha=32 dropout=0.05, target=all-linear   - finetune_vision_layers=False (NO tunear visión/audio — gotcha #4)   - train_on_responses_only (loss solo sobre la respuesta — anti-overfit clave)   - chat template \"gemma-4\" oficial (NO inven",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/train_ft.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/train_ft.py",
+        "ranges": [
+          "1-387"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-41-finetune_llm-scripts-validate_v3.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/scripts/validate_v3.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/scripts/validate_v3.py: 1 archivos. Terminales leido PY \"\"\"Gates de validación del dataset v3 (correr ANTES de entrenar — lección de la auditoría 2026-06-02: auditar el 100% del dataset antes de gastar GPU).  G1 GROUNDING: en filas con tools, todo token numérico y toda hora HH:MM del    final_reply debe existir en (user_text ∪ tool_args_list ∪ tool_results).    Es el invariante que mata el atractor \"decir la hora\". Gate: 0 violaciones. G2 IDENTIDAD: 0 ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/scripts/validate_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/scripts/validate_v3.py",
+        "ranges": [
+          "1-307"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-42-tools-domain_tools-__init__.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/__init__.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/__init__.py: 1 archivos. Terminales leido PY \"\"\"Higher-level local domain tools for the Carter agent.\"\"\"  from __future__ import annotations  import importlib.util import json import os import re",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/__init__.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/__init__.py",
+        "ranges": [
+          "1-3080"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-43-tools-domain_tools-audio_devices.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/audio_devices.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/audio_devices.py: 1 archivos. Terminales leido PY \"\"\"Dispositivos de audio: listar endpoints, fijar/restaurar el default, y helpers de SoundVolumeView (svv). Extraído de domain_tools/__init__.py (ratchet anti-archivo-dios, patrón sibling+shim). Sin ciclo: importa _ok/_err de _shared, _find_soundvolumeview/_powershell_json de .helpers, y recibe AgentState por param. \"\"\" from __future__ import annotations  import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/audio_devices.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/audio_devices.py",
+        "ranges": [
+          "1-321"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-44-tools-domain_tools-bluetooth.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/bluetooth.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/bluetooth.py: 1 archivos. Terminales leido PY \"\"\"Bluetooth domain tool — extracted from domain_tools.py.  Por ahora una sola función pero la pongo en su propio módulo para mantener el patrón 1-área-1-archivo (cuando montemos sub-paquete domain_tools/ proper, todo ya está separado). Si después aparecen más operaciones de bluetooth (pair, disconnect, audio-routing), van acá.  Usa PowerShell (Get-PnpDevice + Get-Service bthserv) en vez de netsh ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/bluetooth.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/bluetooth.py",
+        "ranges": [
+          "1-72"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-45-tools-domain_tools-dependency.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/dependency.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/dependency.py: 1 archivos. Terminales leido PY \"\"\"Dependency catalog domain tool — extracted from domain_tools.py.  Reporta qué dependencias opcionales están instaladas (Python modules + binarios externos). NO instala — install action devuelve needs_user con el hint; instalación va por terminal/package tools explícitos.  Funciones extraídas (4):   dependency_tool                 (entry, 4 acciones)",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/dependency.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/dependency.py",
+        "ranges": [
+          "1-98"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-46-tools-domain_tools-device_settings.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/device_settings.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/device_settings.py: 1 archivos. Terminales leido PY \"\"\"Device settings compound tool — extracted from domain_tools.py.  Compound entry dispatch para WiFi/Bluetooth/displays/power plans. Las sub-áreas viven en sus propios módulos hermanos (wifi, bluetooth); acá quedan display_list y power_plan_* porque son cortos y no justifican otro archivo.  Funciones extraídas (5):",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/device_settings.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/device_settings.py",
+        "ranges": [
+          "1-181"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-47-tools-domain_tools-notifications.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/notifications.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/notifications.py: 1 archivos. Terminales leido PY \"\"\"Notifications domain tool — extracted from domain_tools.py.  Una sola entry point pública (notification_tool) que maneja timer/alarm/ reminder/toast/notification vía actions. Persistencia + scheduling via Windows Scheduled Tasks + un runner PS estático (CC-100: nada del LLM se f-stringea en el script PS, todo va por env-var + JSON payload). Lenguaje natural en `due` (\"a las 7 de la mañana\") se ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/notifications.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/notifications.py",
+        "ranges": [
+          "1-368"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-48-tools-domain_tools-routine.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/routine.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/routine.py: 1 archivos. Terminales leido PY \"\"\"Routine domain tool — extracted from domain_tools.py.  Sistema de rutinas (macros) persistidas: triggers (manual/cron/once/on_app_*/ on_process_*/on_phrase), steps (lista de tool+args). Persistencia + scheduling via Windows Scheduled Tasks + watcher poll + chat phrase hook. Importer de TriggerCMD para bulk-create de on_phrase routines desde commands.json.  Seguridad (CC-100 / T3-routine-cron-tr",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/routine.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/routine.py",
+        "ranges": [
+          "1-691"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-392-functiongemma-49-tools-domain_tools-source_manager.py",
+      "disposition": "evidence_only",
+      "component": "tools/domain_tools/source_manager.py (1 ficheros)",
+      "contract": "Grupo tools/domain_tools/source_manager.py: 1 archivos. Terminales leido PY \"\"\"Source Manager domain tool — extracted from domain_tools.py.  Bibliografía y snapshots de texto local persistidos en state.json como resources kind=source. Cada source guarda title/url/source/text/saved_at.  Funciones extraídas (1):   source_manager_tool             (entry, 7 acciones: status/list/save/                                    snapshot_file/search/read/delete)",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "tools/domain_tools/source_manager.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "tools/domain_tools/source_manager.py",
+        "ranges": [
+          "1-75"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=49 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-393-functiongemma-fg_tools",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-392-functiongemma.inspect.json"
+}

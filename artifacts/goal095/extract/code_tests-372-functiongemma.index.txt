@@ -1,0 +1,9 @@
+batch=code_tests-372-functiongemma
+hash_ok=7 drift=0 miss=0
+OK finetune_llm/archive/run1_20260615_0317/lora/tokenizer.model
+OK finetune_llm/build_fg_trainset.py py_lines=692 defs=15
+OK finetune_llm/build_slim_schemas.py py_lines=55 defs=0
+OK finetune_llm/curated/a11y/_gen_a11y4_variants.py py_lines=293 defs=1
+OK finetune_llm/curated/a11y/_gen_a11y_variants.py py_lines=291 defs=1
+OK finetune_llm/curated/batches/_gen_batch_11.py py_lines=394 defs=1
+OK finetune_llm/curated/batches/_validate_b07.py py_lines=25 defs=0

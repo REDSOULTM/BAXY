@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-056-probando_gemma4-pg4_data",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_clickvisible_2026-06-07",
+      "queued_sha256": "fffaedfd939764e77c7fb1cd1eb3720ea942756fedcf58c4d0919527356057b8",
+      "size_queued": 473085,
+      "exists": true,
+      "disk_sha256": "fffaedfd939764e77c7fb1cd1eb3720ea942756fedcf58c4d0919527356057b8",
+      "disk_size": 473085,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

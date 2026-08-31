@@ -1,0 +1,988 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-459-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:18Z",
+  "closed_utc": "2026-08-31T02:49:20Z",
+  "estimated_tokens": 291519,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 28,
+  "subsystem": "baxy_scripts",
+  "subsystems": [
+    "baxy_scripts",
+    "baxy_src_Baxy.App"
+  ],
+  "files": [
+    {
+      "path": "scripts/test_source_quality.ps1",
+      "sha256": "35fd64f4d398800baad7278de3f58e790e146843627b9806fcad42818f5705d0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "scripts/train_turn_policy_e5_development.py",
+      "sha256": "849b6d3d21e4c1c32a99821d05a161c58a56db11d0a144b91cad280abeb51832",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2802"
+      ]
+    },
+    {
+      "path": "scripts/verify_python_runtime_lock.py",
+      "sha256": "1b53fb9f13ab74743545d3cade651426eb5e3a465b4f315a13cf75f311d6efe4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-250"
+      ]
+    },
+    {
+      "path": "scripts/verify_turn_policy_e5_selective_gate.py",
+      "sha256": "60582ab7b62969df039bac81d902b35ac9778cd05d56ceefa9daac2f451edef6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1390"
+      ]
+    },
+    {
+      "path": "scripts/wake_validation_program_tree.py",
+      "sha256": "a6a57412ad3e19eec7dcc88aa6fe8ea94748911396dfe0e6730b165325151960",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-65"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/AgentFieldGraph.cs",
+      "sha256": "387286783b310b0900d66e12bfb600ae89f87bc6fdafc7ae861b9f82a49396b2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/App.xaml",
+      "sha256": "94d288252ec140de014cb84f55220309e30462958b5ef9072bec5e2e639b9612",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "src/Baxy.App/App.xaml.cs",
+      "sha256": "4d557f20869f99b11d3c4e089d2f4391c18c9547954e683257ec8e99cc0332ba",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/AssetManifestDiscovery.cs",
+      "sha256": "cab072ff5915195d5d2e75888671abe9ece251016aac25dea9b49ea2481fcee7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/Assets/field-native-bridge.js",
+      "sha256": "ba03d0d33fa7f1e11dfd1cf5339b4356d8d0fe18090d88d25b9ddc03aa6b97e5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/AtomicFileReplacement.cs",
+      "sha256": "f5a776b0cdb784814d38c89c77d64816f3d561bdfa48785f9fc96e3e58cb2285",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/Baxy.App.csproj",
+      "sha256": "f605401073c069cc20bea075c615872f141093216471f537001ad9358a848c44",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "src/Baxy.App/BoundedUtf8LineReader.cs",
+      "sha256": "e800bdfe8fb94ed6e09bcb654e662b3c9598cbc87aec56b6fc42cc9f09551232",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/ConfirmationChallengeParser.cs",
+      "sha256": "c199e0840e812ed65ea11686263ad53ab743416c0b793ab95cb15466c81601dd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/ConversationMessage.cs",
+      "sha256": "377851cbb509d0daf8e26ec55b4a58277c2e43424c3ce1d397e0cfb10f38779d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/CoreProcessClient.cs",
+      "sha256": "1f2b14a86ceb832e8c074faee825ceb28f391ce3fcd4041c90ac64dd68243e5d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/DurablePlanStore.cs",
+      "sha256": "39d068070dc4fb3796e30d2b26f07e3cefab9de98d0c533c18af3b4012d8d831",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/DurableRetryStore.cs",
+      "sha256": "45f84b29351079f12cd9339c5423491b2273f643c81b03bf4231ba3aa0622b51",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/FieldBridgeContract.cs",
+      "sha256": "3716903077d63cfa2b38affdb387e8e46bf89165b6d9f317354c71cc930b14e2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/FieldTelemetrySampler.cs",
+      "sha256": "0244226ada33bc9521a8e532f2c9fe666c888236f057ef5795472cbcb5b129ac",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/FieldUiBridge.cs",
+      "sha256": "9f5b8a3b4dede77bfde5380db26f3cef01c9607b3ed2dcc8fda4dc623c33d447",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/HistoricalFieldOriginPolicy.cs",
+      "sha256": "a33bcd16a6a1fda207b0bd23715a07927c4f2360121433b1fcc636aa16c4a846",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/LocalJsonlSidecarProcess.cs",
+      "sha256": "3330b92f078712bad57cb7628757fce974e3882d04bc0e57aa1b3a8b413af930",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/MainWindow.xaml",
+      "sha256": "7ae691990278205261ba685244b87a150c30fa8e6594fded93ac5809c76cd0b6",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "src/Baxy.App/MainWindow.xaml.cs",
+      "sha256": "7b4f32a3fe1d6e332318912615b7ce96a8e0cb823cb1d8113330bf04488e3687",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/MainWindowViewModel.cs",
+      "sha256": "f18f7a10a65ff077d54de9614d18303f8b56b6915be9bdb5e240a0a0e3212d32",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/MemoryOperationProtection.cs",
+      "sha256": "651f11b317ff78c566a41883b3f0e3e7acba7d246f3a257e2070e87ecdc019a5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "src/Baxy.App/MemoryOperationResponseProjection.cs",
+      "sha256": "d2c6b6a9548e9a4184c4b8ca69e7c3696c4637c1c0baed6a1ae7a3fe03bf534b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-459-baxy-01-scripts-test_source_quality.ps1",
+      "disposition": "evidence_only",
+      "component": "scripts/test_source_quality.ps1 (1 ficheros)",
+      "contract": "Grupo scripts/test_source_quality.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "scripts/test_source_quality.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/test_source_quality.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-02-scripts-train_turn_policy_e5_development.py",
+      "disposition": "evidence_only",
+      "component": "scripts/train_turn_policy_e5_development.py (1 ficheros)",
+      "contract": "Grupo scripts/train_turn_policy_e5_development.py: 1 archivos. Terminales leido PY \"\"\"Train and evaluate a text-free, development-only E5 turn policy.  This tool is deliberately outside the BAXY runtime.  It consumes only explicit train/validation JSONL inputs, keeps multilingual paraphrases mission-disjoint, fits linear heads on individual frozen multilingual-E5-small embeddings with one weighted vote per mission, calibrates worst-utterance split-conformal abstention by mission",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/train_turn_policy_e5_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/train_turn_policy_e5_development.py",
+        "ranges": [
+          "1-2802"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-03-scripts-verify_python_runtime_lock.py",
+      "disposition": "evidence_only",
+      "component": "scripts/verify_python_runtime_lock.py (1 ficheros)",
+      "contract": "Grupo scripts/verify_python_runtime_lock.py: 1 archivos. Terminales leido PY \"\"\"Valida el lock reproducible y el entorno Python activo de BAXY.\"\"\"  from __future__ import annotations  import argparse import importlib.metadata import platform import re",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/verify_python_runtime_lock.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/verify_python_runtime_lock.py",
+        "ranges": [
+          "1-250"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-04-scripts-verify_turn_policy_e5_selective_gate.py",
+      "disposition": "evidence_only",
+      "component": "scripts/verify_turn_policy_e5_selective_gate.py (1 ficheros)",
+      "contract": "Grupo scripts/verify_turn_policy_e5_selective_gate.py: 1 archivos. Terminales leido PY \"\"\"Verify the already-produced E5 selective-development evidence chain.  This verifier is intentionally incapable of training or promotion.  It reads only aggregate, text-free evidence plus the small manifests and source files whose hashes were frozen before the run.  It never opens a corpus, holdout, sealed reserve, embedding cache, or installed runtime. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/verify_turn_policy_e5_selective_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/verify_turn_policy_e5_selective_gate.py",
+        "ranges": [
+          "1-1390"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-05-scripts-wake_validation_program_tree.py",
+      "disposition": "evidence_only",
+      "component": "scripts/wake_validation_program_tree.py (1 ficheros)",
+      "contract": "Grupo scripts/wake_validation_program_tree.py: 1 archivos. Terminales leido PY \"\"\"Fingerprint every Python source that can influence the physical wake gate.\"\"\"  from __future__ import annotations  import hashlib from pathlib import Path from typing import Iterable ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "scripts/wake_validation_program_tree.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/wake_validation_program_tree.py",
+        "ranges": [
+          "1-65"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-06-src-Baxy.App-AgentFieldGraph.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/AgentFieldGraph.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/AgentFieldGraph.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/AgentFieldGraph.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/AgentFieldGraph.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-07-src-Baxy.App-App.xaml.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/App.xaml.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/App.xaml.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/App.xaml.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/App.xaml.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-08-src-Baxy.App-AssetManifestDiscovery.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/AssetManifestDiscovery.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/AssetManifestDiscovery.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/AssetManifestDiscovery.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/AssetManifestDiscovery.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-09-src-Baxy.App-Assets",
+      "disposition": "evidence_only",
+      "component": "src/Baxy.App/Assets (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/Assets: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/Assets/field-native-bridge.js"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/Assets/field-native-bridge.js",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-10-src-Baxy.App-AtomicFileReplacement.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/AtomicFileReplacement.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/AtomicFileReplacement.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/AtomicFileReplacement.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/AtomicFileReplacement.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-11-src-Baxy.App-BoundedUtf8LineReader.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/BoundedUtf8LineReader.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/BoundedUtf8LineReader.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/BoundedUtf8LineReader.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/BoundedUtf8LineReader.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-12-src-Baxy.App-ConfirmationChallengeParser.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/ConfirmationChallengeParser.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/ConfirmationChallengeParser.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/ConfirmationChallengeParser.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/ConfirmationChallengeParser.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-13-src-Baxy.App-ConversationMessage.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/ConversationMessage.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/ConversationMessage.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/ConversationMessage.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/ConversationMessage.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-14-src-Baxy.App-CoreProcessClient.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/CoreProcessClient.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/CoreProcessClient.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/CoreProcessClient.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/CoreProcessClient.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-15-src-Baxy.App-DurablePlanStore.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/DurablePlanStore.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/DurablePlanStore.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/DurablePlanStore.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/DurablePlanStore.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-16-src-Baxy.App-DurableRetryStore.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/DurableRetryStore.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/DurableRetryStore.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/DurableRetryStore.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/DurableRetryStore.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-17-src-Baxy.App-FieldBridgeContract.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/FieldBridgeContract.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/FieldBridgeContract.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/FieldBridgeContract.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/FieldBridgeContract.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-18-src-Baxy.App-FieldTelemetrySampler.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/FieldTelemetrySampler.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/FieldTelemetrySampler.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/FieldTelemetrySampler.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/FieldTelemetrySampler.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-19-src-Baxy.App-FieldUiBridge.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/FieldUiBridge.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/FieldUiBridge.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/FieldUiBridge.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/FieldUiBridge.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-20-src-Baxy.App-HistoricalFieldOriginPolicy.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/HistoricalFieldOriginPolicy.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/HistoricalFieldOriginPolicy.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/HistoricalFieldOriginPolicy.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/HistoricalFieldOriginPolicy.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-21-src-Baxy.App-LocalJsonlSidecarProcess.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/LocalJsonlSidecarProcess.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/LocalJsonlSidecarProcess.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/LocalJsonlSidecarProcess.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/LocalJsonlSidecarProcess.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-22-src-Baxy.App-MainWindow.xaml.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/MainWindow.xaml.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/MainWindow.xaml.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/MainWindow.xaml.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/MainWindow.xaml.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-23-src-Baxy.App-MainWindowViewModel.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/MainWindowViewModel.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/MainWindowViewModel.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src",
+      "source_files": [
+        "src/Baxy.App/MainWindowViewModel.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/MainWindowViewModel.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-24-src-Baxy.App-MemoryOperationProtection.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/MemoryOperationProtection.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/MemoryOperationProtection.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "src/Baxy.App/MemoryOperationProtection.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/MemoryOperationProtection.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-459-baxy-25-src-Baxy.App-MemoryOperationResponseProjection.cs",
+      "disposition": "adapt_candidate",
+      "component": "src/Baxy.App/MemoryOperationResponseProjection.cs (1 ficheros)",
+      "contract": "Grupo src/Baxy.App/MemoryOperationResponseProjection.cs: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "src/Baxy.App/MemoryOperationResponseProjection.cs"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "src/Baxy.App/MemoryOperationResponseProjection.cs",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=28 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-460-baxy-baxy_src_Baxy.App",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-459-baxy.inspect.json"
+}

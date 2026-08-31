@@ -1,0 +1,12 @@
+batch=code_tests-446-baxy-baxy_legacy_tooling
+hash_ok=10 drift=0 miss=0
+OK legacy/tooling/grounding.py py_lines=3090 defs=91
+OK legacy/tooling/invocation_identity.py py_lines=329 defs=19
+OK legacy/tooling/invocation_ledger.py py_lines=2001 defs=60
+OK legacy/tooling/llama_cpp_router_client.py py_lines=706 defs=20
+OK legacy/tooling/mission.py py_lines=4970 defs=144
+OK legacy/tooling/policy.py py_lines=1185 defs=60
+OK legacy/tooling/private_result_projection.py py_lines=588 defs=27
+OK legacy/tooling/provenance.py py_lines=248 defs=15
+OK legacy/tooling/providers/__init__.py py_lines=142 defs=2
+OK legacy/tooling/providers/accessibility.py py_lines=970 defs=41

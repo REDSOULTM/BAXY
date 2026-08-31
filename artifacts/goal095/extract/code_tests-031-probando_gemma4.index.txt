@@ -1,0 +1,16 @@
+batch=code_tests-031-probando_gemma4
+hash_ok=14 drift=0 miss=0
+OK gemma4_agent/__init__.py py_lines=186 defs=2
+OK _tesis_curso/_pptx_riesgos_competencia.py py_lines=449 defs=13
+OK _tesis_curso/_rebrand_carter_to_baxy.py py_lines=84 defs=2
+OK _tesis_curso/_to_docx.py py_lines=640 defs=17
+OK _tesis_curso/_to_pptx.py py_lines=294 defs=6
+OK _tesis_curso/_wf_coherencia.js
+OK gemma4_agent/agent_core/__init__.py py_lines=5 defs=0
+OK gemma4_agent/agent_core/action_filler.py py_lines=132 defs=4
+OK gemma4_agent/agent_core/agent.py py_lines=6407 defs=73
+OK gemma4_agent/agent_core/agent_compaction.py py_lines=422 defs=10
+OK gemma4_agent/agent_core/agent_dispatch.py py_lines=221 defs=3
+OK gemma4_agent/agent_core/agent_guards.py py_lines=914 defs=14
+OK gemma4_agent/agent_core/agent_helpers.py py_lines=511 defs=24
+OK gemma4_agent/agent_core/agent_prompt.py py_lines=407 defs=12

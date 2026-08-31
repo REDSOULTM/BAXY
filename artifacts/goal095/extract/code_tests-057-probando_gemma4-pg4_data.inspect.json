@@ -1,0 +1,37 @@
+{
+  "batch_id": "code_tests-057-probando_gemma4-pg4_data",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 2,
+  "hash_ok": 2,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_llm_2026-06-07",
+      "queued_sha256": "a1ee3d7fd8a96ced72bf93c6ab1a2b4ef4aa3da5af6f1cb6a6b417981293689f",
+      "size_queued": 224206,
+      "exists": true,
+      "disk_sha256": "a1ee3d7fd8a96ced72bf93c6ab1a2b4ef4aa3da5af6f1cb6a6b417981293689f",
+      "disk_size": 224206,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/tool2vec_queries.short.done",
+      "queued_sha256": "43df4f1676b282f517a31993235946510a6aa6dde003aad52d5934731cf45c4b",
+      "size_queued": 645,
+      "exists": true,
+      "disk_sha256": "43df4f1676b282f517a31993235946510a6aa6dde003aad52d5934731cf45c4b",
+      "disk_size": 645,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

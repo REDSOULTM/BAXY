@@ -1,0 +1,10 @@
+batch=code_tests-450-baxy-baxy_legacy_tooling
+hash_ok=8 drift=0 miss=0
+OK legacy/tooling/providers/steam_install.py py_lines=3181 defs=146
+OK legacy/tooling/providers/steam_install_dialog.py py_lines=1126 defs=59
+OK legacy/tooling/providers/steam_install_dialog_windows.py py_lines=2062 defs=88
+OK legacy/tooling/providers/steam_install_tool.py py_lines=1994 defs=80
+OK legacy/tooling/providers/steam_install_tool_windows.py py_lines=310 defs=16
+OK legacy/tooling/providers/steam_install_windows.py py_lines=2451 defs=126
+OK legacy/tooling/providers/tasks.py py_lines=2597 defs=99
+OK legacy/tooling/providers/text.py py_lines=158 defs=4

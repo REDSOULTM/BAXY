@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T01:50:11Z",
+  "estimated_tokens": 291016,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 43,
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "output": "artifacts/goal095/ledger/code_tests-002-carter-carter_legacy_Carter_v2.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

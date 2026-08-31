@@ -1,0 +1,52 @@
+batch=code_tests-399-baxy
+hash_ok=50 drift=0 miss=0
+OK artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress.py py_lines=252 defs=6
+OK artifacts/audit/2026-07-27-night-audit/audit_button_target.ps1
+OK artifacts/audit/2026-07-27-night-audit/audit_clipboard_target.ps1
+OK artifacts/audit/2026-07-27-night-audit/audit_text_target.ps1
+OK artifacts/audit/2026-07-27-night-audit/audit_wpf_text_target.ps1
+OK artifacts/audit/2026-07-27-night-audit/browser_chain.py py_lines=174 defs=4
+OK artifacts/audit/2026-07-27-night-audit/browser_visible_click_chain.py py_lines=217 defs=8
+OK artifacts/audit/2026-07-27-night-audit/build_operation_coverage.py py_lines=282 defs=4
+OK artifacts/audit/2026-07-27-night-audit/build_soak_summary.py py_lines=173 defs=5
+OK artifacts/audit/2026-07-27-night-audit/capture_ocr_chain.py py_lines=163 defs=4
+OK artifacts/audit/2026-07-27-night-audit/capture_ui_accessibility.ps1
+OK artifacts/audit/2026-07-27-night-audit/cleanup_exact_audit_root.py py_lines=33 defs=1
+OK artifacts/audit/2026-07-27-night-audit/cleanup_stale_audit_roots.py py_lines=49 defs=1
+OK artifacts/audit/2026-07-27-night-audit/clipboard_interaction_chain.py py_lines=266 defs=9
+OK artifacts/audit/2026-07-27-night-audit/cold_start_stress.py py_lines=188 defs=3
+OK artifacts/audit/2026-07-27-night-audit/diagnose_select_all.ps1
+OK artifacts/audit/2026-07-27-night-audit/diagnose_shortlist.py py_lines=117 defs=1
+OK artifacts/audit/2026-07-27-night-audit/diagnose_voice_clip.py py_lines=122 defs=3
+OK artifacts/audit/2026-07-27-night-audit/filesystem_chain.py py_lines=286 defs=5
+OK artifacts/audit/2026-07-27-night-audit/invoke_operation.py py_lines=170 defs=3
+OK artifacts/audit/2026-07-27-night-audit/known_trash_restore_chain.py py_lines=187 defs=4
+OK artifacts/audit/2026-07-27-night-audit/local_data_chain.py py_lines=328 defs=4
+OK artifacts/audit/2026-07-27-night-audit/media_control_chain.py py_lines=199 defs=4
+OK artifacts/audit/2026-07-27-night-audit/mind_overnight_soak.py py_lines=496 defs=9
+OK artifacts/audit/2026-07-27-night-audit/notification_chain.py py_lines=213 defs=6
+OK artifacts/audit/2026-07-27-night-audit/notification_due_chain.py py_lines=166 defs=3
+OK artifacts/audit/2026-07-27-night-audit/office_document_chain.py py_lines=193 defs=3
+OK artifacts/audit/2026-07-27-night-audit/overnight_soak.py py_lines=376 defs=9
+OK artifacts/audit/2026-07-27-night-audit/parallel_core_start_stress.py py_lines=192 defs=2
+OK artifacts/audit/2026-07-27-night-audit/probe_live_turns.py py_lines=224 defs=3
+OK artifacts/audit/2026-07-27-night-audit/process_terminate_chain.py py_lines=193 defs=5
+OK artifacts/audit/2026-07-27-night-audit/protocol_burst_stress.py py_lines=218 defs=3
+OK artifacts/audit/2026-07-27-night-audit/protocol_fuzz_recovery_stress.py py_lines=264 defs=3
+OK artifacts/audit/2026-07-27-night-audit/protocol_recovery_stress.py py_lines=172 defs=3
+OK artifacts/audit/2026-07-27-night-audit/replay_chain.py py_lines=169 defs=3
+OK artifacts/audit/2026-07-27-night-audit/reproduce_app_open.py py_lines=170 defs=5
+OK artifacts/audit/2026-07-27-night-audit/reproduce_bluetooth_list_timeout.py py_lines=93 defs=2
+OK artifacts/audit/2026-07-27-night-audit/reproduce_package_prepare_crash.py py_lines=96 defs=2
+OK artifacts/audit/2026-07-27-night-audit/reproduce_social_greeting.py py_lines=78 defs=1
+OK artifacts/audit/2026-07-27-night-audit/reproduce_steam_appid_crash.py py_lines=108 defs=2
+OK artifacts/audit/2026-07-27-night-audit/restart_replay_chain.py py_lines=153 defs=4
+OK artifacts/audit/2026-07-27-night-audit/sandbox_named_chain.py py_lines=220 defs=4
+OK artifacts/audit/2026-07-27-night-audit/send_ui_turn.ps1
+OK artifacts/audit/2026-07-27-night-audit/smoke_catalog.py py_lines=307 defs=6
+OK artifacts/audit/2026-07-27-night-audit/ui_startup_stress.py py_lines=196 defs=4
+OK artifacts/audit/2026-07-27-night-audit/visible_click_chain.py py_lines=209 defs=6
+OK artifacts/audit/2026-07-27-night-audit/window_input_chain.py py_lines=287 defs=9
+OK artifacts/audit/2026-07-27-night-audit/window_input_safe_chain.py py_lines=401 defs=13
+OK artifacts/field-ui-4a83f2d-export/gui/ui_field/dist/assets/index-D3QuhrLm.js
+OK artifacts/field-ui-4a83f2d-export/gui/ui_field/eslint.config.js

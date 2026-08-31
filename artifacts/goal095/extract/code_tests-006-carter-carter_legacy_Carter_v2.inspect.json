@@ -1,0 +1,2347 @@
+{
+  "batch_id": "code_tests-006-carter-carter_legacy_Carter_v2",
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 29,
+  "hash_ok": 29,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_legacy_Carter_v2",
+  "subsystems": [
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v2/audit/runners/text_core_golden_matrix.py",
+      "queued_sha256": "e4dd8be51f7fb78d339d40475911f0bc0b34fc7dc771df2e43666a0b5e4f70b0",
+      "size_queued": 9373,
+      "exists": true,
+      "disk_sha256": "e4dd8be51f7fb78d339d40475911f0bc0b34fc7dc771df2e43666a0b5e4f70b0",
+      "disk_size": 9373,
+      "hash_match": true,
+      "head_sha256": "c4f0d2e53e73cc257a54d742bed00f68da8951220f8066138f0142fb694ad759",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 230,
+        "bytes": 9373,
+        "imports": [
+          "13:from __future__ import annotations",
+          "15:import json",
+          "16:import sys",
+          "17:from datetime import datetime",
+          "18:from pathlib import Path",
+          "65:from carter_v2.turn import agent as _agent  # noqa: F401"
+        ],
+        "defs": [
+          "26:def _check(name: str, ok: bool, evidence: str, kind: str = \"behaviour\") -> dict:",
+          "30:def _file_contains(rel: str, needle: str) -> bool:",
+          "37:def _file_does_not_contain(rel: str, needles: list[str]) -> bool:",
+          "45:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"text_core_golden_matrix — RC4 deterministic regression matrix.",
+          "",
+          "Aggregates pass/fail status for the 20 golden cases the user listed in",
+          "the RC mission. Each case checks an *invariant of behaviour*, not a",
+          "specific live-LLM output, by inspecting the relevant module's",
+          "declarative configuration or the existing pytest results.",
+          "",
+          "The point: if these 20 cases survive, the text core's behavioural",
+          "contract holds. Live-LLM evidence is in",
+          "audit/results/FULL_LIVE_LLM_VALIDATION_*.json — this matrix is the",
+          "config-level mirror of those cases.",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import sys",
+          "from datetime import datetime",
+          "from pathlib import Path",
+          "",
+          "ROOT = Path(__file__).resolve().parents[2]",
+          "SRC = ROOT / \"src\"",
+          "if str(SRC) not in sys.path:",
+          "    sys.path.insert(0, str(SRC))",
+          "",
+          "",
+          "def _check(name: str, ok: bool, evidence: str, kind: str = \"behaviour\") -> dict:",
+          "    return {\"case\": name, \"status\": \"PASS\" if ok else \"FAIL\", \"kind\": kind, \"evidence\": evidence}",
+          "",
+          "",
+          "def _file_contains(rel: str, needle: str) -> bool:",
+          "    p = ROOT / rel",
+          "    if not p.exists():",
+          "        return False",
+          "    return needle in p.read_text(encoding=\"utf-8\", errors=\"ignore\")",
+          "",
+          "",
+          "def _file_does_not_contain(rel: str, needles: list[str]) -> bool:",
+          "    p = ROOT / rel",
+          "    if not p.exists():",
+          "        return True"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/runners/text_core_rc_gates.py",
+      "queued_sha256": "a6b6fdbf5b6f06fbf7e7a320784c6c881fbb9d1e965f00bb32ce1b5db3bf67c2",
+      "size_queued": 4920,
+      "exists": true,
+      "disk_sha256": "a6b6fdbf5b6f06fbf7e7a320784c6c881fbb9d1e965f00bb32ce1b5db3bf67c2",
+      "disk_size": 4920,
+      "hash_match": true,
+      "head_sha256": "650ec0527480c01de3f2e771d0d65661dd6c156edfbb2406d4c5f853a5940158",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 113,
+        "bytes": 4920,
+        "imports": [
+          "7:from __future__ import annotations",
+          "9:import json",
+          "10:from pathlib import Path",
+          "11:from typing import Any"
+        ],
+        "defs": [
+          "17:def _load(name: str) -> dict[str, Any]:",
+          "27:def _find_int(payload: dict[str, Any], *keys: str, default: int = 0) -> int:",
+          "48:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"RC2 cheap-gates aggregator.",
+          "",
+          "Pulls verdicts from existing gate JSONs (no live LLM) and emits a single",
+          "TEXT_CORE_RC_GATES.json with the fields the RC closure spec requires.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "from pathlib import Path",
+          "from typing import Any",
+          "",
+          "ROOT = Path(__file__).resolve().parents[2]",
+          "RES = ROOT / \"audit\" / \"results\"",
+          "",
+          "",
+          "def _load(name: str) -> dict[str, Any]:",
+          "    p = RES / name",
+          "    if not p.exists():",
+          "        return {\"_missing\": True, \"_path\": str(p)}",
+          "    try:",
+          "        return json.loads(p.read_text(encoding=\"utf-8\"))",
+          "    except Exception as exc:  # noqa: BLE001",
+          "        return {\"_error\": str(exc), \"_path\": str(p)}",
+          "",
+          "",
+          "def _find_int(payload: dict[str, Any], *keys: str, default: int = 0) -> int:",
+          "    \"\"\"Best-effort recursive search for the first int matching one of `keys`.\"\"\"",
+          "    if not isinstance(payload, dict):",
+          "        return default",
+          "    for k in keys:",
+          "        if k in payload and isinstance(payload[k], int):",
+          "            return payload[k]",
+          "    for v in payload.values():",
+          "        if isinstance(v, dict):",
+          "            r = _find_int(v, *keys, default=-1)",
+          "            if r >= 0:",
+          "                return r",
+          "        elif isinstance(v, list):",
+          "            for item in v:"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/runners/text_core_soak_test.py",
+      "queued_sha256": "4d9949566efc3c134a0bf547e5c2f04daa26c9c2976428e99a1f872b44b4efb2",
+      "size_queued": 11625,
+      "exists": true,
+      "disk_sha256": "4d9949566efc3c134a0bf547e5c2f04daa26c9c2976428e99a1f872b44b4efb2",
+      "disk_size": 11625,
+      "hash_match": true,
+      "head_sha256": "bb2a191bf7dd36cfb6c0d0ea9a59271633cb379b902114dd715e1ac7ca5c6e14",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 281,
+        "bytes": 11625,
+        "imports": [
+          "28:from __future__ import annotations",
+          "30:import json",
+          "31:import os",
+          "32:import sys",
+          "33:import time",
+          "34:import tracemalloc",
+          "35:from datetime import datetime",
+          "36:from pathlib import Path"
+        ],
+        "defs": [
+          "65:def _simulate_turn(turn_idx: int, scenario_id: str, user_text: str,",
+          "142:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"text_core_soak_test — Carter Text Core RC3 soak / regression aggregator.",
+          "",
+          "This is **NOT** a live LLM runner. It is a deterministic aggregator that",
+          "exercises the synchronous code paths Carter touches every turn and proves",
+          "they survive a 200-turn loop without state drift, leak, or corruption.",
+          "",
+          "It uses the same fixtures `tests/` already trust: BackendStub-style",
+          "deterministic LLM, the real session.memory, the real tool_catalog, the",
+          "real mission_observation/verification machine, and the real risk_gate.",
+          "",
+          "The point is to catch the failure modes the user listed:",
+          "- progressive degradation;",
+          "- memory leak;",
+          "- prompt growth without cause;",
+          "- latency drift;",
+          "- fake success;",
+          "- placeholders;",
+          "- action_failed controlables;",
+          "- memory contamination.",
+          "",
+          "If any of those happen across 200 simulated turns, the JSON verdict is",
+          "SOAK_FAILED. Otherwise SOAK_PASSED.",
+          "",
+          "Live LLM evidence is intentionally NOT regenerated here — it lives in",
+          "audit/results/FULL_LIVE_LLM_VALIDATION_*.json (already produced by the",
+          "prior live-safe runner).",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import os",
+          "import sys",
+          "import time",
+          "import tracemalloc",
+          "from datetime import datetime",
+          "from pathlib import Path",
+          "",
+          "ROOT = Path(__file__).resolve().parents[2]",
+          "SRC = ROOT / \"src\"",
+          "if str(SRC) not in sys.path:"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/runners/tool_call_compatibility.py",
+      "queued_sha256": "7aad3b3ad9a6ef3aee8f75f37e54a26120afdcea13726d1e4ec43a8699bee2b2",
+      "size_queued": 19801,
+      "exists": true,
+      "disk_sha256": "7aad3b3ad9a6ef3aee8f75f37e54a26120afdcea13726d1e4ec43a8699bee2b2",
+      "disk_size": 19801,
+      "hash_match": true,
+      "head_sha256": "ac3ca9961fbf2af6a98b6b006c1b396fe78e9c040d72b72bfdae78a089967784",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 494,
+        "bytes": 19801,
+        "imports": [
+          "18:from __future__ import annotations",
+          "20:import argparse",
+          "21:import json",
+          "22:import re",
+          "23:import shutil",
+          "24:import subprocess",
+          "25:import sys",
+          "26:import time",
+          "27:import urllib.error",
+          "28:import urllib.request",
+          "29:from dataclasses import asdict, dataclass, field",
+          "30:from pathlib import Path",
+          "31:from typing import Any",
+          "37:from carter_v2.adapters.tool_call_parser import (  # noqa: E402",
+          "42:from model_eval_cases import TOOL_CATALOG, tool_cases  # noqa: E402"
+        ],
+        "defs": [
+          "65:def _post(path: str, payload: dict[str, Any], *, timeout: float = 120.0) -> tuple[int, dict[str, Any] | str]:",
+          "80:def _vram_used() -> int | None:",
+          "93:def _unload(model: str) -> None:",
+          "153:def _tool_block_text() -> str:",
+          "164:class ProbeResult:",
+          "183:def _classify(case_expected: str | None,",
+          "224:def _run_protocol(",
+          "335:def probe_model(model: str, protocols: list[str]) -> dict[str, Any]:",
+          "385:def _count_classes(results: list[ProbeResult]) -> dict[str, int]:",
+          "395:def _p95(values: list[int]) -> int:",
+          "406:def capability_probe(model: str) -> dict[str, Any]:",
+          "433:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"Tool-call compatibility probe (TC1 + TC2 + TC5 + TC6).",
+          "",
+          "Tests every model with multiple tool-emission protocols and a *universal*",
+          "parser, so we can distinguish:",
+          "",
+          "* the **model** truly cannot tool-call,",
+          "* the **backend** rejected the request (e.g. Ollama 400 ``does not support",
+          "  tools``),",
+          "* the **prompt protocol** was the only thing missing.",
+          "",
+          "No ``if model == ...`` branches anywhere. Every model gets every protocol.",
+          "",
+          "Output:",
+          "* ``audit/results/model_tool_compatibility/raw_tool_traces_<model>.json``",
+          "* ``audit/results/model_tool_compatibility/protocol_matrix.json``",
+          "* ``audit/results/model_tool_compatibility/capability_probe.json``",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import argparse",
+          "import json",
+          "import re",
+          "import shutil",
+          "import subprocess",
+          "import sys",
+          "import time",
+          "import urllib.error",
+          "import urllib.request",
+          "from dataclasses import asdict, dataclass, field",
+          "from pathlib import Path",
+          "from typing import Any",
+          "",
+          "REPO = Path(__file__).resolve().parents[2]  # Carter_v2/",
+          "sys.path.insert(0, str(REPO / \"src\"))",
+          "sys.path.insert(0, str(REPO / \"audit\" / \"runners\"))",
+          "",
+          "from carter_v2.adapters.tool_call_parser import (  # noqa: E402",
+          "    FORMAT_NATIVE,",
+          "    FORMAT_NONE,",
+          "    parse_tool_call,"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/runners/ultra_latency_gate.py",
+      "queued_sha256": "ba6ed68e8ec276d21f6c1694dbfa4d5b78493370ca54c1b5a901d3a919ba4865",
+      "size_queued": 9209,
+      "exists": true,
+      "disk_sha256": "ba6ed68e8ec276d21f6c1694dbfa4d5b78493370ca54c1b5a901d3a919ba4865",
+      "disk_size": 9209,
+      "hash_match": true,
+      "head_sha256": "6f58eb6dd7fec7f0c0a23ce1974f0d70ceeaea59c16991ae43c1ac75245aa729",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 206,
+        "bytes": 9209,
+        "imports": [
+          "8:from __future__ import annotations",
+          "10:import json",
+          "11:import sys",
+          "12:from pathlib import Path",
+          "13:from typing import Any"
+        ],
+        "defs": [
+          "19:def _load(path: Path) -> dict[str, Any] | None:",
+          "47:def main(argv: list[str] | None = None) -> int:"
+        ],
+        "head": [
+          "\"\"\"ultra_latency_gate.py — aggregate the L0-L13 results into a single",
+          "ULTRA_LATENCY_FINAL_GATE.json that records the OPUS 4.7 ultra-latency",
+          "closure conditions.",
+          "",
+          "Read-only. Does not call the LLM.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import sys",
+          "from pathlib import Path",
+          "from typing import Any",
+          "",
+          "ROOT = Path(__file__).resolve().parents[2]",
+          "RESULTS = ROOT / \"audit\" / \"results\"",
+          "",
+          "",
+          "def _load(path: Path) -> dict[str, Any] | None:",
+          "    if not path.exists():",
+          "        return None",
+          "    try:",
+          "        return json.loads(path.read_text(encoding=\"utf-8\"))",
+          "    except Exception:  # noqa: BLE001",
+          "        return None",
+          "",
+          "",
+          "# Stretch targets defined by the user. p95 in milliseconds.",
+          "STRETCH_P95 = {",
+          "    \"simple\": 5_000,",
+          "    \"concept_explanation\": 6_000,",
+          "    \"tools_simple\": 8_000,",
+          "    \"app_action\": 15_000,",
+          "    \"mission\": 30_000,",
+          "}",
+          "",
+          "# Hard ceilings (mandatory for ULTRA_LATENCY_READY).",
+          "HARD_P95 = {",
+          "    \"simple\": 8_000,",
+          "    \"concept_explanation\": 15_000,"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/temp/_c3_strip.py",
+      "queued_sha256": "e0dba440157144ad61c449de87e4f39d6be28bfd61fda70731cb5c1c01aa47ea",
+      "size_queued": 1180,
+      "exists": true,
+      "disk_sha256": "e0dba440157144ad61c449de87e4f39d6be28bfd61fda70731cb5c1c01aa47ea",
+      "disk_size": 1180,
+      "hash_match": true,
+      "head_sha256": "f8afac92eb867f1d39eb43dc3500f7c61458fdc8e70a015325121a8068ea6086",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 31,
+        "bytes": 1180,
+        "imports": [
+          "2:from pathlib import Path"
+        ],
+        "defs": [],
+        "head": [
+          "\"\"\"C3 strip helper: remove inline backend classes from agent.py.\"\"\"",
+          "from pathlib import Path",
+          "",
+          "p = Path(\"src/carter_v2/turn/agent.py\")",
+          "text = p.read_text(encoding=\"utf-8\")",
+          "",
+          "start_marker = \"\\n# ---------------------------------------------------------------------------\\n# AgentResponse\\n\"",
+          "end_marker = '        raise NotImplementedError(\"No agent backend configured\")\\n'",
+          "",
+          "i = text.find(start_marker)",
+          "j = text.find(end_marker)",
+          "if i < 0 or j < 0:",
+          "    raise SystemExit(f\"markers not found: i={i} j={j}\")",
+          "j_end = j + len(end_marker)",
+          "while text[j_end:j_end+1] == \"\\n\":",
+          "    j_end += 1",
+          "",
+          "replacement = (",
+          "    \"\\n# ---------------------------------------------------------------------------\\n\"",
+          "    \"# Backend re-exports (live in turn/backends.py since C3)\\n\"",
+          "    \"# ---------------------------------------------------------------------------\\n\"",
+          "    \"from .backends import (  # noqa: E402,F401\\n\"",
+          "    \"    AgentResponse,\\n\"",
+          "    \"    NullAgentBackend,\\n\"",
+          "    \"    OpenAICompatAgentBackend,\\n\"",
+          "    \")\\n\\n\\n\"",
+          ")",
+          "",
+          "new_text = text[:i] + replacement + text[j_end:]",
+          "p.write_text(new_text, encoding=\"utf-8\")",
+          "print(f\"removed {j_end - i} chars; new size {len(new_text)}\")"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/temp/run_text_closure_gate.py",
+      "queued_sha256": "a6535194c1591250df7962eda1f1372df7ce6024bbe461ec796ddd2704f3e1a8",
+      "size_queued": 7398,
+      "exists": true,
+      "disk_sha256": "a6535194c1591250df7962eda1f1372df7ce6024bbe461ec796ddd2704f3e1a8",
+      "disk_size": 7398,
+      "hash_match": true,
+      "head_sha256": "a6535194c1591250df7962eda1f1372df7ce6024bbe461ec796ddd2704f3e1a8",
+      "head_error": null,
+      "head_matches_queue": true,
+      "outline": {
+        "lines": 183,
+        "bytes": 7398,
+        "imports": [
+          "18:from __future__ import annotations",
+          "20:import argparse",
+          "21:import re",
+          "22:import subprocess",
+          "23:import sys",
+          "24:import time",
+          "25:from pathlib import Path"
+        ],
+        "defs": [
+          "51:def _run(cmd: list[str], *, label: str, timeout: int = 600) -> tuple[int, str]:",
+          "76:def _extract_score(output: str, pattern: str) -> tuple[int, int] | None:",
+          "87:def _gate_status(label: str, passed: bool) -> None:",
+          "92:def main() -> None:"
+        ],
+        "head": [
+          "\"\"\"",
+          "run_text_closure_gate.py — Validation gate for Carter v2 text-agent closure.",
+          "",
+          "Runs:",
+          "  1. pytest (unit + regression tests) — must pass 100%",
+          "  2. probe_all_tools.py  — must reach >= THRESHOLD_PROBE_ALL %",
+          "  3. probe_text_hardening.py — must reach >= THRESHOLD_TEXT_HARD %",
+          "",
+          "Exits 0 only if all three gates pass.",
+          "",
+          "Uso:",
+          "    cd Carter_v2",
+          "    python run_text_closure_gate.py",
+          "    python run_text_closure_gate.py --repeat 3       # run probe_text_hardening 3x",
+          "    python run_text_closure_gate.py --skip-probe-all # skip probe_all (fast local dev)",
+          "    python run_text_closure_gate.py --threshold 90   # relax thresholds to 90%",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import argparse",
+          "import re",
+          "import subprocess",
+          "import sys",
+          "import time",
+          "from pathlib import Path",
+          "",
+          "# Force UTF-8 on stdout/stderr so the box-drawing characters in the gate",
+          "# banner do not crash on Windows consoles that default to cp1252.  Without",
+          "# this, simply printing the section separators raises UnicodeEncodeError",
+          "# before any gate runs.  `errors=\"replace\"` keeps the script usable even",
+          "# on streams that cannot reconfigure (e.g. some redirected pipes).",
+          "for _stream in (sys.stdout, sys.stderr):",
+          "    try:",
+          "        _stream.reconfigure(encoding=\"utf-8\", errors=\"replace\")",
+          "    except (AttributeError, ValueError):",
+          "        pass",
+          "",
+          "BOLD   = \"\\033[1m\"",
+          "GREEN  = \"\\033[92m\"",
+          "RED    = \"\\033[91m\""
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/temp/smoke_runner.py",
+      "queued_sha256": "f8dadd020279f204708e0e205e3f791ed1dd1d440fc8077835012f88702854ff",
+      "size_queued": 4883,
+      "exists": true,
+      "disk_sha256": "f8dadd020279f204708e0e205e3f791ed1dd1d440fc8077835012f88702854ff",
+      "disk_size": 4883,
+      "hash_match": true,
+      "head_sha256": "c9cad7ae508054a45b28f749c38c2dbf6903c313cebc3b24d3ba97cdead27d50",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 131,
+        "bytes": 4883,
+        "imports": [
+          "8:from __future__ import annotations",
+          "10:import json",
+          "11:import os",
+          "12:import sys",
+          "13:import time",
+          "14:from pathlib import Path",
+          "24:from carter_v2.capabilities.probe import get_probe  # noqa: E402",
+          "25:from carter_v2.main import _build_registry  # noqa: E402",
+          "26:from carter_v2.session.memory import PersistentMemory  # noqa: E402",
+          "27:from carter_v2.session.skills import SkillLibrary  # noqa: E402",
+          "28:from carter_v2.turn.agent import AgentEngine, OpenAICompatAgentBackend, _tcp_probe  # noqa: E402"
+        ],
+        "defs": [
+          "41:def build_engine(label: str):",
+          "62:def _summarise_trace(trace: dict) -> dict:",
+          "83:def run_smoke(label: str, prompts: list[str], out_path: Path) -> dict:"
+        ],
+        "head": [
+          "\"\"\"F0.4 baseline smoke runner.",
+          "",
+          "Runs N short turns through the AgentEngine against the local Ollama backend",
+          "and dumps `_timing` + tool_calls per turn into audit/F0_smoke.json.",
+          "",
+          "Re-used later for F-SMOKE final gate (set CARTER_SMOKE_LABEL).",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import os",
+          "import sys",
+          "import time",
+          "from pathlib import Path",
+          "",
+          "ROOT = Path(__file__).resolve().parent.parent",
+          "SRC = ROOT / \"src\"",
+          "if str(SRC) not in sys.path:",
+          "    sys.path.insert(0, str(SRC))",
+          "",
+          "os.environ.setdefault(\"CARTER_TIMING\", \"1\")",
+          "os.environ.setdefault(\"CARTER_AUTO_APPROVE_HIGH\", \"1\")",
+          "",
+          "from carter_v2.capabilities.probe import get_probe  # noqa: E402",
+          "from carter_v2.main import _build_registry  # noqa: E402",
+          "from carter_v2.session.memory import PersistentMemory  # noqa: E402",
+          "from carter_v2.session.skills import SkillLibrary  # noqa: E402",
+          "from carter_v2.turn.agent import AgentEngine, OpenAICompatAgentBackend, _tcp_probe  # noqa: E402",
+          "",
+          "",
+          "DEFAULT_PROMPTS = [",
+          "    \"hola\",",
+          "    \"quien eres\",",
+          "    \"que hora es\",",
+          "    \"cuál es mi IP\",",
+          "    \"abre Notepad y luego ciérralo\",",
+          "    \"qué recuerdas de mí\",",
+          "]",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/temp/smoke_runner_fsmoke.py",
+      "queued_sha256": "112fac518507e87377367f9b5b7a19622ffc8e40d9e2b8db26944fb979c50707",
+      "size_queued": 2249,
+      "exists": true,
+      "disk_sha256": "112fac518507e87377367f9b5b7a19622ffc8e40d9e2b8db26944fb979c50707",
+      "disk_size": 2249,
+      "hash_match": true,
+      "head_sha256": "cd6dc3b7b1aabdce89ecf3efa8e828d1b09657797d7d816264ff83376cca9bba",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 63,
+        "bytes": 2249,
+        "imports": [
+          "8:from __future__ import annotations",
+          "10:import os",
+          "11:import sys",
+          "12:from pathlib import Path",
+          "18:from smoke_runner import run_smoke  # noqa: E402"
+        ],
+        "defs": [],
+        "head": [
+          "\"\"\"F-SMOKE — 18-turn smoke gate for the radical-text-closure branch.",
+          "",
+          "Re-uses ``audit/smoke_runner.run_smoke``. Writes",
+          "``audit/F-SMOKE_smoke.json`` with timing + tool-call summaries so the",
+          "F-SMOKE phase has a verifiable artifact comparable to the F0 baseline",
+          "(``audit/F0_smoke.json``).",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import os",
+          "import sys",
+          "from pathlib import Path",
+          "",
+          "ROOT = Path(__file__).resolve().parent.parent",
+          "if str(ROOT / \"audit\") not in sys.path:",
+          "    sys.path.insert(0, str(ROOT / \"audit\"))",
+          "",
+          "from smoke_runner import run_smoke  # noqa: E402",
+          "",
+          "",
+          "# Eighteen prompts spanning conversation, info lookups, memory, gentle",
+          "# GUI smoke, and prompt-honesty regressions. NO destructive actions",
+          "# (no uninstall, no file writes outside the smoke db). Same Notepad",
+          "# open/close pair as F0 (already exercised on this machine).",
+          "PROMPTS = [",
+          "    # 1-3 conversational — must stay text-only (NO_TOOL_NEEDED path)",
+          "    \"hola\",",
+          "    \"quien eres\",",
+          "    \"gracias por tu ayuda\",",
+          "    # 4-6 info / live queries — should hit one tool each",
+          "    \"que hora es\",",
+          "    \"cuál es mi IP\",",
+          "    \"qué hora es en formato 24h\",",
+          "    # 7-9 memory contract — recall + remember (no destructive write)",
+          "    \"qué recuerdas de mí\",",
+          "    \"recuerda que mi color favorito es azul\",",
+          "    \"qué color me gusta\",",
+          "    # 10-12 capability discovery (META scope)",
+          "    \"qué puedes hacer\",",
+          "    \"list your capabilities\","
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/F0_invariants.py.bak",
+      "queued_sha256": "b951691fa5a04d27f7de6e2e95fbf6032790db240147c03daa411e2ca8897d2c",
+      "size_queued": 12174,
+      "exists": true,
+      "disk_sha256": "b951691fa5a04d27f7de6e2e95fbf6032790db240147c03daa411e2ca8897d2c",
+      "disk_size": 12174,
+      "hash_match": true,
+      "head_sha256": "b951691fa5a04d27f7de6e2e95fbf6032790db240147c03daa411e2ca8897d2c",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "legacy/Carter_v2/backups/MEMORY.md.bak.20260430-190222",
+      "queued_sha256": "f3299e0b1e47e5a6009c6d175beccffc5b6f80d71db1cc9b25c3467c277cfa34",
+      "size_queued": 964,
+      "exists": true,
+      "disk_sha256": "f3299e0b1e47e5a6009c6d175beccffc5b6f80d71db1cc9b25c3467c277cfa34",
+      "disk_size": 964,
+      "hash_match": true,
+      "head_sha256": "f3299e0b1e47e5a6009c6d175beccffc5b6f80d71db1cc9b25c3467c277cfa34",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db",
+      "queued_sha256": "405156ad111a810afccc3809e4377c2a0332cba69c9a8348d0d254eede549b75",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "405156ad111a810afccc3809e4377c2a0332cba69c9a8348d0d254eede549b75",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "405156ad111a810afccc3809e4377c2a0332cba69c9a8348d0d254eede549b75",
+      "head_error": null,
+      "head_matches_queue": true,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 21,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 1,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 2,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db-shm",
+      "queued_sha256": "de062372b149a12cbc0264b342798e71ecd25bb8b723ea5f32336dde30bf63b6",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "de062372b149a12cbc0264b342798e71ecd25bb8b723ea5f32336dde30bf63b6",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "de062372b149a12cbc0264b342798e71ecd25bb8b723ea5f32336dde30bf63b6",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": true,
+      "parent_path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db",
+      "parent_in_batch": true,
+      "parent_sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 21,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 1,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 2,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db-wal",
+      "queued_sha256": "9856c216a83225a14acfd461b6d14f236c65c31e16678dd0cca78069d80563e9",
+      "size_queued": 65952,
+      "exists": true,
+      "disk_sha256": "9856c216a83225a14acfd461b6d14f236c65c31e16678dd0cca78069d80563e9",
+      "disk_size": 65952,
+      "hash_match": true,
+      "head_sha256": "9856c216a83225a14acfd461b6d14f236c65c31e16678dd0cca78069d80563e9",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": true,
+      "parent_path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db",
+      "parent_in_batch": true,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "size": 65952
+      },
+      "parent_sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 21,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 1,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 2,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory_debug.db",
+      "queued_sha256": "7a4ded458c60cb6884e9ad5b59081002fd7c86564051c07eb0ae4edeb8d62d9b",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "7a4ded458c60cb6884e9ad5b59081002fd7c86564051c07eb0ae4edeb8d62d9b",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "7a4ded458c60cb6884e9ad5b59081002fd7c86564051c07eb0ae4edeb8d62d9b",
+      "head_error": null,
+      "head_matches_queue": true,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 1,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.probeall_memory.db",
+      "queued_sha256": "7d5c3b348ec3a3bb1af45df14f1f5d60bf58e4616d3ec819812893129a340600",
+      "size_queued": 61440,
+      "exists": true,
+      "disk_sha256": "7d5c3b348ec3a3bb1af45df14f1f5d60bf58e4616d3ec819812893129a340600",
+      "disk_size": 61440,
+      "hash_match": true,
+      "head_sha256": "7d5c3b348ec3a3bb1af45df14f1f5d60bf58e4616d3ec819812893129a340600",
+      "head_error": null,
+      "head_matches_queue": true,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 87,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/.smoke_F-SMOKE_memory.db",
+      "queued_sha256": "8435a25c3e0d46cdaecdb5900b6d4514740a99767fe9b982120b0ef5392e0a52",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "8435a25c3e0d46cdaecdb5900b6d4514740a99767fe9b982120b0ef5392e0a52",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "8435a25c3e0d46cdaecdb5900b6d4514740a99767fe9b982120b0ef5392e0a52",
+      "head_error": null,
+      "head_matches_queue": true,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 1,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_all_tools.py",
+      "queued_sha256": "382bc5f83d30fa8ae2dbc5d086274e89a964cb8c76d0cd6690333d4b7954894a",
+      "size_queued": 140048,
+      "exists": true,
+      "disk_sha256": "382bc5f83d30fa8ae2dbc5d086274e89a964cb8c76d0cd6690333d4b7954894a",
+      "disk_size": 140048,
+      "hash_match": true,
+      "head_sha256": "382bc5f83d30fa8ae2dbc5d086274e89a964cb8c76d0cd6690333d4b7954894a",
+      "head_error": null,
+      "head_matches_queue": true,
+      "outline": {
+        "lines": 2832,
+        "bytes": 140048,
+        "imports": [
+          "15:from __future__ import annotations",
+          "17:import argparse",
+          "18:import json",
+          "19:import math",
+          "20:import os",
+          "21:import shutil",
+          "22:import struct",
+          "23:import subprocess",
+          "24:import sys",
+          "25:import time",
+          "26:import traceback",
+          "27:import wave",
+          "28:import zipfile",
+          "29:from contextlib import contextmanager",
+          "30:from datetime import datetime",
+          "31:from pathlib import Path",
+          "32:from typing import Any",
+          "65:from carter_v2.capabilities.probe import get_probe",
+          "66:from carter_v2.main import _build_registry",
+          "67:from carter_v2.session.memory import PersistentMemory",
+          "68:from carter_v2.session.skills import SkillLibrary",
+          "69:from carter_v2.turn.agent import OpenAICompatAgentBackend, AgentEngine",
+          "83:from carter_v2.turn.agent import _tcp_probe",
+          "157:import winreg",
+          "173:import subprocess",
+          "187:import pypdf  # noqa: F401",
+          "194:import pdf2image  # noqa: F401",
+          "232:import whisper  # noqa: F401",
+          "239:import sounddevice  # noqa: F401",
+          "249:import pandas  # noqa: F401",
+          "256:import threading",
+          "260:import win32com.client",
+          "273:import threading",
+          "277:import win32com.client",
+          "1531:from carter_v2.capabilities.code import CodeCapability",
+          "1532:from carter_v2.capabilities.filesystem import FileSystemCapability",
+          "1533:from carter_v2.capabilities.registry import CapabilityRegistry",
+          "1549:from carter_v2.universal import PlanGraphBuilder, PlanGraphRunner, TaskFrame, ToolIndex",
+          "1550:from carter_v2.universal.memory_store import UniversalMemoryStore",
+          "1673:from carter_v2.universal.memory_store import UniversalMemoryStore",
+          "1845:from carter_v2.universal import Rect, VisualElement, VisualObservation",
+          "1881:from carter_v2.universal import GuiAction, NoopGuiActor, Rect, VisualActionTarget, VisualGuiRunner",
+          "1904:from carter_v2.universal import GuiAction, NoopGuiActor, VisualActionTarget, VisualGuiRunner",
+          "1927:from carter_v2.universal import GuiAction, NoopGuiActor, Rect, VisualActionTarget, VisualGuiRunner",
+          "1948:from carter_v2.capabilities.registry import CapabilityRegistry",
+          "1949:from carter_v2.universal import NoopGuiActor, PlanGraph, PlanGraphRunner, PlanNode, VisualGuiRunner",
+          "1950:from carter_v2.universal.checkpoint import PlanGraphCheckpointStore",
+          "1991:from carter_v2.universal import GuiAction, NoopGuiActor, VisualActionTarget, VisualGuiRunner",
+          "2003:from carter_v2.universal import GuiAction, NoopGuiActor, SecretHandoff, VisualActionTarget, VisualGuiRunner",
+          "2092:from carter_v2.capabilities.registry import CapabilityRegistry"
+        ],
+        "defs": [
+          "64:def _build_engine():",
+          "103:def _has_tool(result, *names) -> bool:",
+          "106:def _reply_has(*words):",
+          "107:def _check(result):",
+          "112:def _reply_not_empty(result) -> bool:",
+          "115:def _ok(result) -> bool:",
+          "118:def _used_any_tool(result) -> bool:",
+          "121:def _has_any_tool(result, names: list[str]) -> bool:",
+          "124:def _tool_ok(result, name: str) -> bool:",
+          "132:def _probe_env(updates: dict[str, str] | None = None, removals: set[str] | None = None):",
+          "155:def _has_steam() -> bool:",
+          "163:def _has_discord() -> bool:",
+          "167:def _has_spotify() -> bool:",
+          "171:def _has_wifi_adapter() -> bool:",
+          "179:def _allow_session_actions() -> bool:",
+          "182:def _allow_external_mutations() -> bool:",
+          "185:def _has_pdf_support() -> bool:",
+          "192:def _has_pdf2image() -> bool:",
+          "199:def _candidate_binary_paths(name: str) -> list[Path]:",
+          "211:def _find_binary(name: str) -> str | None:",
+          "218:def _configure_probe_environment() -> None:",
+          "227:def _has_ffmpeg() -> bool:",
+          "230:def _has_whisper() -> bool:",
+          "237:def _has_sounddevice() -> bool:",
+          "244:def _has_node() -> bool:",
+          "247:def _has_pandas() -> bool:",
+          "254:def _has_outlook() -> bool:",
+          "258:def _try():",
+          "270:def _has_word_pdf_backend() -> bool:",
+          "275:def _try():",
+          "291:def _has_pdf_image_backend() -> bool:",
+          "294:def _has_python_module(name: str) -> bool:",
+          "301:def _run_setup(args: list[str], *, cwd: Path | None = None, timeout: int = 30) -> bool:",
+          "308:def _ensure_probe_assets() -> Path:",
+          "322:def _probe_asset_path(name: str) -> str:",
+          "325:def _probe_runtime_path(name: str) -> str:",
+          "329:def _write_png(path: Path) -> None:",
+          "335:def _write_wav(path: Path) -> None:",
+          "347:def _write_pdf(path: Path, text: str) -> None:",
+          "372:def _write_docx(path: Path, text: str) -> None:",
+          "395:def _write_mp4(path: Path) -> None:",
+          "405:def _session10_path(name: str) -> str:",
+          "408:def _skip_session10_seed_files() -> bool:",
+          "425:def _remove_probe_tree(path: Path) -> bool:",
+          "426:def _onerror(func, failed_path, _exc_info):",
+          "439:def _git_sandbox() -> dict[str, Path] | None:",
+          "500:def _git_sandbox_path(name: str) -> str:",
+          "506:def _git_sandbox_unavailable() -> bool:",
+          "509:def _skip_type(test: dict) -> str:",
+          "513:def _skip_reason(test: dict) -> str:",
+          "516:def _skip_next_step(test: dict) -> str:",
+          "519:def _resolve_value(value):",
+          "524:def _module_readiness(name: str, package: str | None = None) -> dict[str, Any]:",
+          "532:def _binary_readiness(name: str, hint: str) -> dict[str, Any]:",
+          "536:def _environment_readiness(profile: str) -> dict[str, Any]:",
+          "1307:def _file_contains(path: str, *needles: str) -> bool:",
+          "1318:def _json_path(path: str) -> str:",
+          "1322:def _s15_code_verify_file(path: str, expected: str) -> str:",
+          "1530:def _s16_registry():",
+          "1541:def _s16_run_universal(",
+          "1572:def _s16_mem_store_probe() -> dict:",
+          "1600:def _s16_mem_temporary_probe() -> dict:",
+          "1629:def _s16_skill_promote_probe() -> dict:",
+          "1672:def _s16_skill_reuse_probe() -> dict:",
+          "1726:def _checkpoint_node_resources(run_id: str) -> list[dict[str, Any]]:",
+          "1741:def _checkpoint_schema(run_id: str) -> int:",
+          "1752:def _checkpoint_has_resource_path(run_id: str, path: str) -> bool:",
+          "1844:def _s22b_observation(text: str, *, risk_context: str = \"normal\", label: str = \"Continue\"):",
+          "1867:class _S22BSequenceObserver:",
+          "1868:def __init__(self, observations: list[Any]) -> None:",
+          "1872:def observe(self, *, run_id: str = \"\", node_id: str = \"\"):",
+          "1880:def _s22b_gui_basic_probe() -> dict:",
+          "1903:def _s22b_gui_edit_probe() -> dict:",
+          "1926:def _s22b_gui_scroll_select_probe() -> dict:",
+          "1947:def _s22b_gui_checkpoint_resume_probe() -> dict:",
+          "1990:def _s22b_gui_high_risk_probe() -> dict:",
+          "2002:def _s22b_gui_secret_probe() -> dict:",
+          "2091:def _s25_engine_with_backend(responses: list[Any], capabilities: list[Any]):",
+          "2095:class _Backend:",
+          "2098:def __init__(self, items: list[Any]) -> None:",
+          "2102:def chat_with_tools(self, messages, tools, **_kwargs):",
+          "2116:def _s25_compound_loop_probe() -> dict:",
+          "2122:class _ProcessCapability(Capability):",
+          "2125:def supports(self, action: str) -> bool:",
+          "2128:def execute(self, request: CapabilityRequest) -> CapabilityResult:",
+          "2131:class _WindowCapability(Capability):",
+          "2134:def supports(self, action: str) -> bool:",
+          "2137:def execute(self, request: CapabilityRequest) -> CapabilityResult:",
+          "2163:def _s25_gui_continuity_probe() -> dict:",
+          "2169:class _WindowCapability(Capability):",
+          "2172:def supports(self, action: str) -> bool:",
+          "2175:def execute(self, request: CapabilityRequest) -> CapabilityResult:",
+          "2203:def _s25_real_ambiguity_probe() -> dict:",
+          "2207:class _Backend:",
+          "2210:def __init__(self) -> None:",
+          "2213:def chat_with_tools(self, messages, tools, **_kwargs):",
+          "2226:def _s25_unverified_closure_probe() -> dict:",
+          "2232:class _ProcessCapability(Capability):",
+          "2235:def supports(self, action: str) -> bool:",
+          "2238:def execute(self, request: CapabilityRequest) -> CapabilityResult:",
+          "2409:def _classify_failure(status: str, tools: list[str], expect_tools: list[str], check_ok: bool) -> str:",
+          "2420:def _failure_reason(category: str, tools: list[str], expect_tools: list[str], error: str = \"\") -> str:",
+          "2430:def _run_test_legacy(engine, test: dict) -> dict:",
+          "2509:def _run_test(engine, test: dict) -> dict:",
+          "2592:def _run_direct_test(test: dict) -> dict:",
+          "2632:def _print_result(r: dict, test: dict):",
+          "2656:def main():"
+        ],
+        "head": [
+          "\"\"\"",
+          "probe_all_tools.py — Prueba completa de TODAS las herramientas de Carter con LLM real.",
+          "",
+          "Cubre todos los namespaces:",
+          "  clock, system, memory, media, network, notifications, power, scheduler,",
+          "  process, filesystem, web, window, desktop, terminal, download, taskman,",
+          "  input, meta, steam (skipif)",
+          "",
+          "Uso:",
+          "    cd Carter_v2",
+          "    python probe_all_tools.py",
+          "",
+          "Requisitos: ollama corriendo con qwen3:8b",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import argparse",
+          "import json",
+          "import math",
+          "import os",
+          "import shutil",
+          "import struct",
+          "import subprocess",
+          "import sys",
+          "import time",
+          "import traceback",
+          "import wave",
+          "import zipfile",
+          "from contextlib import contextmanager",
+          "from datetime import datetime",
+          "from pathlib import Path",
+          "from typing import Any",
+          "",
+          "_src = Path(__file__).parent / \"src\"",
+          "if str(_src) not in sys.path:",
+          "    sys.path.insert(0, str(_src))",
+          "",
+          "os.environ[\"CARTER_AUTO_APPROVE_HIGH\"] = \"1\"",
+          "",
+          "PROJECT_ROOT = Path(__file__).parent"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/objects/a9/68c567fd69737c747e88958b17f43d368c0fdb",
+      "queued_sha256": "b967142e48cd361b39ec781810c78164070b6591abc20cde43904f512a36be1e",
+      "size_queued": 127,
+      "exists": true,
+      "disk_sha256": "b967142e48cd361b39ec781810c78164070b6591abc20cde43904f512a36be1e",
+      "disk_size": 127,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/objects/a9/68c567fd69737c747e88958b17f43d368c0fdb' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/objects/ca/be016afa2a5d2183a60121252bd527c23d16d9",
+      "queued_sha256": "452546bbfad746166e33b9ec821d801dbdf3cbc0442bebc412059c8f326be2a7",
+      "size_queued": 163,
+      "exists": true,
+      "disk_sha256": "452546bbfad746166e33b9ec821d801dbdf3cbc0442bebc412059c8f326be2a7",
+      "disk_size": 163,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/objects/ca/be016afa2a5d2183a60121252bd527c23d16d9' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/refs/heads/main",
+      "queued_sha256": "daae69fdd0ef97d7408cae2767c9657755ee3e6f379aa4cb9d5a281cf61860b5",
+      "size_queued": 41,
+      "exists": true,
+      "disk_sha256": "daae69fdd0ef97d7408cae2767c9657755ee3e6f379aa4cb9d5a281cf61860b5",
+      "disk_size": 41,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/refs/heads/main' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/probe-univ-code.json",
+      "queued_sha256": "6aa42c26da78693a54ae1cff1f91924b61b3136cf70f72fd8bff0ad070aeab64",
+      "size_queued": 2238,
+      "exists": true,
+      "disk_sha256": "6aa42c26da78693a54ae1cff1f91924b61b3136cf70f72fd8bff0ad070aeab64",
+      "disk_size": 2238,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/probe-univ-code.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 92,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "probe-univ-code",
+          "timestamp": "2026-04-30T18:33:03.378107+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 1,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/probe-univ-multistep.json",
+      "queued_sha256": "e89131ae3e425a3c36a58b0e533a55522040d8732ac30aa623586c2324a09884",
+      "size_queued": 3975,
+      "exists": true,
+      "disk_sha256": "e89131ae3e425a3c36a58b0e533a55522040d8732ac30aa623586c2324a09884",
+      "disk_size": 3975,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/probe-univ-multistep.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 145,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "probe-univ-multistep",
+          "timestamp": "2026-04-30T18:33:33.607330+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 2,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-app-1.json",
+      "queued_sha256": "6beea283185584be076d48c6a55ffb4e8a5ba19de71a68571661f1cc11b79d6d",
+      "size_queued": 8339,
+      "exists": true,
+      "disk_sha256": "6beea283185584be076d48c6a55ffb4e8a5ba19de71a68571661f1cc11b79d6d",
+      "disk_size": 8339,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-app-1.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 256,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "s15-app-1",
+          "timestamp": "2026-04-30T01:07:02.280215+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 2,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-app-2.json",
+      "queued_sha256": "abe06279c95ff89083a187259010ac31f3903d90f80eb6e75d615c3309137a74",
+      "size_queued": 7738,
+      "exists": true,
+      "disk_sha256": "abe06279c95ff89083a187259010ac31f3903d90f80eb6e75d615c3309137a74",
+      "disk_size": 7738,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-app-2.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 244,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "s15-app-2",
+          "timestamp": "2026-04-30T18:33:48.805690+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 2,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-data-1.json",
+      "queued_sha256": "9f143656e73773d8e4adc7f1fa7892e81e87b50aadc49395f470af31f1aebbc4",
+      "size_queued": 7412,
+      "exists": true,
+      "disk_sha256": "9f143656e73773d8e4adc7f1fa7892e81e87b50aadc49395f470af31f1aebbc4",
+      "disk_size": 7412,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-data-1.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 200,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "s15-data-1",
+          "timestamp": "2026-04-30T18:33:59.553181+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 2,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s21-resource-flow.json",
+      "queued_sha256": "de80d7c846383bffb1d3f5de052b0c574c8ebe3202e9676147094abf4bc87325",
+      "size_queued": 6874,
+      "exists": true,
+      "disk_sha256": "de80d7c846383bffb1d3f5de052b0c574c8ebe3202e9676147094abf4bc87325",
+      "disk_size": 6874,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s21-resource-flow.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 203,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "s21-resource-flow",
+          "timestamp": "2026-04-30T01:08:13.637944+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 2,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s25-universal-intent.json",
+      "queued_sha256": "2e0c34578da3f1d5a93b966dce8351fd52c1cfab6b208aebbe94a3c9412bc9cb",
+      "size_queued": 6939,
+      "exists": true,
+      "disk_sha256": "2e0c34578da3f1d5a93b966dce8351fd52c1cfab6b208aebbe94a3c9412bc9cb",
+      "disk_size": 6939,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s25-universal-intent.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 203,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "s25-universal-intent",
+          "timestamp": "2026-04-30T18:36:50.685902+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [
+          "forced",
+          "input_fingerprint",
+          "resume",
+          "route_reason"
+        ],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 2,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/visual_runs/s22b-visual-resume.json",
+      "queued_sha256": "edcf77bfe8f51992a8f156d73fa4c507579d603484da6b13524bcdf96a5c9aec",
+      "size_queued": 2169,
+      "exists": true,
+      "disk_sha256": "edcf77bfe8f51992a8f156d73fa4c507579d603484da6b13524bcdf96a5c9aec",
+      "disk_size": 2169,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/visual_runs/s22b-visual-resume.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 65,
+        "root_type": "dict",
+        "keys": [
+          "artifacts",
+          "completed_node_ids",
+          "failed_node_ids",
+          "graph",
+          "metadata",
+          "node_results",
+          "run_id",
+          "run_summary",
+          "schema_version",
+          "timestamp"
+        ],
+        "n_keys": 10,
+        "highlights": {},
+        "scalars": {
+          "run_id": "s22b-visual-resume",
+          "timestamp": "2026-04-30T18:34:12.946402+00:00",
+          "schema_version": 3
+        },
+        "obj_metadata_keys": [],
+        "obj_graph_keys": [
+          "global_success_criteria",
+          "goal",
+          "nodes",
+          "source"
+        ],
+        "obj_run_summary_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "completed",
+          "failed",
+          "gui_actions",
+          "ok",
+          "pending_criteria",
+          "skipped"
+        ],
+        "list_node_results_n": 1,
+        "list_node_results_keys": [
+          "artifacts",
+          "awaiting_secret_input",
+          "awaiting_user_confirmation",
+          "blocked",
+          "dependency_status",
+          "failure_kind",
+          "gui_actions",
+          "message",
+          "node_id",
+          "ok",
+          "resolved_resources",
+          "result",
+          "risk_level",
+          "skipped",
+          "success_criteria_met",
+          "success_criteria_pending",
+          "summary",
+          "tool_name",
+          "verification_detail",
+          "verification_status",
+          "visual_summary"
+        ],
+        "list_node_results_ok": {
+          "True": 1
+        }
+      }
+    }
+  ]
+}

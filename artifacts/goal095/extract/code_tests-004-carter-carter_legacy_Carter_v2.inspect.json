@@ -1,0 +1,1399 @@
+{
+  "batch_id": "code_tests-004-carter-carter_legacy_Carter_v2",
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 24,
+  "hash_ok": 24,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_legacy_Carter_v2",
+  "subsystems": [
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-092725.json",
+      "queued_sha256": "b4cb09a78205d732fabcf377a8b83e175de13d0e35cd0873a78aed8931880048",
+      "size_queued": 30968,
+      "exists": true,
+      "disk_sha256": "b4cb09a78205d732fabcf377a8b83e175de13d0e35cd0873a78aed8931880048",
+      "disk_size": 30968,
+      "hash_match": true,
+      "head_sha256": "49321c6826a450901252259210d83422e884f0f4d66e8004a9c50456cc5b50b5",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 1270,
+        "root_type": "dict",
+        "keys": [
+          "components",
+          "composite_score",
+          "duration_s",
+          "hardware",
+          "load_time_ms",
+          "model",
+          "modes",
+          "text_cases",
+          "text_summary",
+          "tool_cases",
+          "tool_summary",
+          "ts_end",
+          "ts_start",
+          "vram_after_load_mb",
+          "vram_after_unload_mb",
+          "vram_before_mb",
+          "vram_load_delta_mb",
+          "vram_peak_mb",
+          "warmup_error",
+          "warmup_ok"
+        ],
+        "n_keys": 20,
+        "highlights": {
+          "model": "qwen3:1.7b"
+        },
+        "scalars": {
+          "model": "qwen3:1.7b",
+          "ts_start": 1777728445.6747148,
+          "ts_end": 1777728548.640505,
+          "duration_s": 103.0,
+          "warmup_ok": true,
+          "warmup_error": "",
+          "load_time_ms": 9397,
+          "vram_before_mb": 2090,
+          "vram_after_load_mb": 3777,
+          "vram_after_unload_mb": 2090,
+          "vram_peak_mb": 3781,
+          "vram_load_delta_mb": 1687,
+          "composite_score": 0.8698
+        },
+        "obj_text_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_tool_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_components_keys": [
+          "lat_score",
+          "multi_avg",
+          "safety_pass",
+          "stability",
+          "text_quality",
+          "tool_quality",
+          "vram_score"
+        ],
+        "obj_hardware_keys": [
+          "cpu_count",
+          "platform",
+          "python",
+          "vram_total_mb",
+          "vram_used_mb"
+        ],
+        "list_text_cases_n": 36,
+        "list_text_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_text_cases_passed": {
+          "True": 31,
+          "False": 5
+        },
+        "list_tool_cases_n": 25,
+        "list_tool_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_tool_cases_passed": {
+          "True": 22,
+          "False": 3
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_14b/20260502-092910.json",
+      "queued_sha256": "3d0f87ba8f4e5ae639a5d7455d1a6e9462ea00511fa1a216721cab9ecc5ac9c0",
+      "size_queued": 30782,
+      "exists": true,
+      "disk_sha256": "3d0f87ba8f4e5ae639a5d7455d1a6e9462ea00511fa1a216721cab9ecc5ac9c0",
+      "disk_size": 30782,
+      "hash_match": true,
+      "head_sha256": "5c417ad4ffc4175d166cfe3ba5707e693024c4bd34194425d753e7e114621936",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 1265,
+        "root_type": "dict",
+        "keys": [
+          "components",
+          "composite_score",
+          "duration_s",
+          "hardware",
+          "load_time_ms",
+          "model",
+          "modes",
+          "text_cases",
+          "text_summary",
+          "tool_cases",
+          "tool_summary",
+          "ts_end",
+          "ts_start",
+          "vram_after_load_mb",
+          "vram_after_unload_mb",
+          "vram_before_mb",
+          "vram_load_delta_mb",
+          "vram_peak_mb",
+          "warmup_error",
+          "warmup_ok"
+        ],
+        "n_keys": 20,
+        "highlights": {
+          "model": "qwen3:14b"
+        },
+        "scalars": {
+          "model": "qwen3:14b",
+          "ts_start": 1777728550.438895,
+          "ts_end": 1777729270.581671,
+          "duration_s": 720.1,
+          "warmup_ok": true,
+          "warmup_error": "",
+          "load_time_ms": 24844,
+          "vram_before_mb": 2090,
+          "vram_after_load_mb": 11313,
+          "vram_after_unload_mb": 1881,
+          "vram_peak_mb": 11313,
+          "vram_load_delta_mb": 9223,
+          "composite_score": 0.6805
+        },
+        "obj_text_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_tool_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_components_keys": [
+          "lat_score",
+          "multi_avg",
+          "safety_pass",
+          "stability",
+          "text_quality",
+          "tool_quality",
+          "vram_score"
+        ],
+        "obj_hardware_keys": [
+          "cpu_count",
+          "platform",
+          "python",
+          "vram_total_mb",
+          "vram_used_mb"
+        ],
+        "list_text_cases_n": 36,
+        "list_text_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_text_cases_passed": {
+          "True": 32,
+          "False": 4
+        },
+        "list_tool_cases_n": 25,
+        "list_tool_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_tool_cases_passed": {
+          "True": 22,
+          "False": 3
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_4b/20260502-085026.json",
+      "queued_sha256": "112e5cde0b8c2282b24f4bfed6943d46f039e3d51a6428763cb12141bdff02f4",
+      "size_queued": 29385,
+      "exists": true,
+      "disk_sha256": "112e5cde0b8c2282b24f4bfed6943d46f039e3d51a6428763cb12141bdff02f4",
+      "disk_size": 29385,
+      "hash_match": true,
+      "head_sha256": "9acfde9a005f4d73daee3753f641e79e0c1041fcd027e97e90e648c9add787b9",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 1259,
+        "root_type": "dict",
+        "keys": [
+          "components",
+          "composite_score",
+          "duration_s",
+          "hardware",
+          "load_time_ms",
+          "model",
+          "modes",
+          "text_cases",
+          "text_summary",
+          "tool_cases",
+          "tool_summary",
+          "ts_end",
+          "ts_start",
+          "vram_after_load_mb",
+          "vram_after_unload_mb",
+          "vram_before_mb",
+          "vram_load_delta_mb",
+          "vram_peak_mb",
+          "warmup_error",
+          "warmup_ok"
+        ],
+        "n_keys": 20,
+        "highlights": {
+          "model": "qwen3:4b"
+        },
+        "scalars": {
+          "model": "qwen3:4b",
+          "ts_start": 1777726226.8544052,
+          "ts_end": 1777726997.94239,
+          "duration_s": 771.1,
+          "warmup_ok": true,
+          "warmup_error": "",
+          "load_time_ms": 10297,
+          "vram_before_mb": 1939,
+          "vram_after_load_mb": 4998,
+          "vram_after_unload_mb": 1873,
+          "vram_peak_mb": 4998,
+          "vram_load_delta_mb": 3059,
+          "composite_score": 0.7427
+        },
+        "obj_text_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_tool_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_components_keys": [
+          "lat_score",
+          "multi_avg",
+          "safety_pass",
+          "stability",
+          "text_quality",
+          "tool_quality",
+          "vram_score"
+        ],
+        "obj_hardware_keys": [
+          "cpu_count",
+          "platform",
+          "python",
+          "vram_total_mb",
+          "vram_used_mb"
+        ],
+        "list_text_cases_n": 36,
+        "list_text_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_text_cases_passed": {
+          "True": 34,
+          "False": 2
+        },
+        "list_tool_cases_n": 25,
+        "list_tool_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_tool_cases_passed": {
+          "True": 22,
+          "False": 3
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_8b/20260502-090319.json",
+      "queued_sha256": "33b37d0ea8afdca1521f8924f201f3343011188ed53ae0563e37f1ef90639da2",
+      "size_queued": 30540,
+      "exists": true,
+      "disk_sha256": "33b37d0ea8afdca1521f8924f201f3343011188ed53ae0563e37f1ef90639da2",
+      "disk_size": 30540,
+      "hash_match": true,
+      "head_sha256": "beb16df1fb11e5318c990767bb6ba4aba0ebafb6097c7b0e4e6395314dec82b6",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 1255,
+        "root_type": "dict",
+        "keys": [
+          "components",
+          "composite_score",
+          "duration_s",
+          "hardware",
+          "load_time_ms",
+          "model",
+          "modes",
+          "text_cases",
+          "text_summary",
+          "tool_cases",
+          "tool_summary",
+          "ts_end",
+          "ts_start",
+          "vram_after_load_mb",
+          "vram_after_unload_mb",
+          "vram_before_mb",
+          "vram_load_delta_mb",
+          "vram_peak_mb",
+          "warmup_error",
+          "warmup_ok"
+        ],
+        "n_keys": 20,
+        "highlights": {
+          "model": "qwen3:8b"
+        },
+        "scalars": {
+          "model": "qwen3:8b",
+          "ts_start": 1777726999.7894516,
+          "ts_end": 1777727507.8445601,
+          "duration_s": 508.1,
+          "warmup_ok": true,
+          "warmup_error": "",
+          "load_time_ms": 13934,
+          "vram_before_mb": 1872,
+          "vram_after_load_mb": 7223,
+          "vram_after_unload_mb": 1871,
+          "vram_peak_mb": 7226,
+          "vram_load_delta_mb": 5351,
+          "composite_score": 0.7845
+        },
+        "obj_text_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_tool_summary_keys": [
+          "avg_score",
+          "by_category",
+          "count",
+          "max_ms",
+          "p50_ms",
+          "p95_ms",
+          "pass_rate"
+        ],
+        "obj_components_keys": [
+          "lat_score",
+          "multi_avg",
+          "safety_pass",
+          "stability",
+          "text_quality",
+          "tool_quality",
+          "vram_score"
+        ],
+        "obj_hardware_keys": [
+          "cpu_count",
+          "platform",
+          "python",
+          "vram_total_mb",
+          "vram_used_mb"
+        ],
+        "list_text_cases_n": 36,
+        "list_text_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_text_cases_passed": {
+          "True": 32,
+          "False": 4
+        },
+        "list_tool_cases_n": 25,
+        "list_tool_cases_keys": [
+          "category",
+          "cid",
+          "extra",
+          "latency_ms",
+          "mode",
+          "passed",
+          "score"
+        ],
+        "list_tool_cases_passed": {
+          "True": 24,
+          "False": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe.json",
+      "queued_sha256": "487e7a7cb575425e5f238639020c20503b1b7de4b5bee435b7610360e56dc955",
+      "size_queued": 1476,
+      "exists": true,
+      "disk_sha256": "487e7a7cb575425e5f238639020c20503b1b7de4b5bee435b7610360e56dc955",
+      "disk_size": 1476,
+      "hash_match": true,
+      "head_sha256": "db70fd2c1cab9e1cd35facc14b7ad90faaf80922f83d7335d94f7e8875d49978",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 44,
+        "root_type": "list",
+        "n": 7,
+        "elem_keys": [
+          "body_preview",
+          "model",
+          "status",
+          "supports_native_tools"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/capability_probe_fast.json",
+      "queued_sha256": "df675e060216229ac9330607366169969c11e993cd46d1fdb03daa26101a13a8",
+      "size_queued": 2590,
+      "exists": true,
+      "disk_sha256": "df675e060216229ac9330607366169969c11e993cd46d1fdb03daa26101a13a8",
+      "disk_size": 2590,
+      "hash_match": true,
+      "head_sha256": "e05b9b2f18a06655093fd8de76b79bbcdaa478482c0c60d0d3923188084a879a",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 16,
+        "elem_keys": [
+          "body_preview",
+          "model",
+          "status",
+          "supports_native_tools"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/fair_rebench_summary.json",
+      "queued_sha256": "3baacfb62c14f3b87a2abbec6e1e284fa7fde77a58c1f6e4ec18819f5c2b7719",
+      "size_queued": 9285,
+      "exists": true,
+      "disk_sha256": "3baacfb62c14f3b87a2abbec6e1e284fa7fde77a58c1f6e4ec18819f5c2b7719",
+      "disk_size": 9285,
+      "hash_match": true,
+      "head_sha256": "c7584b5f0b468a45a0f1ab4986913741e46c378cc09ac27f8593a337d4887402",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 317,
+        "root_type": "dict",
+        "keys": [
+          "histogram",
+          "n_models",
+          "rows",
+          "source_fair_matrix",
+          "source_legacy_matrix"
+        ],
+        "n_keys": 5,
+        "highlights": {},
+        "scalars": {
+          "source_fair_matrix": "audit\\results\\model_tool_compatibility\\protocol_matrix_fast.json",
+          "source_legacy_matrix": "audit\\results\\model_tool_compatibility\\protocol_matrix.json",
+          "n_models": 16
+        },
+        "list_rows_n": 16,
+        "list_rows_keys": [
+          "all_protocol_pass_rates",
+          "best_protocol",
+          "classification",
+          "delta",
+          "fair_tool_pass",
+          "model",
+          "old_tool_pass",
+          "preferred_protocol_in_registry",
+          "registry_agrees"
+        ],
+        "obj_histogram_keys": [
+          "IMPROVED_WITH_JSON",
+          "PROMPT_BIAS_CONFIRMED",
+          "QWEN_STILL_WINS",
+          "STABLE"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_deepseek-r1_8b_fast.json",
+      "queued_sha256": "68c76da5846ba15f89ad66de69c341e6a6682aa9225c1148b1bea7283e926818",
+      "size_queued": 29175,
+      "exists": true,
+      "disk_sha256": "68c76da5846ba15f89ad66de69c341e6a6682aa9225c1148b1bea7283e926818",
+      "disk_size": 29175,
+      "hash_match": true,
+      "head_sha256": "70d63b545985d7a6baaec85a93a0eddf3c77e370ebffe18b04614ba860bab100",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 927,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "deepseek-r1:8b"
+        },
+        "scalars": {
+          "model": "deepseek-r1:8b",
+          "vram_before_mb": 7209,
+          "vram_after_load_mb": 7212,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_devstral_24b_fast.json",
+      "queued_sha256": "071bbac19997a62e9417ec067c9a86e84380d89b1f95e0373d1bd00d0646c870",
+      "size_queued": 29689,
+      "exists": true,
+      "disk_sha256": "071bbac19997a62e9417ec067c9a86e84380d89b1f95e0373d1bd00d0646c870",
+      "disk_size": 29689,
+      "hash_match": true,
+      "head_sha256": "94b5f0066fe76f9656ac7bab9ea89e3307acbbfbf9d674299b8629b479403d55",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 955,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "devstral:24b"
+        },
+        "scalars": {
+          "model": "devstral:24b",
+          "vram_before_mb": 15302,
+          "vram_after_load_mb": 15304,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_gemma3_12b_fast.json",
+      "queued_sha256": "e0cae0cc07a62df6d50941ff14f10ff5341f803c49195965d29dd25008eae205",
+      "size_queued": 28446,
+      "exists": true,
+      "disk_sha256": "e0cae0cc07a62df6d50941ff14f10ff5341f803c49195965d29dd25008eae205",
+      "disk_size": 28446,
+      "hash_match": true,
+      "head_sha256": "a744bdaeb029f5a96457b3a512d26b31f17b585e0824dfeb5516b62db93ad884",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 924,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "gemma3:12b"
+        },
+        "scalars": {
+          "model": "gemma3:12b",
+          "vram_before_mb": 4974,
+          "vram_after_load_mb": 13562,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_granite3.3_8b_fast.json",
+      "queued_sha256": "5fd07ce61f7e50367bc72d37ade7de033da08c6628d3936b997578c790ef7fe4",
+      "size_queued": 29483,
+      "exists": true,
+      "disk_sha256": "5fd07ce61f7e50367bc72d37ade7de033da08c6628d3936b997578c790ef7fe4",
+      "disk_size": 29483,
+      "hash_match": true,
+      "head_sha256": "79c5d3f7f68743299c733edbe2ba56725b05ae02b70185ed5787df1c7831d096",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 927,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "granite3.3:8b"
+        },
+        "scalars": {
+          "model": "granite3.3:8b",
+          "vram_before_mb": 7192,
+          "vram_after_load_mb": 7194,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_hermes3_8b_fast.json",
+      "queued_sha256": "000a3077259939f98b69a291951b0af3eb850f176134f8db10a19adc30561354",
+      "size_queued": 30432,
+      "exists": true,
+      "disk_sha256": "000a3077259939f98b69a291951b0af3eb850f176134f8db10a19adc30561354",
+      "disk_size": 30432,
+      "hash_match": true,
+      "head_sha256": "8269f69d1039a1de5de08fe6a4b0aaddbaac808d96ab918ca333e6541ef64ce2",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 962,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "hermes3:8b"
+        },
+        "scalars": {
+          "model": "hermes3:8b",
+          "vram_before_mb": 6724,
+          "vram_after_load_mb": 6726,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.1_8b_fast.json",
+      "queued_sha256": "dfb3b09ac4f977d6a3c828bb406c094f057594b4252b535da7e38c526b2ede89",
+      "size_queued": 31055,
+      "exists": true,
+      "disk_sha256": "dfb3b09ac4f977d6a3c828bb406c094f057594b4252b535da7e38c526b2ede89",
+      "disk_size": 31055,
+      "hash_match": true,
+      "head_sha256": "804ff50205b5a3b1339996c48edf4e439bb80341df2000d7e5a4e3742320bfc6",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 980,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "llama3.1:8b"
+        },
+        "scalars": {
+          "model": "llama3.1:8b",
+          "vram_before_mb": 12020,
+          "vram_after_load_mb": 12029,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_llama3.2_3b_fast.json",
+      "queued_sha256": "d89921ffd58634fca64c0d06d774c7ccb0287367e5c0011c2f52dd6ff73c612c",
+      "size_queued": 30724,
+      "exists": true,
+      "disk_sha256": "d89921ffd58634fca64c0d06d774c7ccb0287367e5c0011c2f52dd6ff73c612c",
+      "disk_size": 30724,
+      "hash_match": true,
+      "head_sha256": "9b00c0aadcb0aa29dcb1f17222ef85dcd21b8766d7edba0cd55b4b6971544dd4",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 991,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "llama3.2:3b"
+        },
+        "scalars": {
+          "model": "llama3.2:3b",
+          "vram_before_mb": 14613,
+          "vram_after_load_mb": 14615,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_mistral-small_24b_fast.json",
+      "queued_sha256": "afeb974a8c07fef6c583bfc5a4fdf16503f3a1e7300adfdde4c380a0b9939fa9",
+      "size_queued": 29816,
+      "exists": true,
+      "disk_sha256": "afeb974a8c07fef6c583bfc5a4fdf16503f3a1e7300adfdde4c380a0b9939fa9",
+      "disk_size": 29816,
+      "hash_match": true,
+      "head_sha256": "32b0d2440810ec54607901533ccde4d3d768c6ac715460e700a972c8a864260a",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 978,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "mistral-small:24b"
+        },
+        "scalars": {
+          "model": "mistral-small:24b",
+          "vram_before_mb": 15308,
+          "vram_after_load_mb": 15304,
+          "best_protocol": "openai_tools",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_phi4_latest_fast.json",
+      "queued_sha256": "c245dc2d19cf7a2f013d01a73766ff2ac7f86d0504f9b6aafb437eb5f71ae192",
+      "size_queued": 30442,
+      "exists": true,
+      "disk_sha256": "c245dc2d19cf7a2f013d01a73766ff2ac7f86d0504f9b6aafb437eb5f71ae192",
+      "disk_size": 30442,
+      "hash_match": true,
+      "head_sha256": "e2d81bb65ccb54b05934960c0657cc5f91c19754e0f2f2a6d4a8209f6c39b01d",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 921,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "phi4:latest"
+        },
+        "scalars": {
+          "model": "phi4:latest",
+          "vram_before_mb": 11060,
+          "vram_after_load_mb": 11062,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen2.5-coder_14b_fast.json",
+      "queued_sha256": "ef1bacf8aa3505230dc8d7e5b173845060fafc303c01d1cbc3361bc651fd43fd",
+      "size_queued": 29795,
+      "exists": true,
+      "disk_sha256": "ef1bacf8aa3505230dc8d7e5b173845060fafc303c01d1cbc3361bc651fd43fd",
+      "disk_size": 29795,
+      "hash_match": true,
+      "head_sha256": "fa568391bf7188d34a71f005159b4c9b74b886882924381f305e1987c0f1c9ae",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 944,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "qwen2.5-coder:14b"
+        },
+        "scalars": {
+          "model": "qwen2.5-coder:14b",
+          "vram_before_mb": 10940,
+          "vram_after_load_mb": 10942,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_1.7b_fast.json",
+      "queued_sha256": "447f6c2da15cc79eea05af76a597b57ab8c8387c64606771cbc73650afa9a78a",
+      "size_queued": 30252,
+      "exists": true,
+      "disk_sha256": "447f6c2da15cc79eea05af76a597b57ab8c8387c64606771cbc73650afa9a78a",
+      "disk_size": 30252,
+      "hash_match": true,
+      "head_sha256": "71a7c6609ed7076aa9a9d5802ec70a3c2300c844f166be5fb3b7d16580b40f23",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 990,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "qwen3:1.7b"
+        },
+        "scalars": {
+          "model": "qwen3:1.7b",
+          "vram_before_mb": 8898,
+          "vram_after_load_mb": 8900,
+          "best_protocol": "json_direct",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_14b_fast.json",
+      "queued_sha256": "097b186fee0f91fe87b161daf3e5b5fdd6cda2e3e5f58cb20b1ae195bcbdd924",
+      "size_queued": 30236,
+      "exists": true,
+      "disk_sha256": "097b186fee0f91fe87b161daf3e5b5fdd6cda2e3e5f58cb20b1ae195bcbdd924",
+      "disk_size": 30236,
+      "hash_match": true,
+      "head_sha256": "b537be56015b6a58145e16be5581c913aaf923723959abad8fc278b82030fa22",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 985,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "qwen3:14b"
+        },
+        "scalars": {
+          "model": "qwen3:14b",
+          "vram_before_mb": 14154,
+          "vram_after_load_mb": 14155,
+          "best_protocol": "openai_tools",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_4b_fast.json",
+      "queued_sha256": "579a7e32a79f37dcaa358d6f7510811d6f155bc01885d8df7488eeba17f3b247",
+      "size_queued": 29734,
+      "exists": true,
+      "disk_sha256": "579a7e32a79f37dcaa358d6f7510811d6f155bc01885d8df7488eeba17f3b247",
+      "disk_size": 29734,
+      "hash_match": true,
+      "head_sha256": "e387518a3f70e78fa736fc7b0ee865157eedc639ae2d3e3f1b6b9634f2b4dc22",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 984,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "qwen3:4b"
+        },
+        "scalars": {
+          "model": "qwen3:4b",
+          "vram_before_mb": 11961,
+          "vram_after_load_mb": 6606,
+          "best_protocol": "openai_tools",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_tool_compatibility/raw_tool_traces_qwen3_8b_fast.json",
+      "queued_sha256": "8d9e62b36c29132be906e37b2ca502960e8e0a5c58c13b92bc0604fac1a8ff8c",
+      "size_queued": 30008,
+      "exists": true,
+      "disk_sha256": "8d9e62b36c29132be906e37b2ca502960e8e0a5c58c13b92bc0604fac1a8ff8c",
+      "disk_size": 30008,
+      "hash_match": true,
+      "head_sha256": "770b594866cfd682a568d320488c876e290a767594aa8ed77528492a1260f8d7",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 985,
+        "root_type": "dict",
+        "keys": [
+          "best_pass_rate",
+          "best_protocol",
+          "model",
+          "protocols",
+          "vram_after_load_mb",
+          "vram_before_mb"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "qwen3:8b"
+        },
+        "scalars": {
+          "model": "qwen3:8b",
+          "vram_before_mb": 7234,
+          "vram_after_load_mb": 7209,
+          "best_protocol": "openai_tools",
+          "best_pass_rate": 1.0
+        },
+        "obj_protocols_keys": [
+          "fenced_json",
+          "final_json_only",
+          "json_direct",
+          "openai_tools",
+          "reasoning_then_json",
+          "tagged",
+          "text_baseline"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/stability/_analyze.py",
+      "queued_sha256": "e9d9b798cd497f3e48256b1f93785dc63cc38f6838f90ca758d7e577060db3a1",
+      "size_queued": 2763,
+      "exists": true,
+      "disk_sha256": "e9d9b798cd497f3e48256b1f93785dc63cc38f6838f90ca758d7e577060db3a1",
+      "disk_size": 2763,
+      "hash_match": true,
+      "head_sha256": "3b1c68df5d90f469b9a592399cff50b1b63edc6e5e3f1398edc19b76f8e74480",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 62,
+        "bytes": 2763,
+        "imports": [
+          "1:import json, glob, os",
+          "2:from collections import defaultdict"
+        ],
+        "defs": [],
+        "head": [
+          "import json, glob, os",
+          "from collections import defaultdict",
+          "",
+          "runs = {}",
+          "for f in sorted(glob.glob('audit/results/stability/run*.json')):",
+          "    name = os.path.basename(f).replace('.json', '')",
+          "    runs[name] = json.load(open(f, encoding='utf-8'))",
+          "",
+          "case_outcomes = defaultdict(dict)",
+          "case_inputs = {}",
+          "case_violations = defaultdict(dict)",
+          "case_latencies = defaultdict(dict)",
+          "for run, payload in runs.items():",
+          "    for r in payload['records']:",
+          "        cid = r['id']",
+          "        case_inputs[cid] = r.get('input', '')",
+          "        case_outcomes[cid][run] = r.get('outcome_class', '?')",
+          "        case_violations[cid][run] = r.get('violations', [])",
+          "        obs = r.get('observed') or {}",
+          "        case_latencies[cid][run] = obs.get('latency_ms', 0) / 1000.0",
+          "",
+          "print('=== Run summaries ===')",
+          "for run, p in runs.items():",
+          "    print(f'  {run}: total={p.get(\"total\")} ok_succ={p.get(\"passed_successfully\")} honest={p.get(\"passed_honest_degraded\")} fail={p.get(\"failed\")}')",
+          "",
+          "qwen3_runs = [r for r in runs if 'qwen3_8b' in r]",
+          "",
+          "print('\\n=== Per-case outcomes across qwen3:8b runs ===')",
+          "print(f'  {\"id\":>3} {\"input\":<40} ' + ' '.join(f'{r[3:25]:<22}' for r in qwen3_runs))",
+          "for cid in sorted(case_outcomes):",
+          "    cells = []",
+          "    for run in qwen3_runs:",
+          "        cls = case_outcomes[cid].get(run, '--')",
+          "        viols = case_violations[cid].get(run, [])",
+          "        short_viol = (viols[0][:18] + '..') if viols else ''",
+          "        cells.append(f'{cls[:10]:<10}|{short_viol:<11}')",
+          "    inp = (case_inputs[cid] or '')[:38]",
+          "    print(f'  {cid:>3} {inp:<40} ' + ' '.join(f'{c:<22}' for c in cells))",
+          "",
+          "print('\\n=== Variance per case (qwen3:8b only) ===')"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/stability/_analyze_rebaseline.py",
+      "queued_sha256": "cedb571221559a1acaec6a5278f173d8005e4d58b58af2a42f774d932d33bd2b",
+      "size_queued": 5059,
+      "exists": true,
+      "disk_sha256": "cedb571221559a1acaec6a5278f173d8005e4d58b58af2a42f774d932d33bd2b",
+      "disk_size": 5059,
+      "hash_match": true,
+      "head_sha256": "6e0b58ebf362316b077713683aa08cd07543ca6aca946fb4d7b936eec15cd2a4",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 129,
+        "bytes": 5059,
+        "imports": [
+          "9:import json, glob, os",
+          "10:from collections import defaultdict"
+        ],
+        "defs": [
+          "22:def jarvis_class(record):"
+        ],
+        "head": [
+          "\"\"\"Rebaseline analyzer: computes semantic + budget-compliant scores and",
+          "cross-model residual table across all qwen3:8b and qwen2.5:7b-instruct runs.",
+          "",
+          "Jarvis-grade budgets per case (independent of contract.max_total_seconds):",
+          "- chat / no-op / simple reply (must_no_tools=True): 5s",
+          "- single tool / single GUI / single vision: 8s",
+          "- multi-step install (case 12: open + install): 16s",
+          "\"\"\"",
+          "import json, glob, os",
+          "from collections import defaultdict",
+          "",
+          "JARVIS_BUDGETS = {",
+          "    1: 5.0, 2: 5.0, 3: 8.0, 4: 8.0, 5: 8.0, 6: 8.0, 7: 8.0,",
+          "    8: 8.0, 9: 5.0, 10: 5.0, 11: 5.0, 12: 16.0, 13: 5.0,",
+          "}",
+          "",
+          "runs = {}",
+          "for f in sorted(glob.glob('audit/results/stability/run*.json')):",
+          "    name = os.path.basename(f).replace('.json', '')",
+          "    runs[name] = json.load(open(f, encoding='utf-8'))",
+          "",
+          "def jarvis_class(record):",
+          "    sem = record.get('outcome_class', 'fail')",
+          "    lat = (record.get('observed') or {}).get('latency_ms', 0) / 1000.0",
+          "    bud = JARVIS_BUDGETS.get(record['id'], 8.0)",
+          "    if sem == 'fail':",
+          "        return 'budget_fail', lat, bud",
+          "    if lat > bud:",
+          "        return 'budget_fail', lat, bud",
+          "    if sem == 'pass_honest_degraded':",
+          "        return 'budget_compliant_honest_degraded', lat, bud",
+          "    return 'budget_compliant_successful', lat, bud",
+          "",
+          "# ---- summaries ----",
+          "print('=== Run summaries (semantic + Jarvis-budget) ===')",
+          "print(f'  {\"run\":<46} {\"sem S/H/F\":<12} {\"bud S/H/F\":<12}')",
+          "for name, p in runs.items():",
+          "    sem_s = p.get('passed_successfully', 0)",
+          "    sem_h = p.get('passed_honest_degraded', 0)",
+          "    sem_f = p.get('failed', 0)"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/stability/run01_qwen3_8b_warm.json",
+      "queued_sha256": "79f9209af7beaf5678d62fcffb995b256b7c3524e18d5b3af0e1393ebe188a4c",
+      "size_queued": 26622,
+      "exists": true,
+      "disk_sha256": "79f9209af7beaf5678d62fcffb995b256b7c3524e18d5b3af0e1393ebe188a4c",
+      "disk_size": 26622,
+      "hash_match": true,
+      "head_sha256": "24159f9750b7f748fb063f729cf4b7b0519782536469c0ede316b61afca00411",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 780,
+        "root_type": "dict",
+        "keys": [
+          "failed",
+          "mode",
+          "outcome_breakdown",
+          "passed",
+          "passed_honest_degraded",
+          "passed_successfully",
+          "records",
+          "score_honest_total",
+          "score_successful_only",
+          "total",
+          "verdict"
+        ],
+        "n_keys": 11,
+        "highlights": {
+          "passed": 3,
+          "failed": 10,
+          "verdict": "REAL_RUNTIME_REPRO_FAILED",
+          "total": 13
+        },
+        "scalars": {
+          "mode": "safe-live",
+          "total": 13,
+          "passed": 3,
+          "failed": 10,
+          "passed_successfully": 2,
+          "passed_honest_degraded": 1,
+          "score_successful_only": "2/13",
+          "score_honest_total": "3/13",
+          "verdict": "REAL_RUNTIME_REPRO_FAILED"
+        },
+        "obj_outcome_breakdown_keys": [
+          "fail",
+          "pass_honest_degraded",
+          "pass_successful"
+        ],
+        "list_records_n": 13,
+        "list_records_keys": [
+          "contract",
+          "contract_checks",
+          "id",
+          "input",
+          "mode",
+          "notes",
+          "observed",
+          "outcome_class",
+          "pass_kind_reason",
+          "status",
+          "violations"
+        ],
+        "list_records_status": {
+          "fail": 10,
+          "pass": 3
+        }
+      }
+    }
+  ]
+}

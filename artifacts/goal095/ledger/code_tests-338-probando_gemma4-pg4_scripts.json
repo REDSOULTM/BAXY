@@ -1,0 +1,320 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-338-probando_gemma4-pg4_scripts",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:17Z",
+  "closed_utc": "2026-08-31T02:46:18Z",
+  "estimated_tokens": 297753,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 21,
+  "subsystem": "pg4_scripts",
+  "subsystems": [
+    "pg4_scripts"
+  ],
+  "files": [
+    {
+      "path": "scripts/_diag/_ftfail/_failmode_routing.json",
+      "sha256": "01c499637164679783ed60f2c308cf53c81dafab3e1a8420e10d8bb222412cda",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_gaps_full.json",
+      "sha256": "60837cac079c1f2492641c7f223a852a1226428a42a31da6a8f9bcc571f91e4d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_gguf_tokenizer.py",
+      "sha256": "f997c25b8e0cd5a2daf77a5990e2ca565b87ea8ed26dba5415538187d3342bdc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-64"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_006.json",
+      "sha256": "14cc0142066fa34bfc6f5e539e5bbd62afd3d9b440d5b2ac6bf5933292561eed",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_010.json",
+      "sha256": "bce30f98f16a6dd8b5c81d28810bb85aa1a732cc19d60074b2119e5ca8dff746",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_012.json",
+      "sha256": "3e9d3f8aea064b3288241a2e71b39a61b255194bd8008346e9ab14220c0dc386",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_013.json",
+      "sha256": "48a79bfeb872a15ae767eb507624adc4f2c86e6ae862e17598c604a0bdb6d5c5",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_014.json",
+      "sha256": "52f8e343beb0a22d3c188446deee49be1ad92b8ad4145992679b3bc306853fe7",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_017.json",
+      "sha256": "faab267dd2e2b07c22fed1d9be5a35ee1f54cc840a54aeaba47221172580d281",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_020.json",
+      "sha256": "c9387a8dd70836eafd41e408a832829ddaad4934d8541d06242429aad299f12f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_021.json",
+      "sha256": "ef7147491363e660ae9904d099e3188cb14852425b5646b22203da564a644a14",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_022.json",
+      "sha256": "5f3bba2e2a1dd13562d7fb42a90d6cc20341d1376d40932229fce7e010076a52",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_025.json",
+      "sha256": "8798bb083c97bd534851e9b260d8bd9673267b47796a24270a7d006309fa8c30",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_026.json",
+      "sha256": "2d5af85cb6e81db8650558284165b074d0eab78f4dc19ba1b537be534a0322d6",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_027.json",
+      "sha256": "e424d4ff3d48e96e31e7ae44cc3df46da6c39b27edbeb1496281faf5bebecf0d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_034.json",
+      "sha256": "f1b74e348b515cad8bd64e295da917f4dace1833f90d7bc3b44686584cf2e3ea",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_035.json",
+      "sha256": "2851cd38167b7d86d5a823c532f2ce16f156f855cd1aa63ed77fbab85624b71f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_036.json",
+      "sha256": "700eb20f42291c4723f394644bb8f263d779c949b54f230ec5c69b832f83e327",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_037.json",
+      "sha256": "543205cf384d4aded494131cbd49efbb14d846f9476f5f90902c57b5aa2df659",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_039.json",
+      "sha256": "d04160b45d6281be601ff9a46743599494630868aa2a0dcc3a271e7bfbc116e1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_043.json",
+      "sha256": "9f46601a4afd30169bd75780e035f3668b8058b597772c4d3d46cb381d627681",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-338-probando_gemma4-pg4_scripts-01-scripts-_diag-_ftfail",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_ftfail (2 ficheros)",
+      "contract": "Grupo scripts/_diag/_ftfail: 2 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_ftfail/_failmode_routing.json",
+        "scripts/_diag/_ftfail/_gaps_full.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_ftfail/_failmode_routing.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-338-probando_gemma4-pg4_scripts-02-scripts-_diag-_gguf_tokenizer.py",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_gguf_tokenizer.py (1 ficheros)",
+      "contract": "Grupo scripts/_diag/_gguf_tokenizer.py: 1 archivos. Terminales leido PY \"\"\"Reconstruye un tokenizer Unigram (SentencePiece) desde el GGUF de Gemma 4 E2B.  El GGUF (llama_cpp 0.3.17 no conoce 'gemma4') guarda el vocab completo: tokens, scores (unigram logprobs), token_type. Con eso armamos un tokenizers.Tokenizer(Unigram) equivalente al SP de Gemma para CONTAR tokens con fidelidad (no estimación 4c/token).  token_type GGUF: 1=NORMAL 2=UNKNOWN 3=CONTROL 4=USER_DEFINED 6",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_gguf_tokenizer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_gguf_tokenizer.py",
+        "ranges": [
+          "1-64"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-338-probando_gemma4-pg4_scripts-03-scripts-_diag-_jbatch",
+      "disposition": "evidence_only",
+      "component": "scripts/_diag/_jbatch (18 ficheros)",
+      "contract": "Grupo scripts/_diag/_jbatch: 18 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_jbatch/_judge_batch_006.json",
+        "scripts/_diag/_jbatch/_judge_batch_010.json",
+        "scripts/_diag/_jbatch/_judge_batch_012.json",
+        "scripts/_diag/_jbatch/_judge_batch_013.json",
+        "scripts/_diag/_jbatch/_judge_batch_014.json",
+        "scripts/_diag/_jbatch/_judge_batch_017.json",
+        "scripts/_diag/_jbatch/_judge_batch_020.json",
+        "scripts/_diag/_jbatch/_judge_batch_021.json",
+        "scripts/_diag/_jbatch/_judge_batch_022.json",
+        "scripts/_diag/_jbatch/_judge_batch_025.json",
+        "scripts/_diag/_jbatch/_judge_batch_026.json",
+        "scripts/_diag/_jbatch/_judge_batch_027.json",
+        "scripts/_diag/_jbatch/_judge_batch_034.json",
+        "scripts/_diag/_jbatch/_judge_batch_035.json",
+        "scripts/_diag/_jbatch/_judge_batch_036.json",
+        "scripts/_diag/_jbatch/_judge_batch_037.json",
+        "scripts/_diag/_jbatch/_judge_batch_039.json",
+        "scripts/_diag/_jbatch/_judge_batch_043.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_diag/_jbatch/_judge_batch_006.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=21 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-339-probando_gemma4-pg4_scripts",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-338-probando_gemma4-pg4_scripts.inspect.json"
+}

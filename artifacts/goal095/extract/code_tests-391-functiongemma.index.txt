@@ -1,0 +1,56 @@
+batch=code_tests-391-functiongemma
+hash_ok=54 drift=0 miss=0
+OK finetune_llm/curated/train.jsonl.CACERIA
+OK finetune_llm/discover_tempting_subsets.py py_lines=88 defs=0
+OK finetune_llm/eval_night.py py_lines=121 defs=3
+OK finetune_llm/eval_reduced.py py_lines=175 defs=1
+OK finetune_llm/eval_reduced_native.py py_lines=58 defs=1
+OK finetune_llm/fg_fresh_es_eval.py py_lines=56 defs=1
+OK finetune_llm/gen_mling_batch.py py_lines=187 defs=1
+OK finetune_llm/gen_reduced_abstain.py py_lines=237 defs=1
+OK finetune_llm/gen_reduced_contrastive.py py_lines=166 defs=0
+OK finetune_llm/native_test.py py_lines=53 defs=2
+OK finetune_llm/optimize_for_training.ps1
+OK finetune_llm/out_fg/ckpt/checkpoint-1860/trainer_state.json json_keys=['best_global_step', 'best_metric', 'best_model_checkpoint', 'epoch', 'eval_steps', 'global_step', 'is_hyper_param_search', 'is_local_process_zero', 'is_world_process_zero', 'log_history', 'logging_steps', 'max_steps', 'num_input_tokens_seen', 'num_train_epochs', 'save_steps', 'stateful_callbacks', 'total_flos', 'train_batch_size', 'trial_name', 'trial_params']
+OK finetune_llm/out_fg/ckpt/checkpoint-930/trainer_state.json json_keys=['best_global_step', 'best_metric', 'best_model_checkpoint', 'epoch', 'eval_steps', 'global_step', 'is_hyper_param_search', 'is_local_process_zero', 'is_world_process_zero', 'log_history', 'logging_steps', 'max_steps', 'num_input_tokens_seen', 'num_train_epochs', 'save_steps', 'stateful_callbacks', 'total_flos', 'train_batch_size', 'trial_name', 'trial_params']
+OK finetune_llm/quantize_fg.py py_lines=62 defs=2
+OK finetune_llm/reduced_catalog/tool_action_map.json json_keys=['app::close', 'app::open', 'app::search', 'audio::get_volume', 'audio::mute', 'audio::set_default', 'audio::set_volume', 'browser::active_tab_title', 'browser::click', 'browser::open', 'browser::search', 'browser_real::click_text', 'browser_real::open', 'browser_real::status', 'clipboard::read', 'contacts::create', 'contacts::list', 'device_settings::brightness_down', 'device_settings::brightness_get', 'device_settings::brightness_set', 'device_settings::brightness_up', 'device_settings::display_list', 'device_settings::status', 'device_settings::wifi_add_profile', 'device_settings::wifi_connect', 'device_settings::wifi_status', 'document::ingest_to_knowledge', 'document::status', 'document::summarize', 'filesystem::list', 'filesystem::open', 'filesystem::read', 'gui::click', 'gui::click_button', 'gui::click_text', 'gui::double_click', 'gui::hotkey', 'gui::keypress', 'gui::right_click', 'gui::screenshot', 'gui::scroll', 'gui::type', 'gui::type_into', 'knowledge::ingest', 'knowledge::list', 'maintenance::firewall_status', 'maintenance::restore_point_create', 'maintenance::services_list', 'media::next', 'media::now_playing', 'media::pause', 'media::play', 'media::play_pause', 'media::previous', 'media::queue_add', 'media::queue_list', 'media::resume', 'media::status', 'media::stop', 'memory::list', 'memory::save', 'network::dns_set', 'network::public_ip', 'network::status', 'notes_tasks::create_note', 'notes_tasks::note_list', 'notes_tasks::notes', 'notes_tasks::task_list', 'notification::alarm_cancel', 'notification::alarm_create', 'notification::alarm_list', 'notification::history', 'notification::reminder_create', 'notification::reminder_list', 'notification::timer_list', 'notification::timer_start', 'reminder::create', 'reminder::list', 'routine::create', 'routine::list', 'steam::launch_game', 'steam::library', 'steam::list_games', 'steam::open', 'system::battery', 'system::brightness_get', 'system::brightness_set', 'system::cpu_ram_gpu', 'system::disk', 'system::processes', 'system::time', 'uia::click', 'uia::find', 'uia::focus', 'uia::set_value', 'verify::app_opened', 'vision::describe_screen', 'web::open', 'web::read', 'web::search', 'whatsapp::list_messages', 'whatsapp::open_chat', 'whatsapp::send_message', 'window::active', 'window::close', 'window::focus', 'window::list', 'window::maximize', 'window::minimize']
+OK finetune_llm/reduced_catalog/tool_categories.json json_keys=['app', 'audio', 'browser', 'browser_real', 'clipboard', 'computer_use', 'contacts', 'device_settings', 'document', 'filesystem', 'gui', 'knowledge', 'maintenance', 'media', 'memory', 'network', 'notes_tasks', 'notification', 'reminder', 'routine', 'session', 'steam', 'system', 'uia', 'verify', 'vision', 'web', 'whatsapp', 'window']
+OK finetune_llm/repair_argless.py py_lines=169 defs=5
+OK finetune_llm/restore_after_training.ps1
+OK router/heads/abstain_head.py py_lines=190 defs=8
+OK router/heads/tool_head.py py_lines=94 defs=5
+OK router/route.py py_lines=48 defs=2
+OK router/routing/__init__.py py_lines=1 defs=0
+OK router/routing/command_splitter.py py_lines=1291 defs=28
+OK router/routing/deictic_detector.py py_lines=182 defs=11
+OK router/routing/exemplar_router.py py_lines=238 defs=9
+OK router/routing/intent_router.py py_lines=1012 defs=32
+OK router/routing/planner.py py_lines=1771 defs=32
+OK router/routing/semantic_router.py py_lines=552 defs=15
+OK router/scripts/router_eval.py py_lines=452 defs=11
+OK router/scripts/router_exemplar_build.py py_lines=100 defs=1
+OK router/scripts/router_ft_pipeline.py py_lines=86 defs=2
+OK router/scripts/router_tool2vec_build.py py_lines=71 defs=1
+OK router/scripts/train_abstain_head.py py_lines=185 defs=3
+OK router/scripts/train_router_encoder.py py_lines=220 defs=3
+OK router/scripts/train_tool_head.py py_lines=162 defs=2
+OK finetune_llm/run_ft.ps1
+OK finetune_llm/scripts/_ab_leans_server.py py_lines=71 defs=2
+OK finetune_llm/scripts/_analyze_balance.py py_lines=39 defs=0
+OK finetune_llm/scripts/_audit_count_incoherence.py py_lines=81 defs=0
+OK finetune_llm/scripts/_audit_dataset.py py_lines=85 defs=0
+OK finetune_llm/scripts/_audit_full_history_coverage.py py_lines=138 defs=3
+OK finetune_llm/scripts/_audit_gguf_ple.py py_lines=36 defs=0
+OK finetune_llm/scripts/_audit_gguf_template.py py_lines=53 defs=0
+OK finetune_llm/scripts/_audit_leak_dup.py py_lines=113 defs=3
+OK finetune_llm/scripts/_audit_render_vs_server.py py_lines=134 defs=5
+OK finetune_llm/scripts/_audit_semantic_sample.py py_lines=78 defs=1
+OK finetune_llm/scripts/_audit_token_ids.py py_lines=26 defs=0
+OK finetune_llm/scripts/_audit_toolcalls_args.py py_lines=172 defs=1
+OK finetune_llm/scripts/_audit_vocab_serialization.py py_lines=162 defs=3
+OK finetune_llm/scripts/_build_fg_dataset.py py_lines=267 defs=4
+OK finetune_llm/scripts/_caceria_add_seeds.py py_lines=80 defs=1
+OK finetune_llm/scripts/_caceria_apply_edits.py py_lines=78 defs=2
+OK finetune_llm/scripts/_check_train_vocab.py py_lines=22 defs=0
+OK finetune_llm/scripts/_classify_uncovered.py py_lines=40 defs=0

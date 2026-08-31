@@ -1,0 +1,372 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-446-baxy-baxy_legacy_tooling",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:59Z",
+  "closed_utc": "2026-08-31T02:48:59Z",
+  "estimated_tokens": 258913,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 10,
+  "subsystem": "baxy_legacy_tooling",
+  "subsystems": [
+    "baxy_legacy_tooling"
+  ],
+  "files": [
+    {
+      "path": "legacy/tooling/grounding.py",
+      "sha256": "6bdab9a72da3650a84af494b5e72b33acf3e70f5a42c10155c2ef0d7af6ece90",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3090"
+      ]
+    },
+    {
+      "path": "legacy/tooling/invocation_identity.py",
+      "sha256": "1752683b5b13fb8ab6e6cb751e1253f152c922d445fda186e7df42bc167788b3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-329"
+      ]
+    },
+    {
+      "path": "legacy/tooling/invocation_ledger.py",
+      "sha256": "54e8a7d81b104b40ac4c7e2a3e60de4e2689ef5913d54e5fa1f957ea86f9a955",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2001"
+      ]
+    },
+    {
+      "path": "legacy/tooling/llama_cpp_router_client.py",
+      "sha256": "4e41de90bbce10561b4e2ec41a49c45f301eba605b063c2529838a1d42df6d4c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-706"
+      ]
+    },
+    {
+      "path": "legacy/tooling/mission.py",
+      "sha256": "c7a3cc7fc77063f0a31bbe3e5650e7b1a120e17b2115a8a7699705c4959065c2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-4970"
+      ]
+    },
+    {
+      "path": "legacy/tooling/policy.py",
+      "sha256": "df175aded0fe804dc0eb50c2f3b52d31e8db44579236266a878a27fa5d5117d4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1185"
+      ]
+    },
+    {
+      "path": "legacy/tooling/private_result_projection.py",
+      "sha256": "ba815f4c6075ed7c2e186c9eb96d9189ea89b9ffd0e8324c7edf51ea17eab25e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-588"
+      ]
+    },
+    {
+      "path": "legacy/tooling/provenance.py",
+      "sha256": "f373bd0cf491648db38184ae7a231e1c553fc8cd20c2d6a705ff7a0900e898a7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-248"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/__init__.py",
+      "sha256": "670fbb291ed176f45bda4b2e867f15f0bb92c02dab81f59b22ced3d204ca845b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-142"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/accessibility.py",
+      "sha256": "fac615ee8bdc3cbfc28ad58b56798b494bee0756aeb91c328ed54967b6333d96",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-970"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-01-legacy-tooling-grounding.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/grounding.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/grounding.py: 1 archivos. Terminales leido PY \"\"\"Deterministic user-text grounding for :class:`tooling.gateway.ToolGateway`.  This module is the authority boundary between text and argument candidates. It never calls a model or the operating system.  A registered grounder returns values plus exact character spans; only this engine can turn those spans into ``ArgumentSource.USER`` envelopes.  Schema defaults remain ``SAFE_DEFAULT`` and model p",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/grounding.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/grounding.py",
+        "ranges": [
+          "1-3090"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-02-legacy-tooling-invocation_identity.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/invocation_identity.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/invocation_identity.py: 1 archivos. Terminales leido PY \"\"\"Dependency-free typed identities shared by mission and invocation stores.\"\"\"  from __future__ import annotations  import hashlib import hmac import json import re",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/invocation_identity.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/invocation_identity.py",
+        "ranges": [
+          "1-329"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-03-legacy-tooling-invocation_ledger.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/invocation_ledger.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/invocation_ledger.py: 1 archivos. Terminales leido PY \"\"\"Authenticated, cross-process invocation replay ledger.  The ledger is deliberately append-only from ``in_progress`` to ``completed``. An interrupted reservation is never expired or silently made runnable again: the caller must independently observe the effect and use :meth:`reconcile`.  Idempotency keys, action digests, reports, audit data and recovery notes are encrypted with :class:`SecureJso",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/invocation_ledger.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/invocation_ledger.py",
+        "ranges": [
+          "1-2001"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-04-legacy-tooling-llama_cpp_router_client.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/llama_cpp_router_client.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/llama_cpp_router_client.py: 1 archivos. Terminales leido PY \"\"\"Bounded, loopback-only llama.cpp backend for Gemma tool routing.  The server only proposes a schema-constrained routing decision.  It never receives executable authority and it never executes native tool calls; the trusted router still validates the selected operation and attaches the exact pre-authorized argument envelope. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "legacy/tooling/llama_cpp_router_client.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/llama_cpp_router_client.py",
+        "ranges": [
+          "1-706"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-05-legacy-tooling-mission.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/mission.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/mission.py: 1 archivos. Terminales leido PY \"\"\"Durable, policy-bound mission orchestration for Tool Ecosystem v2.  The engine persists a complete plan and every step before any effect.  It never calls a tool handler: normal work, retries, and compensations all cross the same :class:`~tooling.executor.Invoker` boundary. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "legacy/tooling/mission.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/mission.py",
+        "ranges": [
+          "1-4970"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-06-legacy-tooling-policy.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/policy.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/policy.py: 1 archivos. Terminales leido PY \"\"\"Deterministic authorization policy for Tool Ecosystem v2.  The policy boundary does not trust model-visible arguments.  In particular, an argument such as ``confirmed=true`` has no authority.  Execution requires an HMAC-authenticated :class:`TurnPermit`; risky operations additionally need an HMAC-authenticated, exact-scope, single-use :class:`ConfirmationToken` issued from a trusted user channe",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/policy.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/policy.py",
+        "ranges": [
+          "1-1185"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-07-legacy-tooling-private_result_projection.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/private_result_projection.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/private_result_projection.py: 1 archivos. Terminales leido PY \"\"\"Fail-closed projection of private tool output for a trusted local UI.  Provider output is an execution contract, not automatically a display contract.  In particular, v2 output schemas may contain short-lived handles or other authority that must remain inside the deterministic workflow.  This module validates one exact ``ToolSpec`` output and produces canonical JSON with every authority-bearing",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/private_result_projection.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/private_result_projection.py",
+        "ranges": [
+          "1-588"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-08-legacy-tooling-provenance.py",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/provenance.py (1 ficheros)",
+      "contract": "Grupo legacy/tooling/provenance.py: 1 archivos. Terminales leido PY \"\"\"Argument provenance for Tool Ecosystem v2.  Values that can change the outside world must come from the user, a verified observation, a verified typed output, or an exact safe default declared by the tool schema.  Model guesses and untrusted document/web/OCR content are data, never authority. \"\"\" from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/provenance.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/provenance.py",
+        "ranges": [
+          "1-248"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-446-baxy-baxy_legacy_tooling-09-legacy-tooling-providers",
+      "disposition": "evidence_only",
+      "component": "legacy/tooling/providers (2 ficheros)",
+      "contract": "Grupo legacy/tooling/providers: 2 archivos. Terminales leido PY \"\"\"Production providers for Tool Ecosystem v2.\"\"\"  from .accessibility import (     ACCESSIBILITY_TOOL_IDS,     register_accessibility_provider,     register_accessibility_tools, ) from .desktop import (",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/providers/__init__.py",
+        "legacy/tooling/providers/accessibility.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/providers/__init__.py",
+        "ranges": [
+          "1-142"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=10 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-447-baxy-baxy_legacy_tooling",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-446-baxy-baxy_legacy_tooling.inspect.json"
+}

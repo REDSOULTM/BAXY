@@ -1,0 +1,43 @@
+batch=code_tests-464-baxy
+hash_ok=41 drift=0 miss=0
+OK src/Baxy.Providers.Windows/bin/Release/net10.0-windows10.0.19041.0/win-x64/native/Baxy.Providers.Windows.exp
+OK src/Baxy.Providers.Windows/bin/Release/net10.0-windows10.0.19041.0/win-x64/native/Baxy.Providers.Windows.lib
+OK src/Baxy.Security.Windows/Baxy.Security.Windows.csproj
+OK src/Baxy.Security.Windows/BoundProtectedJsonCodec.cs
+OK src/Baxy.Security.Windows/IProtectedPayload.cs
+OK src/Baxy.Security.Windows/ProtectedJsonEnvelopeCodec.cs
+OK src/Baxy.Security.Windows/ProtectedPayloadPathPolicy.cs
+OK src/Baxy.Security.Windows/WindowsCurrentUserDpapi.cs
+OK src/Baxy.Security.Windows/WindowsJournalAuthenticationKeyStore.cs
+OK src/Baxy.Security.Windows/WindowsPrivateStorage.cs
+OK src/Baxy.Security.Windows/WindowsProtectedPayload.cs
+OK src/Baxy.Security.Windows/bin/Debug/net10.0-windows10.0.19041.0/Baxy.Security.Windows.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK src/Baxy.Setup/Baxy.Setup.csproj
+OK src/Baxy.Setup/CanonicalWindowsPaths.cs
+OK src/Baxy.Setup/EmbeddedPackageSource.cs
+OK src/Baxy.Setup/InstallationEngine.cs
+OK src/Baxy.Setup/InstalledApplicationLauncher.cs
+OK src/Baxy.Setup/OperationGates.cs
+OK src/Baxy.Setup/OwnedStartMenuShortcut.cs
+OK src/Baxy.Setup/PackageContract.cs
+OK src/Baxy.Setup/PackageModels.cs
+OK src/Baxy.Setup/PathSafety.cs
+OK src/Baxy.Setup/ProductOperationLease.cs
+OK src/Baxy.Setup/ProductPackageVerifier.cs
+OK src/Baxy.Setup/Program.cs
+OK src/Baxy.Setup/Properties/AssemblyInfo.cs
+OK src/Baxy.Setup/SemanticVersionComparer.cs
+OK src/Baxy.Setup/SetupCommand.cs
+OK src/Baxy.Setup/SetupExceptions.cs
+OK src/Baxy.Setup/SetupHostCandidateVerifier.cs
+OK src/Baxy.Setup/SetupJsonContext.cs
+OK src/Baxy.Setup/SetupProductLifecycleExecutor.cs
+OK src/Baxy.Setup/SetupUninstallExecutor.cs
+OK src/Baxy.Setup/StableSetupHostManager.cs
+OK src/Baxy.Setup/StoredZipReader.cs
+OK src/Baxy.Setup/WindowsIntegrationStore.cs
+OK src/Baxy.Setup/WindowsProductLifecycle.cs
+OK src/Baxy.Setup/WindowsProductLifecycleAdapters.cs
+OK src/Baxy.Setup/WindowsSetupResumeLauncher.cs
+OK src/Baxy.Setup/WindowsShellLink.cs
+OK src/Baxy.Setup/WindowsUninstallRegistry.cs

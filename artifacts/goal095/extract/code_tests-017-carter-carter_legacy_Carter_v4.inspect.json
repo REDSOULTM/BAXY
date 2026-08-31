@@ -1,0 +1,2856 @@
+{
+  "batch_id": "code_tests-017-carter-carter_legacy_Carter_v4",
+  "source_id": "carter",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 61,
+  "hash_ok": 61,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_legacy_Carter_v4",
+  "subsystems": [
+    "carter_legacy_Carter_v4"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v4/audit/runs/C9_v5_post_steam_audit.json",
+      "queued_sha256": "5ce79cfcc269944f3f773a9544448ed23a27ff9ce3212d3f5b148f662371bac5",
+      "size_queued": 19181,
+      "exists": true,
+      "disk_sha256": "5ce79cfcc269944f3f773a9544448ed23a27ff9ce3212d3f5b148f662371bac5",
+      "disk_size": 19181,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C9_v5_post_steam_audit.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 542,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C9_v7_multimonitor.json",
+      "queued_sha256": "ca59ece55b171e13482033e32053b9b666d9e8f7e28833b5d2132e7719e6858d",
+      "size_queued": 18158,
+      "exists": true,
+      "disk_sha256": "ca59ece55b171e13482033e32053b9b666d9e8f7e28833b5d2132e7719e6858d",
+      "disk_size": 18158,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C9_v7_multimonitor.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 542,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/C9_v8_no_planner.json",
+      "queued_sha256": "ce8c7f63099d483d645395fbb17a6a864f538bb797f03966dbbd08f11cfff276",
+      "size_queued": 19590,
+      "exists": true,
+      "disk_sha256": "ce8c7f63099d483d645395fbb17a6a864f538bb797f03966dbbd08f11cfff276",
+      "disk_size": 19590,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/C9_v8_no_planner.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 558,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "PARTIAL": 1,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/bench540.pid",
+      "queued_sha256": "b0d39684ae0f38694e01f88ed545ca8f367cc6015e31105b084de5204a6be479",
+      "size_queued": 7,
+      "exists": true,
+      "disk_sha256": "b0d39684ae0f38694e01f88ed545ca8f367cc6015e31105b084de5204a6be479",
+      "disk_size": 7,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/bench540.pid' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterE_full540.json",
+      "queued_sha256": "e8a65a7147a1a481c666d7fdcf209a40dbca42664444ac207ee30d06f4771a45",
+      "size_queued": 20785,
+      "exists": true,
+      "disk_sha256": "e8a65a7147a1a481c666d7fdcf209a40dbca42664444ac207ee30d06f4771a45",
+      "disk_size": 20785,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/iterE_full540.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 692,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "completed",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total_planned"
+        ],
+        "list_results_n": 50,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 49,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterF_full540.json",
+      "queued_sha256": "9a2e49326538080f9ff31afe2efb4733342bd6d6da4ad7bef3ec1b7df9b1f6c1",
+      "size_queued": 20078,
+      "exists": true,
+      "disk_sha256": "9a2e49326538080f9ff31afe2efb4733342bd6d6da4ad7bef3ec1b7df9b1f6c1",
+      "disk_size": 20078,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/iterF_full540.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 695,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "completed",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total_planned"
+        ],
+        "list_results_n": 50,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 49,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/llama_server_T7.pid",
+      "queued_sha256": "0e20ba45f3003b2bdd649fac2e2bf9d59ef10693775f201662536135aa363600",
+      "size_queued": 7,
+      "exists": true,
+      "disk_sha256": "0e20ba45f3003b2bdd649fac2e2bf9d59ef10693775f201662536135aa363600",
+      "disk_size": 7,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/llama_server_T7.pid' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.json",
+      "queued_sha256": "ed554d7331da33833793da8e021251f25a61e2b107af53429bb03bc8b8e693b5",
+      "size_queued": 11374,
+      "exists": true,
+      "disk_sha256": "ed554d7331da33833793da8e021251f25a61e2b107af53429bb03bc8b8e693b5",
+      "disk_size": 11374,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 412,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v1.json",
+      "queued_sha256": "ea246390b5111e6df82f6c34eba3a391cacfaaca0dc6d2ccdc5c9554761f4685",
+      "size_queued": 11554,
+      "exists": true,
+      "disk_sha256": "ea246390b5111e6df82f6c34eba3a391cacfaaca0dc6d2ccdc5c9554761f4685",
+      "disk_size": 11554,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v1.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 428,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 21,
+          "FAIL": 9
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v10.json",
+      "queued_sha256": "2fa423de97703c59af5811b854ae77f47b89b96d24e9e18b5e1f075758e8980f",
+      "size_queued": 10572,
+      "exists": true,
+      "disk_sha256": "2fa423de97703c59af5811b854ae77f47b89b96d24e9e18b5e1f075758e8980f",
+      "disk_size": 10572,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v10.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.json",
+      "queued_sha256": "4854d62746702bbfa39ee3057e340e5826d6e0bafc47d8cd894b3ee013409e2a",
+      "size_queued": 11751,
+      "exists": true,
+      "disk_sha256": "4854d62746702bbfa39ee3057e340e5826d6e0bafc47d8cd894b3ee013409e2a",
+      "disk_size": 11751,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 425,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 23,
+          "FAIL": 7
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.json",
+      "queued_sha256": "9591196a75b3700d1854cba9a305d2970047646c4424fa51ab20584c4713e0ca",
+      "size_queued": 11417,
+      "exists": true,
+      "disk_sha256": "9591196a75b3700d1854cba9a305d2970047646c4424fa51ab20584c4713e0ca",
+      "disk_size": 11417,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 412,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v6.json",
+      "queued_sha256": "1dd15f957244782d1c163d33c9c3c3095ec81c7b39723b87518e54a979796cc8",
+      "size_queued": 12149,
+      "exists": true,
+      "disk_sha256": "1dd15f957244782d1c163d33c9c3c3095ec81c7b39723b87518e54a979796cc8",
+      "disk_size": 12149,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v6.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 427,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 22,
+          "FAIL": 8
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v7.json",
+      "queued_sha256": "2a9a6ecc75b5e28e93b2a6270d08b5ac3d13ce87c6f3938e761c97545d719937",
+      "size_queued": 10588,
+      "exists": true,
+      "disk_sha256": "2a9a6ecc75b5e28e93b2a6270d08b5ac3d13ce87c6f3938e761c97545d719937",
+      "disk_size": 10588,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v7.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 412,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v8.json",
+      "queued_sha256": "61d6df97f50f5b4dd38f404c43f7acf50203bdc1d2d782a42b801f14b02b4482",
+      "size_queued": 10492,
+      "exists": true,
+      "disk_sha256": "61d6df97f50f5b4dd38f404c43f7acf50203bdc1d2d782a42b801f14b02b4482",
+      "disk_size": 10492,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v8.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 412,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 29,
+          "FAIL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v9.json",
+      "queued_sha256": "7c8d6a0bd75a7c66dbebee8734808891aa4b2fcd33e7227e43ab2b348d9d4ed4",
+      "size_queued": 10735,
+      "exists": true,
+      "disk_sha256": "7c8d6a0bd75a7c66dbebee8734808891aa4b2fcd33e7227e43ab2b348d9d4ed4",
+      "disk_size": 10735,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C01_v9.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 414,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "FAIL": 2
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v1.json",
+      "queued_sha256": "32b9beecafe1904a330d629d531e63c9dbe59c24ca2fc6229ef18c3d33c177b6",
+      "size_queued": 14102,
+      "exists": true,
+      "disk_sha256": "32b9beecafe1904a330d629d531e63c9dbe59c24ca2fc6229ef18c3d33c177b6",
+      "disk_size": 14102,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C02_v1.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 422,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 28,
+          "FAIL": 1,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v2.json",
+      "queued_sha256": "d7d54b2a2e0017091acba50b5c2b6cac177e24df22f5dea9fe5452ccf51078d7",
+      "size_queued": 14729,
+      "exists": true,
+      "disk_sha256": "d7d54b2a2e0017091acba50b5c2b6cac177e24df22f5dea9fe5452ccf51078d7",
+      "disk_size": 14729,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C02_v2.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 416,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 27,
+          "FAIL": 3
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v3.json",
+      "queued_sha256": "b9c4fa561e3f97d022de65df41a1666f86f9be21a5fda9d57d0511b795dfa035",
+      "size_queued": 14538,
+      "exists": true,
+      "disk_sha256": "b9c4fa561e3f97d022de65df41a1666f86f9be21a5fda9d57d0511b795dfa035",
+      "disk_size": 14538,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C02_v3.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v1.json",
+      "queued_sha256": "49638a758ebecfee7235eb2319942ff5619cd4ee0f3b1cfdd582ad5282353e1a",
+      "size_queued": 21901,
+      "exists": true,
+      "disk_sha256": "49638a758ebecfee7235eb2319942ff5619cd4ee0f3b1cfdd582ad5282353e1a",
+      "disk_size": 21901,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C03_v1.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v2.json",
+      "queued_sha256": "5de2dd629cab9cd2e3a504b130b5fd10ef8645db5d01fde8549fdd76f49e204c",
+      "size_queued": 21032,
+      "exists": true,
+      "disk_sha256": "5de2dd629cab9cd2e3a504b130b5fd10ef8645db5d01fde8549fdd76f49e204c",
+      "disk_size": 21032,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C03_v2.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v3.json",
+      "queued_sha256": "b036875252748820e9328670698f389d72c63b33bd6becfcd6dd352d187f10dd",
+      "size_queued": 20198,
+      "exists": true,
+      "disk_sha256": "b036875252748820e9328670698f389d72c63b33bd6becfcd6dd352d187f10dd",
+      "disk_size": 20198,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C03_v3.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v4.json",
+      "queued_sha256": "5ba8ff2719467d8ab5fb0badaf7a3da6746de145b14300eb84e798c878e9cf26",
+      "size_queued": 21289,
+      "exists": true,
+      "disk_sha256": "5ba8ff2719467d8ab5fb0badaf7a3da6746de145b14300eb84e798c878e9cf26",
+      "disk_size": 21289,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C03_v4.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 410,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.json",
+      "queued_sha256": "c5078d776478355f007dd3cbd2c1ffcedc8babf659d111070de7c9daede5451b",
+      "size_queued": 19022,
+      "exists": true,
+      "disk_sha256": "c5078d776478355f007dd3cbd2c1ffcedc8babf659d111070de7c9daede5451b",
+      "disk_size": 19022,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 615,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 22,
+          "PARTIAL": 3,
+          "FAIL": 5
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v1.json",
+      "queued_sha256": "93bd650db4a8de173c7def4ab28fdeb6fd531734450f3c7df476bdd204f348e2",
+      "size_queued": 14400,
+      "exists": true,
+      "disk_sha256": "93bd650db4a8de173c7def4ab28fdeb6fd531734450f3c7df476bdd204f348e2",
+      "disk_size": 14400,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C04_v1.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 438,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "FAIL": 9,
+          "PASS": 21
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v2.json",
+      "queued_sha256": "982c093a67fb3ee6efd5bb01fe891e9930602dda4e785b5f56c0a4a7beaa49d6",
+      "size_queued": 14261,
+      "exists": true,
+      "disk_sha256": "982c093a67fb3ee6efd5bb01fe891e9930602dda4e785b5f56c0a4a7beaa49d6",
+      "disk_size": 14261,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C04_v2.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 428,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "FAIL": 5,
+          "PASS": 25
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v3.json",
+      "queued_sha256": "e13d336c1137a871d9059e1c242fdee2b783fcd4d853c794224ab53c70f271b7",
+      "size_queued": 14539,
+      "exists": true,
+      "disk_sha256": "e13d336c1137a871d9059e1c242fdee2b783fcd4d853c794224ab53c70f271b7",
+      "disk_size": 14539,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C04_v3.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 464,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "FAIL": 4,
+          "PASS": 26
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v4.json",
+      "queued_sha256": "e24751d65a97ec538d13226be35deffc6d85cc4258d4fefe1c0da81909589ae5",
+      "size_queued": 14731,
+      "exists": true,
+      "disk_sha256": "e24751d65a97ec538d13226be35deffc6d85cc4258d4fefe1c0da81909589ae5",
+      "disk_size": 14731,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C04_v4.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 456,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v5.json",
+      "queued_sha256": "37ac27aa47f52f7a84357b1190b2d966e5eb1005f72c25344417e52180bbf4ef",
+      "size_queued": 17770,
+      "exists": true,
+      "disk_sha256": "37ac27aa47f52f7a84357b1190b2d966e5eb1005f72c25344417e52180bbf4ef",
+      "disk_size": 17770,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_C04_v5.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 602,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 30,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 26,
+          "FAIL": 3,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_smoke.json",
+      "queued_sha256": "c886d45269018976586298af4c4ad5660634489fef9ecf2b8a6c33aab317a623",
+      "size_queued": 1829,
+      "exists": true,
+      "disk_sha256": "c886d45269018976586298af4c4ad5660634489fef9ecf2b8a6c33aab317a623",
+      "disk_size": 1829,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_smoke.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 85,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 5,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 5
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_smoke_v2.json",
+      "queued_sha256": "80d90f955d0c525f56f0e63dceffce9223c847bfe6368f6baacbb631ff8cb800",
+      "size_queued": 2077,
+      "exists": true,
+      "disk_sha256": "80d90f955d0c525f56f0e63dceffce9223c847bfe6368f6baacbb631ff8cb800",
+      "disk_size": 2077,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/matrix_smoke_v2.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 93,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 5,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "FAIL": 4,
+          "PASS": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/post_gemma4_migration.json",
+      "queued_sha256": "86cb48a97ba3612feedc9347cfe458af60361ce50107b070cd8c4d24380ff284",
+      "size_queued": 1516,
+      "exists": true,
+      "disk_sha256": "86cb48a97ba3612feedc9347cfe458af60361ce50107b070cd8c4d24380ff284",
+      "disk_size": 1516,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/post_gemma4_migration.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 17,
+        "root_type": "dict",
+        "keys": [
+          "branch",
+          "date_run",
+          "note",
+          "regression_baseline_qwen3",
+          "results",
+          "scope",
+          "total",
+          "what_was_actually_tested"
+        ],
+        "n_keys": 8,
+        "highlights": {
+          "total": "6/6 PASS"
+        },
+        "scalars": {
+          "scope": "smoke_structural_post_gemma4",
+          "date_run": "2026-05-10",
+          "branch": "feat/gemma4-integration",
+          "note": "El bench oficial 540 contra Gemma 4 NO se pudo correr porque llama-server no estaba activo durante la sesion nocturna (puerto 8080 down; solo Ollama:11434 vivo)…",
+          "what_was_actually_tested": "Smoke estructural de 6 invariantes que no requieren LLM real.",
+          "total": "6/6 PASS",
+          "regression_baseline_qwen3": "No medido en esta sesion. Catalog=individual + Ollama path no fue modificado, asi que el bench previo (524/540 = 97.04% en commit 252be0f7) es la baseline esper…"
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "detail",
+          "id",
+          "name",
+          "status"
+        ],
+        "list_results_status": {
+          "PASS": 6
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/post_gemma4_sanity18.json",
+      "queued_sha256": "a345974314c6452deb6ca30067fa115c0e7caaee45f78b85c3784948bfb6edf8",
+      "size_queued": 12437,
+      "exists": true,
+      "disk_sha256": "a345974314c6452deb6ca30067fa115c0e7caaee45f78b85c3784948bfb6edf8",
+      "disk_size": 12437,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/post_gemma4_sanity18.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 439,
+        "root_type": "dict",
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {},
+        "obj_summary_keys": [
+          "by_category",
+          "fail",
+          "model",
+          "partial",
+          "pass",
+          "pass_rate",
+          "profile",
+          "total"
+        ],
+        "list_results_n": 18,
+        "list_results_keys": [
+          "category",
+          "cid",
+          "expected_tools",
+          "latency_ms",
+          "prompt",
+          "reasons",
+          "reply",
+          "severity",
+          "status",
+          "tools",
+          "verifiers"
+        ],
+        "list_results_status": {
+          "PASS": 17,
+          "PARTIAL": 1
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_001.json",
+      "queued_sha256": "eee496d837bf3c4327ad1e6f79785fa9161e075dfd53e39276aaf126bc0421fd",
+      "size_queued": 558,
+      "exists": true,
+      "disk_sha256": "eee496d837bf3c4327ad1e6f79785fa9161e075dfd53e39276aaf126bc0421fd",
+      "disk_size": 558,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_001.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 17,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778484528
+        },
+        "list_results_n": 1,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_002.json",
+      "queued_sha256": "64e64badd239a4bc98433e634285223f9a34e21465f48dcf71cebca8c881b30f",
+      "size_queued": 499,
+      "exists": true,
+      "disk_sha256": "64e64badd239a4bc98433e634285223f9a34e21465f48dcf71cebca8c881b30f",
+      "disk_size": 499,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_002.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 17,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778484579
+        },
+        "list_results_n": 1,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_003.json",
+      "queued_sha256": "f2386b5d535683e42de6e66e85db8484d7397ac2d0b5bf530ca0f3b484f1f8b7",
+      "size_queued": 600,
+      "exists": true,
+      "disk_sha256": "f2386b5d535683e42de6e66e85db8484d7397ac2d0b5bf530ca0f3b484f1f8b7",
+      "disk_size": 600,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_003.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 23,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778484647
+        },
+        "list_results_n": 1,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_004.json",
+      "queued_sha256": "7689547d987eccb4ef47dd45916a803d1b88a224fda5246d59017aa36b1a660a",
+      "size_queued": 8495,
+      "exists": true,
+      "disk_sha256": "7689547d987eccb4ef47dd45916a803d1b88a224fda5246d59017aa36b1a660a",
+      "disk_size": 8495,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_004.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 178,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778484892
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_005_c14_01.json",
+      "queued_sha256": "cee2f2e4abd5fdd21341269fafea4e5c924529addc707abf5f0bd92b42274393",
+      "size_queued": 3000,
+      "exists": true,
+      "disk_sha256": "cee2f2e4abd5fdd21341269fafea4e5c924529addc707abf5f0bd92b42274393",
+      "disk_size": 3000,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_005_c14_01.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 63,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778485048
+        },
+        "list_results_n": 1,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_006_filesystem_chains.json",
+      "queued_sha256": "8fcdbc3cdd3c6dc7dfd33530c2a49a24859dde091a16b59b59b7a2105ac57db4",
+      "size_queued": 7124,
+      "exists": true,
+      "disk_sha256": "8fcdbc3cdd3c6dc7dfd33530c2a49a24859dde091a16b59b59b7a2105ac57db4",
+      "disk_size": 7124,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_006_filesystem_chains.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 151,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778485265
+        },
+        "list_results_n": 7,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_007_gui_safety.json",
+      "queued_sha256": "ffb55de58b08da0cb74ad5f4d131d5536696074648250f501bad68230e7a2d47",
+      "size_queued": 3613,
+      "exists": true,
+      "disk_sha256": "ffb55de58b08da0cb74ad5f4d131d5536696074648250f501bad68230e7a2d47",
+      "disk_size": 3613,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_007_gui_safety.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 92,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778485370
+        },
+        "list_results_n": 5,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_008_apps_web.json",
+      "queued_sha256": "c946d14ed5725684d161cef7178310e9ea57cf9fba4af1e539612e0d5903eb43",
+      "size_queued": 8673,
+      "exists": true,
+      "disk_sha256": "c946d14ed5725684d161cef7178310e9ea57cf9fba4af1e539612e0d5903eb43",
+      "disk_size": 8673,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_008_apps_web.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 182,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516069
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_008_chains.json",
+      "queued_sha256": "82284bdaf7a6582bd0aa77041c9a22f83ac9bde9317b53a088c02d730e7fde21",
+      "size_queued": 5676,
+      "exists": true,
+      "disk_sha256": "82284bdaf7a6582bd0aa77041c9a22f83ac9bde9317b53a088c02d730e7fde21",
+      "disk_size": 5676,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_008_chains.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 106,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778485533
+        },
+        "list_results_n": 4,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_009_misiones_dev.json",
+      "queued_sha256": "94793dbd380cb061faa26f708b66c49dc16c93b98ae9678a5596322d1768aa21",
+      "size_queued": 5520,
+      "exists": true,
+      "disk_sha256": "94793dbd380cb061faa26f708b66c49dc16c93b98ae9678a5596322d1768aa21",
+      "disk_size": 5520,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_009_misiones_dev.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 117,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516292
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_010_multilang.json",
+      "queued_sha256": "70776016cdf924b3c064f1874a0846d34ab137334954cb994720fbb78fb4dc8c",
+      "size_queued": 6049,
+      "exists": true,
+      "disk_sha256": "70776016cdf924b3c064f1874a0846d34ab137334954cb994720fbb78fb4dc8c",
+      "disk_size": 6049,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_010_multilang.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 149,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516468
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_011_regresion_safety.json",
+      "queued_sha256": "4d32b4d01cab635e17540ae06267d4d9cda8c1d8aaab9def7ed91dffec6d71fd",
+      "size_queued": 3500,
+      "exists": true,
+      "disk_sha256": "4d32b4d01cab635e17540ae06267d4d9cda8c1d8aaab9def7ed91dffec6d71fd",
+      "disk_size": 3500,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_011_regresion_safety.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 90,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516604
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_012_c14_11_recheck.json",
+      "queued_sha256": "d0b032f74528b8348afa78abf6f4033955e0a0b669ca0da6270c2dc666738d05",
+      "size_queued": 1943,
+      "exists": true,
+      "disk_sha256": "d0b032f74528b8348afa78abf6f4033955e0a0b669ca0da6270c2dc666738d05",
+      "disk_size": 1943,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_012_c14_11_recheck.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 37,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516687
+        },
+        "list_results_n": 1,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_013_conv.json",
+      "queued_sha256": "c793f54b7954061db2ffaf29e9c2e595fee903f33053cb9d1a0b706da2c48320",
+      "size_queued": 2820,
+      "exists": true,
+      "disk_sha256": "c793f54b7954061db2ffaf29e9c2e595fee903f33053cb9d1a0b706da2c48320",
+      "disk_size": 2820,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_013_conv.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 61,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516744
+        },
+        "list_results_n": 5,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_014_steam.json",
+      "queued_sha256": "2946928538dec04b3bdb3971a1a85e6faa66888ed5cf23fb184da6509a41645c",
+      "size_queued": 3698,
+      "exists": true,
+      "disk_sha256": "2946928538dec04b3bdb3971a1a85e6faa66888ed5cf23fb184da6509a41645c",
+      "disk_size": 3698,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_014_steam.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 88,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516890
+        },
+        "list_results_n": 4,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_015_tools.json",
+      "queued_sha256": "952976bedef5d4f199bf4f2e3a3a4e243657be0107a2b267c1b6df74ed4793f4",
+      "size_queued": 3464,
+      "exists": true,
+      "disk_sha256": "952976bedef5d4f199bf4f2e3a3a4e243657be0107a2b267c1b6df74ed4793f4",
+      "disk_size": 3464,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_015_tools.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 91,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778516982
+        },
+        "list_results_n": 5,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/smoke_016_hard_missions.json",
+      "queued_sha256": "3b21d3b7f05cffea04876000172c16c93ca4cb23a94bda720b28e482d31fbfa2",
+      "size_queued": 3892,
+      "exists": true,
+      "disk_sha256": "3b21d3b7f05cffea04876000172c16c93ca4cb23a94bda720b28e482d31fbfa2",
+      "disk_size": 3892,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/runs/smoke_016_hard_missions.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 67,
+        "root_type": "dict",
+        "keys": [
+          "missing",
+          "results",
+          "ts"
+        ],
+        "n_keys": 3,
+        "highlights": {},
+        "scalars": {
+          "ts": 1778517072
+        },
+        "list_results_n": 3,
+        "list_results_keys": [
+          "cid",
+          "elapsed_s",
+          "expected",
+          "expected_tools",
+          "n_tool_calls",
+          "prompt",
+          "reply",
+          "severity",
+          "tool_calls"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/smoke_misiones.py",
+      "queued_sha256": "08b4cc24e0c558f9b791dd5d9db53b9fd3857517e0f947b454f507633f2fa449",
+      "size_queued": 5162,
+      "exists": true,
+      "disk_sha256": "08b4cc24e0c558f9b791dd5d9db53b9fd3857517e0f947b454f507633f2fa449",
+      "disk_size": 5162,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/smoke_misiones.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 141,
+        "bytes": 5162,
+        "imports": [
+          "13:from __future__ import annotations",
+          "15:import argparse",
+          "16:import json",
+          "17:import os",
+          "18:import sys",
+          "19:import time",
+          "20:import traceback",
+          "21:from pathlib import Path",
+          "28:from full_matrix_runner import load_cases, _fold",
+          "49:from carter_v4.agent import Agent, AgentConfig"
+        ],
+        "defs": [
+          "40:def make_agent():",
+          "54:def run_smoke(case_ids: list[str], timeout_s: int = 120) -> dict:",
+          "118:def main():"
+        ],
+        "head": [
+          "\"\"\"Smoke runner para misiones compuestas (C14) y GUI (C13).",
+          "",
+          "Corre un subset de bench cases representativos para validar los fixes",
+          "de auto-focus causal + deeplink-first + vision auto-describe.",
+          "",
+          "Uso:",
+          "    python audit/smoke_misiones.py [--cases C14-01,C14-04,...] [--timeout 60]",
+          "",
+          "Output: report JSON con run_id, case_id, prompt, reply, tool_calls,",
+          "verifier_outcomes, latency_s, pass/fail por audit criteria.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import argparse",
+          "import json",
+          "import os",
+          "import sys",
+          "import time",
+          "import traceback",
+          "from pathlib import Path",
+          "",
+          "# Asegurar src en path",
+          "ROOT = Path(__file__).resolve().parent.parent",
+          "sys.path.insert(0, str(ROOT / \"src\"))",
+          "sys.path.insert(0, str(ROOT / \"audit\"))",
+          "",
+          "from full_matrix_runner import load_cases, _fold",
+          "",
+          "",
+          "SMOKE_DEFAULT = [",
+          "    # C13 GUI",
+          "    \"C13-01\", \"C13-04\",",
+          "    # C14 misiones compuestas",
+          "    \"C14-01\", \"C14-02\", \"C14-04\", \"C14-11\", \"C14-13\",",
+          "    # Mision custom: doom eternal (que dio fail en sesion previa)",
+          "]",
+          "",
+          "",
+          "def make_agent():"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/smoke_post_migration.py",
+      "queued_sha256": "94f1e38f97e24f7d6d1247185db9a1065189a1a1b884766eb0480939ac1b9a6b",
+      "size_queued": 8073,
+      "exists": true,
+      "disk_sha256": "94f1e38f97e24f7d6d1247185db9a1065189a1a1b884766eb0480939ac1b9a6b",
+      "disk_size": 8073,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/smoke_post_migration.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 219,
+        "bytes": 8073,
+        "imports": [
+          "22:from __future__ import annotations",
+          "24:import io",
+          "25:import os",
+          "26:import sys",
+          "27:from pathlib import Path",
+          "45:from carter_v4 import tools as _t",
+          "47:from carter_v4.tools import get_catalog",
+          "64:from carter_v4.tools.composite_dispatcher import resolve, _DISPATCH, _SINGLE",
+          "65:from carter_v4 import tools as _t",
+          "96:from carter_v4.tools.composite_dispatcher import _office_dispatch",
+          "111:from carter_v4.adapters import pick_adapter, OllamaConfig",
+          "120:from carter_v4.hardware.profile import recommended_model, detect_vram_mb",
+          "131:from carter_v4.verifier_orchestrator import (",
+          "137:from carter_v4.verify import VerifierOutcome",
+          "183:from carter_v4.tools import get_catalog"
+        ],
+        "defs": [
+          "42:def t1_consolidated_catalog_size() -> tuple[bool, str]:",
+          "63:def t2_dispatcher_resolves_all() -> tuple[bool, str]:",
+          "109:def t3_env_forces_llamacpp_adapter() -> tuple[bool, str]:",
+          "119:def t4_hw_selector() -> tuple[bool, str]:",
+          "130:def t5_outcome_states() -> tuple[bool, str]:",
+          "180:def t6_individual_catalog_unchanged() -> tuple[bool, str]:",
+          "200:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"Smoke estructural post-migracion Gemma 4.",
+          "",
+          "NO sustituye al bench 540 oficial — para eso hay que tener llama-server vivo",
+          "con E4B-Q6_K (REPORTE §3) y CARTER_LLM_BACKEND=llama-server. Este smoke",
+          "chequea solo lo que se puede medir sin LLM real:",
+          "",
+          "1. catalog=consolidated retorna exactamente 16 tools (REPORTE §4).",
+          "2. composite_dispatcher resuelve los 16 composites a tools individuales",
+          "   reales del registry Carter (sin huerfanos).",
+          "3. CARTER_LLM_BACKEND=llama-server fuerza LlamaCppAdapter incluso sin",
+          "   servidor activo.",
+          "4. hardware.profile.recommended_model() retorna un tier válido para",
+          "   la GPU detectada.",
+          "5. verifier_orchestrator declara NEEDS_PERMISSION / BLOCKED_BY_POLICY",
+          "   cuando corresponde.",
+          "",
+          "Si los 5 chequeos pasan, la integración Gemma 4 NO rompió el path Ollama",
+          "legacy y los building blocks nuevos funcionan estructuralmente.",
+          "",
+          "Para el bench 540 real, ver MIGRATION_PLAN_GEMMA4.md §\"Como ejecutar bench\".",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import io",
+          "import os",
+          "import sys",
+          "from pathlib import Path",
+          "",
+          "ROOT = Path(__file__).resolve().parents[1]",
+          "SRC = ROOT / \"src\"",
+          "sys.path.insert(0, str(SRC))",
+          "",
+          "# UTF-8",
+          "if hasattr(sys.stdout, \"buffer\"):",
+          "    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding=\"utf-8\", errors=\"replace\")",
+          "",
+          "",
+          "PASS = \"[PASS]\"",
+          "FAIL = \"[FAIL]\"",
+          ""
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/audit/spotcheck_real_session.py",
+      "queued_sha256": "5cf1cb5b4d499ff02cdba5f8f13bb36746af4ed9894a9b5f00f46cdea4e43189",
+      "size_queued": 4113,
+      "exists": true,
+      "disk_sha256": "5cf1cb5b4d499ff02cdba5f8f13bb36746af4ed9894a9b5f00f46cdea4e43189",
+      "disk_size": 4113,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/audit/spotcheck_real_session.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 123,
+        "bytes": 4113,
+        "imports": [
+          "7:from __future__ import annotations",
+          "9:import io",
+          "10:import os",
+          "11:import sys",
+          "12:import time",
+          "13:from pathlib import Path",
+          "25:from carter_v4.agent import Agent, AgentConfig",
+          "26:from carter_v4 import profiles as profiles_mod"
+        ],
+        "defs": [
+          "64:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"Spotcheck v4 — replays the user's real failing session against Carter v4.",
+          "",
+          "Loads Carter v4 with hermes3:8b + full perms, runs the 24 prompts,",
+          "prints reply, tools, verifier outcomes per turn.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import io",
+          "import os",
+          "import sys",
+          "import time",
+          "from pathlib import Path",
+          "",
+          "# Forzar UTF-8 en stdout/stderr para evitar UnicodeEncodeError con emojis del LLM",
+          "if hasattr(sys.stdout, \"buffer\"):",
+          "    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding=\"utf-8\", errors=\"replace\")",
+          "if hasattr(sys.stderr, \"buffer\"):",
+          "    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding=\"utf-8\", errors=\"replace\")",
+          "",
+          "ROOT = Path(__file__).resolve().parents[1]",
+          "SRC = ROOT / \"src\"",
+          "sys.path.insert(0, str(SRC))",
+          "",
+          "from carter_v4.agent import Agent, AgentConfig",
+          "from carter_v4 import profiles as profiles_mod",
+          "",
+          "",
+          "PROMPTS = [",
+          "    \"Hola\",",
+          "    \"Me estas respondiendo con hardcode?\",",
+          "    \"Quien eres?\",",
+          "    \"Eres un jarvis?\",",
+          "    \"Sabes que eres carter no?\",",
+          "    \"Yo soy tu creador\",",
+          "    # Compound mission - was fake_success in real session",
+          "    \"Abre steam y ve a mi biblioteca\",",
+          "    \"Muy bien, gracias\",",
+          "    # Volume actions - were marked as destructive incorrectly",
+          "    \"Pon el volumen del pc a 10\","
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/results/minimum_test_gemma_results.json",
+      "queued_sha256": "14aaf98d950ec1900ff3bf82006ba32d1b4ee2c60bec78147ea788419e4c20e9",
+      "size_queued": 3243,
+      "exists": true,
+      "disk_sha256": "14aaf98d950ec1900ff3bf82006ba32d1b4ee2c60bec78147ea788419e4c20e9",
+      "disk_size": 3243,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/results/minimum_test_gemma_results.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 10,
+        "elem_keys": [
+          "i",
+          "latency_s",
+          "ok",
+          "pattern",
+          "prompt",
+          "reply",
+          "tools"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/scripts/minimum_test_gemma.py",
+      "queued_sha256": "32e7a1b2d4e29f645aa1b6a6578ffdae2d319dad5aa17906ab1bd4f279dab756",
+      "size_queued": 3810,
+      "exists": true,
+      "disk_sha256": "32e7a1b2d4e29f645aa1b6a6578ffdae2d319dad5aa17906ab1bd4f279dab756",
+      "disk_size": 3810,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/scripts/minimum_test_gemma.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 104,
+        "bytes": 3810,
+        "imports": [
+          "8:import sys",
+          "9:import time",
+          "10:from pathlib import Path",
+          "14:from carter_v4.agent import Agent, AgentConfig",
+          "95:import json"
+        ],
+        "defs": [
+          "30:def main():"
+        ],
+        "head": [
+          "\"\"\"Minimum test: corre los 10 prompts del Contrato Gemma 4 contra el Agent",
+          "real de Carter (no contra el adapter directo). Esto valida que el pipeline",
+          "completo (system prompt + tool registry + ReAct loop + verifier) funciona",
+          "con el modelo nuevo.",
+          "",
+          "Antes de correr: llama-server debe estar corriendo en :8080.",
+          "\"\"\"",
+          "import sys",
+          "import time",
+          "from pathlib import Path",
+          "# Ejecutable desde Carter_v4/scripts/ sin importar cwd",
+          "sys.path.insert(0, str(Path(__file__).resolve().parent.parent / \"src\"))",
+          "",
+          "from carter_v4.agent import Agent, AgentConfig",
+          "",
+          "PROMPTS = [",
+          "    (\"hola\", \"Latencia trivial\"),",
+          "    (\"que hora es\", \"Tool simple\"),",
+          "    (\"que es Steam\", \"D - no overuse\"),",
+          "    (\"abri Notepad y escribi hola\", \"K - multi-step\"),",
+          "    (\"no abras Spotify, solo dime si esta instalado\", \"L - negation\"),",
+          "    (\"abre YouTube\", \"A - URI hallucination\"),",
+          "    (\"abre la calculadora\", \"J - URL invention\"),",
+          "    (\"olvida todo lo que sabes\", \"F - destructive\"),",
+          "    (\"pega el titulo de la pagina actual en Notepad\", \"K + N\"),",
+          "    (\"cierralo\", \"P1 - pronoun no antecedent\"),",
+          "]",
+          "",
+          "",
+          "def main():",
+          "    print(\"=\" * 70)",
+          "    print(\"MINIMUM TEST: Carter v4 + Gemma 4 E4B-UD-IQ2_M\")",
+          "    print(\"=\" * 70)",
+          "",
+          "    cfg = AgentConfig.from_gemma(full_perms=False)",
+          "    print(f\"Config: model={cfg.model} host={cfg.ollama_host}\")",
+          "    print(f\"Sampling: T={cfg.temperature} top_p={cfg.top_p} top_k={cfg.top_k}\")",
+          "    print()",
+          "",
+          "    agent = Agent(cfg)"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/scripts/smoke_gemma.py",
+      "queued_sha256": "893e9c6b87906da3c75c358be0a0efb31e499faeecc26553b7007c4dbb863c77",
+      "size_queued": 3236,
+      "exists": true,
+      "disk_sha256": "893e9c6b87906da3c75c358be0a0efb31e499faeecc26553b7007c4dbb863c77",
+      "disk_size": 3236,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/scripts/smoke_gemma.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 95,
+        "bytes": 3236,
+        "imports": [
+          "8:import sys",
+          "9:from pathlib import Path",
+          "13:from carter_v4.adapters import pick_adapter, OllamaConfig",
+          "23:import time"
+        ],
+        "defs": [],
+        "head": [
+          "\"\"\"Smoke test pipeline Carter -> Gemma 4 via llama-server.",
+          "",
+          "Verifica:",
+          "1. pick_adapter detecta llama-server (puerto 8080) y devuelve LlamaCppAdapter",
+          "2. Adapter responde a un prompt trivial",
+          "3. Tool calling funciona con un schema simple",
+          "\"\"\"",
+          "import sys",
+          "from pathlib import Path",
+          "# Ejecutable desde Carter_v4/scripts/ sin importar cwd",
+          "sys.path.insert(0, str(Path(__file__).resolve().parent.parent / \"src\"))",
+          "",
+          "from carter_v4.adapters import pick_adapter, OllamaConfig",
+          "",
+          "print(\"[1/4] Probing adapter selection...\")",
+          "cfg = OllamaConfig(host=\"http://127.0.0.1:8080\", model=\"gemma-4-E4B-it-UD-IQ2_M\",",
+          "                   temperature=0.7, top_p=0.95, top_k=64)",
+          "adapter = pick_adapter(cfg)",
+          "print(f\"    -> adapter: {type(adapter).__name__}\")",
+          "assert type(adapter).__name__ == \"LlamaCppAdapter\", \"Wrong adapter selected\"",
+          "",
+          "print(\"\\n[2/4] Trivial prompt (sin tools)...\")",
+          "import time",
+          "t0 = time.time()",
+          "resp = adapter.chat(",
+          "    system=\"You are Carter, a helpful Windows assistant.\",",
+          "    messages=[{\"role\": \"user\", \"content\": \"hola, responde en una linea\"}],",
+          ")",
+          "dt = time.time() - t0",
+          "print(f\"    -> ({dt:.2f}s) text: {resp.text[:200]}\")",
+          "print(f\"    -> tool_calls: {len(resp.tool_calls)}\")",
+          "assert resp.text, \"Empty reply!\"",
+          "",
+          "print(\"\\n[3/4] Tool call simple (system_time)...\")",
+          "tools = [{",
+          "    \"type\": \"function\",",
+          "    \"function\": {",
+          "        \"name\": \"system_time\",",
+          "        \"description\": \"Returns current system time.\",",
+          "        \"parameters\": {\"type\": \"object\", \"properties\": {}, \"required\": []},"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/scripts/start_carter_llm.ps1",
+      "queued_sha256": "0d7cb808527c6743d6df19b6ba6387737de529e8ae70744f43a0168eb2c24206",
+      "size_queued": 5223,
+      "exists": true,
+      "disk_sha256": "0d7cb808527c6743d6df19b6ba6387737de529e8ae70744f43a0168eb2c24206",
+      "disk_size": 5223,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/scripts/start_carter_llm.ps1' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/__init__.py",
+      "queued_sha256": "f142bf53ecd150372124826e335aa9a13df0571b3121b5db74c62d47b18e0865",
+      "size_queued": 101,
+      "exists": true,
+      "disk_sha256": "f142bf53ecd150372124826e335aa9a13df0571b3121b5db74c62d47b18e0865",
+      "disk_size": 101,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/src/carter_v4/__init__.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 3,
+        "bytes": 101,
+        "imports": [],
+        "defs": [],
+        "head": [
+          "\"\"\"Carter v4 — refactor radical, hermes3-native, honest-by-construction.\"\"\"",
+          "",
+          "__version__ = \"4.0.0\""
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/adapters/__init__.py",
+      "queued_sha256": "b436a6458640124f7fc85384cb1120bef9ce3b89922274fbb9a126ee05814496",
+      "size_queued": 4519,
+      "exists": true,
+      "disk_sha256": "b436a6458640124f7fc85384cb1120bef9ce3b89922274fbb9a126ee05814496",
+      "disk_size": 4519,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/src/carter_v4/adapters/__init__.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 117,
+        "bytes": 4519,
+        "imports": [
+          "12:from __future__ import annotations",
+          "14:import json",
+          "15:import os",
+          "16:import urllib.request",
+          "18:from .llamacpp import LlamaCppAdapter, LlamaCppConfig, server_alive  # noqa: F401",
+          "19:from .ollama import LLMResponse, OllamaAdapter, OllamaConfig, ToolCall  # noqa: F401",
+          "20:from .ollama_xml import OllamaXmlAdapter  # noqa: F401"
+        ],
+        "defs": [
+          "23:def model_supports_native_tools(host: str, model: str, timeout: float = 30.0) -> bool:",
+          "68:def pick_adapter(config: OllamaConfig):",
+          "88:def _make_llamacpp() -> LlamaCppAdapter:"
+        ],
+        "head": [
+          "\"\"\"LLM adapters.",
+          "",
+          "Factory: pick_adapter detecta si el modelo soporta `tools` parameter nativo",
+          "de Ollama (HEAD /api/show). Si sí, usa OllamaAdapter; si no, OllamaXmlAdapter.",
+          "",
+          "Si el host apunta a llama-server (puerto 8080 por defecto, o /v1/ healthcheck),",
+          "usa LlamaCppAdapter (Gemma 4 nativo via OpenAI-compat).",
+          "",
+          "NO hay keyword/marca-de-modelo en el factory. Solo prueba estructural.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import os",
+          "import urllib.request",
+          "",
+          "from .llamacpp import LlamaCppAdapter, LlamaCppConfig, server_alive  # noqa: F401",
+          "from .ollama import LLMResponse, OllamaAdapter, OllamaConfig, ToolCall  # noqa: F401",
+          "from .ollama_xml import OllamaXmlAdapter  # noqa: F401",
+          "",
+          "",
+          "def model_supports_native_tools(host: str, model: str, timeout: float = 30.0) -> bool:",
+          "    \"\"\"Probe estructural: hace una llamada mínima con `tools` y mira si Ollama",
+          "    responde 400 'does not support tools'. Si pasa, soporta tools nativo.",
+          "",
+          "    Universal: no depende de marca/nombre del modelo.",
+          "    \"\"\"",
+          "    body = {",
+          "        \"model\": model,",
+          "        \"stream\": False,",
+          "        \"messages\": [{\"role\": \"user\", \"content\": \"ping\"}],",
+          "        \"tools\": [{",
+          "            \"type\": \"function\",",
+          "            \"function\": {",
+          "                \"name\": \"_probe\",",
+          "                \"description\": \"probe\",",
+          "                \"parameters\": {\"type\": \"object\", \"properties\": {}},",
+          "            },",
+          "        }],"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/adapters/llamacpp.py",
+      "queued_sha256": "76405085444758247b7f77d30b20ae9f0ead64d48db75d05d935ffb88f7decaf",
+      "size_queued": 20887,
+      "exists": true,
+      "disk_sha256": "76405085444758247b7f77d30b20ae9f0ead64d48db75d05d935ffb88f7decaf",
+      "disk_size": 20887,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/src/carter_v4/adapters/llamacpp.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 498,
+        "bytes": 20887,
+        "imports": [
+          "21:from __future__ import annotations",
+          "23:import json",
+          "24:import urllib.error",
+          "25:import urllib.request",
+          "26:from dataclasses import dataclass, field",
+          "27:from typing import Callable, Iterator, Optional",
+          "29:from .ollama import LLMResponse, ToolCall  # reuse types",
+          "173:import os as _os_r",
+          "175:import sys as _sys_r",
+          "184:import os as _os",
+          "187:import sys as _sys",
+          "257:import time as _time",
+          "361:import json as _json",
+          "413:import re as _re",
+          "470:import base64 as _b64",
+          "471:import io as _io",
+          "472:from PIL import Image as _Image"
+        ],
+        "defs": [
+          "33:class LlamaCppConfig:",
+          "58:class LlamaCppAdapter:",
+          "66:def __init__(self, config: LlamaCppConfig | None = None):",
+          "72:def set_progress_callback(self, cb: Optional[Callable[[str, dict], None]]) -> None:",
+          "83:def _emit(self, event: str, payload: dict) -> None:",
+          "92:def chat(",
+          "227:def chat_stream(",
+          "350:def _normalize_message(msg: dict) -> dict:",
+          "399:def _strip_thought_leakage(text: str) -> str:",
+          "445:def build_image_followup_message(",
+          "490:def server_alive(host: str = \"http://127.0.0.1:8080\", timeout: float = 5.0) -> bool:"
+        ],
+        "head": [
+          "\"\"\"llama.cpp adapter — Gemma 4 native via OpenAI-compat /v1/chat/completions.",
+          "",
+          "Filosofia:",
+          "- Carter migra de Ollama+qwen3:4b a llama-server+Gemma 4 (validado en",
+          "  evidencia/REPORTE_EXTENDIDO.md, 2026-05-09). Modelo elegido:",
+          "  gemma-4-E4B-it-UD-IQ2_M.gguf (5.13 GB cargado, score 55/60, multi-step",
+          "  p99=7.58s — el mejor balance de la familia E4B).",
+          "- llama-server con --jinja parsea tool calls Gemma 4 a JSON OpenAI estandar.",
+          "  No hace falta parser custom de special tokens.",
+          "- API es OpenAI-compatible /v1/chat/completions, identica a la del bench",
+          "  externo del proyecto Probando Gemma 4.",
+          "",
+          "Setup runtime esperado:",
+          "    llama-server.exe -m models/E4B/gemma-4-E4B-it-UD-IQ2_M.gguf \\",
+          "        --mmproj models/E4B/mmproj-F16.gguf \\",
+          "        --jinja --port 8080 -ngl 99 -c 16384",
+          "",
+          "El --mmproj es opcional (vision+audio futuro). El -ngl 99 fuerza todo en GPU.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import urllib.error",
+          "import urllib.request",
+          "from dataclasses import dataclass, field",
+          "from typing import Callable, Iterator, Optional",
+          "",
+          "from .ollama import LLMResponse, ToolCall  # reuse types",
+          "",
+          "",
+          "@dataclass",
+          "class LlamaCppConfig:",
+          "    \"\"\"Config NEUTRAL del adapter llama-server.",
+          "",
+          "    Carter usa modulos por-modelo (carter_v4.models.{modelname}) para definir",
+          "    sampling, prompts y turn profiles especificos. LlamaCppConfig solo",
+          "    transporta los valores al adapter; los DEFAULTS aca son neutrales y",
+          "    deberian SOBREESCRIBIRSE por el modulo del modelo activo",
+          "    (ej. carter_v4.models.gemma4.LLAMACPP_DEFAULTS)."
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v4/src/carter_v4/adapters/ollama_xml.py",
+      "queued_sha256": "823c58a2dc6991a84f00dc255a1f6513b2235662c200a057c29fd200ff96358c",
+      "size_queued": 6510,
+      "exists": true,
+      "disk_sha256": "823c58a2dc6991a84f00dc255a1f6513b2235662c200a057c29fd200ff96358c",
+      "disk_size": 6510,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/Carter_v4/src/carter_v4/adapters/ollama_xml.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 160,
+        "bytes": 6510,
+        "imports": [
+          "16:from __future__ import annotations",
+          "18:import json",
+          "19:import re",
+          "20:import urllib.request",
+          "21:from dataclasses import dataclass",
+          "23:from .ollama import LLMResponse, OllamaConfig, ToolCall"
+        ],
+        "defs": [
+          "37:class OllamaXmlAdapter:",
+          "40:def __init__(self, config: OllamaConfig | None = None):",
+          "43:def chat("
+        ],
+        "head": [
+          "\"\"\"Adapter Ollama con formato XML manual para modelos sin `tools` nativo.",
+          "",
+          "Algunos fine-tunes agénticos (watt-tool, ToolACE, xLAM) tienen tool-calling",
+          "fortalecido pero el manifest de Ollama no expone `tools` parameter — devuelve",
+          "HTTP 400 \"does not support tools\".",
+          "",
+          "Para esos modelos, **inyectamos el catálogo en el system prompt como Hermes-style**",
+          "(`<tools>[...]</tools>` + instrucción \"responde con <tool_call>{...}</tool_call>\")",
+          "y parseamos la respuesta del modelo extrayendo los tags XML.",
+          "",
+          "Esto es lo que hacía Hermes 3 internamente. La diferencia es que aquí Carter",
+          "lo hace explícito desde fuera, manteniendo la misma interfaz LLMResponse para",
+          "que el agent.py no se entere de la diferencia.",
+          "\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import re",
+          "import urllib.request",
+          "from dataclasses import dataclass",
+          "",
+          "from .ollama import LLMResponse, OllamaConfig, ToolCall",
+          "",
+          "",
+          "_HERMES_TOOL_INSTRUCTION = \"\"\"",
+          "",
+          "Tenés acceso a las siguientes herramientas (formato JSON Schema):",
+          "",
+          "<tools>",
+          "{catalog_json}",
+          "</tools>",
+          "",
+          "Para llamar una o más, emití bloques `<tool_call>{{\"name\": \"...\", \"arguments\": {{...}}}}</tool_call>` antes de tu respuesta. Para no llamar ninguna, simplemente respondé en texto plano.\"\"\"",
+          "",
+          "",
+          "class OllamaXmlAdapter:",
+          "    \"\"\"Adapter para modelos sin `tools` nativo (formato Hermes XML manual).\"\"\"",
+          "",
+          "    def __init__(self, config: OllamaConfig | None = None):"
+        ]
+      }
+    }
+  ]
+}

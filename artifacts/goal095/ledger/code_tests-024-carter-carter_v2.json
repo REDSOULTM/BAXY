@@ -1,0 +1,87 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-024-carter-carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:43:33Z",
+  "closed_utc": "2026-08-31T02:43:34Z",
+  "estimated_tokens": 259943,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 3,
+  "subsystem": "carter_v2",
+  "subsystems": [
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "Carter_v2/Carter_v2.rar",
+      "sha256": "e5b2663d37700efcd9d091c8c9fc49e8f1cf5a32a715eeecb35361fbb9726251",
+      "source_id": "carter",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-021-carter-carter_v2:Carter_v2/Carter_v2.rar"
+    },
+    {
+      "path": "Carter_v2/probe_all_tools.py",
+      "sha256": "b605bae4bc4bb288dc002a710f8f0876bf50a07c922554dd9c7dbeee0cbfafbf",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2806"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets/.gitattributes",
+      "sha256": "6bf85a6a638422cce7c57f67ebad5a07a846caf76ccab1eb94a1239bfb7dd6f3",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-024-carter-carter_v2-01-Carter_v2-probe_all_tools.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/probe_all_tools.py (1 ficheros)",
+      "contract": "Grupo Carter_v2/probe_all_tools.py: 1 archivos. Terminales leido PY \"\"\" probe_all_tools.py — Prueba completa de TODAS las herramientas de Carter con LLM real.  Cubre todos los namespaces:   clock, system, memory, media, network, notifications, power, scheduler,   process, filesystem, web, window, desktop, terminal, download, taskman,   input, meta, steam (skipif) ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_all_tools.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/probe_all_tools.py",
+        "ranges": [
+          "1-2806"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=3 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-025-carter-carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-024-carter-carter_v2.inspect.json"
+}

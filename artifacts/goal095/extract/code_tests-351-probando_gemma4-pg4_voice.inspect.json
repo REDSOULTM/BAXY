@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-351-probando_gemma4-pg4_voice",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_voice",
+  "subsystems": [
+    "pg4_voice"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/voice/tests/Grabación (2).m4a",
+      "queued_sha256": "c40e200d2e301f608c7523e78f3568e2616e239417c02bf1f1faaec4dc1fa0af",
+      "size_queued": 7454724,
+      "exists": true,
+      "disk_sha256": "c40e200d2e301f608c7523e78f3568e2616e239417c02bf1f1faaec4dc1fa0af",
+      "disk_size": 7454724,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

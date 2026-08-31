@@ -1,0 +1,584 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-399-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:48Z",
+  "closed_utc": "2026-08-31T02:46:51Z",
+  "estimated_tokens": 293662,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 50,
+  "subsystem": "baxy_art_audit",
+  "subsystems": [
+    "baxy_art_audit",
+    "baxy_art_field-ui-4a83f2d-export"
+  ],
+  "files": [
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress.py",
+      "sha256": "6f2a5fb521a556f09d329498514bf4d6b45dc3f0a4092dd77f78d14f73c7d78e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-252"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audit_button_target.ps1",
+      "sha256": "cf83b0826dd7600c0210f2cbceac55c46b738027f3d1b60331f4123602d88154",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audit_clipboard_target.ps1",
+      "sha256": "10f20f397d67c2682eacda1038b58dfe8996abc5969618798e4e3e9ee59bc786",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audit_text_target.ps1",
+      "sha256": "30abe1ba6b295d9357d56495db3906f24721851c5509baaac53870fd0f21f511",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audit_wpf_text_target.ps1",
+      "sha256": "6c7fe21e70a1e0184d28bca55a4b328d1f2a95a4e5c3364b5cf02b49c72c6854",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/browser_chain.py",
+      "sha256": "cd22500569bdc9158090ba57c6ed22f582869000859d2ecc6c0834e39666439a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-174"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/browser_visible_click_chain.py",
+      "sha256": "64553746759838fb106c10407165bb081148eabbc69bc9ab220d9ecc3f067ada",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-217"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/build_operation_coverage.py",
+      "sha256": "68a52322496e2cfe6a06e2325d8a4d8c44ed5916ca36c7ee81cc7ba92cb35d53",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-282"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/build_soak_summary.py",
+      "sha256": "27ed6964e34a9e7b0cc1b549c722b0832b1160f74097b2f693ecf18277fee5f0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-173"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/capture_ocr_chain.py",
+      "sha256": "f74372f23b3656b20115337746d2ad617cd18be8f5e26777a78760ac2447d8a8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-163"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/capture_ui_accessibility.ps1",
+      "sha256": "3e6ede1ec52abca7fcfc41e5633169d3a5a48405d9970699b0676f2d455bcc5c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/cleanup_exact_audit_root.py",
+      "sha256": "1ab5b824d97f0d25a43c5bae7988cf28fd9201cc63459f2ebffb2a891f562f5b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-33"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/cleanup_stale_audit_roots.py",
+      "sha256": "6cce629b4ca0e91cade41e1ea6b9ff291295070238b261757d97b4b5f97f6575",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/clipboard_interaction_chain.py",
+      "sha256": "a881ed1eef72f44a56566a226c9c621b814b90b5bb0e155d6f0c9d33030de9e0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-266"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/cold_start_stress.py",
+      "sha256": "9ebcb7af4d8d926f3a757d60d12f0d7f73b0fd88afd749a2c9773fa4045d0b43",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-188"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/diagnose_select_all.ps1",
+      "sha256": "de65b57a14ea2a52fab315a931dfbf70c3325b876219a612f5e20185aa5bfe10",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/diagnose_shortlist.py",
+      "sha256": "d2eb80173d0318820542f0138fad98087a8f37c1d2f0e87d37b434f888462d18",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-117"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/diagnose_voice_clip.py",
+      "sha256": "5ad1f6dd7eced8d660cff5577c63b937ff7080b9642c50149d6955578fbbaccd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-122"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_chain.py",
+      "sha256": "8c6e75fb432c133d6ea86d00d4f7a8030de573141be035ed09baa19340859a73",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-286"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/invoke_operation.py",
+      "sha256": "407409cb3680b4a603f5a1150bc8140e9ac715fbf11256cafb5fcb5493c3f9ab",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-170"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/known_trash_restore_chain.py",
+      "sha256": "52858d72f363a3b364d69901ab060b67ac1c1b593f192f05e15c88dabae9fa81",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-187"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/local_data_chain.py",
+      "sha256": "f487a355d35f8369653720836dea6429c018b6cdbab687673c04b3d7767659c6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-328"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_control_chain.py",
+      "sha256": "72e50f4da9a070568ca451cb09268a8bcaf8691b6a59a8591499b7196327fcb2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-199"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/mind_overnight_soak.py",
+      "sha256": "b83a1590afe7ebb14960b04f23e14be48c380e2fa3461091e46dbbbba00716a0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-496"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/notification_chain.py",
+      "sha256": "f5b8107c941475d9245bef32ced1a9cc755938c7b708bcfad965806fdc6af35c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-213"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/notification_due_chain.py",
+      "sha256": "e79de11f06f7467871c5f4c4af91bd6b08d6619c9ea2be9c10898d9a7c026d01",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-166"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/office_document_chain.py",
+      "sha256": "48d100b923a1bd9c3387df61b41159621d31bdeaa8f9b557dd0bef14e4a554e7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-193"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/overnight_soak.py",
+      "sha256": "d945e0b6877f205450927f655550be54da76093e67854da3a02861ef43dd5e02",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-376"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/parallel_core_start_stress.py",
+      "sha256": "c3660ef4f15a930ef0981e128aab6459689071f72dce0edd50a356b13668eac3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-192"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/probe_live_turns.py",
+      "sha256": "bb4e08274dd514d8f79b287f4c05f895ba035927b751ed7c1ae54ea12b6681a1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-224"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/process_terminate_chain.py",
+      "sha256": "65ece9c3695d305f4ffdf82edf54a67279901c483827234c92f0233957fad194",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-193"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/protocol_burst_stress.py",
+      "sha256": "ddbe4952a2cfa4fd0657fba4478fff16d90a3e9072ce9e31cd49deedc677fb95",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-218"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/protocol_fuzz_recovery_stress.py",
+      "sha256": "c36c195dc5ec470e930f1f83ff43a3499296b3d1be37819c5b738604f8773c13",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-264"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/protocol_recovery_stress.py",
+      "sha256": "7f1077840ac42c110be80c1f835a51e0aee9b6999ec6a1685afe788e6a057f32",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-172"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/replay_chain.py",
+      "sha256": "5d3a49bb740f91786f125023ad9891514cac2e6d0bca6ec5c5532c9923cabdbf",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-169"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/reproduce_app_open.py",
+      "sha256": "b8d99a37569f19d70c26036c5d7991c30d5b6f63657b2126b03b7c7dbfa0ece5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-170"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/reproduce_bluetooth_list_timeout.py",
+      "sha256": "ea7f859b7a15190c85e2364d904c2cdaa5d193c912967b0c56272c3eed625184",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-93"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/reproduce_package_prepare_crash.py",
+      "sha256": "f2597e90bf2d5cb40bae8e92d1ab572fd9804e2e238cf49ff0ffb147782a2ca1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-96"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/reproduce_social_greeting.py",
+      "sha256": "5e9985d13256d3141d0e68ce4abb0c4d9b41db62154b69484eb6d675287da6e0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-78"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/reproduce_steam_appid_crash.py",
+      "sha256": "5c7fce9575f31bf5d1d7d554037121094b0945070e740b1c632b36fc3c0d9bd7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/restart_replay_chain.py",
+      "sha256": "e5310698213fbb39f2192702845fef7e82cd740e68e57935e62288e4e2a48c1a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-153"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/sandbox_named_chain.py",
+      "sha256": "e638b482266bfddf6405048b3f0274d2675602985be438b47b8133da0983b0f2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-220"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/send_ui_turn.ps1",
+      "sha256": "ffeeaf2943eec795a4f2922c6f754442c8c6f12b32f69fe9964437dd2656d368",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/smoke_catalog.py",
+      "sha256": "d051ab52fcc74ac7b9251d13a083b9a31298749ba893cd0b7c704d252f8acb57",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-307"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/ui_startup_stress.py",
+      "sha256": "72ae569160c4306ba25bcd98ae221cdc59afbfc3826112ca9f9f6cbad4c30062",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-196"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/visible_click_chain.py",
+      "sha256": "b54b5398b3ddf4123c6d80c768c62b278310d62654b59575f4820bcc04571eea",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-209"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/window_input_chain.py",
+      "sha256": "50e1c2f14b5437d4ebe1a55113e37eb3d567ff39898967c2f596e747a5fb22ea",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-287"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/window_input_safe_chain.py",
+      "sha256": "1f73fb480fb5cf35b0f6f743c4bdd4f306669d714901b3b7214b594d027192db",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-401"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/dist/assets/index-D3QuhrLm.js",
+      "sha256": "0906b41843e9516a83d34525422c6b298a60fad0e6ef84b5ffe096b606a02814",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/eslint.config.js",
+      "sha256": "f19395caf80173ffbd41ab74f8eef4fc26c042f84a937de4a6286ec5c13ad401",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-399-baxy-01-artifacts-audit-2026-07-27-night-audit",
+      "disposition": "evidence_only",
+      "component": "artifacts/audit/2026-07-27-night-audit (48 ficheros)",
+      "contract": "Grupo artifacts/audit/2026-07-27-night-audit: 48 archivos. Terminales leido PY \"\"\"Audit installed-core recovery after an abrupt stop with queued requests.\"\"\"  from __future__ import annotations  import argparse import json import os import queue",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/audit_button_target.ps1",
+        "artifacts/audit/2026-07-27-night-audit/audit_clipboard_target.ps1",
+        "artifacts/audit/2026-07-27-night-audit/audit_text_target.ps1",
+        "artifacts/audit/2026-07-27-night-audit/audit_wpf_text_target.ps1",
+        "artifacts/audit/2026-07-27-night-audit/browser_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/browser_visible_click_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/build_operation_coverage.py",
+        "artifacts/audit/2026-07-27-night-audit/build_soak_summary.py",
+        "artifacts/audit/2026-07-27-night-audit/capture_ocr_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/capture_ui_accessibility.ps1",
+        "artifacts/audit/2026-07-27-night-audit/cleanup_exact_audit_root.py",
+        "artifacts/audit/2026-07-27-night-audit/cleanup_stale_audit_roots.py",
+        "artifacts/audit/2026-07-27-night-audit/clipboard_interaction_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/cold_start_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/diagnose_select_all.ps1",
+        "artifacts/audit/2026-07-27-night-audit/diagnose_shortlist.py",
+        "artifacts/audit/2026-07-27-night-audit/diagnose_voice_clip.py",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/invoke_operation.py",
+        "artifacts/audit/2026-07-27-night-audit/known_trash_restore_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/local_data_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/media_control_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/mind_overnight_soak.py",
+        "artifacts/audit/2026-07-27-night-audit/notification_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/notification_due_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/office_document_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/overnight_soak.py",
+        "artifacts/audit/2026-07-27-night-audit/parallel_core_start_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/probe_live_turns.py",
+        "artifacts/audit/2026-07-27-night-audit/process_terminate_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/protocol_burst_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/protocol_fuzz_recovery_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/protocol_recovery_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/replay_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/reproduce_app_open.py",
+        "artifacts/audit/2026-07-27-night-audit/reproduce_bluetooth_list_timeout.py",
+        "artifacts/audit/2026-07-27-night-audit/reproduce_package_prepare_crash.py",
+        "artifacts/audit/2026-07-27-night-audit/reproduce_social_greeting.py",
+        "artifacts/audit/2026-07-27-night-audit/reproduce_steam_appid_crash.py",
+        "artifacts/audit/2026-07-27-night-audit/restart_replay_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/sandbox_named_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/send_ui_turn.ps1",
+        "artifacts/audit/2026-07-27-night-audit/smoke_catalog.py",
+        "artifacts/audit/2026-07-27-night-audit/ui_startup_stress.py",
+        "artifacts/audit/2026-07-27-night-audit/visible_click_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/window_input_chain.py",
+        "artifacts/audit/2026-07-27-night-audit/window_input_safe_chain.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress.py",
+        "ranges": [
+          "1-252"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-399-baxy-02-artifacts-field-ui-4a83f2d-export-gui",
+      "disposition": "evidence_only",
+      "component": "artifacts/field-ui-4a83f2d-export/gui (2 ficheros)",
+      "contract": "Grupo artifacts/field-ui-4a83f2d-export/gui: 2 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/dist/assets/index-D3QuhrLm.js",
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/eslint.config.js"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/dist/assets/index-D3QuhrLm.js",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=50 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-400-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-399-baxy.inspect.json"
+}

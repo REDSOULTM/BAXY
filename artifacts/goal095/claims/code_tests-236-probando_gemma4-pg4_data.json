@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-236-probando_gemma4-pg4_data",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:45:36Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 1,
+  "source_id": "probando_gemma4",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-236-probando_gemma4-pg4_data.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

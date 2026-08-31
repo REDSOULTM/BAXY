@@ -1,0 +1,457 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-003-carter-carter_legacy_Carter_v2",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:42:20Z",
+  "closed_utc": "2026-08-31T02:42:22Z",
+  "estimated_tokens": 288204,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 40,
+  "subsystem": "carter_legacy_Carter_v2",
+  "subsystems": [
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v2/audit/results/PERFORMANCE_GATE.json",
+      "sha256": "b15c41af8c5fc765c811e04048be8614af27f35b85aacd2cfc32aad094e8af22",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/PERFORMANCE_GATE_POSTOPT1.json",
+      "sha256": "e2541db384dd8016edacc4df9e5e92f2cdb66d4b035fdfbddc95ad56f8460d52",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/PERFORMANCE_GATE_PREOPT.json",
+      "sha256": "17b83b86ca0ca16e7e884bb58d5f3ba2349e2fa5a921ed5c737a864ada53fece",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/REAL_RUNTIME_FAILURE_FINAL_GATE.json",
+      "sha256": "80fb28ce0aad127242b1ec1800a8754cc4422cee489e00d1ec71f203e8e33d44",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/REAL_RUNTIME_FAILURE_FINAL_GATE.json.pre_block_landing",
+      "sha256": "42ffb17462d60f3b3b3f40bb99f4eeb5cd551a026842da5e08a112c9d2ba0bc2",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/REAL_RUNTIME_LIVE_REPRO_GATE.json",
+      "sha256": "356202052900ed5518df3455aaadd387a46952885b9b7ae14347e513ce481ead",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/REAL_RUNTIME_TRANSCRIPT_REPRO.json",
+      "sha256": "c8ca80a96113ab0800b43d5bdbdd8dfb9450fdcf607b3dcd1f5989059883f6a8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/REPO_CLEANUP_FINAL.json",
+      "sha256": "fe8359cb4b3847131b3790e3061b29c72f7ae9c8015b404e2dffc77862f2ab5f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/RUNTIME_TOOL_PROTOCOL_FINAL_GATE.json",
+      "sha256": "ca3e7b682d778c9b1ba35d9d5b605a911b2607467a8122ad3187e23a47df3674",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/RUNTIME_TOOL_PROTOCOL_PROBE.json",
+      "sha256": "3113706da2512b94c684bdbf96cc2fcbf8ead61444c1baba0d5f79df3b4b0dfe",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/SKIPPED_LIVE_FINAL_GATE.json",
+      "sha256": "30190720cdcada6878779a17f02c8d6e70ebf0c75b0f64d8fd9a6d508737439f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_DRY_RUN.json",
+      "sha256": "7e119d81826a4b25c7b94cbf60776b717f38b03ae6e4e9f8ab6c550daf058d4b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_STEAM_LIVE.json",
+      "sha256": "a650dcbddf3ace2f40b58a1644eba817d93c4fed7715202b2a2e9788b095fe2e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/TEXT_CORE_GOLDEN_MATRIX.json",
+      "sha256": "b4a279ee149e37192672f9f10e5c66e450786b87e4e3838537c02e829edd5164",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/TEXT_CORE_RC_GATES.json",
+      "sha256": "4639a7a14faf76fd3c2e9aec1bc03dd47c2f7b8892fe394ddde12d75e0f8ace8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/TEXT_CORE_SOAK_TEST.json",
+      "sha256": "a85661ad20127972674ad73fc8350d6d926417e9d601e0140f23bf6f272d64be",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/TOOL_CALL_COMPATIBILITY_FINAL_GATE.json",
+      "sha256": "1f965e5102ee4291da175da8ad6bc83d48ff3add2e9f3a9c037aa334ff49f67c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/ULTRA_LATENCY_FINAL_GATE.json",
+      "sha256": "3f317f1b5237119a53f248f5ab787b2421a0269d93a02b022b8174a58e78762e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/_tournament_20260502-085007.json",
+      "sha256": "7dc7344f0ae5c686981605240692a91a0a10a2fb9d3aa2e24937418e6f1d614a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/_tournament_20260502-092039.json",
+      "sha256": "480d78dbcf0e925d976153c3f6c9a5cb95f612b631642ca17d8a2d9b2d04dc4d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/_tournament_20260502-095608.json",
+      "sha256": "d4b72b78885af1524035fc906858cd5099cfdca140c6f9ba769076b6329efd57",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/_vision_tournament_20260502-095912.json",
+      "sha256": "fdb15fbfd20bf12b2afa15e404f3b463dc740771aedb661d404a8ff2002edc6f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/deepseek-r1_8b/20260502-091622.json",
+      "sha256": "1b8036089d77b099d13707d1499c47d12f08cad9a1ade03906f3b8bc76c75aa0",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/devstral_24b/20260502-095350.json",
+      "sha256": "9aa43aa822effcf90cc431edf2e4494383d777ae0a4fc7629c13c12cba32a513",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/gemma3_12b/20260502-094244.json",
+      "sha256": "b4d585fb91653f3d3f41a3500ee48ace909f1e4dc6e21914355cb5b1a4377d3e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/gemma3_12b/vision_20260502-095738.json",
+      "sha256": "a250eae0675fd618ce42f3bbb4f0bcd2c3e2734bbfc2332cfcfa305b61cfc2ee",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/gpt-oss_20b/20260502-094506.json",
+      "sha256": "1d668113e241f7443e75ce0306eff77aab221de2f73adb10d1f686e718778fa6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/hermes3_8b/20260502-092625.json",
+      "sha256": "3b9fa67c1e4e04feb6266568168aa6b1014f32580adf855fb08164e2ec179c54",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/llama3.1_8b/20260502-091149.json",
+      "sha256": "90533b20d6d26401ea19655f349cd48cfc44d91fba6357912edcb98d3ee1e9af",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/llama3.2_3b/20260502-091421.json",
+      "sha256": "6b83baa93936b4828e0302e7aec89efec2ecdb65506b7244f261235d6b31a59e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/llava-llama3_latest/vision_20260502-095702.json",
+      "sha256": "7f148386038516445426cfc3d8ecb0902f306273778442d87fac80514fa9fad7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/llava_7b/vision_20260502-095850.json",
+      "sha256": "3352fbd5b7df9296021101a614c04680e6048f2558cd3a2fd2266d5a0ac6401f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/minicpm-v_latest/vision_20260502-095808.json",
+      "sha256": "ad6bef2d5ca3dd60cb79640b72e992e195a3f8b46a536a27be57fe406212cf2c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/mistral-small_24b/20260502-095059.json",
+      "sha256": "8498f5809829b1e0faea4a367b96eca11d7b24454ff828b8c0d731eb61f37cd7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/moondream_latest/vision_20260502-095833.json",
+      "sha256": "e83c39fd95faee5968b370b29556952709d31e99093583ff4150ad4a0b3371aa",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/phi3.5_latest/20260502-091456.json",
+      "sha256": "5c18b0c2407505e4e98b5421e429afd15e8f9eaf2120c0f63e0af17ca1c7902d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/phi4_latest/20260502-094355.json",
+      "sha256": "ff178f154251f8557f1815e16d8360b3a0b65e38c685ff5b8373ce3770f8fb8d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen2.5-coder_14b/20260502-094112.json",
+      "sha256": "b0308645a3e7341dd8c6afa87baf9c3dd85d69c1c5d95f4346593d4eeb1bc080",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen2.5vl_7b/vision_20260502-095642.json",
+      "sha256": "e0da875976fac5f6c08274617b0ea6f97dff6a6a34430f191a11903a7b7b4b5a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-084818.json",
+      "sha256": "6e02bed88840814747e638ae1e6aca4b28b42dafc18285abceb19050e77a8eb0",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-003-carter-carter_legacy_Carter_v2-01-legacy-Carter_v2-audit",
+      "disposition": "evidence_only",
+      "component": "legacy/Carter_v2/audit (39 ficheros)",
+      "contract": "Grupo legacy/Carter_v2/audit: 39 archivos. Terminales parseado_completo. JSON scalars={\"source_payload_label\": \"live_safe_ultra_final\", \"source_payload_mode\": \"live-safe\", \"source_payload_model\": \"qwen3:8b\", \"duplicate_llm_load_prevented\": false, \"hardcode_critical_total\": 0, \"controllable_failures\": 0, \"honest_fast_failures_total\": 2, \"fake_success\": 0, \"needs_user_total\": 6, \"needs_environment_total\": 4, \"silent_slow_60s_unexplained\": 0, \"cold_start_cid\": \"C1.01\", \"verdict\": \"PER",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v2/audit/results/PERFORMANCE_GATE.json",
+        "legacy/Carter_v2/audit/results/PERFORMANCE_GATE_POSTOPT1.json",
+        "legacy/Carter_v2/audit/results/PERFORMANCE_GATE_PREOPT.json",
+        "legacy/Carter_v2/audit/results/REAL_RUNTIME_FAILURE_FINAL_GATE.json",
+        "legacy/Carter_v2/audit/results/REAL_RUNTIME_LIVE_REPRO_GATE.json",
+        "legacy/Carter_v2/audit/results/REAL_RUNTIME_TRANSCRIPT_REPRO.json",
+        "legacy/Carter_v2/audit/results/REPO_CLEANUP_FINAL.json",
+        "legacy/Carter_v2/audit/results/RUNTIME_TOOL_PROTOCOL_FINAL_GATE.json",
+        "legacy/Carter_v2/audit/results/RUNTIME_TOOL_PROTOCOL_PROBE.json",
+        "legacy/Carter_v2/audit/results/SKIPPED_LIVE_FINAL_GATE.json",
+        "legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_DRY_RUN.json",
+        "legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_STEAM_LIVE.json",
+        "legacy/Carter_v2/audit/results/TEXT_CORE_GOLDEN_MATRIX.json",
+        "legacy/Carter_v2/audit/results/TEXT_CORE_RC_GATES.json",
+        "legacy/Carter_v2/audit/results/TEXT_CORE_SOAK_TEST.json",
+        "legacy/Carter_v2/audit/results/TOOL_CALL_COMPATIBILITY_FINAL_GATE.json",
+        "legacy/Carter_v2/audit/results/ULTRA_LATENCY_FINAL_GATE.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/_tournament_20260502-085007.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/_tournament_20260502-092039.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/_tournament_20260502-095608.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/_vision_tournament_20260502-095912.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/deepseek-r1_8b/20260502-091622.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/devstral_24b/20260502-095350.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/gemma3_12b/20260502-094244.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/gemma3_12b/vision_20260502-095738.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/gpt-oss_20b/20260502-094506.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/hermes3_8b/20260502-092625.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/llama3.1_8b/20260502-091149.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/llama3.2_3b/20260502-091421.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/llava-llama3_latest/vision_20260502-095702.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/llava_7b/vision_20260502-095850.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/minicpm-v_latest/vision_20260502-095808.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/mistral-small_24b/20260502-095059.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/moondream_latest/vision_20260502-095833.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/phi3.5_latest/20260502-091456.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/phi4_latest/20260502-094355.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen2.5-coder_14b/20260502-094112.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen2.5vl_7b/vision_20260502-095642.json",
+        "legacy/Carter_v2/audit/results/model_benchmarks/qwen3_1.7b/20260502-084818.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v2/audit/results/PERFORMANCE_GATE.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=40 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-004-carter-carter_legacy_Carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-003-carter-carter_legacy_Carter_v2.inspect.json"
+}

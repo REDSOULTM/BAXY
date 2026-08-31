@@ -1,0 +1,412 @@
+{
+  "batch_id": "code_tests-460-baxy-baxy_src_Baxy.App",
+  "source_id": "baxy",
+  "source_root": "Programacion/BAXY",
+  "file_count": 26,
+  "hash_ok": 26,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "baxy_src_Baxy.App",
+  "subsystems": [
+    "baxy_src_Baxy.App"
+  ],
+  "files": [
+    {
+      "path": "src/Baxy.App/MindRuntimeDiscovery.cs",
+      "queued_sha256": "1f3ba8afb9941976c044a0af0994b9d019515922acfa531cd21f6ea580760850",
+      "size_queued": 19872,
+      "exists": true,
+      "disk_sha256": "1f3ba8afb9941976c044a0af0994b9d019515922acfa531cd21f6ea580760850",
+      "disk_size": 19872,
+      "hash_match": true,
+      "head_sha256": "1f3ba8afb9941976c044a0af0994b9d019515922acfa531cd21f6ea580760850",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/MindSidecarClient.cs",
+      "queued_sha256": "b4baf47e789e21509c41cd0138b49b7c8caebc1040d66a7ec4d884b9a81aeaaa",
+      "size_queued": 43795,
+      "exists": true,
+      "disk_sha256": "b4baf47e789e21509c41cd0138b49b7c8caebc1040d66a7ec4d884b9a81aeaaa",
+      "disk_size": 43795,
+      "hash_match": true,
+      "head_sha256": "b4baf47e789e21509c41cd0138b49b7c8caebc1040d66a7ec4d884b9a81aeaaa",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/MissionInput.cs",
+      "queued_sha256": "7bb24bc7c52493f2c28ae6c257666e8741a003fa4df9a0933d0b20f07c909c77",
+      "size_queued": 10031,
+      "exists": true,
+      "disk_sha256": "7bb24bc7c52493f2c28ae6c257666e8741a003fa4df9a0933d0b20f07c909c77",
+      "disk_size": 10031,
+      "hash_match": true,
+      "head_sha256": "7bb24bc7c52493f2c28ae6c257666e8741a003fa4df9a0933d0b20f07c909c77",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/NaturalAudioRequestParser.cs",
+      "queued_sha256": "539938f7033d7274f56d9b53b45e38e4a3432c45209dd6981b2996e578b01bbe",
+      "size_queued": 8082,
+      "exists": true,
+      "disk_sha256": "539938f7033d7274f56d9b53b45e38e4a3432c45209dd6981b2996e578b01bbe",
+      "disk_size": 8082,
+      "hash_match": true,
+      "head_sha256": "539938f7033d7274f56d9b53b45e38e4a3432c45209dd6981b2996e578b01bbe",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/NaturalMemoryRequestParser.cs",
+      "queued_sha256": "da7da826f4edeb4377d500faf660b87a456002f95c3fd475edc0a8323103e7ab",
+      "size_queued": 76281,
+      "exists": true,
+      "disk_sha256": "da7da826f4edeb4377d500faf660b87a456002f95c3fd475edc0a8323103e7ab",
+      "disk_size": 76281,
+      "hash_match": true,
+      "head_sha256": "da7da826f4edeb4377d500faf660b87a456002f95c3fd475edc0a8323103e7ab",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/NaturalSystemStatusRequestParser.cs",
+      "queued_sha256": "c7bccf2030e07c3f6bf79a64fa527ba444c3ca95ddb18e49029e6142da5db618",
+      "size_queued": 8609,
+      "exists": true,
+      "disk_sha256": "c7bccf2030e07c3f6bf79a64fa527ba444c3ca95ddb18e49029e6142da5db618",
+      "disk_size": 8609,
+      "hash_match": true,
+      "head_sha256": "c7bccf2030e07c3f6bf79a64fa527ba444c3ca95ddb18e49029e6142da5db618",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/NoteDisambiguation.cs",
+      "queued_sha256": "0ad2fc96f911a7b6b16aa5c26053ecd3c014c1a65babae690e4ba4a1aee0938b",
+      "size_queued": 21371,
+      "exists": true,
+      "disk_sha256": "0ad2fc96f911a7b6b16aa5c26053ecd3c014c1a65babae690e4ba4a1aee0938b",
+      "disk_size": 21371,
+      "hash_match": true,
+      "head_sha256": "0ad2fc96f911a7b6b16aa5c26053ecd3c014c1a65babae690e4ba4a1aee0938b",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/OperationResponseProjection.cs",
+      "queued_sha256": "87b6aba9e891aad5e1720c5bd8a1dc223f88d67618b94ac531c15630eeab2a68",
+      "size_queued": 5176,
+      "exists": true,
+      "disk_sha256": "87b6aba9e891aad5e1720c5bd8a1dc223f88d67618b94ac531c15630eeab2a68",
+      "disk_size": 5176,
+      "hash_match": true,
+      "head_sha256": "87b6aba9e891aad5e1720c5bd8a1dc223f88d67618b94ac531c15630eeab2a68",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/PendingNoteInteractionState.cs",
+      "queued_sha256": "5d96f7005151c690b00247678834b44bfa4334fa9e05c712b198d7353a79f0a9",
+      "size_queued": 3273,
+      "exists": true,
+      "disk_sha256": "5d96f7005151c690b00247678834b44bfa4334fa9e05c712b198d7353a79f0a9",
+      "disk_size": 3273,
+      "hash_match": true,
+      "head_sha256": "5d96f7005151c690b00247678834b44bfa4334fa9e05c712b198d7353a79f0a9",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/PlannerExecutionSupport.cs",
+      "queued_sha256": "8a800447dca578d5cfecf773723f5894105ad419e0c181104fc0c7cb51ee7767",
+      "size_queued": 24589,
+      "exists": true,
+      "disk_sha256": "8a800447dca578d5cfecf773723f5894105ad419e0c181104fc0c7cb51ee7767",
+      "disk_size": 24589,
+      "hash_match": true,
+      "head_sha256": "8a800447dca578d5cfecf773723f5894105ad419e0c181104fc0c7cb51ee7767",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/PreparedOperation.cs",
+      "queued_sha256": "c10a9d6074c6b5b9a416a28450dadbb999bee8e00382d69b3eb6cd99935b2a61",
+      "size_queued": 13408,
+      "exists": true,
+      "disk_sha256": "c10a9d6074c6b5b9a416a28450dadbb999bee8e00382d69b3eb6cd99935b2a61",
+      "disk_size": 13408,
+      "hash_match": true,
+      "head_sha256": "c10a9d6074c6b5b9a416a28450dadbb999bee8e00382d69b3eb6cd99935b2a61",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/Presentation/AppSurfaceCatalog.cs",
+      "queued_sha256": "af3c4928ccb2a31bec97d9c74134c1427c3f06a02baf872243861d4c5cea48b8",
+      "size_queued": 4097,
+      "exists": true,
+      "disk_sha256": "af3c4928ccb2a31bec97d9c74134c1427c3f06a02baf872243861d4c5cea48b8",
+      "disk_size": 4097,
+      "hash_match": true,
+      "head_sha256": "af3c4928ccb2a31bec97d9c74134c1427c3f06a02baf872243861d4c5cea48b8",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/Presentation/AppSurfaceNavigator.cs",
+      "queued_sha256": "9661c317ecad6ae934e5e2671f1183943d9e62a55625e3a596251c9aa0b1ad95",
+      "size_queued": 4863,
+      "exists": true,
+      "disk_sha256": "9661c317ecad6ae934e5e2671f1183943d9e62a55625e3a596251c9aa0b1ad95",
+      "disk_size": 4863,
+      "hash_match": true,
+      "head_sha256": "9661c317ecad6ae934e5e2671f1183943d9e62a55625e3a596251c9aa0b1ad95",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/Presentation/FieldLoadingSurface.xaml",
+      "queued_sha256": "8d26bdd8adf6e852ab5c6cc304c4c84ca8d9a1fb00a1fa04beed762b08ce0810",
+      "size_queued": 1330,
+      "exists": true,
+      "disk_sha256": "8d26bdd8adf6e852ab5c6cc304c4c84ca8d9a1fb00a1fa04beed762b08ce0810",
+      "disk_size": 1330,
+      "hash_match": true,
+      "head_sha256": "8ef7599de381fa7bc3e6f684e5f7d0e73ccc9452082e6b7af2a83e8fe009706a",
+      "head_error": null,
+      "head_matches_queue": false
+    },
+    {
+      "path": "src/Baxy.App/Presentation/FieldLoadingSurface.xaml.cs",
+      "queued_sha256": "51ba7eb9d2179a816ccd74c304dd671053d03e361a6673db1cc62d87afce0687",
+      "size_queued": 425,
+      "exists": true,
+      "disk_sha256": "51ba7eb9d2179a816ccd74c304dd671053d03e361a6673db1cc62d87afce0687",
+      "disk_size": 425,
+      "hash_match": true,
+      "head_sha256": "51ba7eb9d2179a816ccd74c304dd671053d03e361a6673db1cc62d87afce0687",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/Presentation/MainWindowSurfacePresenter.cs",
+      "queued_sha256": "e66afcd74fe9d83ab7efc4cd12735d258ccd825775c93781b064e85be2309e19",
+      "size_queued": 1507,
+      "exists": true,
+      "disk_sha256": "e66afcd74fe9d83ab7efc4cd12735d258ccd825775c93781b064e85be2309e19",
+      "disk_size": 1507,
+      "hash_match": true,
+      "head_sha256": "e66afcd74fe9d83ab7efc4cd12735d258ccd825775c93781b064e85be2309e19",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/Properties/AssemblyInfo.cs",
+      "queued_sha256": "ab455a762203a4b1ad0642e4f6d13e34061f66bce2d2e792a7fdd000eb30e9a2",
+      "size_queued": 97,
+      "exists": true,
+      "disk_sha256": "ab455a762203a4b1ad0642e4f6d13e34061f66bce2d2e792a7fdd000eb30e9a2",
+      "disk_size": 97,
+      "hash_match": true,
+      "head_sha256": "ab455a762203a4b1ad0642e4f6d13e34061f66bce2d2e792a7fdd000eb30e9a2",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/ShellTrace.cs",
+      "queued_sha256": "b032517a45aac5a40887b8a460c3a2ab192113790dbd379b89ffcee9177c37fc",
+      "size_queued": 14089,
+      "exists": true,
+      "disk_sha256": "b032517a45aac5a40887b8a460c3a2ab192113790dbd379b89ffcee9177c37fc",
+      "disk_size": 14089,
+      "hash_match": true,
+      "head_sha256": "b032517a45aac5a40887b8a460c3a2ab192113790dbd379b89ffcee9177c37fc",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/UserMessagePolicy.cs",
+      "queued_sha256": "c9e395f33e99b57be53372ba2a3e6b65e735262f04a9542912cb4c69b5939924",
+      "size_queued": 23107,
+      "exists": true,
+      "disk_sha256": "c9e395f33e99b57be53372ba2a3e6b65e735262f04a9542912cb4c69b5939924",
+      "disk_size": 23107,
+      "hash_match": true,
+      "head_sha256": "c9e395f33e99b57be53372ba2a3e6b65e735262f04a9542912cb4c69b5939924",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/Baxy.deps.json",
+      "queued_sha256": "461ba0d77060e2fb21dd7c31192644d0a68e116b9c544d09de8586e9cb33bab3",
+      "size_queued": 5140,
+      "exists": true,
+      "disk_sha256": "461ba0d77060e2fb21dd7c31192644d0a68e116b9c544d09de8586e9cb33bab3",
+      "disk_size": 5140,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/Baxy.deps.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 176,
+        "root_type": "dict",
+        "keys": [
+          "compilationOptions",
+          "libraries",
+          "runtimeTarget",
+          "targets"
+        ],
+        "n_keys": 4,
+        "highlights": {},
+        "scalars": {},
+        "obj_runtimeTarget_keys": [
+          "name",
+          "signature"
+        ],
+        "obj_compilationOptions_keys": [],
+        "obj_targets_keys": [
+          ".NETCoreApp,Version=v10.0"
+        ],
+        "obj_libraries_keys": [
+          "Baxy.Contracts/1.0.0",
+          "Baxy.Kernel/1.0.0",
+          "Baxy.Providers.Windows/1.0.0",
+          "Baxy.Security.Windows/1.0.0",
+          "Baxy/1.0.0",
+          "Microsoft.Web.WebView2.Core/1.0.4078.44",
+          "Microsoft.Web.WebView2.WinForms/1.0.4078.44",
+          "Microsoft.Web.WebView2.Wpf/1.0.4078.44",
+          "Microsoft.Web.WebView2/1.0.4078.44",
+          "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.57"
+        ]
+      }
+    },
+    {
+      "path": "src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/Baxy.runtimeconfig.json",
+      "queued_sha256": "039a0defb81019310fa2e8a17ef8d2ad086b1a37656149aa598f1f75893f2a22",
+      "size_queued": 447,
+      "exists": true,
+      "disk_sha256": "039a0defb81019310fa2e8a17ef8d2ad086b1a37656149aa598f1f75893f2a22",
+      "disk_size": 447,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/Baxy.runtimeconfig.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 19,
+        "root_type": "dict",
+        "keys": [
+          "runtimeOptions"
+        ],
+        "n_keys": 1,
+        "highlights": {},
+        "scalars": {},
+        "obj_runtimeOptions_keys": [
+          "configProperties",
+          "frameworks",
+          "tfm"
+        ]
+      }
+    },
+    {
+      "path": "src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/DesktopKeyPress.ps1",
+      "queued_sha256": "3b91cead8e2b5cddd9fa279ca57791e320d5ad8ed19884414f899137f720498a",
+      "size_queued": 3529,
+      "exists": true,
+      "disk_sha256": "3b91cead8e2b5cddd9fa279ca57791e320d5ad8ed19884414f899137f720498a",
+      "disk_size": 3529,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/DesktopKeyPress.ps1' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/SpotifyDesktopAutomation.ps1",
+      "queued_sha256": "f1e57a9b0da751343f5d25f621d43b6487ea3e1e6e3c51c5bd9c881a897553ed",
+      "size_queued": 12590,
+      "exists": true,
+      "disk_sha256": "f1e57a9b0da751343f5d25f621d43b6487ea3e1e6e3c51c5bd9c881a897553ed",
+      "disk_size": 12590,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/SpotifyDesktopAutomation.ps1' exists on disk, but not in 'HEAD'\n"
+    },
+    {
+      "path": "src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.deps.json",
+      "queued_sha256": "476fa68c7aac9326cb9e53a7b5dbad8a3086685c10adccd9e4b31d71be7c31fe",
+      "size_queued": 2789,
+      "exists": true,
+      "disk_sha256": "476fa68c7aac9326cb9e53a7b5dbad8a3086685c10adccd9e4b31d71be7c31fe",
+      "disk_size": 2789,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.deps.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 107,
+        "root_type": "dict",
+        "keys": [
+          "compilationOptions",
+          "libraries",
+          "runtimeTarget",
+          "targets"
+        ],
+        "n_keys": 4,
+        "highlights": {},
+        "scalars": {},
+        "obj_runtimeTarget_keys": [
+          "name",
+          "signature"
+        ],
+        "obj_compilationOptions_keys": [],
+        "obj_targets_keys": [
+          ".NETCoreApp,Version=v10.0"
+        ],
+        "obj_libraries_keys": [
+          "Baxy.Contracts/1.0.0",
+          "Baxy.Kernel/1.0.0",
+          "Baxy.Providers.Windows/1.0.0",
+          "Baxy.Security.Windows/1.0.0",
+          "baxy-core/1.0.0",
+          "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.57"
+        ]
+      }
+    },
+    {
+      "path": "src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.runtimeconfig.json",
+      "queued_sha256": "b759eb6f98b271704f7f8bfc914321b2950ea0cd6dee1269c3ef299e59e635c8",
+      "size_queued": 2034,
+      "exists": true,
+      "disk_sha256": "b759eb6f98b271704f7f8bfc914321b2950ea0cd6dee1269c3ef299e59e635c8",
+      "disk_size": 2034,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.runtimeconfig.json' exists on disk, but not in 'HEAD'\n",
+      "json": {
+        "lines": 36,
+        "root_type": "dict",
+        "keys": [
+          "runtimeOptions"
+        ],
+        "n_keys": 1,
+        "highlights": {},
+        "scalars": {},
+        "obj_runtimeOptions_keys": [
+          "configProperties",
+          "framework",
+          "tfm"
+        ]
+      }
+    },
+    {
+      "path": "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/DesktopSelectAll.ps1",
+      "queued_sha256": "90c0f7afece7041cc9b17a2425f1d5da9034a823e11dbd5f5155911b450a2cf2",
+      "size_queued": 8960,
+      "exists": true,
+      "disk_sha256": "90c0f7afece7041cc9b17a2425f1d5da9034a823e11dbd5f5155911b450a2cf2",
+      "disk_size": 8960,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/DesktopSelectAll.ps1' exists on disk, but not in 'HEAD'\n"
+    }
+  ]
+}

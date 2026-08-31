@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-381-functiongemma-fg_curated",
+  "source_id": "functiongemma",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/train.jsonl.BAK",
+      "queued_sha256": "a60f0c3e247be02b2be112953f6ee24e9f97e473b995fd45cca26742949a8d2b",
+      "size_queued": 2896831,
+      "exists": true,
+      "disk_sha256": "a60f0c3e247be02b2be112953f6ee24e9f97e473b995fd45cca26742949a8d2b",
+      "disk_size": 2896831,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

@@ -1,0 +1,1584 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-408-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:47:28Z",
+  "closed_utc": "2026-08-31T02:47:31Z",
+  "estimated_tokens": 297939,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 42,
+  "subsystem": "baxy_exp_model_evaluation",
+  "subsystems": [
+    "baxy_exp_model_evaluation",
+    "baxy_exp_stt_quality"
+  ],
+  "files": [
+    {
+      "path": "experiments/model_evaluation/summarize_mind_budget_abba.py",
+      "sha256": "7a731daef2b366d1cad8a8d3f0eee920af46c2f152f5cf0f488408d11d4e15eb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-323"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/acquire_mdc_stt_archives.py",
+      "sha256": "fac23cd22bf3fc47c52e812de89d501b0e5fa7e5c1093d377de31a6ba7e61aa3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-568"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/analyze_msner_nemotron_comparison.py",
+      "sha256": "084593452401f3690fc37dfde852397f3726ff3a5c9865f8e39a0f73bcd7e44b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-250"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/analyze_msner_spanish_dual_asr_ceiling_development.py",
+      "sha256": "eb99635bdf40b8acec830dfdb979c1bb6869efa5c926720f59ba13d9245d9dff",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-387"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/analyze_msner_spanish_parakeet_failure.py",
+      "sha256": "e16bb88b05c19ddb773264a2018e477d6113144620e10e0c86de7f65c1632a47",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-207"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/analyze_servicenow_semantic_fusion_blind_failure.py",
+      "sha256": "cfa025201edd2287efc36d64c6e86b1e0af2b5cd1186d5cdad3996209b4a866a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-199"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+      "sha256": "1ece5a597a9a91a28df6b0e6ef8b801ae4ed175721288f53fa50905389bc88ac",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-535"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/contextual_hotwords.py",
+      "sha256": "66a407db7a11144833539df18ece5fdbb6905a8e5d5b5de27c92fac5308da1f1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-173"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_canary180m_onnx_development.py",
+      "sha256": "899ac3037705ddf08e79c9e7d0182e48ce06f121848fae7be897b3ee26cc40e2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-342"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle.py",
+      "sha256": "1f44495cd6e6038aaa22fed5d183b0298bc481bbe2417f64e5bbd24d8316212f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-745"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle_matrix.py",
+      "sha256": "9c84d2ab0cc6e72e619aef0d8c826633e3053982c6000cf08bba8d16d8d9605e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-638"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_entity_development.py",
+      "sha256": "eec7cb3289fa6cc73753e90923089f07311c2e1c7040a3ea497b2cd1f325f83a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-457"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_faster_whisper_development.py",
+      "sha256": "30705c2cecbb691dc1d042299ce52a689aaed2915410082a461a9516bb515673",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-530"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_nemotron_development.py",
+      "sha256": "b93eecefa0703fed75fa3b3bf4121c4cf08556f5d86d67e967946cdab4619da9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-430"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_numeric_semantic_development.py",
+      "sha256": "ef1b267c81cfd9cd752585839c55282a83fdfaa0b03d6646afdec15c43addb4f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-293"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_msner_spanish_onnx_phrase_boosting_development.py",
+      "sha256": "106927d37c218da7066595903c8983fea11ce958e190c109aed3d54a01879c04",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-336"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_qwen3_asr_onnx_development.py",
+      "sha256": "f08171ba91ce1b25183d86989e1f2a12b69cb23b3fcc0b096d8908038a8243fa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-331"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "sha256": "9abc028d785b4a9a3ff9ab20212f31a4f9dc66952e4b144c41c9431fdd5b080b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1767"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_codeswitch_development.py",
+      "sha256": "9e7c81c9573615aa1fa4ce9d23ef70b1c8371b11ddae2c804b50191b05ff97c0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-403"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_parakeet_modified_beam_development.py",
+      "sha256": "58d3c00761e5e5af5813792e19d2a9420c0d480e22644f0a31ec1e7c186e4708",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-157"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_blind.py",
+      "sha256": "fd679e03ad64135bc54800eb217938b5efdd2fddbd7eb07580c72d2ac8e57d29",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-508"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development.py",
+      "sha256": "9f0fcb9faa34d6475aa6cb6ed9f03268f90b85490adcfa6892d40ae440cc4d04",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-530"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v2.py",
+      "sha256": "27538d2ff340a7dcb75308c1af648d7a93ed290f20c5bf79592d47e8f13dd00b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-175"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v3.py",
+      "sha256": "c644cfd808e6805507551dcfd903cb5d37fc3ae2f754a4afab9fcc6b47e0e573",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-126"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v4.py",
+      "sha256": "b6f15f37b0f7ec79e5d9df98add31647fbd93dab6e5fef78b671bab9852c84fe",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-129"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/extract_msner_spanish_entity_development.py",
+      "sha256": "d53bc7ed0962042ede30a853647e04fabe019fd1d46a79b7cb44e85808ea7797",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-270"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/extract_servicenow_codeswitch_blind.py",
+      "sha256": "e895e6074dd485101ece81e2f7d209c12587d2ca6b52529c9dd2ffa40ac27afb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-285"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/extract_servicenow_codeswitch_development.py",
+      "sha256": "b01e85d3d213d66856fc76150cf7cdae09219efbd2132d84684add9aa4de1a8b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-228"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/fuse_empty_primary_stt_fallback.py",
+      "sha256": "2dab11f320da0acc0319562b26735677f1ae52a7014eee9f9bde5ba86d7ba76d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-332"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/msner_entity_scoring.py",
+      "sha256": "fa9688ba1fc445f757ce26fdbd03cd458c44b5c8c6616109bb1562b6f64a2fd1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-276"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/onnx_tdt_phrase_boosting.py",
+      "sha256": "95a28da21cb6d6e4d5c24d7119df984c67abbd9b8fe9e83af65b07a162c524b6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-483"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/prepare_wordfreq_semantic_fusion.py",
+      "sha256": "aff585f55142c0f22123d66a8f864fafbfe1090e3a734c44e517b7e0a04d2a7d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-56"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/preregister_audio_arena_assistant_bench.py",
+      "sha256": "ba927aad3868bb77443a665ee96eed30fe5ff86a66cba8b8628b261b57da52fb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-277"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/preregister_bangor_miami_stt_holdout.py",
+      "sha256": "e3fba81f26d4ef759de578ddc26d0159002103638dd9618ac2552c8bfee3d931",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-432"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/preregister_minds14_stt_holdout.py",
+      "sha256": "3fdbfc04811c779d4d3190699cd4c7c75265f142f183c446c9ec5280153633aa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-338"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/preregister_msner_spanish_entity_stt.py",
+      "sha256": "403c780cb67e73085b5cbe006fee6532e27376eed1f05cabe07541a510bf1dd8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-185"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/preregister_servicenow_codeswitch_stt.py",
+      "sha256": "9b8cc3f850b1c45b90658d6ddbf6dbc634e492a398fb310a15867a901fdaa917",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-230"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/preregister_servicenow_semantic_fusion_blind.py",
+      "sha256": "95a947620507871c313755f74200abab53efe06be582b6a973782f930a3befce",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-360"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/reserve_common_voice_spontaneous_holdout.py",
+      "sha256": "74064eed662410a6769d9305fb568a0a0535c654b879e3eb24af72fe155eb1ff",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-585"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/semantic_stt_fusion.py",
+      "sha256": "b486d29ec77006539c33961940cba8cc57cb2fcefb9b178d0378140f7e2d22ad",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-535"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/semantic_stt_fusion_v3.py",
+      "sha256": "3510729290f4e3ef6bec0d00182b6818dc5aa3e3a825201f07269a40fa9f467f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-81"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/semantic_stt_fusion_v4.py",
+      "sha256": "e022e7cb7b37b91c3006defa9b8eceeb06b22b83f20958d0d07a0924611ca2ff",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-79"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-408-baxy-01-experiments-model_evaluation-summarize_mind_budget_abba.py",
+      "disposition": "evidence_only",
+      "component": "experiments/model_evaluation/summarize_mind_budget_abba.py (1 ficheros)",
+      "contract": "Grupo experiments/model_evaluation/summarize_mind_budget_abba.py: 1 archivos. Terminales leido PY \"\"\"Summarize a sealed local-model ABBA budget comparison.  The input reports intentionally contain only contract projections and stable failure codes.  This analyzer preserves that privacy boundary while verifying the preregistered order, identities, request counts, resource limits and zero effects before emitting a development verdict. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "experiments/model_evaluation/summarize_mind_budget_abba.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/model_evaluation/summarize_mind_budget_abba.py",
+        "ranges": [
+          "1-323"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-02-experiments-stt_quality-acquire_mdc_stt_archives.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/acquire_mdc_stt_archives.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/acquire_mdc_stt_archives.py: 1 archivos. Terminales leido PY \"\"\"Prepare and acquire BAXY's sealed Mozilla Data Collective STT sources.  The acquisition plan is public and contains no credentials or private corpus content.  Downloading requires a caller-provided ``MDC_API_KEY`` after the person has accepted each dataset's terms in the MDC web interface.  Archives are downloaded without opening or decoding them and interrupted transfers are resumed only when ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/acquire_mdc_stt_archives.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/acquire_mdc_stt_archives.py",
+        "ranges": [
+          "1-568"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-03-experiments-stt_quality-analyze_msner_nemotron_comparison.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/analyze_msner_nemotron_comparison.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/analyze_msner_nemotron_comparison.py: 1 archivos. Terminales leido PY \"\"\"Compare MSNER Parakeet and Nemotron development results without raw text.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import hashlib import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/analyze_msner_nemotron_comparison.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/analyze_msner_nemotron_comparison.py",
+        "ranges": [
+          "1-250"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-04-experiments-stt_quality-analyze_msner_spanish_dual_asr_ceili",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/analyze_msner_spanish_dual_asr_ceiling_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/analyze_msner_spanish_dual_asr_ceiling_development.py: 1 archivos. Terminales leido PY \"\"\"Measure the semantic ceiling of frozen Parakeet and Faster-Whisper outputs.  This is an explicitly non-promotable development oracle. It never decodes audio and never opens either reserved MSNER shard. Its purpose is to determine whether choosing or merging the two already-frozen hypotheses can plausibly reach the 99% entity-preservation contract before another blind is consumed. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/analyze_msner_spanish_dual_asr_ceiling_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/analyze_msner_spanish_dual_asr_ceiling_development.py",
+        "ranges": [
+          "1-387"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-05-experiments-stt_quality-analyze_msner_spanish_parakeet_failu",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/analyze_msner_spanish_parakeet_failure.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/analyze_msner_spanish_parakeet_failure.py: 1 archivos. Terminales leido PY \"\"\"Publish aggregate causes from the rejected MSNER Parakeet development run.\"\"\"  from __future__ import annotations  import argparse from collections import Counter from datetime import datetime, timezone import hashlib",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/analyze_msner_spanish_parakeet_failure.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/analyze_msner_spanish_parakeet_failure.py",
+        "ranges": [
+          "1-207"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-06-experiments-stt_quality-analyze_servicenow_semantic_fusion_b",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/analyze_servicenow_semantic_fusion_blind_failure.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/analyze_servicenow_semantic_fusion_blind_failure.py: 1 archivos. Terminales leido PY \"\"\"Publish aggregate failure evidence for the frozen ServiceNow blind run.\"\"\"  from __future__ import annotations  import argparse from collections import Counter from datetime import datetime, timezone import hashlib",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/analyze_servicenow_semantic_fusion_blind_failure.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/analyze_servicenow_semantic_fusion_blind_failure.py",
+        "ranges": [
+          "1-199"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-07-experiments-stt_quality-audit_fresh_postweight_stt_sources.p",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/audit_fresh_postweight_stt_sources.py: 1 archivos. Terminales leido PY \"\"\"Audit fresh, post-weight STT sources without opening archive payloads.  The audit intentionally reads only public datasheets and repository metadata. It never downloads audio archives, decodes audio, or emits the sample text that Mozilla renders on its datasheets.  Those visible samples are reduced to a normalized hash blocklist so a later reservation step can exclude them. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/audit_fresh_postweight_stt_sources.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+        "ranges": [
+          "1-535"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-08-experiments-stt_quality-contextual_hotwords.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/contextual_hotwords.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/contextual_hotwords.py: 1 archivos. Terminales leido PY \"\"\"Deterministic Parakeet BPE compilation for contextual STT diagnostics.\"\"\"  from __future__ import annotations  from collections.abc import Iterable from pathlib import Path import unicodedata ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/contextual_hotwords.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/contextual_hotwords.py",
+        "ranges": [
+          "1-173"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-09-experiments-stt_quality-evaluate_canary180m_onnx_development",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_canary180m_onnx_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_canary180m_onnx_development.py: 1 archivos. Terminales leido PY \"\"\"Measure the official sherpa-onnx Canary 180M Flash int8 candidate.  The evaluator is development-only and uses explicit language metadata.  It therefore measures the English/Spanish accuracy ceiling, not production language selection or code-switch support. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_canary180m_onnx_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_canary180m_onnx_development.py",
+        "ranges": [
+          "1-342"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-10-experiments-stt_quality-evaluate_msner_spanish_contextual_ho",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle.py: 1 archivos. Terminales leido PY \"\"\"Probe Parakeet contextual hotwords on opened MSNER Spanish development data.  This is intentionally an oracle-contained mechanism diagnostic: each selected missed entity is supplied to the recognizer.  It cannot promote a product candidate or authorize opening either blind partition. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle.py",
+        "ranges": [
+          "1-745"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-11-experiments-stt_quality-evaluate_msner_spanish_contextual_ho",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle_matrix.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle_matrix.py: 1 archivos. Terminales leido PY \"\"\"Map the safe operating region of Parakeet hotwords on MSNER development.  Every target remains oracle-provided.  The matrix is an upper-bound mechanism diagnostic only; it cannot promote a candidate or open a blind partition. \"\"\"  from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle_matrix.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle_matrix.py",
+        "ranges": [
+          "1-638"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-12-experiments-stt_quality-evaluate_msner_spanish_entity_develo",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_entity_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_entity_development.py: 1 archivos. Terminales leido PY \"\"\"Measure the frozen Parakeet primary on MSNER Spanish development audio.  All 504 candidate transcripts are produced before the manifest containing the reference text is opened.  Detailed text remains outside the repository. \"\"\"  from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_entity_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_entity_development.py",
+        "ranges": [
+          "1-457"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-13-experiments-stt_quality-evaluate_msner_spanish_faster_whispe",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_faster_whisper_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_faster_whisper_development.py: 1 archivos. Terminales leido PY \"\"\"Measure Faster-Whisper large-v3-turbo on opened MSNER Spanish development.  All candidate transcripts are frozen before this evaluator opens the reference manifest. Detailed text stays outside the repository. This is development evidence only and cannot open either reserved MSNER blind shard. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_faster_whisper_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_faster_whisper_development.py",
+        "ranges": [
+          "1-530"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-14-experiments-stt_quality-evaluate_msner_spanish_nemotron_deve",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_nemotron_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_nemotron_development.py: 1 archivos. Terminales leido PY \"\"\"Measure Nemotron streaming on the opened MSNER Spanish development shard.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import hashlib import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_nemotron_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_nemotron_development.py",
+        "ranges": [
+          "1-430"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-15-experiments-stt_quality-evaluate_msner_spanish_numeric_seman",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_numeric_semantic_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_numeric_semantic_development.py: 1 archivos. Terminales leido PY \"\"\"Rescore frozen MSNER Parakeet outputs with Spanish numeric semantics.\"\"\"  from __future__ import annotations  import argparse from collections import defaultdict from datetime import datetime, timezone import hashlib",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_numeric_semantic_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_numeric_semantic_development.py",
+        "ranges": [
+          "1-293"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-16-experiments-stt_quality-evaluate_msner_spanish_onnx_phrase_b",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_msner_spanish_onnx_phrase_boosting_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_msner_spanish_onnx_phrase_boosting_development.py: 1 archivos. Terminales leido PY \"\"\"Measure target-only ONNX TDT phrase boosting on opened MSNER development.  This is an explicit reference-assisted oracle diagnostic.  It may select a safe algorithm and alpha for later catalog-derived evaluation, but its numbers must never be presented as blind evidence or promoted directly to product. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_msner_spanish_onnx_phrase_boosting_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_msner_spanish_onnx_phrase_boosting_development.py",
+        "ranges": [
+          "1-336"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-17-experiments-stt_quality-evaluate_qwen3_asr_onnx_development.",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_qwen3_asr_onnx_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_qwen3_asr_onnx_development.py: 1 archivos. Terminales leido PY \"\"\"Measure the official sherpa-onnx Qwen3-ASR 0.6B int8 candidate.  This evaluator is intentionally development-only.  It reuses the frozen real-audio loaders and scoring oracles without changing the evaluator that sealed the previous blind campaign. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_qwen3_asr_onnx_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_qwen3_asr_onnx_development.py",
+        "ranges": [
+          "1-331"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-18-experiments-stt_quality-evaluate_reserved_stt.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_reserved_stt.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_reserved_stt.py: 1 archivos. Terminales leido PY \"\"\"Evaluate preregistered real-audio STT partitions without executing effects.  The workflow is intentionally two-stage:  1. ``contract`` validates every immutable input and writes a pre-open contract. 2. ``evaluate`` refuses to decode unless that contract matches this exact    evaluator, runtime, source preregistration, ffmpeg binary, and wake program    tree.",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_reserved_stt.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+        "ranges": [
+          "1-1767"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-19-experiments-stt_quality-evaluate_servicenow_codeswitch_devel",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_codeswitch_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_codeswitch_development.py: 1 archivos. Terminales leido PY \"\"\"Evaluate STT candidates on the opened ServiceNow code-switch development set.  Detailed text stays outside the repository because the dataset card does not declare a license.  The repository artifact contains only metrics, hashes, and case commitments.  Blind row groups 0 and 1 are never read here. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_codeswitch_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_codeswitch_development.py",
+        "ranges": [
+          "1-403"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-20-experiments-stt_quality-evaluate_servicenow_parakeet_modifie",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_parakeet_modified_beam_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_parakeet_modified_beam_development.py: 1 archivos. Terminales leido PY \"\"\"Measure Parakeet modified-beam decoding on opened ServiceNow development.\"\"\"  from __future__ import annotations  import argparse import importlib.util import json import os",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_parakeet_modified_beam_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_parakeet_modified_beam_development.py",
+        "ranges": [
+          "1-157"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-21-experiments-stt_quality-evaluate_servicenow_semantic_fusion_",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_blind.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_semantic_fusion_blind.py: 1 archivos. Terminales leido PY \"\"\"Evaluate the frozen semantic STT candidate on 200 ServiceNow blind rows.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import hashlib import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_semantic_fusion_blind.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_blind.py",
+        "ranges": [
+          "1-508"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-22-experiments-stt_quality-evaluate_servicenow_semantic_fusion_",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_semantic_fusion_development.py: 1 archivos. Terminales leido PY \"\"\"Rescore frozen ServiceNow development hypotheses with semantic ASR fusion.  This evaluator never reads blind row groups.  It consumes already-published development hypotheses, applies a reference-free canonicalizer, and uses the reference only after inference to compute metrics.  Raw text stays outside the repository because the source dataset does not declare a license. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development.py",
+        "ranges": [
+          "1-530"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-23-experiments-stt_quality-evaluate_servicenow_semantic_fusion_",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v2.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v2.py: 1 archivos. Terminales leido PY \"\"\"Evaluate semantic STT fusion with the measured concurrent-streaming clock.  V1 conservatively but incorrectly treated Nemotron's total streaming CPU time as serial work after end-of-speech.  The product feeds Nemotron while the user is speaking.  This evaluator therefore uses its measured endpoint finalization latency for the secondary arm and keeps Parakeet's offline latency unchanged. No qual",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v2.py",
+        "ranges": [
+          "1-175"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-24-experiments-stt_quality-evaluate_servicenow_semantic_fusion_",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v3.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v3.py: 1 archivos. Terminales leido PY \"\"\"Evaluate the precision-revised ServiceNow semantic STT fusion candidate.\"\"\"  from __future__ import annotations  import argparse import importlib.util import json from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v3.py",
+        "ranges": [
+          "1-126"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-25-experiments-stt_quality-evaluate_servicenow_semantic_fusion_",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v4.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v4.py: 1 archivos. Terminales leido PY \"\"\"Evaluate semantic-risk-aware ServiceNow STT fusion on development data.\"\"\"  from __future__ import annotations  import argparse import importlib.util import json from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v4.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v4.py",
+        "ranges": [
+          "1-129"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-26-experiments-stt_quality-extract_msner_spanish_entity_develop",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/extract_msner_spanish_entity_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/extract_msner_spanish_entity_development.py: 1 archivos. Terminales leido PY \"\"\"Extract only the preregistered MSNER Spanish development shard.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime import hashlib import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/extract_msner_spanish_entity_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/extract_msner_spanish_entity_development.py",
+        "ranges": [
+          "1-270"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-27-experiments-stt_quality-extract_servicenow_codeswitch_blind.",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/extract_servicenow_codeswitch_blind.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/extract_servicenow_codeswitch_blind.py: 1 archivos. Terminales leido PY \"\"\"Open and extract only preregistered ServiceNow blind row groups 0 and 1.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime import hashlib import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/extract_servicenow_codeswitch_blind.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/extract_servicenow_codeswitch_blind.py",
+        "ranges": [
+          "1-285"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-28-experiments-stt_quality-extract_servicenow_codeswitch_develo",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/extract_servicenow_codeswitch_development.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/extract_servicenow_codeswitch_development.py: 1 archivos. Terminales leido PY \"\"\"Extract only the preregistered ServiceNow code-switch development row group.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime import hashlib import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/extract_servicenow_codeswitch_development.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/extract_servicenow_codeswitch_development.py",
+        "ranges": [
+          "1-228"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-29-experiments-stt_quality-fuse_empty_primary_stt_fallback.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/fuse_empty_primary_stt_fallback.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/fuse_empty_primary_stt_fallback.py: 1 archivos. Terminales leido PY \"\"\"Fuse a primary STT with a tightly bounded streaming completion fallback.  This is an effect-free selector for frozen development or blind reports. It never invents a score: every selected transcript and timing comes from two reports emitted by the same frozen evaluator, contract, runtime, source partition and case set. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/fuse_empty_primary_stt_fallback.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/fuse_empty_primary_stt_fallback.py",
+        "ranges": [
+          "1-332"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-30-experiments-stt_quality-msner_entity_scoring.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/msner_entity_scoring.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/msner_entity_scoring.py: 1 archivos. Terminales leido PY \"\"\"Deterministic transcript/entity scoring for the MSNER evaluation corpus.\"\"\"  from __future__ import annotations  from dataclasses import dataclass import re from typing import Callable, Sequence ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/msner_entity_scoring.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/msner_entity_scoring.py",
+        "ranges": [
+          "1-276"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-31-experiments-stt_quality-onnx_tdt_phrase_boosting.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/onnx_tdt_phrase_boosting.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/onnx_tdt_phrase_boosting.py: 1 archivos. Terminales leido PY \"\"\"Greedy ONNX TDT decoding with catalog phrase boosting.  This development module reuses BAXY's existing Parakeet ONNX exports.  It does not download, duplicate, or retrain model weights.  The boosting graph mirrors NeMo's non-uniform Aho-Corasick scoring and is intentionally independent from the product runtime until a fresh blind gate justifies promotion. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/onnx_tdt_phrase_boosting.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/onnx_tdt_phrase_boosting.py",
+        "ranges": [
+          "1-483"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-32-experiments-stt_quality-prepare_wordfreq_semantic_fusion.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/prepare_wordfreq_semantic_fusion.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/prepare_wordfreq_semantic_fusion.py: 1 archivos. Terminales leido PY \"\"\"Install the frozen semantic-fusion lexicon into an external target.\"\"\"  from __future__ import annotations  import argparse import json from pathlib import Path import subprocess",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/prepare_wordfreq_semantic_fusion.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/prepare_wordfreq_semantic_fusion.py",
+        "ranges": [
+          "1-56"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-33-experiments-stt_quality-preregister_audio_arena_assistant_be",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/preregister_audio_arena_assistant_bench.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/preregister_audio_arena_assistant_bench.py: 1 archivos. Terminales leido PY \"\"\"Freeze an unread real-audio STT partition from Audio Arena Assistant Bench.  This generator deliberately never opens ``metadata.jsonl`` or the benchmark turn definitions: those files contain the reference transcripts.  It reads only paths, WAV headers, hashes, Git provenance, and speaker/environment metadata.  The selected audio remains unavailable to BAXY models until a separate versioned eval",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/preregister_audio_arena_assistant_bench.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/preregister_audio_arena_assistant_bench.py",
+        "ranges": [
+          "1-277"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-34-experiments-stt_quality-preregister_bangor_miami_stt_holdout",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/preregister_bangor_miami_stt_holdout.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/preregister_bangor_miami_stt_holdout.py: 1 archivos. Terminales leido PY \"\"\"Freeze Bangor Miami STT partitions without inspecting reference text.  The acquired mirror is incomplete, so this generator never presents it as the canonical 56-recording corpus.  It validates the three acquired files, reads only WebVTT NOTE/timestamp lines, excludes materially overlapping cues, and selects recording-disjoint development and blind partitions.  Cue text and MP3 audio remain uno",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/preregister_bangor_miami_stt_holdout.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/preregister_bangor_miami_stt_holdout.py",
+        "ranges": [
+          "1-432"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-35-experiments-stt_quality-preregister_minds14_stt_holdout.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/preregister_minds14_stt_holdout.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/preregister_minds14_stt_holdout.py: 1 archivos. Terminales leido PY \"\"\"Freeze command-like English/Spanish MInDS-14 STT partitions.  Only the Parquet metadata columns ``path``, ``intent_class`` and ``lang_id`` are read.  Audio bytes and both transcript columns remain unopened until a separately versioned evaluator is frozen. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/preregister_minds14_stt_holdout.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/preregister_minds14_stt_holdout.py",
+        "ranges": [
+          "1-338"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-36-experiments-stt_quality-preregister_msner_spanish_entity_stt",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/preregister_msner_spanish_entity_stt.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/preregister_msner_spanish_entity_stt.py: 1 archivos. Terminales leido PY \"\"\"Freeze disjoint MSNER Spanish entity partitions before reading row values.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime import hashlib import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/preregister_msner_spanish_entity_stt.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/preregister_msner_spanish_entity_stt.py",
+        "ranges": [
+          "1-185"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-37-experiments-stt_quality-preregister_servicenow_codeswitch_st",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/preregister_servicenow_codeswitch_stt.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/preregister_servicenow_codeswitch_stt.py: 1 archivos. Terminales leido PY \"\"\"Reserve physically disjoint ServiceNow English-Spanish code-switch rows.  Only Parquet footer metadata is inspected.  Row groups 0 and 1 remain blind; row group 2 is the only partition allowed for development. \"\"\"  from __future__ import annotations ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/preregister_servicenow_codeswitch_stt.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/preregister_servicenow_codeswitch_stt.py",
+        "ranges": [
+          "1-230"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-38-experiments-stt_quality-preregister_servicenow_semantic_fusi",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/preregister_servicenow_semantic_fusion_blind.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/preregister_servicenow_semantic_fusion_blind.py: 1 archivos. Terminales leido PY \"\"\"Freeze the semantic STT candidate before opening ServiceNow blind rows.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime import hashlib import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/preregister_servicenow_semantic_fusion_blind.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/preregister_servicenow_semantic_fusion_blind.py",
+        "ranges": [
+          "1-360"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-39-experiments-stt_quality-reserve_common_voice_spontaneous_hol",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/reserve_common_voice_spontaneous_holdout.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/reserve_common_voice_spontaneous_holdout.py: 1 archivos. Terminales leido PY \"\"\"Preregister and reserve a fresh Common Voice SPS holdout without decoding audio.  The public receipt never contains transcripts, prompts, speaker identifiers, or audio filenames.  Those fields live only in a caller-selected private manifest outside the repository.  ``preregister`` must run before the authenticated archives are opened; ``reserve`` then verifies the frozen policy and writes both ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/reserve_common_voice_spontaneous_holdout.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/reserve_common_voice_spontaneous_holdout.py",
+        "ranges": [
+          "1-585"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-40-experiments-stt_quality-semantic_stt_fusion.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/semantic_stt_fusion.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/semantic_stt_fusion.py: 1 archivos. Terminales leido PY \"\"\"Conservative semantic fusion for structured, code-switched ASR text.  The component never receives a reference transcript.  It repairs written-form segmentation that is unambiguous (identifier labels and digit groups), and it preserves genuinely ambiguous structured entities as explicit alternatives. Downstream callers must treat any returned ambiguity as a reason to clarify before executing an",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/semantic_stt_fusion.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/semantic_stt_fusion.py",
+        "ranges": [
+          "1-535"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-41-experiments-stt_quality-semantic_stt_fusion_v3.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/semantic_stt_fusion_v3.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/semantic_stt_fusion_v3.py: 1 archivos. Terminales leido PY \"\"\"Precision revision of semantic STT fusion.  V2 surfaced three unnecessary ambiguities from ordinary lower-case morphology (``como dos/comodos``, ``cambiar los/cambiarlos`` and ``time zone/timezone``). This revision keeps lexicon compounds only when the acoustic transcript itself marks both words as a named entity with capitalization.  It deliberately gives up one lower-case ``work day`` rescue;",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/semantic_stt_fusion_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/semantic_stt_fusion_v3.py",
+        "ranges": [
+          "1-81"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-408-baxy-42-experiments-stt_quality-semantic_stt_fusion_v4.py",
+      "disposition": "evidence_only",
+      "component": "experiments/stt_quality/semantic_stt_fusion_v4.py (1 ficheros)",
+      "contract": "Grupo experiments/stt_quality/semantic_stt_fusion_v4.py: 1 archivos. Terminales leido PY \"\"\"Semantic-risk revision of the structured ASR fusion result.  Written-form aliases (state name/abbreviation, spacing, acronym segmentation) preserve evidence but do not require a user clarification.  Only alternatives that can denote different real entities block an effect. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/stt_quality/semantic_stt_fusion_v4.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/stt_quality/semantic_stt_fusion_v4.py",
+        "ranges": [
+          "1-79"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=42 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-409-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-408-baxy.inspect.json"
+}

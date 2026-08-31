@@ -1,0 +1,4 @@
+batch=code_tests-036-probando_gemma4-pg4_data
+hash_ok=2 drift=0 miss=0
+OK gemma4_agent/data/experience.sqlite.bak_2026_05_20
+OK gemma4_agent/data/notifications/_runner.ps1

@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-379-functiongemma-fg_curated",
+  "source_id": "functiongemma",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/holdout.jsonl.BAK",
+      "queued_sha256": "edba7b2bcb69555389799fce0e59da8c33aec468b43cff07049e884d0bcc6374",
+      "size_queued": 660577,
+      "exists": true,
+      "disk_sha256": "edba7b2bcb69555389799fce0e59da8c33aec468b43cff07049e884d0bcc6374",
+      "disk_size": 660577,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

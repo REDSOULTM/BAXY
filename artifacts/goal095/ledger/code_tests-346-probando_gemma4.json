@@ -1,0 +1,125 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-346-probando_gemma4",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:29Z",
+  "closed_utc": "2026-08-31T02:46:30Z",
+  "estimated_tokens": 66076,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 4,
+  "subsystem": "pg4_ui_field",
+  "subsystems": [
+    "pg4_ui_field",
+    "pg4_voice"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/ui_field/src/App.tsx",
+      "sha256": "e56888fdbf1639a0642b396e3b1d7674986177c62b3491d8b16b973b8f9fd0f0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "gemma4_agent/ui_field/src/components/SubstratePanel.tsx",
+      "sha256": "12e4218c6eb6854254d8bb1216847b84207c881125acab465549e183d1fe8a70",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "gemma4_agent/ui_field/src/styles/prototype.css",
+      "sha256": "9171738c22d25bd97933ed6df962d0338ffb6888aa04ee76734fc7a3f3f8aa50",
+      "source_id": "probando_gemma4",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "gemma4_agent/voice/livekit_runtime.py",
+      "sha256": "db589cce52fcdceb6a09b2fc3565dbea5dd3a5a965cc1384c76eb43f8a1cc0d5",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-229"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-346-probando_gemma4-01-gemma4_agent-ui_field-src",
+      "disposition": "adapt_candidate",
+      "component": "gemma4_agent/ui_field/src (2 ficheros)",
+      "contract": "Grupo gemma4_agent/ui_field/src: 2 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "gemma4_agent/ui_field/src/App.tsx",
+        "gemma4_agent/ui_field/src/components/SubstratePanel.tsx"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "gemma4_agent/ui_field/src/App.tsx",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "code_tests-346-probando_gemma4-02-gemma4_agent-voice-livekit_runtime.py",
+      "disposition": "evidence_only",
+      "component": "gemma4_agent/voice/livekit_runtime.py (1 ficheros)",
+      "contract": "Grupo gemma4_agent/voice/livekit_runtime.py: 1 archivos. Terminales leido PY \"\"\"Pure-onnxruntime LiveKit wake-word inference for Python 3.10.  The trained LiveKit model lives as 3 ONNX graphs. The `livekit-wakeword` PyPI package requires Python 3.11, but the Gemma 4 runtime is 3.10. This module reimplements LiveKit's inference pipeline using ONLY onnxruntime + numpy, so it loads in 3.10.  Pipeline (mirrors livekit.wakeword.inference.WakeWordModel exactly):",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "gemma4_agent/voice/livekit_runtime.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "gemma4_agent/voice/livekit_runtime.py",
+        "ranges": [
+          "1-229"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=4 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-347-probando_gemma4-pg4_voice",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-346-probando_gemma4.inspect.json"
+}

@@ -1,0 +1,32 @@
+batch=code_tests-416-baxy
+hash_ok=30 drift=0 miss=0
+OK experiments/voice_latency/train_mdtc_phoneme_distillation.py py_lines=507 defs=12
+OK experiments/voice_latency/train_mdtc_phoneme_distillation_v2.py py_lines=1601 defs=30
+OK experiments/voice_latency/train_mdtc_phonetic_ctc_group_cv.py py_lines=596 defs=12
+OK experiments/voice_latency/train_mswc_ctc_alignment_cnn_distillation_v15.py py_lines=613 defs=17
+OK experiments/voice_latency/train_mswc_hyperspotter_listwise_v2.py py_lines=590 defs=10
+OK experiments/voice_latency/train_mswc_hyperspotter_spanish_v1.py py_lines=457 defs=10
+OK experiments/voice_latency/train_mswc_hyperspotter_teacher_distillation_v3.py py_lines=554 defs=10
+OK experiments/voice_latency/train_mswc_spanish_qbye_angular_prototypical_v1.py py_lines=661 defs=16
+OK experiments/voice_latency/train_mswc_spanish_qbye_similarity_cnn_v4.py py_lines=559 defs=17
+OK experiments/voice_latency/train_mswc_wake_scaf_embedding_v1.py py_lines=578 defs=10
+OK experiments/voice_latency/train_wav2vec2_hidden_wake_mil_head_v1.py py_lines=421 defs=14
+OK experiments/voice_latency/train_wav2vec2_hidden_wake_scaf_embedding_v1.py py_lines=671 defs=18
+OK experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py py_lines=408 defs=16
+OK experiments/wake_validation/evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py py_lines=633 defs=22
+OK experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py py_lines=411 defs=12
+OK experiments/wake_validation/evaluate_score_gated_basic_rescue_v1.py py_lines=445 defs=11
+OK experiments/wake_validation/evaluate_split_alias_ctc_guard_v1.py py_lines=521 defs=12
+OK experiments/wake_validation/evaluate_split_alias_localized_qbt_v2.py py_lines=520 defs=14
+OK experiments/wake_validation/extract_opened_physical_wav2vec2_features_v1.py py_lines=343 defs=9
+OK experiments/wake_validation/train_baxy_phonetic_auxiliary_domain_loco_v2.py py_lines=514 defs=10
+OK experiments/wake_validation/train_baxy_phonetic_prosody_domain_loco_v1.py py_lines=652 defs=21
+OK experiments/wake_validation/validate_physical_wake_v17_program.py py_lines=553 defs=15
+OK legacy/Experimentando/gemma4_unified.py py_lines=1167 defs=63
+OK legacy/Experimentando/run_baxy_gemma4_experiment.ps1
+OK legacy/Experimentando/run_baxy_gemma4_experiment.py py_lines=127 defs=9
+OK legacy/baxy.bat
+OK legacy/computer_use/__init__.py py_lines=15 defs=0
+OK legacy/computer_use/browser_cdp.py py_lines=626 defs=30
+OK legacy/computer_use/executor.py py_lines=93 defs=1
+OK legacy/computer_use/gui.py py_lines=175 defs=7

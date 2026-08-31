@@ -1,0 +1,39 @@
+batch=code_tests-468-baxy
+hash_ok=37 drift=0 miss=0
+OK src/baxy_mind/voice.py py_lines=2820 defs=77
+OK src/baxy_mind/voice_aec.py py_lines=292 defs=18
+OK src/baxy_mind/voice_output.py py_lines=337 defs=20
+OK src/baxy_mind/wake_cascade.py py_lines=1184 defs=39
+OK src/baxy_mind/wake_verifier.py py_lines=895 defs=41
+OK src/baxy_mind/wakeword.py py_lines=664 defs=32
+OK tests/Baxy.Contracts.Tests/Baxy.Contracts.Tests.csproj
+OK tests/Baxy.Contracts.Tests/ProtocolContractTests.cs
+OK tests/Baxy.Contracts.Tests/bin/Debug/net10.0/Baxy.Contracts.Tests.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK tests/Baxy.Contracts.Tests/bin/Debug/net10.0/Baxy.Contracts.Tests.runtimeconfig.json json_keys=['runtimeOptions']
+OK tests/Baxy.Contracts.Tests/bin/Debug/net10.0/nunit_random_seed.tmp
+OK tests/Baxy.Contracts.Tests/bin/Release/net10.0/Baxy.Contracts.Tests.runtimeconfig.json json_keys=['runtimeOptions']
+OK tests/Baxy.Integration.Tests/AppJsonHotPathTests.cs
+OK tests/Baxy.Integration.Tests/AppOpenHandlerTests.cs
+OK tests/Baxy.Integration.Tests/AppSurfaceNavigatorTests.cs
+OK tests/Baxy.Integration.Tests/AssetManifestDiscoveryTests.cs
+OK tests/Baxy.Integration.Tests/AudioMuteHandlerTests.cs
+OK tests/Baxy.Integration.Tests/AudioRecoveryViewModelTests.cs
+OK tests/Baxy.Integration.Tests/AudioStatusHandlerTests.cs
+OK tests/Baxy.Integration.Tests/AudioVolumeHandlerTests.cs
+OK tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj
+OK tests/Baxy.Integration.Tests/BluetoothRadioNarrationTests.cs
+OK tests/Baxy.Integration.Tests/BoundedUtf8LineReaderTests.cs
+OK tests/Baxy.Integration.Tests/CaptureHandlerTests.cs
+OK tests/Baxy.Integration.Tests/CatalogNarrationCoverageTests.cs
+OK tests/Baxy.Integration.Tests/ClipboardHandlerTests.cs
+OK tests/Baxy.Integration.Tests/CoreJsonlProtocolBenchmarkTests.cs
+OK tests/Baxy.Integration.Tests/CoreJsonlProtocolTests.cs
+OK tests/Baxy.Integration.Tests/CoreNotesEndToEndTests.cs
+OK tests/Baxy.Integration.Tests/CoreProcessClientShutdownRaceTests.cs
+OK tests/Baxy.Integration.Tests/CoreProcessClientTimeoutTests.cs
+OK tests/Baxy.Integration.Tests/DurableRetryStoreTests.cs
+OK tests/Baxy.Integration.Tests/ExhaustiveHistoricalDirectRoutingTests.cs
+OK tests/Baxy.Integration.Tests/ExternalCapabilityHandlerTests.cs
+OK tests/Baxy.Integration.Tests/FieldProgressContractTests.cs
+OK tests/Baxy.Integration.Tests/GpuSystemStatusHandlerTests.cs
+OK tests/Baxy.Integration.Tests/HistoricalAudioRoutingTests.cs

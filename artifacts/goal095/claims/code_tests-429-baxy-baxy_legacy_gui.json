@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-429-baxy-baxy_legacy_gui",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:22Z",
+  "estimated_tokens": 298158,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 28,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-429-baxy-baxy_legacy_gui.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

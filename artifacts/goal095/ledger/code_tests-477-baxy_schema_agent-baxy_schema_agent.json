@@ -1,0 +1,210 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-477-baxy_schema_agent-baxy_schema_agent",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:50:07Z",
+  "closed_utc": "2026-08-31T02:50:08Z",
+  "estimated_tokens": 56669,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy_schema_agent",
+  "source_head": "e6f9c1e5130d17d8de2c1b9447c327e53f468948",
+  "source_root": "Programacion/BAXY",
+  "file_count": 9,
+  "subsystem": "baxy_schema_agent",
+  "subsystems": [
+    "baxy_schema_agent"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/tests/test_computer_use_schema_no_invented_msg.py",
+      "sha256": "903277f5f9ae04ee82049a2d727285530f5f8584f5c63ca000e30f407afc8e7d",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-51"
+      ],
+      "parse_note": "git blob 4256700bde2f @ e6f9c1e5130d"
+    },
+    {
+      "path": "gemma4_agent/tests/test_experience_schema_drift.py",
+      "sha256": "fd703fce962fec49efbd5736997ac2a7ae154175c1fd3b726b7e9f6190cb85f4",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-135"
+      ],
+      "parse_note": "git blob 957e54d131cb @ e6f9c1e5130d"
+    },
+    {
+      "path": "gemma4_agent/tests/test_schema_handler_contract.py",
+      "sha256": "0e9285c5c0b09a9fabfc7be1666b589d15601deef0934c438450edf1eefdc8f0",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-457"
+      ],
+      "parse_note": "git blob f31cf55809e3 @ e6f9c1e5130d"
+    },
+    {
+      "path": "gemma4_agent/tests/test_schemas_for_names_cache.py",
+      "sha256": "505c2bf8c5d7ed7a4c58850e29c8ff01cdc393d96496fb8cebdcd2f26bf44fe0",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-188"
+      ],
+      "parse_note": "git blob bde041ab9189 @ e6f9c1e5130d"
+    },
+    {
+      "path": "gemma4_agent/tests/test_whatsapp_schema_slot_examples.py",
+      "sha256": "3620cff5bd2ea9918185da388cc2173f8f281c64c01703d90af067a3025059d9",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-52"
+      ],
+      "parse_note": "git blob a5df1abef681 @ e6f9c1e5130d"
+    },
+    {
+      "path": "gemma4_agent/tests/test_window_active_schema_examples.py",
+      "sha256": "d3780ea6c60fbfdb802a2e391b63cada4e8eb5b9f8d5675e2354b84867913818",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-60"
+      ],
+      "parse_note": "git blob 904c80c5c728 @ e6f9c1e5130d"
+    },
+    {
+      "path": "gemma4_agent/tools_pkg/tool_schemas.py",
+      "sha256": "8eb5b5c4b1b65a90333ec94aa134ffbf660001c2872f333f1b95ef637e08d649",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-129"
+      ],
+      "parse_note": "git blob 2b084dcf866e @ e6f9c1e5130d"
+    },
+    {
+      "path": "scripts/_measure_tool_schemas.py",
+      "sha256": "cc87a550295e44464ed745201ca4b8e59bb34aa90cd7af0536142903747126c0",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-52"
+      ],
+      "parse_note": "git blob 4d814c538fd9 @ e6f9c1e5130d"
+    },
+    {
+      "path": "scripts/_verify_schema_hint_gate.py",
+      "sha256": "03eaaba25c14c87f5dd5db746d6e5e257b7d2448e6edd5da8193109aba6d51ee",
+      "source_id": "baxy_schema_agent",
+      "terminal": "leido",
+      "ranges": [
+        "1-31"
+      ],
+      "parse_note": "git blob fbf8d576fbf0 @ e6f9c1e5130d"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "schema-agent-tool-schemas",
+      "disposition": "reject_candidate",
+      "component": "tool_schemas.py de Schema Agent (catalogo OpenAI/JSON en el prompt)",
+      "contract": "Modulo 129 lineas. Head: \"\"\"Authoritative list of compound tool schemas exposed to the LLM.  Pulled out of ``gemma4_agent.tools``. The literal stays verbatim so contract tests (test_tool_registry_contract.TestSchemasAPI) detect any drift. The action-enum decoration still happens in ``tools.py`` right after this import, against the same shared list. \"\"\" from __future__ import annotations  from typing import Any   defs=0",
+      "dependencies": "gemma4_agent tools_pkg; tests de schema en el mismo lote",
+      "historical_test": "test_schema_handler_contract.py y test_experience_schema_drift.py en este lote",
+      "limitations": "No esta en el worktree de BAXY HEAD; vive en git Tools-Reduce/vram4_lean/v0.9.2. Goal 01 rechazo catalogo cocido en pesos/prompt.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "gemma4_agent/tools_pkg/tool_schemas.py",
+        "scripts/_measure_tool_schemas.py"
+      ],
+      "failure_mechanism": "El universo de tools vive en un modulo Python que el LLM ve. BAXY exige catalogo tipado autorizado por kernel.",
+      "readme_vs_real": "El blob git coincide con el hash 09.5.1. No hay copia en HEAD actual de BAXY.",
+      "invariant_risk": "Trasplantar tool_schemas como tools OpenAI rompe invariante 1.",
+      "duplicate_layers": "Schema Agent vs FunctionGemma slim schemas vs ProductCatalog .NET vs Carter v4 @tool.",
+      "provisional": true,
+      "provenance": {
+        "path": "gemma4_agent/tools_pkg/tool_schemas.py",
+        "ranges": [
+          "1-129"
+        ],
+        "date": "2026-06-26",
+        "hardware": "Windows · BAXY git blob Schema Agent (Tools-Reduce)",
+        "model": "n/a (schemas)",
+        "commit": "e6f9c1e5130d17d8de2c1b9447c327e53f468948"
+      }
+    },
+    {
+      "card_id": "schema-agent-schema-tests",
+      "disposition": "adapt_candidate",
+      "component": "Tests de contrato de schema (no inventar tools, drift, cache de nombres)",
+      "contract": "Seis tests: no invented msg, experience schema drift, handler contract, names cache, whatsapp slots, window_active examples.",
+      "dependencies": "tool_schemas.py historico",
+      "historical_test": "Los seis ficheros SON los tests. No reejecutados (arbol git, no worktree).",
+      "limitations": "Aterrizan sobre el catalogo Python, no ProductCatalog.",
+      "current_owner": "tests/Baxy.Kernel.Tests y tests de catalogo",
+      "source_files": [
+        "gemma4_agent/tests/test_computer_use_schema_no_invented_msg.py",
+        "gemma4_agent/tests/test_experience_schema_drift.py",
+        "gemma4_agent/tests/test_schema_handler_contract.py",
+        "gemma4_agent/tests/test_schemas_for_names_cache.py",
+        "gemma4_agent/tests/test_whatsapp_schema_slot_examples.py",
+        "gemma4_agent/tests/test_window_active_schema_examples.py"
+      ],
+      "failure_mechanism": "Contratos de schema en pytest Python; BAXY los tiene en .NET. Adaptar la idea (no inventar nombres) no el harness.",
+      "readme_vs_real": "Los tests existen en el blob git. HEAD de BAXY ya no tiene gemma4_agent/.",
+      "invariant_risk": "Adaptar aserciones de 'no inventar' al kernel no rompe invariantes.",
+      "duplicate_layers": "tests Schema Agent vs Kernel.Tests vs FunctionGemma holdout.",
+      "provisional": true,
+      "provenance": {
+        "path": "gemma4_agent/tests/test_computer_use_schema_no_invented_msg.py",
+        "ranges": [
+          "1-51"
+        ],
+        "date": "2026-06",
+        "hardware": "Windows · BAXY git blob Schema Agent (Tools-Reduce)",
+        "model": "n/a (pytest)",
+        "commit": "e6f9c1e5130d17d8de2c1b9447c327e53f468948"
+      }
+    },
+    {
+      "card_id": "schema-agent-schema-scripts",
+      "disposition": "evidence_only",
+      "component": "Scripts de medicion y verify de schema hint",
+      "contract": " _measure_tool_schemas.py y _verify_schema_hint_gate.py: medidor y gate de hints.",
+      "dependencies": "tool_schemas.py",
+      "historical_test": "Scripts, no pytest.",
+      "limitations": "No se ejecutaron. Son receta de medicion de un catalogo abandonado.",
+      "current_owner": "scripts/ de BAXY Definitivo (gates actuales)",
+      "source_files": [
+        "scripts/_measure_tool_schemas.py",
+        "scripts/_verify_schema_hint_gate.py"
+      ],
+      "failure_mechanism": "Gate de hint de schema sobre un catalogo que ya no es el ProductCatalog.",
+      "readme_vs_real": "Blobs git coinciden. No hay equivalente 1:1 en scripts/ actuales.",
+      "invariant_risk": "No ejecutar contra el catalogo vivo sin reescritura.",
+      "duplicate_layers": "measure scripts vs test_source_quality.ps1",
+      "provisional": true,
+      "provenance": {
+        "path": "scripts/_measure_tool_schemas.py",
+        "ranges": [
+          "1-52"
+        ],
+        "date": "2026-06",
+        "hardware": "Windows · BAXY git blob Schema Agent (Tools-Reduce)",
+        "model": "n/a",
+        "commit": "e6f9c1e5130d17d8de2c1b9447c327e53f468948"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "9/9 git blob=cola 09.5.1; 0 en worktree HEAD BAXY",
+  "next_code_tests_batch_id": null,
+  "next_prompt": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-477-baxy_schema_agent-baxy_schema_agent.inspect.json"
+}

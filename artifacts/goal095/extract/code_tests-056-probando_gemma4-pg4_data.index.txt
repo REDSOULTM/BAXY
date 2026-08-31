@@ -1,0 +1,3 @@
+batch=code_tests-056-probando_gemma4-pg4_data
+hash_ok=1 drift=0 miss=0
+OK gemma4_agent/data/tool2vec_queries.jsonl.bak_pre_clickvisible_2026-06-07

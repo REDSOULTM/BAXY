@@ -1,0 +1,24 @@
+batch=code_tests-444-baxy
+hash_ok=22 drift=0 miss=0
+OK legacy/tests/test_tooling_v2_gui_reminders.py py_lines=2247 defs=78
+OK legacy/tests/test_tooling_v2_mission_matrix.py py_lines=855 defs=41
+OK legacy/tests/test_tooling_v2_private_results.py py_lines=1056 defs=48
+OK legacy/tests/test_tooling_v2_product_executor.py py_lines=4906 defs=93
+OK legacy/tests/test_tooling_vision_attachment.py py_lines=689 defs=29
+OK legacy/tests/test_tooling_windows_control_provider.py py_lines=612 defs=21
+OK legacy/tests/test_tooling_workflow_adapter.py py_lines=441 defs=15
+OK legacy/tests/test_tooling_workflow_grounding.py py_lines=1459 defs=29
+OK legacy/tests/test_tooling_workflow_selector.py py_lines=138 defs=8
+OK legacy/tests/test_tooling_workflows.py py_lines=421 defs=21
+OK legacy/tests/test_tools_apps_resolver.py py_lines=165 defs=12
+OK legacy/tests/test_vision_tool.py py_lines=425 defs=29
+OK legacy/tests/test_voice_durable_output_mode.py py_lines=385 defs=28
+OK legacy/tests/test_voice_guards.py py_lines=109 defs=18
+OK legacy/tests/test_voice_hardware_probe.py py_lines=35 defs=3
+OK legacy/tests/test_voice_lifecycle.py py_lines=1143 defs=149
+OK legacy/tests/test_voice_shutdown_lifecycle.py py_lines=342 defs=24
+OK legacy/tests/test_wake_artifact_integrity.py py_lines=362 defs=31
+OK legacy/tests/test_web_search_deadline.py py_lines=108 defs=8
+OK legacy/tests/test_windows_job.py py_lines=664 defs=46
+OK legacy/tooling/__init__.py py_lines=99 defs=0
+OK legacy/tooling/browser_v2_identity.py py_lines=81 defs=7

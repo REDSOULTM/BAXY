@@ -1,0 +1,643 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-020-carter",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:43:31Z",
+  "closed_utc": "2026-08-31T02:43:33Z",
+  "estimated_tokens": 256816,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 18,
+  "subsystem": "carter_v1",
+  "subsystems": [
+    "carter_v1",
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "Carter_v1/tests/test_llm_backends.py",
+      "sha256": "75667e99782f404c865796073542ea59859b340886c449db2f3a298b98b75f27",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-128"
+      ]
+    },
+    {
+      "path": "Carter_v1/tests/test_meta_tools.py",
+      "sha256": "a4d31ae21f8f2e6e861a1795d418c140e7bc851fba9fee024b3c687523563ff5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-10"
+      ]
+    },
+    {
+      "path": "Carter_v1/tests/test_parser.py",
+      "sha256": "348896080377dbb7954d4bba3447978ffa74fbfddd98b2f2704aacfa6abcbd74",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-194"
+      ]
+    },
+    {
+      "path": "Carter_v1/tests/test_phase6_full_compare.py",
+      "sha256": "841b581cadf70ee83697da0278a0805f1ef99a9375970df7607f866b00cae467",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-31"
+      ]
+    },
+    {
+      "path": "Carter_v1/tests/test_sandbox.py",
+      "sha256": "812066837af0c208437ecbc2f933a34d92b53b95b31a1cbc777287076125d2f8",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-233"
+      ]
+    },
+    {
+      "path": "Carter_v1/tests/test_task_state.py",
+      "sha256": "29432e174245b552c40e80b1160b89ee2e2ee19d22a240e7e483cf05a5494f9a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1235"
+      ]
+    },
+    {
+      "path": "Carter_v1/tests/test_universal_benchmark.py",
+      "sha256": "bbe1fca939168d3d5e39791f8ad29acb2d6f090ff5866c5ac67d58ca6cc3e9c7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-100"
+      ]
+    },
+    {
+      "path": "Carter_v1/universal_benchmark.py",
+      "sha256": "220625872ea8d186e92efd6d056643271d47b1bd09dcc67969cda42715ef0106",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1136"
+      ]
+    },
+    {
+      "path": "Carter_v1/vram_manager.py",
+      "sha256": "20d8dab36627df3ad3312cdb5c5e1c1fb245af8c1c7bbf14ac0e6451c48fa079",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-206"
+      ]
+    },
+    {
+      "path": "Carter_v2/.diag_memory.db",
+      "sha256": "1378a744ba1c7c695f61f97ae85b4a6978746f9f6adc4b5a7148ceee78d9e43d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "Carter_v2/.diag_skills.db",
+      "sha256": "2cd8f201bb377bea69b1c5da152462a9bac392a37d17d74abb561a854d624cd4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "Carter_v2/.env.example",
+      "sha256": "053f79d4d0b6de6520b943798cb692c897b963db2efba080530c06929a4f2baa",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "config"
+      ]
+    },
+    {
+      "path": "Carter_v2/.gitignore",
+      "sha256": "c83569d7c4c2b9ccb15c0b0629273ff7f66a21dc1edfdec9121387bee309ac21",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "Carter_v2/.probe7_memory.db",
+      "sha256": "5c35f414ebf8ff9124e94e21500709217367214157d2cf8ceddbb81389bc8fbe",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "Carter_v2/.probe_memory_safe.db",
+      "sha256": "bf492bb17605eaf03181556736b67dc248dc47d9696c65025f5dc551e41d60cb",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "Carter_v2/.probeall_memory.db",
+      "sha256": "9480d028ecde1e83f82c1d7fde0a04a3b33634c9b2ab094b280baaa47e2979ad",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "Carter_v2/.probeall_memory.db-shm",
+      "sha256": "82c03725f0bf5286829b9fa72cd6d49e8fed08ee8e5f6a0f729667e8cb553322",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "sidecar"
+      ],
+      "exclusion_rule": "sqlite_runtime_shm"
+    },
+    {
+      "path": "Carter_v2/.probeall_memory.db-wal",
+      "sha256": "50d3bc9741f7a81fa801dc3e6e3242d7f0bab8ad3bd25fa3ba57d14ab291d85e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:applied-with-parent-db"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-020-carter-01-Carter_v1-tests-test_llm_backends.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_llm_backends.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_llm_backends.py: 1 archivos. Terminales leido PY from types import SimpleNamespace  from llm_backends import (     OpenAICompatibleBackendAdapter,     OllamaBackendAdapter,     build_openai_endpoint,     create_backend_adapter,     detect_openai_runtime_flavor,",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_llm_backends.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_llm_backends.py",
+        "ranges": [
+          "1-128"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-02-Carter_v1-tests-test_meta_tools.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_meta_tools.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_meta_tools.py: 1 archivos. Terminales leido PY import unittest  class TestMetaTools(unittest.TestCase):      def test_meta_tool_example(self):         # Example test for a meta tool         self.assertTrue(True) ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_meta_tools.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_meta_tools.py",
+        "ranges": [
+          "1-10"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-03-Carter_v1-tests-test_parser.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_parser.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_parser.py: 1 archivos. Terminales leido PY \"\"\"Tests de regresion para el parser estricto del ciclo.\"\"\"  from carter_core import (     parse_llm_response,     parse_visual_analysis_response,     _try_fix_json,     _strip_thinking_tags, )",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_parser.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_parser.py",
+        "ranges": [
+          "1-194"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-04-Carter_v1-tests-test_phase6_full_compare.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_phase6_full_compare.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_phase6_full_compare.py: 1 archivos. Terminales leido PY from phase6_full_compare import _score_row, _select_stage2_ids   def test_select_stage2_ids_keeps_baseline_and_top_finalists():     ranked = [\"devstral-24b\", \"qwen25-coder\", \"qwen25-32b\", \"qwen3-baseline\"]     assert _select_stage2_ids(ranked, top_n=3, baseline_id=\"qwen3-baseline\") == [         \"qwen3-baseline\",         \"devstral-24b\",",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_phase6_full_compare.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_phase6_full_compare.py",
+        "ranges": [
+          "1-31"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-05-Carter_v1-tests-test_sandbox.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_sandbox.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_sandbox.py: 1 archivos. Terminales leido PY \"\"\"Tests de regresion para el sandbox de ejecucion.\"\"\"  import json import os  import pytest from dynamic_sandbox import DynamicSandbox, EVENT_PREFIX, ExecutionResult ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_sandbox.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_sandbox.py",
+        "ranges": [
+          "1-233"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-06-Carter_v1-tests-test_task_state.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_task_state.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_task_state.py: 1 archivos. Terminales leido PY \"\"\"Tests para task_state y contradicciones simples.\"\"\"  from task_state import (     TaskCycleRecord,     TaskState,     VerifiedFact,     extract_verified_facts_from_events,     extract_verified_facts_from_stdout,",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_task_state.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_task_state.py",
+        "ranges": [
+          "1-1235"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-07-Carter_v1-tests-test_universal_benchmark.py",
+      "disposition": "adapt_candidate",
+      "component": "Carter_v1/tests/test_universal_benchmark.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/tests/test_universal_benchmark.py: 1 archivos. Terminales leido PY from universal_benchmark import (     RECOVERY_SAMPLE_CASE_IDS,     _validate_universal_report,     load_universal_cases,     summarize_universal_results, )  ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "Carter_v1/tests/test_universal_benchmark.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/tests/test_universal_benchmark.py",
+        "ranges": [
+          "1-100"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-08-Carter_v1-universal_benchmark.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v1/universal_benchmark.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/universal_benchmark.py: 1 archivos. Terminales leido PY \"\"\" Carter OS - Universal PC benchmark runner.  This suite is intentionally declarative: - all benchmark cases live in data/universal_benchmark_cases.json - the runner applies generic validators only - intrusive cases can be marked as guided/manual without changing Carter core \"\"\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v1/universal_benchmark.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/universal_benchmark.py",
+        "ranges": [
+          "1-1136"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-09-Carter_v1-vram_manager.py",
+      "disposition": "evidence_only",
+      "component": "Carter_v1/vram_manager.py (1 ficheros)",
+      "contract": "Grupo Carter_v1/vram_manager.py: 1 archivos. Terminales leido PY \"\"\" Carter OS — VRAM Manager Gestion inteligente de VRAM para proteger rendimiento de juegos.  Idea rescatada del proyecto anterior: estados HOT/WARM/COLD. Implementacion minima pero funcional sobre Ollama.  HOT  = Modelo cargado en VRAM (inferencia inmediata)",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v1/vram_manager.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v1/vram_manager.py",
+        "ranges": [
+          "1-206"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-10-Carter_v2-.diag_memory.db",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.diag_memory.db (1 ficheros)",
+      "contract": "Grupo Carter_v2/.diag_memory.db: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "Carter_v2/.diag_memory.db"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.diag_memory.db",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-11-Carter_v2-.diag_skills.db",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.diag_skills.db (1 ficheros)",
+      "contract": "Grupo Carter_v2/.diag_skills.db: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "Carter_v2/.diag_skills.db"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.diag_skills.db",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-12-Carter_v2-.env.example",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.env.example (1 ficheros)",
+      "contract": "Grupo Carter_v2/.env.example: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/.env.example"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.env.example",
+        "ranges": [
+          "config"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-13-Carter_v2-.probe7_memory.db",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.probe7_memory.db (1 ficheros)",
+      "contract": "Grupo Carter_v2/.probe7_memory.db: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "Carter_v2/.probe7_memory.db"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.probe7_memory.db",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-14-Carter_v2-.probe_memory_safe.db",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.probe_memory_safe.db (1 ficheros)",
+      "contract": "Grupo Carter_v2/.probe_memory_safe.db: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "Carter_v2/.probe_memory_safe.db"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.probe_memory_safe.db",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-15-Carter_v2-.probeall_memory.db",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.probeall_memory.db (1 ficheros)",
+      "contract": "Grupo Carter_v2/.probeall_memory.db: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "Carter_v2/.probeall_memory.db"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.probeall_memory.db",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "code_tests-020-carter-16-Carter_v2-.probeall_memory.db-wal",
+      "disposition": "evidence_only",
+      "component": "Carter_v2/.probeall_memory.db-wal (1 ficheros)",
+      "contract": "Grupo Carter_v2/.probeall_memory.db-wal: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "Carter_v2/.probeall_memory.db-wal"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "Carter_v2/.probeall_memory.db-wal",
+        "ranges": [
+          "sqlite:applied-with-parent-db"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=18 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-021-carter-carter_v2",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-020-carter.inspect.json"
+}

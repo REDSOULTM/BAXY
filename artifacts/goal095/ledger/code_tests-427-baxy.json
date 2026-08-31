@@ -1,0 +1,362 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-427-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:20Z",
+  "closed_utc": "2026-08-31T02:48:21Z",
+  "estimated_tokens": 246408,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 14,
+  "subsystem": "baxy_legacy_data",
+  "subsystems": [
+    "baxy_legacy_data",
+    "baxy_legacy_gui"
+  ],
+  "files": [
+    {
+      "path": "legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model",
+      "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+      "source_id": "baxy",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-419-baxy-baxy_legacy_data:legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model"
+    },
+    {
+      "path": "legacy/data/tasks-v2.sqlite3",
+      "sha256": "850132741f5524e7a690dfce26c9245fe05f37f7ff50a482d903ce2706d60083",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tasks-v2.sqlite3.key",
+      "sha256": "e24d3333596e2de4554b3af92e5e6780a539aee61edd3bb2b3a7bc2c7e891103",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tasks-v2.sqlite3.ready",
+      "sha256": "e83d0758d711da4d80192741793b9aef69b2ef9334b364dedd2b2dc3c0173060",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tooling-v2/invocations.sqlite.key",
+      "sha256": "542eb56eae86a210824d246da775868404262d336624208c2ce0a85ff5e263f2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tooling-v2/missions.sqlite.key",
+      "sha256": "ca72abe8a9962801e671bd838a77dd6058dd090f1b6249753bd1de6f73a3d7f2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tooling-v2/missions.sqlite.pre-v8-1783975297762668200.bak",
+      "sha256": "3e3da87c621816dc7590c698f14f6575528c384efdcf1445975b4c7395b75681",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tooling-v2/policy-authority.envelope",
+      "sha256": "298be9e0a31e53d939b21d77995658528fe19cd1a3d6b9e72818cf55a8146c2a",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/data/tooling-v2/policy-authority.key",
+      "sha256": "530b847eaecc81aab806456172705f19596995c09f59b37a1664cc842d0208f8",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/data/tooling-v2/routines.sqlite.key",
+      "sha256": "090d238173841771b41b3e1ac6608e299966d04d4b9ab7a79fb8727641b8c6c4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ]
+    },
+    {
+      "path": "legacy/data/tooling-v2/runtime.ready",
+      "sha256": "8087042788bda369b5f9541cad4fab1cf7f28e751327e73057dda613b2904604",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/gui/__init__.py",
+      "sha256": "38b7bd065ffb004dc94398ededcf916d85e4b23d49827f87c768d84b71b2f4b2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "legacy/gui/health_badge.js",
+      "sha256": "9ca8b7d64c2bca313e544b445901553329959031f1e57a2536883b031d0c9bd8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "legacy/gui/listener.py",
+      "sha256": "0f9defcc2602eff3f96cd376a6ad4284450ad29c2b52cf43a23cb519d9173955",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-345"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-427-baxy-01-legacy-data-tasks-v2.sqlite3",
+      "disposition": "evidence_only",
+      "component": "legacy/data/tasks-v2.sqlite3 (1 ficheros)",
+      "contract": "Grupo legacy/data/tasks-v2.sqlite3: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "legacy/data/tasks-v2.sqlite3"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/data/tasks-v2.sqlite3",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-427-baxy-02-legacy-data-tasks-v2.sqlite3.key",
+      "disposition": "evidence_only",
+      "component": "legacy/data/tasks-v2.sqlite3.key (1 ficheros)",
+      "contract": "Grupo legacy/data/tasks-v2.sqlite3.key: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "legacy/data/tasks-v2.sqlite3.key"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/data/tasks-v2.sqlite3.key",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-427-baxy-03-legacy-data-tasks-v2.sqlite3.ready",
+      "disposition": "evidence_only",
+      "component": "legacy/data/tasks-v2.sqlite3.ready (1 ficheros)",
+      "contract": "Grupo legacy/data/tasks-v2.sqlite3.ready: 1 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "legacy/data/tasks-v2.sqlite3.ready"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/data/tasks-v2.sqlite3.ready",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-427-baxy-04-legacy-data-tooling-v2",
+      "disposition": "evidence_only",
+      "component": "legacy/data/tooling-v2 (4 ficheros)",
+      "contract": "Grupo legacy/data/tooling-v2: 4 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs",
+      "source_files": [
+        "legacy/data/tooling-v2/invocations.sqlite.key",
+        "legacy/data/tooling-v2/missions.sqlite.key",
+        "legacy/data/tooling-v2/missions.sqlite.pre-v8-1783975297762668200.bak",
+        "legacy/data/tooling-v2/routines.sqlite.key"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/data/tooling-v2/invocations.sqlite.key",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-427-baxy-05-legacy-gui-__init__.py",
+      "disposition": "evidence_only",
+      "component": "legacy/gui/__init__.py (1 ficheros)",
+      "contract": "Grupo legacy/gui/__init__.py: 1 archivos. Terminales leido PY \"\"\"GUIs de BAXY: la web real exportada (ui_field + server) y el fallback tkinter.\"\"\"",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/gui/__init__.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/gui/__init__.py",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-427-baxy-06-legacy-gui-health_badge.js",
+      "disposition": "evidence_only",
+      "component": "legacy/gui/health_badge.js (1 ficheros)",
+      "contract": "Grupo legacy/gui/health_badge.js: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/gui/health_badge.js"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/gui/health_badge.js",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-427-baxy-07-legacy-gui-listener.py",
+      "disposition": "evidence_only",
+      "component": "legacy/gui/listener.py (1 ficheros)",
+      "contract": "Grupo legacy/gui/listener.py: 1 archivos. Terminales leido PY \"\"\"Exclusive, attestable ownership of BAXY's loopback GUI listener.  The lease binds and listens before expensive application construction.  The same socket is then handed to Uvicorn via ``Server.run(sockets=[...])`` so there is no close/rebind race and no opportunity to mistake an older process on the same port for the newly built application. \"\"\" from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/gui/listener.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/gui/listener.py",
+        "ranges": [
+          "1-345"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=14 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-428-baxy-baxy_legacy_gui",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-427-baxy.inspect.json"
+}

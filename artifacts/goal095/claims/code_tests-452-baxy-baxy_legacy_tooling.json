@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-452-baxy-baxy_legacy_tooling",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:04Z",
+  "estimated_tokens": 280370,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 4,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-452-baxy-baxy_legacy_tooling.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

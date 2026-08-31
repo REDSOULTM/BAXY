@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-347-probando_gemma4-pg4_voice",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_voice",
+  "subsystems": [
+    "pg4_voice"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/voice/models/livekit/baxy.onnx.bak_pre_basetrain_20260618",
+      "queued_sha256": "70704b6b5ef18dcb91471533b9c41b88e69829299c07c9ee90ed600a204bac3a",
+      "size_queued": 882211,
+      "exists": true,
+      "disk_sha256": "70704b6b5ef18dcb91471533b9c41b88e69829299c07c9ee90ed600a204bac3a",
+      "disk_size": 882211,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

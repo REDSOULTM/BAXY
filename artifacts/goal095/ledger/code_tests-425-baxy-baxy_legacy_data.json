@@ -1,0 +1,38 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-425-baxy-baxy_legacy_data",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:20Z",
+  "closed_utc": "2026-08-31T02:48:20Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 1,
+  "subsystem": "baxy_legacy_data",
+  "subsystems": [
+    "baxy_legacy_data"
+  ],
+  "files": [
+    {
+      "path": "legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model",
+      "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+      "source_id": "baxy",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-419-baxy-baxy_legacy_data:legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-426-baxy-baxy_legacy_data",
+  "next_prompt": "campaign:code_tests",
+  "inspect": null
+}

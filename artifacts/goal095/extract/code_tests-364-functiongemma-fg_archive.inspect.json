@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-364-functiongemma-fg_archive",
+  "source_id": "functiongemma",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "fg_archive",
+  "subsystems": [
+    "fg_archive"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/lora/chat_template.jinja",
+      "queued_sha256": "9c68a146e23413875508e518daf26122e36697a7b2a577ba230133fdfec38411",
+      "size_queued": 14228,
+      "exists": true,
+      "disk_sha256": "9c68a146e23413875508e518daf26122e36697a7b2a577ba230133fdfec38411",
+      "disk_size": 14228,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

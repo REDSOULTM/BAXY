@@ -1,0 +1,19 @@
+batch=code_tests-363-probando_gemma4
+hash_ok=17 drift=0 miss=0
+OK gemma4_agent/voice/tests/Grabación (2).m4a
+OK gemma4_agent/voice/tests/test_lang_profiles.py py_lines=58 defs=10
+OK gemma4_agent/voice/tests/testaudio_analysis.json json_keys=['all_results', 'bucket_counts', 'buckets', 'reject_reason_distribution', 'source_file', 'total_duration_s', 'wake_detections']
+OK gemma4_agent/voice/tests/testaudio_groundtruth_aligned.json json_keys=['alignment_source', 'source_file', 'turns', 'wake_count']
+OK gemma4_agent/voice/tests/testaudio_groundtruth_full.json json_keys=['generated_at', 'language_detected', 'language_probability', 'manual_correction', 'model', 'segments', 'source_file', 'total_duration_s', 'transcribe_elapsed_s']
+OK gemma4_agent/voice/tests/testaudio_v2_expected.json json_keys=['audio_file', 'commands', 'duration_s', 'wakes']
+OK gemma4_agent/voice/tts.py py_lines=423 defs=19
+OK gemma4_agent/voice_runner.py py_lines=15 defs=0
+OK gemma4_agent/watcher_runner.py py_lines=23 defs=1
+OK .gitignore
+OK conftest.py py_lines=16 defs=0
+OK fix_streaming.py py_lines=76 defs=1
+OK implement_autoplay_guarantee.py py_lines=240 defs=1
+OK nightly_e2e_suite.py py_lines=892 defs=30
+OK pyproject.toml
+OK test_streaming_live.py py_lines=163 defs=1
+OK upgrade_autoplay.py py_lines=133 defs=1

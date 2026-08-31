@@ -1,0 +1,96 @@
+{
+  "batch_id": "code_tests-477-baxy_schema_agent-baxy_schema_agent",
+  "source_id": "baxy_schema_agent",
+  "source_root": "Programacion/BAXY",
+  "file_count": 9,
+  "hash_ok": 0,
+  "hash_drift": 0,
+  "hash_missing": 9,
+  "subsystem": "baxy_schema_agent",
+  "subsystems": [
+    "baxy_schema_agent"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/tests/test_computer_use_schema_no_invented_msg.py",
+      "queued_sha256": "903277f5f9ae04ee82049a2d727285530f5f8584f5c63ca000e30f407afc8e7d",
+      "size_queued": 2315,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tests/test_computer_use_schema_no_invented_msg.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "gemma4_agent/tests/test_experience_schema_drift.py",
+      "queued_sha256": "fd703fce962fec49efbd5736997ac2a7ae154175c1fd3b726b7e9f6190cb85f4",
+      "size_queued": 5452,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tests/test_experience_schema_drift.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "gemma4_agent/tests/test_schema_handler_contract.py",
+      "queued_sha256": "0e9285c5c0b09a9fabfc7be1666b589d15601deef0934c438450edf1eefdc8f0",
+      "size_queued": 20142,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tests/test_schema_handler_contract.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "gemma4_agent/tests/test_schemas_for_names_cache.py",
+      "queued_sha256": "505c2bf8c5d7ed7a4c58850e29c8ff01cdc393d96496fb8cebdcd2f26bf44fe0",
+      "size_queued": 7963,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tests/test_schemas_for_names_cache.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "gemma4_agent/tests/test_whatsapp_schema_slot_examples.py",
+      "queued_sha256": "3620cff5bd2ea9918185da388cc2173f8f281c64c01703d90af067a3025059d9",
+      "size_queued": 1979,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tests/test_whatsapp_schema_slot_examples.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "gemma4_agent/tests/test_window_active_schema_examples.py",
+      "queued_sha256": "d3780ea6c60fbfdb802a2e391b63cada4e8eb5b9f8d5675e2354b84867913818",
+      "size_queued": 2539,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tests/test_window_active_schema_examples.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "gemma4_agent/tools_pkg/tool_schemas.py",
+      "queued_sha256": "8eb5b5c4b1b65a90333ec94aa134ffbf660001c2872f333f1b95ef637e08d649",
+      "size_queued": 70019,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'gemma4_agent/tools_pkg/tool_schemas.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "scripts/_measure_tool_schemas.py",
+      "queued_sha256": "cc87a550295e44464ed745201ca4b8e59bb34aa90cd7af0536142903747126c0",
+      "size_queued": 1707,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'scripts/_measure_tool_schemas.py' does not exist in 'HEAD'\n"
+    },
+    {
+      "path": "scripts/_verify_schema_hint_gate.py",
+      "queued_sha256": "03eaaba25c14c87f5dd5db746d6e5e257b7d2448e6edd5da8193109aba6d51ee",
+      "size_queued": 1229,
+      "exists": false,
+      "hash_match": false,
+      "head_sha256": null,
+      "head_error": "fatal: path 'scripts/_verify_schema_hint_gate.py' does not exist in 'HEAD'\n"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+batch=code_tests-453-baxy
+hash_ok=77 drift=0 miss=0
+OK legacy/tooling/workflow_grounding.py py_lines=2465 defs=87
+OK legacy/tooling/workflow_selector.py py_lines=159 defs=7
+OK legacy/tooling/workflows.py py_lines=1470 defs=79
+OK legacy/tooling/workflows_builtin/accessibility_find_process_control.yaml
+OK legacy/tooling/workflows_builtin/accessibility_inspect_process_ui.yaml
+OK legacy/tooling/workflows_builtin/accessibility_invoke_process_control_exact.yaml
+OK legacy/tooling/workflows_builtin/accessibility_select_process_control_exact.yaml
+OK legacy/tooling/workflows_builtin/accessibility_set_process_control_value_exact.yaml
+OK legacy/tooling/workflows_builtin/accessibility_set_process_expand_exact.yaml
+OK legacy/tooling/workflows_builtin/accessibility_set_process_toggle_exact.yaml
+OK legacy/tooling/workflows_builtin/automation_routine_delete_exact.yaml
+OK legacy/tooling/workflows_builtin/automation_routine_disable_exact.yaml
+OK legacy/tooling/workflows_builtin/automation_routine_enable_exact.yaml
+OK legacy/tooling/workflows_builtin/automation_routine_read_exact.yaml
+OK legacy/tooling/workflows_builtin/automation_routine_restore_exact.yaml
+OK legacy/tooling/workflows_builtin/copy_file_text.yaml
+OK legacy/tooling/workflows_builtin/desktop_close_safely.yaml
+OK legacy/tooling/workflows_builtin/desktop_focus_process.yaml
+OK legacy/tooling/workflows_builtin/desktop_maximize_process.yaml
+OK legacy/tooling/workflows_builtin/desktop_minimize_process.yaml
+OK legacy/tooling/workflows_builtin/desktop_restore_process.yaml
+OK legacy/tooling/workflows_builtin/filesystem_archive_exact.yaml
+OK legacy/tooling/workflows_builtin/filesystem_copy_exact.yaml
+OK legacy/tooling/workflows_builtin/filesystem_create_directory_exact.yaml
+OK legacy/tooling/workflows_builtin/filesystem_move_exact.yaml
+OK legacy/tooling/workflows_builtin/filesystem_trash_exact.yaml
+OK legacy/tooling/workflows_builtin/note_delete_exact.yaml
+OK legacy/tooling/workflows_builtin/note_from_clipboard.yaml
+OK legacy/tooling/workflows_builtin/note_read_exact.yaml
+OK legacy/tooling/workflows_builtin/note_restore_exact.yaml
+OK legacy/tooling/workflows_builtin/note_update_exact.yaml
+OK legacy/tooling/workflows_builtin/productivity_reminder_delete_exact.yaml
+OK legacy/tooling/workflows_builtin/productivity_task_complete_exact.yaml
+OK legacy/tooling/workflows_builtin/task_delete_exact.yaml
+OK legacy/tooling/workflows_builtin/task_reopen_exact.yaml
+OK legacy/tooling/workflows_builtin/task_restore_exact.yaml
+OK legacy/tooling/workflows_builtin/task_update_exact.yaml
+OK legacy/tooling/workflows_builtin/task_with_reminder.yaml
+OK legacy/tooling/workflows_builtin/vision_describe_screen.yaml
+OK legacy/tooling/workflows_builtin/vision_identify_screen.yaml
+OK legacy/tooling/workflows_builtin/vision_read_screen.yaml
+OK legacy/tooling/workflows_builtin/whatsapp_send_exact.yaml
+OK legacy/tooling/workflows_experimental/calendar_create_exact.yaml
+OK legacy/tools/__init__.py py_lines=240 defs=1
+OK legacy/tools/_common.py py_lines=113 defs=7
+OK legacy/tools/apps.py py_lines=215 defs=7
+OK legacy/tools/apps_engine/__init__.py py_lines=18 defs=0
+OK legacy/tools/apps_engine/_toolshim.py py_lines=14 defs=0
+OK legacy/tools/apps_engine/app_paths.py py_lines=34 defs=2
+OK legacy/tools/apps_engine/app_process.py py_lines=213 defs=5
+OK legacy/tools/apps_engine/app_resolver.py py_lines=878 defs=29
+OK legacy/tools/apps_engine/name_match.py py_lines=100 defs=2
+OK legacy/tools/apps_engine/text_utils.py py_lines=9 defs=1
+OK legacy/tools/media.py py_lines=270 defs=7
+OK legacy/tools/music.py py_lines=53 defs=2
+OK legacy/tools/pc_status.py py_lines=194 defs=6
+OK legacy/tools/reminders.py py_lines=330 defs=10
+OK legacy/tools/routine.py py_lines=138 defs=9
+OK legacy/tools/streaming.py py_lines=102 defs=3
+OK legacy/tools/streaming_engine/__init__.py py_lines=40 defs=2
+OK legacy/tools/streaming_engine/_state.py py_lines=117 defs=12
+OK legacy/tools/streaming_engine/engine.py py_lines=2792 defs=49
+OK legacy/tools/streaming_engine/media_apps.py py_lines=22 defs=1
+OK legacy/tools/streaming_engine/media_now_playing_fast.py py_lines=72 defs=2
+OK legacy/tools/streaming_engine/runtime.py py_lines=688 defs=29
+OK legacy/tools/streaming_engine/winrt_mta.py py_lines=514 defs=26
+OK legacy/tools/vision.py py_lines=652 defs=26
+OK legacy/tools/web_search.py py_lines=277 defs=13
+OK legacy/tools/whatsapp.py py_lines=472 defs=20
+OK legacy/vision/__init__.py py_lines=10 defs=0
+OK legacy/vision/intent.py py_lines=122 defs=2
+OK legacy/vision/ocr.py py_lines=155 defs=8
+OK legacy/vision/screen_reader.py py_lines=109 defs=6
+OK legacy/vision/win_context.py py_lines=82 defs=5
+OK legacy/voice/__init__.py py_lines=21 defs=0
+OK legacy/voice/app_discovery.py py_lines=169 defs=6
+OK legacy/voice/artifact_manifests.py py_lines=120 defs=5

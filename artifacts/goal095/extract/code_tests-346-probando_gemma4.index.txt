@@ -1,0 +1,6 @@
+batch=code_tests-346-probando_gemma4
+hash_ok=4 drift=0 miss=0
+OK gemma4_agent/ui_field/src/App.tsx
+OK gemma4_agent/ui_field/src/components/SubstratePanel.tsx
+OK gemma4_agent/ui_field/src/styles/prototype.css
+OK gemma4_agent/voice/livekit_runtime.py py_lines=229 defs=10

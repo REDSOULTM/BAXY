@@ -1,0 +1,59 @@
+{
+  "batch_id": "code_tests-038-probando_gemma4-pg4_data",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 4,
+  "hash_ok": 4,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/router_corpus_curated_ft.jsonl.bak_pre_v3corpus_2026-06-11",
+      "queued_sha256": "72837ef35ab72c61d0071e72c13363e878176933640e1cd1ad6206fe1cb9c4c8",
+      "size_queued": 786354,
+      "exists": true,
+      "disk_sha256": "72837ef35ab72c61d0071e72c13363e878176933640e1cd1ad6206fe1cb9c4c8",
+      "disk_size": 786354,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/router_encoder_meta.json.bak_pre_clickvisible",
+      "queued_sha256": "3302593926a6b7664f5a833034da3ddb8eb99ef63db378a4a2d940ff66644ee0",
+      "size_queued": 240,
+      "exists": true,
+      "disk_sha256": "3302593926a6b7664f5a833034da3ddb8eb99ef63db378a4a2d940ff66644ee0",
+      "disk_size": 240,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/router_encoder_meta.json.bak_pre_jbalvin",
+      "queued_sha256": "b3debcb5d58b9827393efdc86f0baefbc1eaa9a329c8335e0ef3f2b8db891680",
+      "size_queued": 240,
+      "exists": true,
+      "disk_sha256": "b3debcb5d58b9827393efdc86f0baefbc1eaa9a329c8335e0ef3f2b8db891680",
+      "disk_size": 240,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "gemma4_agent/data/router_encoder_meta.json.bak_pre_v3corpus_2026-06-11",
+      "queued_sha256": "b1c24828d0c5d7cda8b30884829a02d36bb61e51a667b05d978c8a1e5e5d9cf0",
+      "size_queued": 240,
+      "exists": true,
+      "disk_sha256": "b1c24828d0c5d7cda8b30884829a02d36bb61e51a667b05d978c8a1e5e5d9cf0",
+      "disk_size": 240,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

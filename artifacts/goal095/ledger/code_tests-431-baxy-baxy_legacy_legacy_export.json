@@ -1,0 +1,428 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-431-baxy-baxy_legacy_legacy_export",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:48:28Z",
+  "closed_utc": "2026-08-31T02:48:31Z",
+  "estimated_tokens": 297397,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 29,
+  "subsystem": "baxy_legacy_legacy_export",
+  "subsystems": [
+    "baxy_legacy_legacy_export"
+  ],
+  "files": [
+    {
+      "path": "legacy/legacy_export/computer_use/computer_use.py",
+      "sha256": "6c2619d60b75e8d55a89338ba220c54a865f596a45f3cb5ebdab6f877b16e542",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1561"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/computer_use/uia_fast.py",
+      "sha256": "aaa1a1fed589751433ec3f04a24be5fb5224a82d488adf1c469b14f9b77d54c3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-343"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/config.py",
+      "sha256": "ab94fe5d72cc25c56c3a3dcab2e93e4a1e08fae4b486fe64b714d3594dd59fe8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-148"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/events_bus.py",
+      "sha256": "96d6637e64ca3dc3f83355e57ca26bd4ff499748a3e9876a6b9c00aab24bea17",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-99"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/launcher.py",
+      "sha256": "30e1c7c90987ca2ffdf1b4524b4f441600caa39c374ec5d4d85b9387bb795420",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-721"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/llama_server.py",
+      "sha256": "e12f82933424310f7184937ae81c593fcdda0ebe1d64e8582893a2cebb371e82",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1435"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/llm_client.py",
+      "sha256": "608f958e30a03238f80b70a67aced7ed48c2568996b8bcb12bbddb72896a6e5b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-950"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/profiles.py",
+      "sha256": "668813d0a494deff5eb802e5853d36541529824ccc6605dd3623e747e35b7ef7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-769"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/routine_runner.py",
+      "sha256": "6975906bda423fc500bf62e92d4962d92d9cdd11ade05cbf6fd42fb5a977be08",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-20"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/server.py",
+      "sha256": "a98188f6b065a506520034ab01640c33ccaad947528738ca329733bd90cb417f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1720"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/task_runner.py",
+      "sha256": "83c282f6ab53c32cef5e579441439039bd58fe67e408787ccfcd3a8288980efd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-90"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/voice_runner.py",
+      "sha256": "2275deca048cb97528cb00fb83c40b68844ae03f00c8c7c475c1d2932f4744b2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-335"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/infra/watcher_runner.py",
+      "sha256": "1bed43e4d9b75a09f18d6b5ad0defa91b29e79b80baf5f37fd96a3084105e325",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-20"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/ambient_observer.py",
+      "sha256": "a821f02872ed62c2484c4ad801fbaa94993d759290d7a3fac6c864841ffec386",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-227"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/behavior_log.py",
+      "sha256": "d6ed2cf60d4e98093aa8057d37edf53d4e745d0634e396e29866bf2deabf9105",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-294"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/jarvis_proactive.py",
+      "sha256": "1f310d78389306c98be614c3ac884a80d0d5792ba79e6fa03f5c16542d9df6c7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-119"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/knowledge.py",
+      "sha256": "deb885a16177db1b3f1fbaeaca964bfd107cd672a9bff4b23f6d37246c71ec94",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-270"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/memory.py",
+      "sha256": "a0b74c4a89f700e933e02beda31aed508995e327ef5e9cb211afc49ce02fdb09",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-348"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/memory_retrieval.py",
+      "sha256": "45c812054b220d757fa6df7e5cbc0ec2400ab9c20f4789020a1e7d341ed52167",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-126"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/microagents.py",
+      "sha256": "96a15f7deca7122cdc149a5d03324eb597b139d158e809b7fa317df0504b16e7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-549"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/proactive_notifier.py",
+      "sha256": "1af10c9a5d11e8850dc04dcd75054aa60eb92246d5ba74ad340add09cae4953f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-157"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/profile_intent.py",
+      "sha256": "a478bcd9b03943266eba334733055867926d442ad928b264dd4b12af3e7f976c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-200"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/project_context.py",
+      "sha256": "5bccded46ca891749647840759e6b1c0d3b953852a4d7e8c7051b2d2e09d2ce9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-95"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/sessions.py",
+      "sha256": "10ddf08b71f0e1d88395bf345ea056b8e9e81c67750c40d79cde039199b65c99",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-237"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/memoria_jarvis/taste_reflection.py",
+      "sha256": "9f4597662f6495e081c0b140dd15f70818ca1d1a7d58668e56b1fe80153f43a6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-343"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/core_lean.md.BAK",
+      "sha256": "d9bee045c9617b6844b41206adee18842d5173d0c10d715718dfb25cee70b242",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/legacy_export/routing/action_fewshot.py",
+      "sha256": "bc3ed7d6209b3db0af20eb5bb66f1f745f308633a18d37b06fb4e7c874905c56",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-101"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/routing/arithmetic.py",
+      "sha256": "6ce3109306d5bccbf3665199afd313afae2d1724817950588a4472fbe33a8829",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-175"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/routing/command_splitter.py",
+      "sha256": "cd129344891af5130b5fa8cb568ace1e307f7e5144a1d60eac776e2964d308da",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1357"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-431-baxy-baxy_legacy_legacy_export-01-legacy-legacy_export-computer_use",
+      "disposition": "evidence_only",
+      "component": "legacy/legacy_export/computer_use (2 ficheros)",
+      "contract": "Grupo legacy/legacy_export/computer_use: 2 archivos. Terminales leido PY \"\"\"Computer-use UNIVERSAL — ejecutor de planes (NO un macro por intención).  Diseño (decidido por medición, gates en las reglas del proyecto):   - El 4B NO encadena acciones solo (medido 2/10: hace focus_app y para).   - El 4B SÍ emite un PLAN de primitivas (medido 10/10 parseable, 7/10 correcto).   -> El LLM da el OBJETIVO crudo (cualquier idioma/fraseo). Un PLANIFICADOR (el      mismo 4B con un ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/legacy_export/computer_use/computer_use.py",
+        "legacy/legacy_export/computer_use/uia_fast.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/legacy_export/computer_use/computer_use.py",
+        "ranges": [
+          "1-1561"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-431-baxy-baxy_legacy_legacy_export-02-legacy-legacy_export-infra",
+      "disposition": "evidence_only",
+      "component": "legacy/legacy_export/infra (11 ficheros)",
+      "contract": "Grupo legacy/legacy_export/infra: 11 archivos. Terminales leido PY \"\"\"Runtime configuration for the standalone Carter agent.\"\"\"  from __future__ import annotations  import os from dataclasses import dataclass from pathlib import Path from typing import Optional",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/legacy_export/infra/config.py",
+        "legacy/legacy_export/infra/events_bus.py",
+        "legacy/legacy_export/infra/launcher.py",
+        "legacy/legacy_export/infra/llama_server.py",
+        "legacy/legacy_export/infra/llm_client.py",
+        "legacy/legacy_export/infra/profiles.py",
+        "legacy/legacy_export/infra/routine_runner.py",
+        "legacy/legacy_export/infra/server.py",
+        "legacy/legacy_export/infra/task_runner.py",
+        "legacy/legacy_export/infra/voice_runner.py",
+        "legacy/legacy_export/infra/watcher_runner.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/legacy_export/infra/config.py",
+        "ranges": [
+          "1-148"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-431-baxy-baxy_legacy_legacy_export-03-legacy-legacy_export-memoria_jarvis",
+      "disposition": "evidence_only",
+      "component": "legacy/legacy_export/memoria_jarvis (12 ficheros)",
+      "contract": "Grupo legacy/legacy_export/memoria_jarvis: 12 archivos. Terminales leido PY \"\"\"Observador ambiente — la \"capa viva\" del Jarvis (R-Jarvis, 2026-05-30).  Observa el comportamiento REAL del usuario (no solo lo que el agente ejecuta) para que el sistema aprenda QUIÉN es y le dé esa info a Gemma4. Diseño respaldado por investigación verificada:   - Generative Agents (Park et al., arXiv:2304.03442): observación → reflexión →     insight. Este módulo es la capa de OBSERVACIÓN (l",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/legacy_export/memoria_jarvis/ambient_observer.py",
+        "legacy/legacy_export/memoria_jarvis/behavior_log.py",
+        "legacy/legacy_export/memoria_jarvis/jarvis_proactive.py",
+        "legacy/legacy_export/memoria_jarvis/knowledge.py",
+        "legacy/legacy_export/memoria_jarvis/memory.py",
+        "legacy/legacy_export/memoria_jarvis/memory_retrieval.py",
+        "legacy/legacy_export/memoria_jarvis/microagents.py",
+        "legacy/legacy_export/memoria_jarvis/proactive_notifier.py",
+        "legacy/legacy_export/memoria_jarvis/profile_intent.py",
+        "legacy/legacy_export/memoria_jarvis/project_context.py",
+        "legacy/legacy_export/memoria_jarvis/sessions.py",
+        "legacy/legacy_export/memoria_jarvis/taste_reflection.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/legacy_export/memoria_jarvis/ambient_observer.py",
+        "ranges": [
+          "1-227"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-431-baxy-baxy_legacy_legacy_export-04-legacy-legacy_export-routing",
+      "disposition": "evidence_only",
+      "component": "legacy/legacy_export/routing (3 ficheros)",
+      "contract": "Grupo legacy/legacy_export/routing: 3 archivos. Terminales leido PY \"\"\"Few-shot dinámico para el turno de ACCIÓN (tool-calling).  Causa raíz del residual de tool-calling (~75% medido en vivo con el system completo, 2026-06-10): \"first-token misalignment\" — sin un sesgo hacia el trigger `<|tool_call|>` en el PRIMER token, un SLM de 2B \"narra\" (\"Voy a abrir…\") en vez de disparar la tool, y por la causa autoregresiva se compromete a narrar.  Fuente: `documentacion/02",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/legacy_export/routing/action_fewshot.py",
+        "legacy/legacy_export/routing/arithmetic.py",
+        "legacy/legacy_export/routing/command_splitter.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/legacy_export/routing/action_fewshot.py",
+        "ranges": [
+          "1-101"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=29 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-432-baxy-baxy_legacy_legacy_export",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-431-baxy-baxy_legacy_legacy_export.inspect.json"
+}

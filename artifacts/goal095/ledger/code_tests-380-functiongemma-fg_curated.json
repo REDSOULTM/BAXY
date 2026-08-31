@@ -1,0 +1,953 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-380-functiongemma-fg_curated",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:38Z",
+  "closed_utc": "2026-08-31T02:46:40Z",
+  "estimated_tokens": 145220,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 87,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/holdout.jsonl.BAK",
+      "sha256": "edba7b2bcb69555389799fce0e59da8c33aec468b43cff07049e884d0bcc6374",
+      "source_id": "functiongemma",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-379-functiongemma-fg_curated:finetune_llm/curated/holdout.jsonl.BAK"
+    },
+    {
+      "path": "finetune_llm/curated/multistep/_gen_ms_techmedia.py",
+      "sha256": "73b06daa8149edb0ec3db38aa073c34edb42fa30d90a2975814fe358ca2b1b1d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-236"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_000.json",
+      "sha256": "afb1659f7e0a2612cbfd27c3419b5fd10812f7fd06a7e77376997caf0fcb0e04",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_001.json",
+      "sha256": "4495aa4c735f00311bb51f1bdae6cdc9612ad202f14c5042690fc9c2aa7a6f71",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_002.json",
+      "sha256": "324c075416e1c5fee1e25c5e87f01fc653bae8b387199a958410fd069e49bedc",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_003.json",
+      "sha256": "fd7d964752bac7b390d271d106a7c1fdbace2e315d2f3093b4829bb60a77e0e2",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_004.json",
+      "sha256": "f030fe6ba4bc6beb66b3ba753fed3a8461788099ba9588334329f74e5aad7167",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_005.json",
+      "sha256": "cf693f1338671f247145f65122e0322cc879f536c74f4b8b2c9b5811a6016a02",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_006.json",
+      "sha256": "ab54587174b3bb6d5a25b8b8f5eabd2249cf0eb5bba5ddb89fe8817fc926a6cb",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_007.json",
+      "sha256": "b5ba1dca143530d0f9cfaf66a3bc01662d18820c9a789f6656ba669f4b17e61d",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_008.json",
+      "sha256": "5972b8a53ce1e057222312c01381c6115354908bd57d02e5c14081d23bdaef64",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_009.json",
+      "sha256": "04db890c4d096bb8c01c7b807e07717c66bd66f47c63ddc214eb71221f31e6c0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_010.json",
+      "sha256": "ee3832252cfaf800354663a0204b016f201295797aad91e0ab8cc20e08b14835",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_011.json",
+      "sha256": "818bf60ae2cc6d6ec0fb3cc3e4b0be9cbcd2947c21c27c4352de65ed300c7261",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_012.json",
+      "sha256": "ed02faa624759f70d25ba5c8ad77bccd41325df9b50f76ab609410881ac9a408",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_013.json",
+      "sha256": "4b7312a807195586c007e40c9fcec13c7b1bc985036ed5b44738807f238aefe6",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_014.json",
+      "sha256": "9c68386553ce04e88446db092ba210e217a6e9f53b5aa34ba163761423a92576",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_015.json",
+      "sha256": "f15d9a4f0e0e51eedcb0a6b50b18eefdc5cee17f333187e20486dbb7c88ce2c3",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_016.json",
+      "sha256": "345162d5322f4fb2d409170023645c08807a5d588d37c6d05e08d130ef9ac826",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_017.json",
+      "sha256": "a06431fb7b406205c5c9075f3add5a5e7968a478bfef567d6cd494b1c9a4c6e8",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_018.json",
+      "sha256": "a8c4c0857fca1b78003d1a1bc6fa1ac50df798e830b6acb32e465863dd6eb40a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_019.json",
+      "sha256": "76cacb563bcb0cb034087c5f3068d8503b86036b95362fe36eca9d80e58a990d",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_020.json",
+      "sha256": "83a7946d9f1c419f18cc24f12760044855b407b012924f31e023dd392864f091",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_021.json",
+      "sha256": "4b9a04ca4370198b7be46226df676fb0ca3bcf0c0595b0966b5a78af2701080f",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_022.json",
+      "sha256": "d2c14c936460b12ffbe71da58e02bd46ac58d5e066a39bead6370bc85a87c85e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_023.json",
+      "sha256": "c5ddedb1d5e4f49655aa8dd8b7bf70d61b418ad0499db57273244a330999f4d8",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_024.json",
+      "sha256": "3ca7c7cbe97c5feafd5162670af30ee94dcfe108a7f8bde9826bc07a8839c7bc",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_025.json",
+      "sha256": "4a4329fb54a7a992754942adca78d6cc48f76ad049642ce29976324fa09bf3c0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_026.json",
+      "sha256": "d376e1d8fc26ea098dc8c56dc7623be98705a9a4f3565eef8d816bb6956edd14",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_027.json",
+      "sha256": "53fe023bcbba58add06fb7250e515f05713b33700c4142cd4319cf2df5f3273c",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_028.json",
+      "sha256": "b44f919a256135d4a9562915fbbdc4b2b90c987431dbabb9c506e00a9715a8cf",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_029.json",
+      "sha256": "e4071e3f4f078553cc452db501f29907c88054ad32258e15c6002caff8d4f00e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_030.json",
+      "sha256": "813a7fa52877ef1042e444627cf98e2eb7a7881d48f8d38bc274d74e0ae5ab41",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_031.json",
+      "sha256": "9cebc80397497b520307b128df530f38bf0cd97a6fdee9c4274ef265d0c406c4",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_032.json",
+      "sha256": "fd76f9a8d88959dfd92bf7988dd4be509d08b0dca7b65f29d93f9953b57678fc",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_033.json",
+      "sha256": "f75212b6989f9a6db5fae2d875a41a1c50e4aae5c7a719275fe4c6be466f2e47",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_034.json",
+      "sha256": "6d2ec4243b82f0b84e637d17f1b92896c5c3b8e489642ca2e953bb86cc7350be",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_035.json",
+      "sha256": "0ffa92f9f56823ae7d2b5031e8107e98a044727156c23013a695a7884aa55495",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_036.json",
+      "sha256": "dc8d606fbb0170ef101ff9ab46dc37efef5c4eb24e7da6d2434e86dc51501856",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_037.json",
+      "sha256": "b4f2da23c1d075c966df716f1a876f35a0227db2c8365374be15a14fdcfb838e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_038.json",
+      "sha256": "95f65c5507e738c0503ab2207dc767dfc7010beb81453717d4b01d28e8a36910",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_039.json",
+      "sha256": "70823fa016e035450ddc14f9a910b4eb5f61b86279765e93653ee89b292d777d",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_040.json",
+      "sha256": "cd97cd14bdd47aa1df9f5e27ae5bb26467c6fd40ba4ce75b13795b8a0f89fa15",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_041.json",
+      "sha256": "5ad2de686c171780f8e235ada8442967014ce152c219a8484e2ccf5abc87e8c0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_042.json",
+      "sha256": "cb054a2496d1c4117b8ff6e2b4fcb50d704d295cc42c019410e45c1fc7ed8041",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_043.json",
+      "sha256": "d93b8e7cae1811515c45d49cd58e093467acc47c2f996e3c43a050c2c0027bf9",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_044.json",
+      "sha256": "00d9fa25add961d721e5068db4d947f93655306165e0b0a4a4ec0ac94d39a2f1",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_045.json",
+      "sha256": "d2f88b902328687bf7a9611f920a93eb9216b99cc6dc9773cd4b521bce828e26",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_046.json",
+      "sha256": "22a551609a8dc9af46dfcdf000b517c25129ce22c7a34ae6259650229e1b5e70",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_047.json",
+      "sha256": "8f1615df6f579ff0b4c925820cd8bd8b380e28d4d39e1e3c17580eabfb8e3a43",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_048.json",
+      "sha256": "60eb7dcf1ba5b7834994f067c93f062d115a187005227fe5ea443f8ad3ba31fc",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_049.json",
+      "sha256": "ce1975576097b9ab6a75781f2e7882143c716b6522df0ed9affdd3f9217199dd",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_050.json",
+      "sha256": "13c1b048a80606500505a5c66db23bb315770a8fce9d92cf73e340e389ab0da5",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_051.json",
+      "sha256": "fa679c045720f9645de732aa56fe9f6f884cf6fe62b06d30caa920236009333a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_052.json",
+      "sha256": "e73671e656c7ac37cec5627c7dc763caec1b253988c665e10d03b5f93e6bd3d8",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_053.json",
+      "sha256": "b6778eec980a3486a23dc401157c78fd499d56e5b97c8520eb29b4f1f3524c27",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_054.json",
+      "sha256": "b04158da204236044296f2aea88cd35317bfb8d0245901703db93a0806f2e16a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_055.json",
+      "sha256": "4e795d8f48ea71daa7082ac7613ce654ba4194821ab73195354fde2081c26564",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_056.json",
+      "sha256": "3aaece812dc150351817008ef14e65e07459deca0a352b028e416086aeae4626",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_057.json",
+      "sha256": "cedc8fc5d3ec942eb52b420d90d7599bba47b0a8de916e97ee739dde7b6e370a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_058.json",
+      "sha256": "0523ba5eaf03992a4e01eb200d770574c4c9d93c18a01e9958ce20a77afcbf26",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_059.json",
+      "sha256": "4091e6fe666e5a17fcc4fc05fabb1e6f61eb8705464318e10944c39104de3827",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_060.json",
+      "sha256": "89f0836ba5407a3cd3f64d49e089b26208217a9c4288754f0620d56f6fd00250",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_061.json",
+      "sha256": "04eaef9216cb31d22dadcc3af29d3ae56da162f87ded02f58abd99727a0d8266",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_062.json",
+      "sha256": "03aaa71cd5317b721d38546609b5f29a46ba3e695e1ea0bcbcd2fd13ca488378",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_063.json",
+      "sha256": "f2f12d1aac367990cdce94ed3857a8256a3638eefa5f8678c993bf3192288a53",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_064.json",
+      "sha256": "fd3ef9eb8710b77055c185b193e1ff537b36f8bf68cab2e935cf4156347777d2",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_065.json",
+      "sha256": "d3e40fa7e8295410b88a50f08a21418e0eb9b5394324988bd243255844351857",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_066.json",
+      "sha256": "336cf23cfe0a40b445318f094c6e70b023d3be54f524c14d2aacb621e0360005",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_067.json",
+      "sha256": "19daa4277d733a6288c93441b97eddb469a9bf05d443009187664a5a7392b606",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_068.json",
+      "sha256": "9b82edb5cefeb1346bff47222974eff62e05ba57dc853c116f3c623fc83a8d7e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_069.json",
+      "sha256": "60ae49cf88eabe4949145855aef6a50a42f6b90101607c695227b14e2684d2fa",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_070.json",
+      "sha256": "166f58a1f29650208de4ac59bfafcaa64975777ea9937299a8a9ccf97977183b",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_071.json",
+      "sha256": "888222a61534e4dec0c66dbedda992e4dd14fbd8486fe4bdabafac9615c1c84a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_072.json",
+      "sha256": "cc5d167bab64b4cff13226aa6161124add94bba0a36379b96668b01b23a0d5b8",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_073.json",
+      "sha256": "e0d035f010eafda6f4ca4ee3d6d843cbbd0df420d207645e4015a0100ccd8162",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_074.json",
+      "sha256": "b4714610db62cdfd5c63ad1e14b3141dfdfaf702fef5e98ee094e8e0326b94e7",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_075.json",
+      "sha256": "8a1b7aacc24479544c312278863c715074719eaee3f5b8202da9b8622cdef313",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_076.json",
+      "sha256": "9708e1ee4576aa7b1e824106052106ac5dd2a08031cda7cb639801b705a58afc",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_077.json",
+      "sha256": "8a8e1d395a73f907fb5a7bfd83961fa45eda82dec6382ef26427289b9c177767",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_078.json",
+      "sha256": "f0f0cc16f717042d4fb85be9774aaf60cb7bf6925639e4ec7171f274eb005b8c",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_079.json",
+      "sha256": "c399c1869fe9da5545ae0f21cf9cce5b0cc044fbbea58d051213b96464b6824a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_080.json",
+      "sha256": "60a1e63d09ad92755c1d9647ac841269187632759e7f481dc44de11e5ba46d77",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_081.json",
+      "sha256": "394da70c2e40eeb44ba7bcb4b3a509ad6f1bbc058d45dc32e769ae306a33e20a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_082.json",
+      "sha256": "c6a0fe34665737a68be229c12134c4d3ccb6e12dad3e60a59cfbf34bff7e112b",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_083.json",
+      "sha256": "3623cb69972eb075caf6eb54d7aa9eb321d87d27242e4943ef879a8f6c1c5bbb",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_084.json",
+      "sha256": "6cbf9e9bc6c778ece15e01a22629caafc7c6cb3f13b41c0b3c30420962404af5",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+aggregates+muestras"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-380-functiongemma-fg_curated-01-finetune_llm-curated-multistep",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/curated/multistep (1 ficheros)",
+      "contract": "Grupo finetune_llm/curated/multistep: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\" Genera ejemplos de fine-tuning de FLUJOS MULTI-PASO (encadenamiento real de tools) para Gemma 4. 8 flujos x 6 ejemplos = 48, repartidos en 6 idiomas (es,en,pt,fr,de,it).  Acciones verificadas contra el schema real del repo:   media_edit:     trim, extract_audio, transcode, thumbnail   creative_local: submit, wait, result",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/curated/multistep/_gen_ms_techmedia.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/curated/multistep/_gen_ms_techmedia.py",
+        "ranges": [
+          "1-236"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-380-functiongemma-fg_curated-02-finetune_llm-curated-specs",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/curated/specs (85 ficheros)",
+      "contract": "Grupo finetune_llm/curated/specs: 85 archivos. Terminales parseado_completo",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/curated/specs/batch_000.json",
+        "finetune_llm/curated/specs/batch_001.json",
+        "finetune_llm/curated/specs/batch_002.json",
+        "finetune_llm/curated/specs/batch_003.json",
+        "finetune_llm/curated/specs/batch_004.json",
+        "finetune_llm/curated/specs/batch_005.json",
+        "finetune_llm/curated/specs/batch_006.json",
+        "finetune_llm/curated/specs/batch_007.json",
+        "finetune_llm/curated/specs/batch_008.json",
+        "finetune_llm/curated/specs/batch_009.json",
+        "finetune_llm/curated/specs/batch_010.json",
+        "finetune_llm/curated/specs/batch_011.json",
+        "finetune_llm/curated/specs/batch_012.json",
+        "finetune_llm/curated/specs/batch_013.json",
+        "finetune_llm/curated/specs/batch_014.json",
+        "finetune_llm/curated/specs/batch_015.json",
+        "finetune_llm/curated/specs/batch_016.json",
+        "finetune_llm/curated/specs/batch_017.json",
+        "finetune_llm/curated/specs/batch_018.json",
+        "finetune_llm/curated/specs/batch_019.json",
+        "finetune_llm/curated/specs/batch_020.json",
+        "finetune_llm/curated/specs/batch_021.json",
+        "finetune_llm/curated/specs/batch_022.json",
+        "finetune_llm/curated/specs/batch_023.json",
+        "finetune_llm/curated/specs/batch_024.json",
+        "finetune_llm/curated/specs/batch_025.json",
+        "finetune_llm/curated/specs/batch_026.json",
+        "finetune_llm/curated/specs/batch_027.json",
+        "finetune_llm/curated/specs/batch_028.json",
+        "finetune_llm/curated/specs/batch_029.json",
+        "finetune_llm/curated/specs/batch_030.json",
+        "finetune_llm/curated/specs/batch_031.json",
+        "finetune_llm/curated/specs/batch_032.json",
+        "finetune_llm/curated/specs/batch_033.json",
+        "finetune_llm/curated/specs/batch_034.json",
+        "finetune_llm/curated/specs/batch_035.json",
+        "finetune_llm/curated/specs/batch_036.json",
+        "finetune_llm/curated/specs/batch_037.json",
+        "finetune_llm/curated/specs/batch_038.json",
+        "finetune_llm/curated/specs/batch_039.json",
+        "finetune_llm/curated/specs/batch_040.json",
+        "finetune_llm/curated/specs/batch_041.json",
+        "finetune_llm/curated/specs/batch_042.json",
+        "finetune_llm/curated/specs/batch_043.json",
+        "finetune_llm/curated/specs/batch_044.json",
+        "finetune_llm/curated/specs/batch_045.json",
+        "finetune_llm/curated/specs/batch_046.json",
+        "finetune_llm/curated/specs/batch_047.json",
+        "finetune_llm/curated/specs/batch_048.json",
+        "finetune_llm/curated/specs/batch_049.json",
+        "finetune_llm/curated/specs/batch_050.json",
+        "finetune_llm/curated/specs/batch_051.json",
+        "finetune_llm/curated/specs/batch_052.json",
+        "finetune_llm/curated/specs/batch_053.json",
+        "finetune_llm/curated/specs/batch_054.json",
+        "finetune_llm/curated/specs/batch_055.json",
+        "finetune_llm/curated/specs/batch_056.json",
+        "finetune_llm/curated/specs/batch_057.json",
+        "finetune_llm/curated/specs/batch_058.json",
+        "finetune_llm/curated/specs/batch_059.json",
+        "finetune_llm/curated/specs/batch_060.json",
+        "finetune_llm/curated/specs/batch_061.json",
+        "finetune_llm/curated/specs/batch_062.json",
+        "finetune_llm/curated/specs/batch_063.json",
+        "finetune_llm/curated/specs/batch_064.json",
+        "finetune_llm/curated/specs/batch_065.json",
+        "finetune_llm/curated/specs/batch_066.json",
+        "finetune_llm/curated/specs/batch_067.json",
+        "finetune_llm/curated/specs/batch_068.json",
+        "finetune_llm/curated/specs/batch_069.json",
+        "finetune_llm/curated/specs/batch_070.json",
+        "finetune_llm/curated/specs/batch_071.json",
+        "finetune_llm/curated/specs/batch_072.json",
+        "finetune_llm/curated/specs/batch_073.json",
+        "finetune_llm/curated/specs/batch_074.json",
+        "finetune_llm/curated/specs/batch_075.json",
+        "finetune_llm/curated/specs/batch_076.json",
+        "finetune_llm/curated/specs/batch_077.json",
+        "finetune_llm/curated/specs/batch_078.json",
+        "finetune_llm/curated/specs/batch_079.json",
+        "finetune_llm/curated/specs/batch_080.json",
+        "finetune_llm/curated/specs/batch_081.json",
+        "finetune_llm/curated/specs/batch_082.json",
+        "finetune_llm/curated/specs/batch_083.json",
+        "finetune_llm/curated/specs/batch_084.json"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/curated/specs/batch_000.json",
+        "ranges": [
+          "json:schema+aggregates+muestras"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=87 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-381-functiongemma-fg_curated",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-380-functiongemma-fg_curated.inspect.json"
+}

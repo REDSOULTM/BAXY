@@ -1,0 +1,2424 @@
+{
+  "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
+  "source_head_cmd": "git rev-parse HEAD",
+  "file_count": 43,
+  "hash_ok": 43,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_legacy_Carter_v2",
+  "subsystems": [
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_ultra_final_skills.db-wal",
+      "queued_sha256": "05cbeb53280bc0d09dbf4035fe6587c369ca170a055c31e7eaea89fc3dbaf732",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "05cbeb53280bc0d09dbf4035fe6587c369ca170a055c31e7eaea89fc3dbaf732",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "05cbeb53280bc0d09dbf4035fe6587c369ca170a055c31e7eaea89fc3dbaf732",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_live_safe_ultra_final_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_skipped_all_web_live_skills.db-shm",
+      "queued_sha256": "e7593ff228318be21711c81ab9186b9e35617a0d0d6fa53fd279c67ec268b811",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "e7593ff228318be21711c81ab9186b9e35617a0d0d6fa53fd279c67ec268b811",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "e7593ff228318be21711c81ab9186b9e35617a0d0d6fa53fd279c67ec268b811",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_skipped_all_web_live_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_skipped_all_web_live_skills.db-wal",
+      "queued_sha256": "b69db95fb32985a7cc070a1183e3680e18f2206d741d06b81273b7574d98425e",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "b69db95fb32985a7cc070a1183e3680e18f2206d741d06b81273b7574d98425e",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "b69db95fb32985a7cc070a1183e3680e18f2206d741d06b81273b7574d98425e",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_skipped_all_web_live_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_skipped_web_live_skills.db-shm",
+      "queued_sha256": "036a7f5790bb5dc2d3e638932d930c76eb7e6226d0fca5fa98f2ff4f006bbeee",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "036a7f5790bb5dc2d3e638932d930c76eb7e6226d0fca5fa98f2ff4f006bbeee",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "036a7f5790bb5dc2d3e638932d930c76eb7e6226d0fca5fa98f2ff4f006bbeee",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_skipped_web_live_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_skipped_web_live_skills.db-wal",
+      "queued_sha256": "80715551c2d2161a5345616fecf21d1d8c3ec3febf0391f29fd03a3cfab50864",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "80715551c2d2161a5345616fecf21d1d8c3ec3febf0391f29fd03a3cfab50864",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "80715551c2d2161a5345616fecf21d1d8c3ec3febf0391f29fd03a3cfab50864",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_skipped_web_live_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_full_skills.db-shm",
+      "queued_sha256": "d666d1d65be18826986950267f2a05ebb4be730afcae65990f27a5a46887eaf2",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "d666d1d65be18826986950267f2a05ebb4be730afcae65990f27a5a46887eaf2",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "d666d1d65be18826986950267f2a05ebb4be730afcae65990f27a5a46887eaf2",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_full_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_full_skills.db-wal",
+      "queued_sha256": "d1c616fd599ae80274025d0f6b6a1fded644825d610b1cf394c3058f684d168c",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "d1c616fd599ae80274025d0f6b6a1fded644825d610b1cf394c3058f684d168c",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "d1c616fd599ae80274025d0f6b6a1fded644825d610b1cf394c3058f684d168c",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_full_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_rerun2_skills.db-shm",
+      "queued_sha256": "261c9b38bd56840fd8ba45ffb215c44732a4a7639cf0cb14a30f1a0f3bba618b",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "261c9b38bd56840fd8ba45ffb215c44732a4a7639cf0cb14a30f1a0f3bba618b",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "261c9b38bd56840fd8ba45ffb215c44732a4a7639cf0cb14a30f1a0f3bba618b",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_rerun2_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_rerun2_skills.db-wal",
+      "queued_sha256": "8b48eaa8ce977bd6ce7cdfefe8c2437e3e5436ca65a227a2d15ad2b339847c26",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "8b48eaa8ce977bd6ce7cdfefe8c2437e3e5436ca65a227a2d15ad2b339847c26",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "8b48eaa8ce977bd6ce7cdfefe8c2437e3e5436ca65a227a2d15ad2b339847c26",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_rerun2_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_rerun_skills.db-shm",
+      "queued_sha256": "afc91f23113c897f20b292e19ba8930fcd673d56d32fa4516b8e22b3603bbc4c",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "afc91f23113c897f20b292e19ba8930fcd673d56d32fa4516b8e22b3603bbc4c",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "afc91f23113c897f20b292e19ba8930fcd673d56d32fa4516b8e22b3603bbc4c",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_rerun_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_rerun_skills.db-wal",
+      "queued_sha256": "d886950600af25e98912fbf3eeafd8951c5e8da77aca3d990413f04b925d3da2",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "d886950600af25e98912fbf3eeafd8951c5e8da77aca3d990413f04b925d3da2",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "d886950600af25e98912fbf3eeafd8951c5e8da77aca3d990413f04b925d3da2",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_rerun_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_smoke3_skills.db-shm",
+      "queued_sha256": "aa8fbf811ad554e571135d4aac51e67f2ba7480fcaa8617cb051da825e10d2ca",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "aa8fbf811ad554e571135d4aac51e67f2ba7480fcaa8617cb051da825e10d2ca",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "aa8fbf811ad554e571135d4aac51e67f2ba7480fcaa8617cb051da825e10d2ca",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_smoke3_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_smoke3_skills.db-wal",
+      "queued_sha256": "f0cb4b14d059537c713f0b575a8c2b5cd957f6c40ac7f83b49271aa6b248e711",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "f0cb4b14d059537c713f0b575a8c2b5cd957f6c40ac7f83b49271aa6b248e711",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "f0cb4b14d059537c713f0b575a8c2b5cd957f6c40ac7f83b49271aa6b248e711",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_smoke3_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_v3_skills.db-shm",
+      "queued_sha256": "75505984b96c6a9cffcbc8b82c872b66059b02dfbbbeeb82ae0f1d222a676c9e",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "75505984b96c6a9cffcbc8b82c872b66059b02dfbbbeeb82ae0f1d222a676c9e",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "75505984b96c6a9cffcbc8b82c872b66059b02dfbbbeeb82ae0f1d222a676c9e",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_v3_skills",
+      "parent_in_batch": false
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_web_v3_skills.db-wal",
+      "queued_sha256": "a2d27eef7d5f2673db18c4cfc73a80b558ef823c011d9fbccacfe513c7966e64",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "a2d27eef7d5f2673db18c4cfc73a80b558ef823c011d9fbccacfe513c7966e64",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "a2d27eef7d5f2673db18c4cfc73a80b558ef823c011d9fbccacfe513c7966e64",
+      "head_error": null,
+      "head_matches_queue": true,
+      "parent_on_disk": false,
+      "parent_path": "legacy/Carter_v2/.matrix_web_v3_skills",
+      "parent_in_batch": false,
+      "wal": {
+        "magic": "377f0682002de2180000100000000000",
+        "ascii_prefix": "7\u0006�\u0000-�\u0018\u0000\u0000\u0010\u0000\u0000\u0000\u0000\u0000",
+        "size": 20632
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/COMPOUND_SMOKE.json",
+      "queued_sha256": "59a9b8af9168e1044a4d88c5748eefdc3d35d8f837cf59cd09184f2d7ccc9aba",
+      "size_queued": 9289,
+      "exists": true,
+      "disk_sha256": "59a9b8af9168e1044a4d88c5748eefdc3d35d8f837cf59cd09184f2d7ccc9aba",
+      "disk_size": 9289,
+      "hash_match": true,
+      "head_sha256": "c36ebf9659cb64687c9f8ba083cc308ec27bfe9cefe06bd7c7fe9d77bcc8fdac",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 292,
+        "root_type": "dict",
+        "keys": [
+          "cases",
+          "failed",
+          "passed",
+          "total",
+          "version"
+        ],
+        "n_keys": 5,
+        "highlights": {
+          "passed": 5,
+          "failed": 5,
+          "total": 10,
+          "cases": {
+            "type": "array",
+            "n": 10,
+            "elem0": {
+              "type": "object",
+              "keys": [
+                "error",
+                "failures",
+                "mission_events",
+                "mission_status",
+                "name",
+                "passed",
+                "reply",
+                "tool_calls_made"
+              ],
+              "n_keys": 8
+            }
+          }
+        },
+        "scalars": {
+          "version": "M8.2-M4-M7",
+          "total": 10,
+          "passed": 5,
+          "failed": 5
+        },
+        "list_cases_n": 10,
+        "list_cases_keys": [
+          "error",
+          "failures",
+          "mission_events",
+          "mission_status",
+          "name",
+          "passed",
+          "reply",
+          "tool_calls_made"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/HARDCODE_GUARD.json",
+      "queued_sha256": "7c76b3b31e4f6c810ff3b774bb5ed2464fd2231be9545fc379de2459da27965a",
+      "size_queued": 110,
+      "exists": true,
+      "disk_sha256": "7c76b3b31e4f6c810ff3b774bb5ed2464fd2231be9545fc379de2459da27965a",
+      "disk_size": 110,
+      "hash_match": true,
+      "head_sha256": "f6228f7f49d76a003ee7f58e4d92e032aceaba96e14f621fc09cfc3dfe3bdfec",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 6,
+        "root_type": "dict",
+        "keys": [
+          "critical_findings",
+          "findings",
+          "scanned_root",
+          "total_findings"
+        ],
+        "n_keys": 4,
+        "highlights": {},
+        "scalars": {
+          "scanned_root": "src\\carter_v2",
+          "total_findings": 0,
+          "critical_findings": 0
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/C-SMOKE_smoke.json",
+      "queued_sha256": "1622fe6bdd799f27dcdedccc4e5b1f271a7c13c95484eec7e6263b2d14869d69",
+      "size_queued": 7896,
+      "exists": true,
+      "disk_sha256": "1622fe6bdd799f27dcdedccc4e5b1f271a7c13c95484eec7e6263b2d14869d69",
+      "disk_size": 7896,
+      "hash_match": true,
+      "head_sha256": "88d60e4056dc928a68a8be77b1a844331ec8c9fb8a5731479f2fc74d7f744ef7",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 255,
+        "root_type": "dict",
+        "keys": [
+          "label",
+          "model",
+          "prompts_n",
+          "results"
+        ],
+        "n_keys": 4,
+        "highlights": {
+          "model": "qwen3:8b"
+        },
+        "scalars": {
+          "label": "F-SMOKE",
+          "model": "qwen3:8b",
+          "prompts_n": 18
+        },
+        "list_results_n": 18,
+        "list_results_keys": [
+          "catalog_size",
+          "elapsed_ms",
+          "error",
+          "iterations",
+          "n",
+          "prompt",
+          "reply",
+          "retry_reason",
+          "timing",
+          "tool_calls",
+          "used_universal_runner"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/C-final_metrics.json",
+      "queued_sha256": "8f97aff63fe161bf388de63d224ac40772ec081e4505b08f5c5c6c649fd0a536",
+      "size_queued": 1506,
+      "exists": true,
+      "disk_sha256": "8f97aff63fe161bf388de63d224ac40772ec081e4505b08f5c5c6c649fd0a536",
+      "disk_size": 1506,
+      "hash_match": true,
+      "head_sha256": "9f72a3c09fcc8b3556d7bb199836dbb539ed1bf738924148b46f1dcab4661193",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 50,
+        "root_type": "dict",
+        "keys": [
+          "branch",
+          "commits",
+          "head_commit",
+          "label",
+          "metrics",
+          "pytest",
+          "smoke"
+        ],
+        "n_keys": 7,
+        "highlights": {
+          "smoke": {
+            "type": "object",
+            "keys": [
+              "artifact",
+              "elapsed_ms",
+              "failed",
+              "label",
+              "model",
+              "ok",
+              "prompts_n",
+              "tool_distribution"
+            ],
+            "n_keys": 8
+          }
+        },
+        "scalars": {
+          "label": "C-SMOKE-final",
+          "branch": "radical/text-closure",
+          "head_commit": "1aeb12a"
+        },
+        "obj_pytest_keys": [
+          "delta_vs_baseline",
+          "duration_s",
+          "failed",
+          "ignored",
+          "passed"
+        ],
+        "obj_metrics_keys": [
+          "_text_py_loc",
+          "agent_py_loc",
+          "agent_py_loc_baseline",
+          "agent_py_loc_delta",
+          "backends_py_loc",
+          "system_prompt_chars_baseline",
+          "system_prompt_chars_default",
+          "system_prompt_chars_delta",
+          "system_prompt_chars_with_kernel",
+          "universal_kernel_default"
+        ],
+        "obj_smoke_keys": [
+          "artifact",
+          "elapsed_ms",
+          "failed",
+          "label",
+          "model",
+          "ok",
+          "prompts_n",
+          "tool_distribution"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/C0_baseline.json",
+      "queued_sha256": "d6b3063c3cbd1ca66ff66b39e7106215f0208c7829123f268aa071f5629b8dea",
+      "size_queued": 979,
+      "exists": true,
+      "disk_sha256": "d6b3063c3cbd1ca66ff66b39e7106215f0208c7829123f268aa071f5629b8dea",
+      "disk_size": 979,
+      "hash_match": true,
+      "head_sha256": "ac3f3a4d0ad6dafdf776099169d86dfbe4f2b528385193042e9db21919ab4fd5",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 35,
+        "root_type": "dict",
+        "keys": [
+          "branch",
+          "files_to_act_on",
+          "head_commit",
+          "label",
+          "metrics",
+          "pytest"
+        ],
+        "n_keys": 6,
+        "highlights": {},
+        "scalars": {
+          "label": "C0_baseline",
+          "branch": "radical/text-closure",
+          "head_commit": "8f67917"
+        },
+        "obj_pytest_keys": [
+          "duration_s",
+          "failed",
+          "ignored",
+          "passed"
+        ],
+        "obj_metrics_keys": [
+          "agent_py_loc",
+          "system_prompt_chars",
+          "system_prompt_template_chars",
+          "universal_kernel_chars"
+        ],
+        "obj_files_to_act_on_keys": [
+          "delete_dir",
+          "delete_funcs_in_agent_py",
+          "extract_to_backends",
+          "gate_in_prompt",
+          "rewrite_funcs_in_agent_py"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/F0_MEMORY.snapshot",
+      "queued_sha256": "b80d869a66ac3a0537dc0ca13a4507d4a226a83ed1d716abfcd671ea77d2e368",
+      "size_queued": 482,
+      "exists": true,
+      "disk_sha256": "b80d869a66ac3a0537dc0ca13a4507d4a226a83ed1d716abfcd671ea77d2e368",
+      "disk_size": 482,
+      "hash_match": true,
+      "head_sha256": "b80d869a66ac3a0537dc0ca13a4507d4a226a83ed1d716abfcd671ea77d2e368",
+      "head_error": null,
+      "head_matches_queue": true,
+      "snapshot": {
+        "lines": 13,
+        "bytes": 482,
+        "head": [
+          "﻿# Carter Memory",
+          "",
+          "<!--",
+          "Sanitized 2026-04-30 (Phase 5).",
+          "Backup: MEMORY.md.bak.20260430-190222",
+          "Removed: 4x probe-event-id artifacts, CARTER_PROBE_SESSION10, 2x internal dev",
+          "notes about app_open description, 4x duplicate \"favorite_color\" entries.",
+          "Consolidated: favorite_color (azul) and user name (Emmanuel) into a single",
+          "canonical line each, both flagged user_stated.",
+          "-->",
+          "",
+          "- [2026-04-26] favorite_color: azul (source: user_stated)",
+          "- [2026-04-29] name: Emmanuel (source: user_stated)"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/F0_baseline_tests.json",
+      "queued_sha256": "9a7ba3b2760b0096f494cbf8a58e92106ac36df75f9fd04435415e43fceb029b",
+      "size_queued": 258,
+      "exists": true,
+      "disk_sha256": "9a7ba3b2760b0096f494cbf8a58e92106ac36df75f9fd04435415e43fceb029b",
+      "disk_size": 258,
+      "hash_match": true,
+      "head_sha256": "6612ab949cff17250ceae3e543f891c4e3a0ced0ce26877f4f664631baa2da08",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 11,
+        "root_type": "dict",
+        "keys": [
+          "duration_formatted",
+          "duration_seconds",
+          "excluded",
+          "failed",
+          "passed",
+          "status",
+          "test_count",
+          "timestamp",
+          "warnings"
+        ],
+        "n_keys": 9,
+        "highlights": {
+          "passed": 1481,
+          "failed": 0,
+          "status": "BASELINE_GREEN"
+        },
+        "scalars": {
+          "timestamp": "2026-04-30T07:56:29Z",
+          "test_count": 1481,
+          "passed": 1481,
+          "failed": 0,
+          "warnings": 3,
+          "duration_seconds": 162.48,
+          "duration_formatted": "0:02:42",
+          "status": "BASELINE_GREEN"
+        }
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/historical/F0_smoke.json",
+      "queued_sha256": "3696ba44f79cf5f117992cade2fca5a053f8e47b75ee8d421260e2cc4e883191",
+      "size_queued": 2489,
+      "exists": true,
+      "disk_sha256": "3696ba44f79cf5f117992cade2fca5a053f8e47b75ee8d421260e2cc4e883191",
+      "disk_size": 2489,
+      "hash_match": true,
+      "head_sha256": "11aae2233ac01486ce11654d54980a3fb226d84577d92f53e1b4ca6944b0bd50",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 94,
+        "root_type": "dict",
+        "keys": [
+          "label",
+          "model",
+          "prompts_n",
+          "results"
+        ],
+        "n_keys": 4,
+        "highlights": {
+          "model": "qwen3:8b"
+        },
+        "scalars": {
+          "label": "F0",
+          "model": "qwen3:8b",
+          "prompts_n": 6
+        },
+        "list_results_n": 6,
+        "list_results_keys": [
+          "catalog_size",
+          "elapsed_ms",
+          "error",
+          "iterations",
+          "n",
+          "prompt",
+          "reply",
+          "retry_reason",
+          "timing",
+          "tool_calls",
+          "used_universal_runner"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/baselines/pre_cleanup_snapshot.json",
+      "queued_sha256": "7b0b30adb8b6c4a7a17957a50611040976db91aaab164102851b045ffd718cb2",
+      "size_queued": 2285,
+      "exists": true,
+      "disk_sha256": "7b0b30adb8b6c4a7a17957a50611040976db91aaab164102851b045ffd718cb2",
+      "disk_size": 2285,
+      "hash_match": true,
+      "head_sha256": "b5f69db156f30abe347383bcfc1621da6686de5b700d96fa5847799d51f65c37",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 59,
+        "root_type": "dict",
+        "keys": [
+          "backups",
+          "baseline_results",
+          "counts",
+          "git",
+          "notes",
+          "snapshot_id",
+          "timestamp_utc"
+        ],
+        "n_keys": 7,
+        "highlights": {},
+        "scalars": {
+          "snapshot_id": "pre_cleanup_20260501-020549",
+          "timestamp_utc": "2026-05-01T02:05:49Z"
+        },
+        "obj_git_keys": [
+          "branch",
+          "module_root",
+          "parent_branch",
+          "repo_root",
+          "rollback_commit",
+          "rollback_commit_message"
+        ],
+        "obj_counts_keys": [
+          "audit_artifacts",
+          "repo_files_total",
+          "root_markdown_files",
+          "root_probe_db_files",
+          "root_probe_files",
+          "src_loc",
+          "src_py_files",
+          "tests_collected",
+          "tests_loc",
+          "tests_py_files"
+        ],
+        "obj_baseline_results_keys": [
+          "compound_smoke",
+          "hardcode_guard",
+          "pytest"
+        ],
+        "obj_backups_keys": [
+          "rollback_instructions",
+          "tests_legacy_dir",
+          "tests_legacy_file_count"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/compound_smoke_runner.py",
+      "queued_sha256": "e8237fb274b568c1e916d2852ef2377ca66a96c91a60f54eb045ec50dce2e5c5",
+      "size_queued": 16654,
+      "exists": true,
+      "disk_sha256": "e8237fb274b568c1e916d2852ef2377ca66a96c91a60f54eb045ec50dce2e5c5",
+      "disk_size": 16654,
+      "hash_match": true,
+      "head_sha256": "194ed4928458c0e8f7ee839cb69e9972feeeb29ff5b090d2196d3acf75862527",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 406,
+        "bytes": 16654,
+        "imports": [
+          "18:from __future__ import annotations",
+          "20:import json",
+          "21:import sys",
+          "22:import traceback",
+          "23:from dataclasses import dataclass, field",
+          "24:from pathlib import Path",
+          "25:from typing import Callable",
+          "32:from carter_v2.adapters.tools import ToolCall  # noqa: E402",
+          "33:from carter_v2.capabilities.base import Capability  # noqa: E402",
+          "34:from carter_v2.capabilities.registry import CapabilityRegistry  # noqa: E402",
+          "35:from carter_v2.turn.agent import AgentEngine, AgentResponse  # noqa: E402",
+          "36:from carter_v2.types import CapabilityRequest, CapabilityResult  # noqa: E402"
+        ],
+        "defs": [
+          "43:class ScriptedBackend:",
+          "46:def __init__(self, responses: list[AgentResponse]) -> None:",
+          "50:def chat_with_tools(self, messages, tools, **_kw):",
+          "58:class _AnyCap(Capability):",
+          "61:def __init__(self, namespace: str = \"any\", *, ok: bool = True, message: str = \"ok\") -> None:",
+          "67:def supports(self, action: str) -> bool:",
+          "70:def execute(self, request: CapabilityRequest) -> CapabilityResult:",
+          "89:class CompoundCase:",
+          "109:def _tc(call_id: str, name: str, args: dict | None = None) -> ToolCall:",
+          "273:class CaseResult:",
+          "284:def _run_case(case: CompoundCase) -> CaseResult:",
+          "367:def main() -> int:"
+        ],
+        "head": [
+          "\"\"\"Compound-mission smoke runner (M8).",
+          "",
+          "Drives ``AgentEngine`` with **scripted** backends through the user-mandated",
+          "multi-step prompts identified in COMPOUND_TASKS_VISION_AUDIT.md. The runner",
+          "validates the *mission state machine*, not raw OS side-effects, so it can",
+          "run on any developer machine without launching real applications.",
+          "",
+          "Each case asserts:",
+          "",
+          "* ``expected_steps``        — how many mission steps were extracted.",
+          "* ``expected_tools``        — the exact tool sequence the engine dispatched.",
+          "* ``forbidden_replies``     — strings that must NOT appear in the final reply.",
+          "* ``expected_mission_status`` — final mission status (``complete`` /",
+          "                                ``partial`` / ``failed`` / ``trivial``).",
+          "",
+          "Output: ``audit/COMPOUND_SMOKE.json``. Exit code != 0 if any case fails.",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import json",
+          "import sys",
+          "import traceback",
+          "from dataclasses import dataclass, field",
+          "from pathlib import Path",
+          "from typing import Callable",
+          "",
+          "# Make ``src`` importable when run as a script.",
+          "_HERE = Path(__file__).resolve()",
+          "_REPO = _HERE.parent.parent",
+          "sys.path.insert(0, str(_REPO / \"src\"))",
+          "",
+          "from carter_v2.adapters.tools import ToolCall  # noqa: E402",
+          "from carter_v2.capabilities.base import Capability  # noqa: E402",
+          "from carter_v2.capabilities.registry import CapabilityRegistry  # noqa: E402",
+          "from carter_v2.turn.agent import AgentEngine, AgentResponse  # noqa: E402",
+          "from carter_v2.types import CapabilityRequest, CapabilityResult  # noqa: E402",
+          "",
+          "",
+          "# ---------------------------------------------------------------------------",
+          "# Generic scripted backend"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/hardcode_guard.py",
+      "queued_sha256": "9ee51275a44d73d91486e7c38d4dfd73f32849dd850b7a41bd256cc429132a56",
+      "size_queued": 21179,
+      "exists": true,
+      "disk_sha256": "9ee51275a44d73d91486e7c38d4dfd73f32849dd850b7a41bd256cc429132a56",
+      "disk_size": 21179,
+      "hash_match": true,
+      "head_sha256": "0346e1e8df23fe48c803399fb9b0b72e8b37c9a46306bfbfa95bc1238b53024c",
+      "head_error": null,
+      "head_matches_queue": false,
+      "outline": {
+        "lines": 453,
+        "bytes": 21179,
+        "imports": [
+          "30:from __future__ import annotations",
+          "32:import argparse",
+          "33:import json",
+          "34:import re",
+          "35:import sys",
+          "36:from pathlib import Path",
+          "37:from typing import Iterable"
+        ],
+        "defs": [
+          "179:def _iter_python_files(root: Path) -> Iterable[Path]:",
+          "186:def _scan_file(path: Path) -> list[dict]:",
+          "408:def main(argv: list[str] | None = None) -> int:"
+        ],
+        "head": [
+          "\"\"\"Hardcode guard for Carter v2 (post H1-H8 enforcement).",
+          "",
+          "Scans ``src/carter_v2/`` and fails if it finds:",
+          "",
+          "* Brand names (Steam/Spotify/Discord/Notepad/Batman/Opera/Edge/Chrome/...) in",
+          "  modules that must remain brand-agnostic (router, planner, agent loop,",
+          "  invariants, normalizer, mission, observation, catalog selector, system",
+          "  prompt). Brand strings ARE allowed inside dedicated capability modules",
+          "  (``capabilities/steam.py``, ``capabilities/_graceful_close.py``,",
+          "  ``interfaces/discord.py``) and the main entry banner.",
+          "",
+          "* Multilingual phrase / verb / connector lists hidden as Python literals",
+          "  (``y luego``/``and then``/``despu[eé]s``/``publica``/``externa``/",
+          "  ``correo``).",
+          "",
+          "* Non-empty token / phrase / verb / alias frozensets in runtime modules",
+          "  (these were the old ``_*_TOKENS`` / ``_*_PHRASES`` containers).",
+          "",
+          "The scanner intentionally trusts inline ``H-XYZ-NN`` audit-trail comments:",
+          "a line that ends with such a marker is whitelisted because it documents",
+          "removed behavior.",
+          "",
+          "Usage::",
+          "",
+          "    python audit/hardcode_guard.py",
+          "    python audit/hardcode_guard.py --json audit/HARDCODE_GUARD.json",
+          "",
+          "Exit code is 0 when zero critical findings, 1 otherwise.",
+          "\"\"\"",
+          "from __future__ import annotations",
+          "",
+          "import argparse",
+          "import json",
+          "import re",
+          "import sys",
+          "from pathlib import Path",
+          "from typing import Iterable",
+          "",
+          "",
+          "REPO_ROOT = Path(__file__).resolve().parent.parent"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/ACTION_FAILED_ELIMINATION_FINAL_GATE.json",
+      "queued_sha256": "4e922aa09406e2bee4a698484154ea03ddab798b3072dd87df10b6332ba1ce24",
+      "size_queued": 4581,
+      "exists": true,
+      "disk_sha256": "4e922aa09406e2bee4a698484154ea03ddab798b3072dd87df10b6332ba1ce24",
+      "disk_size": 4581,
+      "hash_match": true,
+      "head_sha256": "c4a9d526c6661f4859084a5b3d59cb4ccd83314bb3242d7d5f0cd311310cca43",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 67,
+        "root_type": "dict",
+        "keys": [
+          "constraint_compliance",
+          "controllable_action_failed_status",
+          "deferred",
+          "files_modified_this_session",
+          "honest_scoreboard",
+          "infrastructure_added_or_modified_this_session",
+          "mission",
+          "ready_for_close",
+          "validator_status",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "highlights": {
+          "verdict": "GREEN — Z1, Z2-min, Z2-full, Z3, Z4, Z5, Z5b, Z6, Z7, Z8, Z9 implemented; controllable [action_failed] driven to ZERO across all measured surfaces."
+        },
+        "scalars": {
+          "mission": "OPUS 4.7 — ACTION_FAILED ELIMINATION (cierre real de funcionalidad)",
+          "verdict": "GREEN — Z1, Z2-min, Z2-full, Z3, Z4, Z5, Z5b, Z6, Z7, Z8, Z9 implemented; controllable [action_failed] driven to ZERO across all measured surfaces.",
+          "ready_for_close": true
+        },
+        "obj_honest_scoreboard_keys": [
+          "hardcode_guard",
+          "live_safe_654",
+          "overall_skipped_live_gate_pass",
+          "pytest",
+          "scripted_654",
+          "skipped_live_111"
+        ],
+        "obj_controllable_action_failed_status_keys": [
+          "after_previous_turn",
+          "after_this_turn",
+          "all_resolved_via",
+          "before_session"
+        ],
+        "obj_infrastructure_added_or_modified_this_session_keys": [
+          "Z2_full_universal_recovery",
+          "Z2_idempotent_terminal",
+          "Z4_extended_filesystem_fallback",
+          "Z5_universal_capability_redirect",
+          "Z6_window_active_default"
+        ],
+        "obj_validator_status_keys": [
+          "no_unrecovered_action_failed_Z9"
+        ],
+        "obj_constraint_compliance_keys": [
+          "hardcode_guard_proof",
+          "no_app_specific_branches",
+          "no_destructive_actions_without_gate",
+          "no_double_llm_load",
+          "no_fake_success",
+          "no_hardcodes",
+          "no_per_language_word_lists"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/AUTO_MODEL_STACK_FINAL_GATE.json",
+      "queued_sha256": "26b16aa12f6abbfeaa1a271c90332c036cee52b7cfa9a281ff63c5198e7182de",
+      "size_queued": 5562,
+      "exists": true,
+      "disk_sha256": "26b16aa12f6abbfeaa1a271c90332c036cee52b7cfa9a281ff63c5198e7182de",
+      "disk_size": 5562,
+      "hash_match": true,
+      "head_sha256": "814689eb4ed957044000cc47d972c9002b28a56020d1d1b31e83afed6e201435",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 44,
+        "root_type": "dict",
+        "keys": [
+          "final_verdict",
+          "gates",
+          "generated_at_utc",
+          "mission",
+          "operator_rig",
+          "per_profile_recommendation",
+          "schema_version",
+          "verdict_rationale"
+        ],
+        "n_keys": 8,
+        "highlights": {},
+        "scalars": {
+          "schema_version": 1,
+          "mission": "CARTER_AUTO_MODEL_STACK_FINAL",
+          "generated_at_utc": "2026-05-02T00:00:00Z",
+          "final_verdict": "AUTO_MODEL_STACK_READY_WITH_ENV_LIMITATIONS",
+          "verdict_rationale": "All 18 gates pass. Text/vision tournaments are LIVE (21 models, 5 VLMs). STT/TTS shipped as executable scaffold (faster-whisper + piper) — Carter currently has …"
+        },
+        "obj_operator_rig_keys": [
+          "auto_detected_profile",
+          "cpu_cores",
+          "gpu",
+          "os",
+          "ram_total_mb",
+          "vram_total_mb"
+        ],
+        "obj_gates_keys": [
+          "config_generator",
+          "external_model_downloads_done",
+          "external_model_research_done",
+          "fair_protocol_integration",
+          "hardcode_guard",
+          "load_policy_per_profile",
+          "model_stack_by_vram_updated",
+          "no_double_load",
+          "no_hardcodes_per_model",
+          "profiles_complete",
+          "pytest",
+          "queued_models_resolved",
+          "rollback_intact",
+          "selector_validated",
+          "stt_done_or_scaffolded",
+          "text_tournament_done",
+          "tts_done_or_scaffolded",
+          "vision_tournament_done"
+        ],
+        "obj_per_profile_recommendation_keys": [
+          "10gb",
+          "12gb",
+          "16gb",
+          "24gb",
+          "6gb",
+          "8gb",
+          "cpu_only"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_DEFAULT_SWITCH_GATE.json",
+      "queued_sha256": "1d7d1def726452610e0addd1830974f5292d9b8ac639af9980d4d6d3d6d2c080",
+      "size_queued": 6716,
+      "exists": true,
+      "disk_sha256": "1d7d1def726452610e0addd1830974f5292d9b8ac639af9980d4d6d3d6d2c080",
+      "disk_size": 6716,
+      "hash_match": true,
+      "head_sha256": "968b459c1aad55436f7303edb9346d6a391840319df3a4160f9ba75099e9085a",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 95,
+        "root_type": "dict",
+        "keys": [
+          "allowed_verdict",
+          "audit_name",
+          "audit_phase",
+          "audit_round",
+          "case_11_after",
+          "case_11_before",
+          "case_11_contract_bug_fixed",
+          "core_changed",
+          "false_passes_removed",
+          "full_default_switch_completed",
+          "hardcode_guard_passed",
+          "harness_changed",
+          "llamacpp_launcher_default_model",
+          "lock_in_run_after_contract_fix",
+          "lock_in_run_before_contract_fix",
+          "md_case_labels_corrected",
+          "md_corruption_summary",
+          "next_block_of_work_in_order",
+          "old_default_model",
+          "ollama_default_model",
+          "post_repair_per_case_run11",
+          "pytest_passed",
+          "rerun_rationale",
+          "rerun_was_required",
+          "timestamp",
+          "validator_repair_summary"
+        ],
+        "n_keys": 26,
+        "highlights": {},
+        "scalars": {
+          "timestamp": "2026-05-02",
+          "audit_round": 8,
+          "audit_phase": "cleanup-contract-data-and-md-integrity",
+          "audit_name": "CARTER_DEFAULT_SWITCH_HONESTY_REPAIR + CONTRACT_DATA_FIX",
+          "old_default_model": "qwen3:8b",
+          "ollama_default_model": "qwen2.5:7b-instruct",
+          "llamacpp_launcher_default_model": "qwen3-8b GGUF (unchanged)",
+          "full_default_switch_completed": false,
+          "false_passes_removed": 2,
+          "case_11_contract_bug_fixed": true,
+          "md_case_labels_corrected": true,
+          "md_corruption_summary": "Round-8 first audit md used labels like 'sube el volumen', 'hola', 'abre la calculadora', 'instala spotify' that did not match the actual transcript. The real c…",
+          "harness_changed": true,
+          "core_changed": false,
+          "pytest_passed": "481 / 481 (1 deselected) in 44.07s",
+          "hardcode_guard_passed": "0 findings, 0 critical",
+          "rerun_was_required": true,
+          "rerun_rationale": "Contract-data change can flip case-11 classification, so a fresh safe-live capture is needed to keep the gate consistent with evidence.",
+          "allowed_verdict": "PARTIAL_WITH_NEXT_STEP"
+        },
+        "obj_case_11_before_keys": [
+          "bug",
+          "contract",
+          "run10_outcome",
+          "run10_reply_first_chars",
+          "run10_violation"
+        ],
+        "obj_case_11_after_keys": [
+          "contract",
+          "fix",
+          "run11_outcome",
+          "run11_pass_kind_reason",
+          "run11_reply_first_chars"
+        ],
+        "obj_validator_repair_summary_keys": [
+          "core_changed",
+          "file",
+          "scope"
+        ],
+        "obj_lock_in_run_before_contract_fix_keys": [
+          "run_file",
+          "semantic_fail",
+          "semantic_pass_honest_degraded",
+          "semantic_pass_successful"
+        ],
+        "obj_lock_in_run_after_contract_fix_keys": [
+          "run_file",
+          "semantic_fail",
+          "semantic_pass_honest_degraded",
+          "semantic_pass_successful"
+        ],
+        "obj_post_repair_per_case_run11_keys": [
+          "1",
+          "10",
+          "11",
+          "12",
+          "13",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_GLOBAL_RUNTIME_GATE.json",
+      "queued_sha256": "7efd82561b0819a3d8559c6a814bf2cd4594c74eccd5562fc9b1d20aa2051a0c",
+      "size_queued": 10876,
+      "exists": true,
+      "disk_sha256": "7efd82561b0819a3d8559c6a814bf2cd4594c74eccd5562fc9b1d20aa2051a0c",
+      "disk_size": 10876,
+      "hash_match": true,
+      "head_sha256": "7e0dd09be929666d5cc1977e0eb0db8b8aacfacff4ff947eecedad09d808dc75",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 81,
+        "root_type": "dict",
+        "keys": [
+          "action_route_clarification_detector_fixed",
+          "action_route_clarification_detector_rule",
+          "allowed_verdict",
+          "case_9_fixed_or_reclassified",
+          "files_changed_round_4",
+          "hardcode_guard_findings",
+          "live_subset_results_round_4",
+          "mission",
+          "model_used",
+          "next_step_concrete_remaining_hole",
+          "previous_score_flat",
+          "pytest_passed",
+          "remaining_failures",
+          "round",
+          "round_3_failures_user_called_out",
+          "structural_fixes_round_4",
+          "timestamp_utc",
+          "what_round_3_overstated"
+        ],
+        "n_keys": 18,
+        "highlights": {},
+        "scalars": {
+          "timestamp_utc": "2026-05-02T23:00:00Z",
+          "round": 4,
+          "previous_score_flat": "10/13 (round 3, single bucket — conflated successful, honest_degraded, and false_pass)",
+          "mission": "CARTER_GLOBAL_RUNTIME_AUDIT_AND_LLM_FIRST_REARCHITECTURE",
+          "model_used": "qwen3:8b @ http://localhost:11434/v1",
+          "action_route_clarification_detector_fixed": true,
+          "action_route_clarification_detector_rule": "Structural: first interrogative glyph (?/¿) in reply. If any completed declarative sentence (matched by `\\S[.!;]\\s` or `\\S[.!;]$`) precedes that glyph → substan…",
+          "pytest_passed": "481/481 (1 deselected)",
+          "hardcode_guard_findings": "0 total / 0 critical",
+          "allowed_verdict": "PARTIAL_WITH_NEXT_STEP",
+          "next_step_concrete_remaining_hole": "Two real holes remain. (1) NEEDS_ENVIRONMENT: implement model preload + bump per-tool LLM call concurrency on AssistantEngine init to reduce qwen3:8b first-call…"
+        },
+        "obj_case_9_fixed_or_reclassified_keys": [
+          "after_round_4_runner_fix",
+          "after_round_4_runtime_fix",
+          "before_round_4",
+          "honest_outcome",
+          "this_run_classification"
+        ],
+        "obj_live_subset_results_round_4_keys": [
+          "honesty_note",
+          "model",
+          "outcome_breakdown",
+          "round_3_score_flat",
+          "round_4_score_taxonomized",
+          "runner"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_MODEL_REBASELINE_GATE.json",
+      "queued_sha256": "874bbba00ecf197fb4bb0e16167ae53eaae19f4887982c6a42737121459bde89",
+      "size_queued": 10746,
+      "exists": true,
+      "disk_sha256": "874bbba00ecf197fb4bb0e16167ae53eaae19f4887982c6a42737121459bde89",
+      "disk_size": 10746,
+      "hash_match": true,
+      "head_sha256": "81cecab54cdfb7a64db31ec05bf8f360bf52106f8bafb747aefbd80552b758e1",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 132,
+        "root_type": "dict",
+        "keys": [
+          "allowed_verdict",
+          "audit_name",
+          "audit_round",
+          "best_qwen25_warm_run",
+          "best_qwen25_warm_run_budget",
+          "best_qwen25_warm_run_semantic",
+          "budget_compliant_honest_degraded_counts",
+          "budget_compliant_successful_counts",
+          "budget_fail_counts",
+          "candidate_default_justification",
+          "candidate_default_verdict",
+          "candidate_model",
+          "cold_runs_qwen25",
+          "cold_runs_qwen3_for_reference",
+          "core_changes_still_justified",
+          "core_changes_still_justified_note",
+          "cross_model_residual_failures",
+          "harness_changed_during_audit",
+          "harness_path",
+          "jarvis_budgets_seconds_per_case",
+          "jarvis_grade_cases_failing",
+          "jarvis_grade_cases_under_budget",
+          "jarvis_grade_cases_with_volatility",
+          "jarvis_grade_score_best_run",
+          "model_change_recommended",
+          "model_specific_to_qwen3_failures_now_resolved_under_qwen25",
+          "old_default_model",
+          "qwen25_warm_per_case_outcome",
+          "recommendation_priority_order",
+          "residual_core_backlog",
+          "run_files",
+          "runs_executed",
+          "semantic_fail_counts",
+          "semantic_pass_honest_degraded_counts",
+          "semantic_pass_successful_counts",
+          "stability_summary_qwen25_warm",
+          "tests_status",
+          "timestamp",
+          "warm_runs_qwen25",
+          "warm_runs_qwen3_for_reference"
+        ],
+        "n_keys": 40,
+        "highlights": {},
+        "scalars": {
+          "timestamp": "2026-05-02",
+          "audit_round": 6,
+          "audit_name": "CARTER_MODEL_REBASELINE",
+          "harness_changed_during_audit": false,
+          "harness_path": "audit/runners/real_runtime_transcript_repro.py",
+          "old_default_model": "qwen3:8b",
+          "candidate_model": "qwen2.5:7b-instruct",
+          "runs_executed": 4,
+          "warm_runs_qwen25": 3,
+          "cold_runs_qwen25": 1,
+          "warm_runs_qwen3_for_reference": 3,
+          "cold_runs_qwen3_for_reference": 1,
+          "stability_summary_qwen25_warm": "10/13 STABLE across 3 warm runs; 3 VOLATILE (4, 11, 12). Volatility favours pass on the better runs.",
+          "best_qwen25_warm_run": "run07_qwen25_7b_instruct_warm",
+          "best_qwen25_warm_run_semantic": "6/1/6",
+          "best_qwen25_warm_run_budget": "4/1/8",
+          "model_change_recommended": true,
+          "candidate_default_verdict": "ADOPT_AS_NEW_DEFAULT_WITH_RESIDUAL_BACKLOG",
+          "core_changes_still_justified": false,
+          "core_changes_still_justified_note": "No new core surgery is justified during this audit. The residual backlog is real but should be tackled AFTER setting qwen2.5:7b-instruct as the new default, so …",
+          "jarvis_grade_score_best_run": "5 of 13 reach budget-compliant pass on qwen2.5 best warm run (cases 2, 3, 10, 12, 13); 4 of 13 are budget_compliant_successful + 1 budget_compliant_honest_degra…",
+          "allowed_verdict": "PARTIAL_WITH_NEXT_STEP"
+        },
+        "obj_run_files_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm",
+          "qwen3_8b_cold_subset",
+          "qwen3_8b_warm"
+        ],
+        "obj_semantic_pass_successful_counts_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm_runs",
+          "qwen3_8b_warm_runs"
+        ],
+        "obj_semantic_pass_honest_degraded_counts_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm_runs",
+          "qwen3_8b_warm_runs"
+        ],
+        "obj_semantic_fail_counts_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm_runs",
+          "qwen3_8b_warm_runs"
+        ],
+        "obj_jarvis_budgets_seconds_per_case_keys": [
+          "1",
+          "10",
+          "11",
+          "12",
+          "13",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "obj_budget_compliant_successful_counts_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm_runs",
+          "qwen3_8b_warm_runs"
+        ],
+        "obj_budget_compliant_honest_degraded_counts_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm_runs",
+          "qwen3_8b_warm_runs"
+        ],
+        "obj_budget_fail_counts_keys": [
+          "qwen25_7b_instruct_cold_subset",
+          "qwen25_7b_instruct_warm_runs",
+          "qwen3_8b_warm_runs"
+        ],
+        "obj_qwen25_warm_per_case_outcome_keys": [
+          "1",
+          "10",
+          "11",
+          "12",
+          "13",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "list_cross_model_residual_failures_n": 6,
+        "list_cross_model_residual_failures_keys": [
+          "id",
+          "input",
+          "interpretation",
+          "qwen25",
+          "qwen3"
+        ],
+        "list_model_specific_to_qwen3_failures_now_resolved_under_qwen25_n": 5,
+        "list_model_specific_to_qwen3_failures_now_resolved_under_qwen25_keys": [
+          "id",
+          "input",
+          "qwen25_outcome"
+        ],
+        "list_residual_core_backlog_n": 7,
+        "list_residual_core_backlog_keys": [
+          "category",
+          "id",
+          "model_independent",
+          "note",
+          "priority",
+          "title"
+        ],
+        "obj_tests_status_keys": [
+          "hardcode_guard_violations",
+          "pytest_deselected",
+          "pytest_passed",
+          "pytest_total"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_RUNTIME_STABILITY_GATE.json",
+      "queued_sha256": "f66b9073803369cab1cefd37655b6ed9a1332a5b9ab3f1136f3c12f0b0b7d64a",
+      "size_queued": 9954,
+      "exists": true,
+      "disk_sha256": "f66b9073803369cab1cefd37655b6ed9a1332a5b9ab3f1136f3c12f0b0b7d64a",
+      "disk_size": 9954,
+      "hash_match": true,
+      "head_sha256": "f85bd842b1a002c6ffca72fa2b51fb5a6b264b6bc738d95897759802d641c470",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 105,
+        "root_type": "dict",
+        "keys": [
+          "allowed_verdict",
+          "cold_runs",
+          "core_changes_justification",
+          "core_changes_still_justified",
+          "cross_model_comparison",
+          "deterministic_core_failures",
+          "environment_failures",
+          "fail_counts",
+          "harness",
+          "harness_changed_during_audit",
+          "harness_freeze_justification",
+          "mission",
+          "model_suitability_evidence",
+          "model_suitability_verdict",
+          "model_used_comparator",
+          "model_used_primary",
+          "model_volatility_failures",
+          "next_step_concrete",
+          "pass_honest_degraded_counts",
+          "pass_successful_counts",
+          "per_case_variance_qwen3_8b_warm",
+          "recommendation_priority_order",
+          "run_files",
+          "runs_executed",
+          "stability_summary_qwen3_8b",
+          "timestamp_utc",
+          "verifier_protocol_failures",
+          "warm_runs"
+        ],
+        "n_keys": 28,
+        "highlights": {},
+        "scalars": {
+          "timestamp_utc": "2026-05-02T23:30:00Z",
+          "mission": "CARTER_RUNTIME_STABILITY_AUDIT",
+          "model_used_primary": "qwen3:8b @ http://localhost:11434/v1",
+          "model_used_comparator": "qwen2.5:7b-instruct @ http://localhost:11434/v1",
+          "harness": "audit/runners/real_runtime_transcript_repro.py (round 4 frozen — no measurement-bug fixes were required)",
+          "harness_changed_during_audit": false,
+          "harness_freeze_justification": "Round 4 already added the per-field contract validators, history_tokens corpus, must_answer_directly, and the pass taxonomy. No measurement bug was discovered i…",
+          "runs_executed": 5,
+          "cold_runs": 1,
+          "warm_runs": 4,
+          "stability_summary_qwen3_8b": "12 / 13 cases are STABLE across 3 warm runs. Only case 12 oscillates between `pass_honest_degraded` (install gate fires) and `fail` (LLM call latency exceeds th…",
+          "model_suitability_verdict": "NOT_SUITABLE_AS_CURRENT_DEFAULT",
+          "core_changes_still_justified": false,
+          "core_changes_justification": "Across 5 runs and 2 models, no NEW deterministic core bug was reproduced. The round-3 leak vectors stay closed (case 10 reply remains structurally clean even wh…",
+          "allowed_verdict": "PARTIAL_WITH_NEXT_STEP",
+          "next_step_concrete": "Change the default model. Continuing to patch Carter against qwen3:8b will produce more model-specific accidental contracts. The smaller, older qwen2.5:7b-instr…"
+        },
+        "obj_pass_successful_counts_keys": [
+          "qwen25_7b_instruct_run05_warm",
+          "qwen3_8b_run01_warm",
+          "qwen3_8b_run02_warm",
+          "qwen3_8b_run03_warm",
+          "qwen3_8b_run04_cold_subset"
+        ],
+        "obj_pass_honest_degraded_counts_keys": [
+          "qwen25_7b_instruct_run05_warm",
+          "qwen3_8b_run01_warm",
+          "qwen3_8b_run02_warm",
+          "qwen3_8b_run03_warm",
+          "qwen3_8b_run04_cold_subset"
+        ],
+        "obj_fail_counts_keys": [
+          "qwen25_7b_instruct_run05_warm",
+          "qwen3_8b_run01_warm",
+          "qwen3_8b_run02_warm",
+          "qwen3_8b_run03_warm",
+          "qwen3_8b_run04_cold_subset"
+        ],
+        "obj_per_case_variance_qwen3_8b_warm_keys": [
+          "case_1",
+          "case_10",
+          "case_11",
+          "case_12",
+          "case_13",
+          "case_2",
+          "case_3",
+          "case_4",
+          "case_5",
+          "case_6",
+          "case_7",
+          "case_8",
+          "case_9"
+        ],
+        "list_verifier_protocol_failures_n": 2,
+        "list_verifier_protocol_failures_keys": [
+          "case",
+          "reason"
+        ],
+        "list_environment_failures_n": 5,
+        "list_environment_failures_keys": [
+          "case",
+          "reason"
+        ],
+        "list_model_volatility_failures_n": 5,
+        "list_model_volatility_failures_keys": [
+          "case",
+          "reason"
+        ],
+        "obj_cross_model_comparison_keys": [
+          "interpretation",
+          "qwen25_7b_instruct_warm_single_run",
+          "qwen25_advantages",
+          "qwen25_remaining_failures",
+          "qwen3_8b_warm_avg"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_GATE.json",
+      "queued_sha256": "e768b79a1ef585a64e7f1d248ce518a5fac1b923e563d97dea1e86eb8c6d4b66",
+      "size_queued": 7981,
+      "exists": true,
+      "disk_sha256": "e768b79a1ef585a64e7f1d248ce518a5fac1b923e563d97dea1e86eb8c6d4b66",
+      "disk_size": 7981,
+      "hash_match": true,
+      "head_sha256": "d14220cb56e16bd004793f962c0d3c28d1407ebfafd63a79cfc2a1491717aaa1",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 138,
+        "root_type": "dict",
+        "keys": [
+          "files_created_by_this_block",
+          "files_modified_by_this_block",
+          "gate_name",
+          "items",
+          "live_runs",
+          "mission",
+          "model_under_test",
+          "model_variance_disclosure",
+          "pass_set_delta_run11_to_post_block",
+          "regression_gates",
+          "supersedes_partially",
+          "verdict"
+        ],
+        "n_keys": 12,
+        "highlights": {
+          "verdict": "BLOCK_LANDED_LIVE_VERIFIED"
+        },
+        "scalars": {
+          "gate_name": "CARTER_TEXT_BLOCK_LANDING_GATE",
+          "verdict": "BLOCK_LANDED_LIVE_VERIFIED",
+          "supersedes_partially": "REAL_RUNTIME_FAILURE_FINAL_GATE (closure_checklist rewritten in-place to add live_status / evidence per item)",
+          "mission": "Close the next concrete block of Carter Text Core work with REAL evidence — no inflated gates, no fake green, no model hacks, no language hacks."
+        },
+        "obj_model_under_test_keys": [
+          "backend",
+          "base_url",
+          "model",
+          "preload_enabled",
+          "preload_timeout_s_run12",
+          "preload_timeout_s_run13"
+        ],
+        "obj_items_keys": [
+          "1_gate_honesty_rewrite",
+          "2_dry_run_honesty",
+          "3_launcher_unification_L1",
+          "4_preload_warmup",
+          "5_pycaw_verifier_fix",
+          "6_overclaim_guard",
+          "7_residual_backlog_declared"
+        ],
+        "obj_regression_gates_keys": [
+          "dry_run_repro",
+          "hardcode_guard",
+          "pytest"
+        ],
+        "list_live_runs_n": 3,
+        "list_live_runs_keys": [
+          "context",
+          "fail",
+          "file",
+          "honest_degraded",
+          "id",
+          "successful",
+          "verdict"
+        ],
+        "obj_pass_set_delta_run11_to_post_block_keys": [
+          "added_pass_honest_degraded",
+          "added_pass_successful",
+          "lost",
+          "net"
+        ],
+        "obj_model_variance_disclosure_keys": [
+          "observed",
+          "summary"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_V2_GATE.json",
+      "queued_sha256": "0256d8a58462f9b7d6ec531d25de1646cd72ddf3cee674bdba3213b0978f9cbc",
+      "size_queued": 5224,
+      "exists": true,
+      "disk_sha256": "0256d8a58462f9b7d6ec531d25de1646cd72ddf3cee674bdba3213b0978f9cbc",
+      "disk_size": 5224,
+      "hash_match": true,
+      "head_sha256": "9feed66d9de88c04c6e4c4f3dc89cd3818fc1cb130fe7fd89af7b1cfdf8761cc",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 93,
+        "root_type": "dict",
+        "keys": [
+          "code_changes",
+          "gates",
+          "items",
+          "new_dependency",
+          "non_negotiables",
+          "report",
+          "residuals",
+          "verdict",
+          "verdict_rationale"
+        ],
+        "n_keys": 9,
+        "highlights": {
+          "verdict": "JARVIS_BLOCK_PARTIAL"
+        },
+        "scalars": {
+          "report": "CARTER_TEXT_BLOCK_LANDING_V2",
+          "verdict": "JARVIS_BLOCK_PARTIAL",
+          "verdict_rationale": "Item 3 (latency under 8.0s contract floor) and Item 4 (structural language directive) are live-verified in 3/3 safe-live runs. Item 1 (action-route resolver + s…",
+          "residuals": "RESIDUAL_BACKLOG_V2.md"
+        },
+        "obj_non_negotiables_keys": [
+          "honest_partials_documented",
+          "zero_false_greens",
+          "zero_hardcoded_language_fallbacks",
+          "zero_model_specific_shortcuts",
+          "zero_verb_or_app_or_process_whitelists"
+        ],
+        "obj_items_keys": [
+          "B-1_action_route_resolver",
+          "B-2_memory_autosave",
+          "B-3_case1_latency",
+          "J5_language_detection",
+          "J8_risk_matrix_audit",
+          "run14_live_validation"
+        ],
+        "obj_gates_keys": [
+          "dry_run",
+          "hardcode_guard",
+          "pytest",
+          "safe_live_runs"
+        ],
+        "obj_new_dependency_keys": [
+          "delta_disclosed",
+          "name",
+          "spec_estimate_mb",
+          "version",
+          "wheel_size_mb"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_TEXT_CORE_RC_FINAL_GATE.json",
+      "queued_sha256": "9f0aef7e55e8b23aa84d423412b6bee9273c0f99c8842fb864da0003a35e8b42",
+      "size_queued": 4125,
+      "exists": true,
+      "disk_sha256": "9f0aef7e55e8b23aa84d423412b6bee9273c0f99c8842fb864da0003a35e8b42",
+      "disk_size": 4125,
+      "hash_match": true,
+      "head_sha256": "719af24f963b0bb3d6af586c8b29c6a68e877d2dadfb4a18e5d87ce0895801e3",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 118,
+        "root_type": "dict",
+        "keys": [
+          "blockers",
+          "counters",
+          "default_model",
+          "documentation",
+          "fast_model",
+          "gates",
+          "non_blocking_limitations",
+          "phase",
+          "quality_model_24gb_plus",
+          "recommended_model_16gb",
+          "rig",
+          "rollback_baseline",
+          "scope",
+          "verdict"
+        ],
+        "n_keys": 14,
+        "highlights": {
+          "verdict": "CARTER_TEXT_CORE_RELEASE_CANDIDATE"
+        },
+        "scalars": {
+          "verdict": "CARTER_TEXT_CORE_RELEASE_CANDIDATE",
+          "phase": "TEXT_MODE",
+          "scope": "text-only; voice/camera/mic explicitly out of scope",
+          "default_model": "qwen3:8b",
+          "recommended_model_16gb": "hermes3:8b",
+          "fast_model": "llama3.2:3b",
+          "quality_model_24gb_plus": "gpt-oss:20b"
+        },
+        "obj_rig_keys": [
+          "cores",
+          "gpu",
+          "os",
+          "ram_gb"
+        ],
+        "obj_gates_keys": [
+          "auto_model_stack",
+          "carter_text_final_closure",
+          "golden_matrix",
+          "hardcode_guard",
+          "live_safe",
+          "performance",
+          "performance_and_hardcode",
+          "pytest",
+          "rc_gates_aggregator",
+          "runtime_tool_protocol",
+          "skipped_live",
+          "soak_test",
+          "ultra_latency"
+        ],
+        "obj_counters_keys": [
+          "action_failed_controlable_count",
+          "app_hack_count",
+          "duplicate_llm_load_count",
+          "fake_success_count",
+          "hardcode_count",
+          "placeholder_count"
+        ],
+        "obj_documentation_keys": [
+          "architecture",
+          "cleanup_plan",
+          "invariants",
+          "model_decision",
+          "performance_final",
+          "rc_audit",
+          "release_notes",
+          "voice_camera_handoff"
+        ],
+        "list_non_blocking_limitations_n": 3,
+        "list_non_blocking_limitations_keys": [
+          "description",
+          "id",
+          "kind"
+        ],
+        "obj_rollback_baseline_keys": [
+          "default_model",
+          "registry",
+          "selector"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/CARTER_TEXT_FINAL_CLOSURE_GATE.json",
+      "queued_sha256": "c665db72fafbc7d690f1d4c658a3c5005e614c6b4ea959d9db8a3937840db667",
+      "size_queued": 5658,
+      "exists": true,
+      "disk_sha256": "c665db72fafbc7d690f1d4c658a3c5005e614c6b4ea959d9db8a3937840db667",
+      "disk_size": 5658,
+      "hash_match": true,
+      "head_sha256": "a8ebf55e2175f9c56e941828a6c15b3a11e356e50dc70dea34e69ec97a8664f3",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 78,
+        "root_type": "dict",
+        "keys": [
+          "compliance_with_user_rules",
+          "counters_observed",
+          "counters_required_zero",
+          "deferred",
+          "infrastructure_summary",
+          "latency_ms",
+          "mission",
+          "ready_for_close",
+          "scoreboard",
+          "this_turn_changes",
+          "verdict"
+        ],
+        "n_keys": 11,
+        "highlights": {
+          "verdict": "GREEN — CARTER_TEXT_FINAL_READY"
+        },
+        "scalars": {
+          "mission": "OPUS 4.7 — CIERRE FINAL CARTER TEXT MODE: JARVIS OPERATIVO 100%",
+          "verdict": "GREEN — CARTER_TEXT_FINAL_READY",
+          "ready_for_close": true
+        },
+        "obj_scoreboard_keys": [
+          "hardcode_guard",
+          "live_safe_full_live_654",
+          "pytest",
+          "scripted_full_live_654",
+          "skipped_live_106"
+        ],
+        "obj_counters_required_zero_keys": [
+          "action_failed_controlable",
+          "action_failed_total",
+          "active_app_context_leak_failures",
+          "app_hack_total",
+          "corrupt_memory_failures",
+          "destructive_action_executed",
+          "duplicate_llm_load_total",
+          "fake_success_total",
+          "gui_unrecovered_total",
+          "hardcode_critical_total",
+          "low_information_output_failures",
+          "mission_integrity_failures",
+          "placeholder_total",
+          "pre_existing_steam_killed_by_us",
+          "safety_policy_failures",
+          "timeout_silent_total",
+          "unresolved_failures",
+          "unverified_completed_failures",
+          "vram_safety_failures",
+          "wrong_tool_unrepaired_total"
+        ],
+        "obj_counters_observed_keys": [
+          "completed_total",
+          "needs_environment_total",
+          "needs_user_total",
+          "partial_with_next_step_total"
+        ],
+        "obj_latency_ms_keys": [
+          "all",
+          "simple_no_tools",
+          "source",
+          "with_tools"
+        ],
+        "obj_infrastructure_summary_keys": [
+          "Z2_full_recovery_loop",
+          "Z2_idempotent_terminal",
+          "Z3_file_vs_skill_guard",
+          "Z4_path_grounding",
+          "Z5_safety_alternative",
+          "Z6_gui_target_discovery",
+          "Z7_vision_dependency_manager",
+          "Z8_gui_multi_step_engine",
+          "Z9_validator_strict",
+          "ledger_honest_classifier"
+        ],
+        "obj_this_turn_changes_keys": [
+          "src/carter_v2/capabilities/terminal.py"
+        ],
+        "obj_compliance_with_user_rules_keys": [
+          "language_neutral",
+          "no_app_hacks",
+          "no_deferred_by_complexity",
+          "no_double_llm_load",
+          "no_fake_success",
+          "no_hardcodes",
+          "universal_solutions_only"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/FULL_LIVE_LLM_FINAL_GATE.json",
+      "queued_sha256": "66741e152036cf3941da23186faa2bac6511e23924c55ee7c6967f11fd969f6b",
+      "size_queued": 533,
+      "exists": true,
+      "disk_sha256": "66741e152036cf3941da23186faa2bac6511e23924c55ee7c6967f11fd969f6b",
+      "disk_size": 533,
+      "hash_match": true,
+      "head_sha256": "6232fb53472c9055a53fbf60cd40e6c4837990a97032fca6de10e5dd777946ba",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 18,
+        "root_type": "dict",
+        "keys": [
+          "counters",
+          "overall_gate_pass"
+        ],
+        "n_keys": 2,
+        "highlights": {},
+        "scalars": {
+          "overall_gate_pass": true
+        },
+        "obj_counters_keys": [
+          "active_app_context_leak_failures",
+          "app_hack_core_findings",
+          "corrupt_memory_failures",
+          "duplicate_llm_load_failures",
+          "fake_success_failures",
+          "hardcode_critical_findings",
+          "low_information_output_failures",
+          "mission_integrity_failures",
+          "placeholder_failures",
+          "safety_policy_failures",
+          "simple_latency_failures",
+          "unverified_completed_failures",
+          "vram_safety_failures"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/LLM_CONTEXT_MEMORY_PROBE.json",
+      "queued_sha256": "e995002d83fcef620eabbada659e0cc0a89f4bcc26517238cf918134472fa399",
+      "size_queued": 14205,
+      "exists": true,
+      "disk_sha256": "e995002d83fcef620eabbada659e0cc0a89f4bcc26517238cf918134472fa399",
+      "disk_size": 14205,
+      "hash_match": true,
+      "head_sha256": "1411797421d608f10eb6992aee3991b7383c5b40a332567d1c14a8a56f9ccbdb",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 430,
+        "root_type": "dict",
+        "keys": [
+          "cases_failed",
+          "cases_total",
+          "label",
+          "mode",
+          "model",
+          "results"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "scripted"
+        },
+        "scalars": {
+          "mode": "scripted",
+          "label": "opus47",
+          "model": "scripted",
+          "cases_total": 13,
+          "cases_failed": 0
+        },
+        "list_results_n": 13,
+        "list_results_keys": [
+          "cid",
+          "error",
+          "failures",
+          "group",
+          "llm_calls",
+          "mode",
+          "prompt",
+          "reply_excerpt",
+          "total_ms",
+          "trace"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/LLM_CONTEXT_MEMORY_PROBE_REAL.json",
+      "queued_sha256": "2dcf25ed2611c579a65b7be55505ded1546cbaa2a69c77f9f9c5d21445f461aa",
+      "size_queued": 14486,
+      "exists": true,
+      "disk_sha256": "2dcf25ed2611c579a65b7be55505ded1546cbaa2a69c77f9f9c5d21445f461aa",
+      "disk_size": 14486,
+      "hash_match": true,
+      "head_sha256": "d9f1deb67631da1171281ce5301e018f12ca81e951868dfda1fbc4597a4fd585",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 425,
+        "root_type": "dict",
+        "keys": [
+          "cases_failed",
+          "cases_total",
+          "label",
+          "mode",
+          "model",
+          "results"
+        ],
+        "n_keys": 6,
+        "highlights": {
+          "model": "qwen3:8b"
+        },
+        "scalars": {
+          "mode": "real",
+          "label": "opus47_real",
+          "model": "qwen3:8b",
+          "cases_total": 13,
+          "cases_failed": 0
+        },
+        "list_results_n": 13,
+        "list_results_keys": [
+          "cid",
+          "error",
+          "failures",
+          "group",
+          "llm_calls",
+          "mode",
+          "prompt",
+          "reply_excerpt",
+          "total_ms",
+          "trace"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/MODEL_COMPATIBILITY_FINAL_GATE.json",
+      "queued_sha256": "4f3c315aaf29d6c8105d68bce07c00998d9a975790cc495bc56659f941d223c2",
+      "size_queued": 5993,
+      "exists": true,
+      "disk_sha256": "4f3c315aaf29d6c8105d68bce07c00998d9a975790cc495bc56659f941d223c2",
+      "disk_size": 5993,
+      "hash_match": true,
+      "head_sha256": "c45cbde5ee30577595808a13d26bc0045141b47f1e3cd3c9e5379fdf9124c322",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 103,
+        "root_type": "dict",
+        "keys": [
+          "best_models_by_class",
+          "closure_conditions",
+          "concern",
+          "default_runtime_changed",
+          "fair_rebench",
+          "force_tools_env_var",
+          "gates",
+          "mission_codename",
+          "mission_id",
+          "optin_env_var",
+          "phases",
+          "qwen_regression",
+          "rollback",
+          "started_after",
+          "verdict",
+          "verdict_explanation"
+        ],
+        "n_keys": 16,
+        "highlights": {
+          "verdict": "HARNESS_BIAS_CONFIRMED_AND_FIXED"
+        },
+        "scalars": {
+          "mission_id": "MODEL_COMPATIBILITY_BIAS_AUDIT",
+          "mission_codename": "Opus 4.7 — Fair Model Adaptation Layer",
+          "started_after": "MODEL_LAB_FINAL_GATE.json",
+          "concern": "Carter is Qwen-tuned. M11 used a single tool-calling protocol (OpenAI tools=) that rewards Qwen for its training rather than for genuine task quality. The runti…",
+          "qwen_regression": false,
+          "default_runtime_changed": false,
+          "optin_env_var": "CARTER_TOOL_PROTOCOL=auto (default openai_native)",
+          "force_tools_env_var": "CARTER_FORCE_TOOLS=1",
+          "verdict": "HARNESS_BIAS_CONFIRMED_AND_FIXED"
+        },
+        "obj_phases_keys": [
+          "A0_bias_audit_doc",
+          "A1_declarative_compat_package",
+          "A1_unit_tests",
+          "A2_A3_probe_runner_extended",
+          "A4_parser_anti_fake_success",
+          "A7_fair_rebench_summary",
+          "A8_runtime_optin",
+          "A8_runtime_tests",
+          "A9_model_lab_report_section"
+        ],
+        "obj_fair_rebench_keys": [
+          "harness",
+          "histogram",
+          "log",
+          "matrix",
+          "n_cases_per_combo",
+          "n_models",
+          "n_protocols",
+          "notable",
+          "summary",
+          "total_calls"
+        ],
+        "obj_closure_conditions_keys": [
+          "10_qwen_default_path_unchanged",
+          "11_no_tools_models_demoted_not_deleted",
+          "12_hardcode_guard_zero",
+          "13_pytest_no_regressions",
+          "1_compat_package_exists",
+          "2_zero_per_model_conditionals",
+          "3_22_compat_unit_tests_pass",
+          "4_parser_4_reject_tests_pass",
+          "5_probe_runner_supports_7_protocols",
+          "6_fair_rebench_completed",
+          "7_fair_rebench_summary_written",
+          "8_runtime_optin_in_backends",
+          "9_runtime_optin_5_tests_pass"
+        ],
+        "obj_gates_keys": [
+          "compat_unit_tests",
+          "hardcode_guard",
+          "parser_strict_tests",
+          "pytest_no_live",
+          "runtime_optin_tests"
+        ],
+        "obj_best_models_by_class_keys": [
+          "best_safe_default",
+          "non_qwen_native_winner",
+          "qwen_native_winner",
+          "universal_champion"
+        ],
+        "obj_rollback_keys": [
+          "files_to_revert_for_full_rollback",
+          "method",
+          "registry_changes"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/MODEL_LAB_FINAL_GATE.json",
+      "queued_sha256": "c9e5122671db9a3d9e53fe662935a760e9781c88726636e75c469d499fa166dc",
+      "size_queued": 7783,
+      "exists": true,
+      "disk_sha256": "c9e5122671db9a3d9e53fe662935a760e9781c88726636e75c469d499fa166dc",
+      "disk_size": 7783,
+      "hash_match": true,
+      "head_sha256": "85e09f653fae791443f6022096c097a1b0883ac41b878ef060b91f2cf3b67f73",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 169,
+        "root_type": "dict",
+        "keys": [
+          "carter_default_kept",
+          "closure_conditions",
+          "generated_utc",
+          "leaderboard_text_top5",
+          "limitations",
+          "mission",
+          "next_actions_for_operator",
+          "rig",
+          "summary_counts",
+          "verdict",
+          "vision_winners",
+          "voice_winners_by_profile"
+        ],
+        "n_keys": 12,
+        "highlights": {
+          "verdict": "MODEL_STACK_READY_WITH_LIMITATIONS"
+        },
+        "scalars": {
+          "mission": "Carter Model Lab — Opus 4.7 Wave 2/3 close-out",
+          "generated_utc": "2026-05-02T10:15:00Z",
+          "verdict": "MODEL_STACK_READY_WITH_LIMITATIONS"
+        },
+        "obj_rig_keys": [
+          "cpu_logical_cores",
+          "gpu",
+          "os",
+          "ram_total_mib",
+          "vram_total_mib"
+        ],
+        "list_closure_conditions_n": 15,
+        "list_closure_conditions_keys": [
+          "evidence",
+          "id",
+          "status",
+          "title"
+        ],
+        "list_closure_conditions_status": {
+          "PASS": 14,
+          "PASS_WITH_LIMITATION": 1
+        },
+        "obj_summary_counts_keys": [
+          "closure_conditions_pass",
+          "closure_conditions_pass_with_limitation",
+          "closure_conditions_total",
+          "text_models_benched_total",
+          "vision_models_benched",
+          "voice_runtimes_probed",
+          "voice_runtimes_smoke_executed",
+          "wave1_text_models",
+          "wave2_text_models"
+        ],
+        "list_leaderboard_text_top5_n": 5,
+        "list_leaderboard_text_top5_keys": [
+          "composite",
+          "model",
+          "p95_ms",
+          "text",
+          "tool",
+          "vram_mib"
+        ],
+        "obj_carter_default_kept_keys": [
+          "composite",
+          "model",
+          "rationale",
+          "tool",
+          "vram_mib"
+        ],
+        "obj_vision_winners_keys": [
+          "efficiency_6gb",
+          "grounding_12gb_plus",
+          "ocr_describe_8gb"
+        ],
+        "obj_voice_winners_by_profile_keys": [
+          "10gb",
+          "12gb",
+          "16gb",
+          "24gb",
+          "6gb",
+          "8gb",
+          "cpu_only"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/MODEL_RECOMMENDATION.json",
+      "queued_sha256": "c0cc6e3eba94c29d230a1cc2197551aad7b0e9ccb3e7455e133c50f50d39487e",
+      "size_queued": 1849,
+      "exists": true,
+      "disk_sha256": "c0cc6e3eba94c29d230a1cc2197551aad7b0e9ccb3e7455e133c50f50d39487e",
+      "disk_size": 1849,
+      "hash_match": true,
+      "head_sha256": "c87c468fa14d93848014d0380f1629f1af11e0719eb9b7a15f4e4f5bdcfc6b18",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 69,
+        "root_type": "dict",
+        "keys": [
+          "fallback_chains",
+          "generated_at_utc",
+          "hardware",
+          "load_policy",
+          "profile",
+          "selection",
+          "warnings"
+        ],
+        "n_keys": 7,
+        "highlights": {},
+        "scalars": {
+          "generated_at_utc": "2026-05-02T16:52:39Z"
+        },
+        "obj_hardware_keys": [
+          "cpu_count",
+          "gpu_name",
+          "has_cuda",
+          "os_name",
+          "ram_available_mb",
+          "ram_total_mb",
+          "vram_total_mb",
+          "vram_used_mb"
+        ],
+        "obj_profile_keys": [
+          "concurrent_modals",
+          "context_default",
+          "keep_alive_modal_s",
+          "keep_alive_text_s",
+          "name",
+          "ram_min_mb",
+          "stt_budget_mb",
+          "text_budget_mb",
+          "tts_budget_mb",
+          "vision_budget_mb",
+          "vram_total_max_mb",
+          "vram_total_min_mb"
+        ],
+        "obj_selection_keys": [
+          "stt",
+          "text",
+          "text_tool_protocol",
+          "tts",
+          "vision"
+        ],
+        "obj_fallback_chains_keys": [
+          "stt",
+          "text",
+          "tts",
+          "vision"
+        ],
+        "obj_load_policy_keys": [
+          "concurrent_modals",
+          "concurrent_voice",
+          "max_vram_ratio",
+          "modal_keep_alive_s",
+          "note",
+          "stt_keep_alive_s",
+          "text_keep_alive_s",
+          "tts_keep_alive_s",
+          "unload_text_before_modal"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/audit/results/PERFORMANCE_AND_HARDCODE_FINAL_GATE.json",
+      "queued_sha256": "78a7df9edd3be97d9e61efbb06f49bff974d7067f12b5a1e1c828ba009892309",
+      "size_queued": 8215,
+      "exists": true,
+      "disk_sha256": "78a7df9edd3be97d9e61efbb06f49bff974d7067f12b5a1e1c828ba009892309",
+      "disk_size": 8215,
+      "hash_match": true,
+      "head_sha256": "32ca1f7f89f75091605aca087b1f1424339ebc1658a663f562f45c43da2bed08",
+      "head_error": null,
+      "head_matches_queue": false,
+      "json": {
+        "lines": 255,
+        "root_type": "dict",
+        "keys": [
+          "backend_reused",
+          "closure_conditions",
+          "closure_conditions_passed",
+          "closure_conditions_total",
+          "cold_start_cid",
+          "controllable_failures_list",
+          "controllable_failures_total",
+          "duplicate_llm_load_prevented",
+          "fake_success_total",
+          "final_verdict",
+          "hardcode_critical_total",
+          "hardcode_total_findings",
+          "honest_fast_failures_total",
+          "live_safe_label",
+          "live_safe_model",
+          "live_safe_totals",
+          "llm_instance_count_detected",
+          "max_by_profile_ms",
+          "needs_environment_total",
+          "needs_user_total",
+          "no_duplicate_llm_load",
+          "p50_by_profile_ms",
+          "p95_by_profile_ms",
+          "performance_gate_criteria",
+          "performance_gate_verdict",
+          "preopt_max_by_profile_ms",
+          "preopt_p95_by_profile_ms",
+          "scripted_totals",
+          "silent_slow_60s_unexplained",
+          "silent_slow_cases",
+          "target_p95_by_profile_ms",
+          "top_remaining_slow_cases"
+        ],
+        "n_keys": 32,
+        "highlights": {},
+        "scalars": {
+          "hardcode_critical_total": 0,
+          "hardcode_total_findings": 0,
+          "live_safe_label": "live_safe_postopt2",
+          "live_safe_model": "qwen3:8b",
+          "controllable_failures_total": 0,
+          "fake_success_total": 0,
+          "needs_user_total": 6,
+          "needs_environment_total": 4,
+          "honest_fast_failures_total": 2,
+          "silent_slow_60s_unexplained": 0,
+          "duplicate_llm_load_prevented": false,
+          "backend_reused": true,
+          "llm_instance_count_detected": 1,
+          "no_duplicate_llm_load": true,
+          "cold_start_cid": "C1.01",
+          "performance_gate_verdict": "PERFORMANCE_READY_WITH_ENV_LIMITATIONS",
+          "closure_conditions_passed": 7,
+          "closure_conditions_total": 7,
+          "final_verdict": "READY"
+        },
+        "obj_scripted_totals_keys": [
+          "fail",
+          "pass",
+          "skipped",
+          "total"
+        ],
+        "obj_live_safe_totals_keys": [
+          "fail",
+          "pass",
+          "skipped",
+          "total"
+        ],
+        "obj_p95_by_profile_ms_keys": [
+          "app_action",
+          "concept_explanation",
+          "mission",
+          "simple",
+          "tools_simple"
+        ],
+        "obj_p50_by_profile_ms_keys": [
+          "app_action",
+          "concept_explanation",
+          "mission",
+          "simple",
+          "tools_simple"
+        ],
+        "obj_max_by_profile_ms_keys": [
+          "app_action",
+          "concept_explanation",
+          "mission",
+          "simple",
+          "tools_simple"
+        ],
+        "obj_target_p95_by_profile_ms_keys": [
+          "app_action",
+          "concept_explanation",
+          "mission",
+          "simple",
+          "tools_simple"
+        ],
+        "obj_preopt_p95_by_profile_ms_keys": [
+          "app_action",
+          "identity",
+          "mission",
+          "simple",
+          "tools_simple"
+        ],
+        "obj_preopt_max_by_profile_ms_keys": [
+          "app_action",
+          "identity",
+          "mission",
+          "simple",
+          "tools_simple"
+        ],
+        "list_top_remaining_slow_cases_n": 15,
+        "list_top_remaining_slow_cases_keys": [
+          "category",
+          "cid",
+          "prompt",
+          "reason",
+          "reply_excerpt",
+          "tool_calls",
+          "total_ms"
+        ],
+        "obj_performance_gate_criteria_keys": [
+          "app_action_p95_ok",
+          "concept_explanation_p95_ok",
+          "hardcode_critical_zero",
+          "mission_p95_ok",
+          "no_controllable_failures",
+          "no_fake_success",
+          "no_silent_slow_unexplained",
+          "simple_p95_ok",
+          "tools_simple_p95_ok"
+        ],
+        "obj_closure_conditions_keys": [
+          "controllable_failures_zero",
+          "duplicate_llm_load_prevented",
+          "fake_success_zero",
+          "hardcode_critical_zero",
+          "performance_gate_not_NOT_READY",
+          "scripted_no_failures",
+          "silent_slow_60s_zero"
+        ]
+      }
+    }
+  ]
+}

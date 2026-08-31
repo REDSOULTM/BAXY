@@ -1,0 +1,36 @@
+batch=code_tests-457-baxy-baxy_scripts
+hash_ok=34 drift=0 miss=0
+OK scripts/build_setup.ps1
+OK scripts/build_turn_training_corpus.py py_lines=118 defs=4
+OK scripts/capture_product.ps1
+OK scripts/catalog_seen_scenarios_v1.py py_lines=254 defs=0
+OK scripts/detect_promotion_boundary_decisions.py py_lines=281 defs=3
+OK scripts/detect_shortlist_recall.py py_lines=267 defs=3
+OK scripts/detect_social_envelope_equivalence.py py_lines=325 defs=5
+OK scripts/evaluate_wake_corpus.py py_lines=465 defs=11
+OK scripts/export_codex_subagents.py py_lines=419 defs=12
+OK scripts/freeze_historical_sources.py py_lines=432 defs=15
+OK scripts/install_baxy_wake_model.ps1
+OK scripts/install_nemotron_streaming_stt.ps1
+OK scripts/lock_python_dependencies.ps1
+OK scripts/measure_app_visible_path.ps1
+OK scripts/measure_mind_budget.py py_lines=1241 defs=44
+OK scripts/measure_turn_policy_v52_mtop_validation.py py_lines=1866 defs=33
+OK scripts/measure_turn_policy_v5_validation_cascade.py py_lines=1446 defs=21
+OK scripts/merge_exhaustive_runtime_model_gate.py py_lines=123 defs=2
+OK scripts/mind_runtime_manifest.ps1
+OK scripts/package_product.ps1
+OK scripts/path_safety.ps1
+OK scripts/prepare_turn_policy_runtime_development.py py_lines=356 defs=15
+OK scripts/preregister_wake_cascade_physical_validation.py py_lines=190 defs=4
+OK scripts/probe_mvp_core_provider_matrix.py py_lines=370 defs=11
+OK scripts/probe_mvp_ui_smoke.ps1
+OK scripts/probe_turn_policy_cases.py py_lines=194 defs=4
+OK scripts/product_build_common.ps1
+OK scripts/promote_wake_cascade_candidate.py py_lines=309 defs=14
+OK scripts/python_runtime_common.ps1
+OK scripts/register_mind_runtime.ps1
+OK scripts/reserve_disjoint_wake_physical_holdout_v1.py py_lines=211 defs=8
+OK scripts/restore_agent_assets.ps1
+OK scripts/run_baxy.ps1
+OK scripts/run_bluetooth_radio_roundtrip_gate.py py_lines=167 defs=4

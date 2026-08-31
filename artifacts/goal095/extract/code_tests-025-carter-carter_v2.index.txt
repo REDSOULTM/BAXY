@@ -1,0 +1,87 @@
+batch=code_tests-025-carter-carter_v2
+hash_ok=85 drift=0 miss=0
+OK Carter_v2/probe_assets_run
+OK Carter_v2/probe_assets_runtime/.gitignore
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/HEAD
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/config
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/description
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/applypatch-msg.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/commit-msg.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/fsmonitor-watchman.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/post-update.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-applypatch.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-commit.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-merge-commit.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-push.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-rebase.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/pre-receive.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/prepare-commit-msg.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/push-to-checkout.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/sendemail-validate.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/hooks/update.sample
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/info/exclude
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/2d/613bf96f4b8821045a1993896574469495cc3f
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/58/482867c797017c25826665b8229200031a209f
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/a2/e513639741705aa52a87e19f52c4ce967c0b7c
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/d7/86f998a4e7f2f89c57a552dad18a377e06383a
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/f2/e72be70e4f5ee9b70b3299ea62372f5a0876b4
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/objects/f4/d212b1895a3fb26028a83116848a2f960a6f62
+OK Carter_v2/probe_assets_runtime/git_sandbox/remote.git/refs/heads/main
+OK Carter_v2/probe_assets_runtime/s15_app_one/index.html
+OK Carter_v2/probe_assets_runtime/s15_app_two/app.py py_lines=1 defs=0
+OK Carter_v2/probe_assets_runtime/s15_data/report.json json_keys=['total']
+OK Carter_v2/probe_assets_runtime/snippet.py py_lines=1 defs=0
+OK Carter_v2/probe_assets_runtime/universal_runs/probe-univ-code.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/universal_runs/probe-univ-multistep.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/universal_runs/s15-app-1.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/universal_runs/s15-app-2.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/universal_runs/s15-data-1.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/universal_runs/s21-resource-flow.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/universal_runs/s25-universal-intent.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_assets_runtime/visual_runs/s22b-visual-resume.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK Carter_v2/probe_carter.py py_lines=260 defs=2
+OK Carter_v2/probe_clk1_test.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_environment_readiness.json json_keys=['assets', 'audio_input', 'binaries', 'external_mutations_enabled', 'git', 'guards', 'office', 'outlook', 'profile', 'python_modules', 'safe_mutation_mode', 'session_actions_enabled', 'tests', 'timestamp']
+OK Carter_v2/probe_intent3_recheck.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_mem_recheck.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_mem_recheck2.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_recheck2_results.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_recheck3_results.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_recheck4_results.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_recheck5_results.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_recheck6_results.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_recheck_results.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_regression_recheck.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_session7.py py_lines=429 defs=8
+OK Carter_v2/probe_t01_test.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_targeted_recheck.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_targeted_recheck2.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_targeted_recheck3.json json_keys=['by_category', 'errors', 'failed', 'failures', 'passed', 'profile', 'readiness_file', 'results', 'skip_by_type', 'skipped', 'skips', 'timestamp', 'total']
+OK Carter_v2/probe_text_hardening.py py_lines=556 defs=8
+OK Carter_v2/pyproject.toml
+OK Carter_v2/run.py py_lines=14 defs=0
+OK Carter_v2/run_text_closure_gate.py py_lines=172 defs=4
+OK Carter_v2/scripts/inspect_vision.py py_lines=153 defs=4
+OK Carter_v2/scripts/live_carter_llm_smoke.py py_lines=630 defs=15
+OK Carter_v2/scripts/quantize_q2k.py py_lines=79 defs=1
+OK Carter_v2/scripts/setup_optional_probe_env.py py_lines=121 defs=5
+OK Carter_v2/setup_ollama_optimized.ps1
+OK Carter_v2/src/carter_v2/__init__.py py_lines=2 defs=0
+OK Carter_v2/src/carter_v2/__main__.py py_lines=4 defs=0
+OK Carter_v2/src/carter_v2/adapters/__init__.py py_lines=2 defs=0
+OK Carter_v2/src/carter_v2/adapters/tool_normalizer.py py_lines=252 defs=14
+OK Carter_v2/src/carter_v2/adapters/tools.py py_lines=2261 defs=11
+OK Carter_v2/src/carter_v2/adapters/uia.py py_lines=464 defs=44
+OK Carter_v2/src/carter_v2/capabilities/__init__.py py_lines=2 defs=0
+OK Carter_v2/src/carter_v2/capabilities/_dialogs.py py_lines=538 defs=27
+OK Carter_v2/src/carter_v2/capabilities/_gui_planner.py py_lines=165 defs=5
+OK Carter_v2/src/carter_v2/capabilities/_subprocess.py py_lines=60 defs=2
+OK Carter_v2/src/carter_v2/capabilities/app_resolver.py py_lines=154 defs=12
+OK Carter_v2/src/carter_v2/capabilities/base.py py_lines=18 defs=3
+OK Carter_v2/src/carter_v2/capabilities/calendar.py py_lines=166 defs=13
+OK Carter_v2/src/carter_v2/capabilities/clock.py py_lines=43 defs=3
+OK Carter_v2/src/carter_v2/capabilities/code.py py_lines=136 defs=11
+OK Carter_v2/src/carter_v2/capabilities/database.py py_lines=147 defs=11
+OK Carter_v2/src/carter_v2/capabilities/desktop.py py_lines=207 defs=9
+OK Carter_v2/src/carter_v2/capabilities/download.py py_lines=338 defs=11
+OK Carter_v2/src/carter_v2/capabilities/email.py py_lines=317 defs=22

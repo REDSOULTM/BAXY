@@ -1,0 +1,11 @@
+batch=code_tests-477-baxy_schema_agent-baxy_schema_agent
+hash_ok=0 drift=0 miss=9
+DRIFT gemma4_agent/tests/test_computer_use_schema_no_invented_msg.py
+DRIFT gemma4_agent/tests/test_experience_schema_drift.py
+DRIFT gemma4_agent/tests/test_schema_handler_contract.py
+DRIFT gemma4_agent/tests/test_schemas_for_names_cache.py
+DRIFT gemma4_agent/tests/test_whatsapp_schema_slot_examples.py
+DRIFT gemma4_agent/tests/test_window_active_schema_examples.py
+DRIFT gemma4_agent/tools_pkg/tool_schemas.py
+DRIFT scripts/_measure_tool_schemas.py
+DRIFT scripts/_verify_schema_hint_gate.py

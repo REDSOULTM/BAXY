@@ -1,0 +1,1178 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-398-functiongemma",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:47Z",
+  "closed_utc": "2026-08-31T02:46:48Z",
+  "estimated_tokens": 157387,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 31,
+  "subsystem": "fg_unsloth_compiled_cache",
+  "subsystems": [
+    "fg_unsloth_compiled_cache",
+    "fg_validate_dataset.py",
+    "functiongemma_root_code"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/UnslothXPOTrainer.py",
+      "sha256": "3fc679b897e95751565fe665665845bd7af7a31887fa96437888e206dde47461",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1428"
+      ]
+    },
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/moe_utils.py",
+      "sha256": "d799dfa4c5336ee81189c765a5ddc61f336c4634216454109809828ab6a2bf7c",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1564"
+      ]
+    },
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_gemma3.py",
+      "sha256": "50c9ed094ae448314dd43d452f8da7f94cbde355ff0e063a0919bed80a89d2e4",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-1076"
+      ]
+    },
+    {
+      "path": "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_siglip.py",
+      "sha256": "5fbb8f299a632bae3e9186bb40cf7e8a05ddd198952667de120bf4b10b35b811",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-443"
+      ]
+    },
+    {
+      "path": "finetune_llm/validate_dataset.py",
+      "sha256": "fe7df21936447cfceb663e4912e32cfe987af556791cb29a7a14da53a39d07eb",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-103"
+      ]
+    },
+    {
+      "path": "baxy_speech.py",
+      "sha256": "728d1cd14c0e9b7dfc199cb53de916e5c85934efdfcdd20f8f9cd7d526024c27",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-124"
+      ]
+    },
+    {
+      "path": "build_kva_gate.py",
+      "sha256": "09d38eafb28c5515e0b8ce68c25a967ef4fa4d6cdbe2f20f1a8f67f6b7cc0090",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-211"
+      ]
+    },
+    {
+      "path": "chat.ps1",
+      "sha256": "367243e5d2df0943067895de2e5bd0a0f860e5188d9e0430f18964f748e572c4",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "decompose_tools.py",
+      "sha256": "97f5debc59eb9fd30907e2fdc24c66fd9e1535ece2a40aab249e42bab8e97df0",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-165"
+      ]
+    },
+    {
+      "path": "describe_screen.py",
+      "sha256": "0e75e5b96a626f011f1402901d26e50932ab3f62441672a58568db21f6ca377b",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-42"
+      ]
+    },
+    {
+      "path": "fg_argeval.py",
+      "sha256": "9d8f3063432cc3caa3ed751a7d1df3d1fbdf3cd30c615e1164a8f816484dc5b3",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-176"
+      ]
+    },
+    {
+      "path": "fg_bench.py",
+      "sha256": "ee2b5e02d4beef0986c8b7dddd0580035c14bc4a9bcd796242fec820b8c0c825",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-38"
+      ]
+    },
+    {
+      "path": "fg_chain_client.py",
+      "sha256": "c7e2445740b28af09cffc34ce4b254a661ac72ff4e96879264cc5551c86ab674",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-87"
+      ]
+    },
+    {
+      "path": "fg_chat.py",
+      "sha256": "6b43d3e92d8787ca6fc87fc798952a0e0914763b774c13966e5dfea2a42cc8bb",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-38"
+      ]
+    },
+    {
+      "path": "fg_contam_probe.py",
+      "sha256": "e882d6e56a1f21d465e14ddd63a9bdb779dc1a532a92f068dd001133c4be6e86",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-55"
+      ]
+    },
+    {
+      "path": "fg_corrections_eval.py",
+      "sha256": "3d727c12120d176d0e1b8810b701ea6afab2ec4d3ed8e2acc19ca47d97ddb6a1",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-65"
+      ]
+    },
+    {
+      "path": "fg_diag.py",
+      "sha256": "7fe9f1a9ac90356a4b094e8568dad88389e1ef574191cfd24e7e890359a13c5d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-39"
+      ]
+    },
+    {
+      "path": "fg_diag2.py",
+      "sha256": "ad16c7300f7d2b0b32e8489aedb1c93012d3c7cf7ccea8f5795518d8780bff9e",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-33"
+      ]
+    },
+    {
+      "path": "fg_e2e_eval.py",
+      "sha256": "967ae5b0c52b35a02ce28beb5ab867dbf06b15d0f21853d87600d135b3a9a42e",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-72"
+      ]
+    },
+    {
+      "path": "fg_e2e_test.py",
+      "sha256": "e00d774fc5e2f4e000f8e2b0f7d23b1d4b34050118607d79d8f1e4b69bcceab9",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-76"
+      ]
+    },
+    {
+      "path": "fg_handlers.py",
+      "sha256": "b8060df3c5c5f98a58dab83022bb46233c12c8044274749da5ea02aff6878e6d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-180"
+      ]
+    },
+    {
+      "path": "fg_probe_broad.py",
+      "sha256": "e68d2926ce71306e075ae092ae0e38c7bcd234c6843d287d783ccf0fd770cc0d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-83"
+      ]
+    },
+    {
+      "path": "fg_probe_knowledge.py",
+      "sha256": "91c1ee6722c0ec7b623bb5121288f0aca3dacbb28426e18e7205b7cc9aeefa0d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-55"
+      ]
+    },
+    {
+      "path": "fg_probe_multiling.py",
+      "sha256": "141796e9a0922f99ba648e9d24dab4fd692b18c15102c77412cbace95a3e8429",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-71"
+      ]
+    },
+    {
+      "path": "fg_probe_notool.py",
+      "sha256": "ac8bcd6941fcd91adab1cd1394965b155ed945386058f7e82285c129d0904672",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-63"
+      ]
+    },
+    {
+      "path": "fg_repl.py",
+      "sha256": "01a37d7ffa239fbe79dd69c868398b1a4447259f8554dbe56394e3317df959bf",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-117"
+      ]
+    },
+    {
+      "path": "fg_router.py",
+      "sha256": "dbb434e7220e5b5a6d1adf2fe6efa8f4a4ca053e5509953aaa8bd94eedf663a6",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-177"
+      ]
+    },
+    {
+      "path": "fg_router_ft.py",
+      "sha256": "feb96906d5fc37252c4a20e863988fc1870537cde05e2cf19fca65da44b19320",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-228"
+      ]
+    },
+    {
+      "path": "fg_threshold_curve.py",
+      "sha256": "e8793375b6f83ff81123baaf89a72d9ea9af9c01bc10d8c137df044d5f58c62d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-59"
+      ]
+    },
+    {
+      "path": "kva_gate_infer.py",
+      "sha256": "79e2e3ef978f7b27bf126f1809129a9a28c51d0000b48bd8cf7793d9692562a8",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-49"
+      ]
+    },
+    {
+      "path": "sim_split.py",
+      "sha256": "95e001105b5cda4f58b07685e0280e792704fb4648cd88971f04366de19d825d",
+      "source_id": "functiongemma",
+      "terminal": "leido",
+      "ranges": [
+        "1-79"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-398-functiongemma-01-baxy_speech.py",
+      "disposition": "evidence_only",
+      "component": "baxy_speech.py (1 ficheros)",
+      "contract": "Grupo baxy_speech.py: 1 archivos. Terminales leido PY \"\"\"Baxy — modelo de HABLA (orquestador production-shaped).  Pieza del split: este módulo arma el contexto y obtiene la respuesta natural del modelo de habla (Gemma 4 E2B QAT Q4_K_XL en llama.cpp). NO emite tool-calls — eso lo hace FunctionGemma. Acá solo: recibir el resultado de una acción (si hubo) + redactar la respuesta al usuario, en su idioma, grounded.  CÓMO RECIBE TODO (contrato):",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "baxy_speech.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "baxy_speech.py",
+        "ranges": [
+          "1-124"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-02-build_kva_gate.py",
+      "disposition": "evidence_only",
+      "component": "build_kva_gate.py (1 ficheros)",
+      "contract": "Grupo build_kva_gate.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Clasificador CONOCIMIENTO-vs-ACCION (gate pre-FunctionGemma) — SIN reentrenar FG. Regresion logistica calibrada sobre embeddings del encoder MiniLM-L12-FT de Baxy (mismo que el router). Si una query es CONOCIMIENTO/conversacion con alta confianza -> no_tool (no se invoca a FG). Si no -> FG decide. Best-practice 2026 (vLLM Semantic Router / FutureAGI): head barato sobre e",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "build_kva_gate.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "build_kva_gate.py",
+        "ranges": [
+          "1-211"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-03-chat.ps1",
+      "disposition": "evidence_only",
+      "component": "chat.ps1 (1 ficheros)",
+      "contract": "Grupo chat.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "chat.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "chat.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-04-decompose_tools.py",
+      "disposition": "evidence_only",
+      "component": "decompose_tools.py (1 ficheros)",
+      "contract": "Grupo decompose_tools.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Descompone los tools COMPUESTOS (con enum `action`) de Baxy en tools INDIVIDUALES de proposito unico, que es como FunctionGemma rutea bien.  Entrada : tool_schemas_full.json  (67 tools, 64 compuestos) Salidas : tool_schemas_decomposed.json   -> ~524 tools individuales           tool_categories.json           -> {tool_padre: [nombres_descompuestos]} ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "decompose_tools.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "decompose_tools.py",
+        "ranges": [
+          "1-165"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-05-describe_screen.py",
+      "disposition": "evidence_only",
+      "component": "describe_screen.py (1 ficheros)",
+      "contract": "Grupo describe_screen.py: 1 archivos. Terminales leido PY \"\"\"Demo de VISIÓN REAL: Baxy ve tu PC.  Captura la pantalla AHORA -> se la pasa al modelo de visión -> dice qué ve. Esto es lo que hace el `describe_screen` real de Baxy: el RUNTIME saca el screenshot automáticamente y lo inyecta al modelo (el LLM no \"ve\" solo; el programa le pasa la imagen).  Requisito: server de visión corriendo (Q4 QAT + mmproj) en :8088. Uso: python describe_screen.py  [pregun",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "describe_screen.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "describe_screen.py",
+        "ranges": [
+          "1-42"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-06-fg_argeval.py",
+      "disposition": "evidence_only",
+      "component": "fg_argeval.py (1 ficheros)",
+      "contract": "Grupo fg_argeval.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Eval ARG-AWARE sobre holdout (gold con args no vacios). Mide si el modelo produce args que el EXECUTOR REAL de Baxy aceptaria, no solo string-match contra el gold.  Tres niveles de scoring (de mas estricto a mas fiel a la ejecucion real):   1) STRICT exact   : dict pred == dict gold (lo que media antes -> 60.6%, PISO de medicion).   2) value-normalized: misma key, valor ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_argeval.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_argeval.py",
+        "ranges": [
+          "1-176"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-07-fg_bench.py",
+      "disposition": "evidence_only",
+      "component": "fg_bench.py (1 ficheros)",
+      "contract": "Grupo fg_bench.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Micro-benchmark de latencia de FunctionGemma via llama-server. Manda la MISMA request N veces y reporta wall-clock + el desglose de timings del server (prompt eval vs generacion).\"\"\" import sys, json, time, urllib.request, statistics sys.stdout.reconfigure(encoding=\"utf-8\") URL = \"http://127.0.0.1:8082/v1/chat/completions\" SLIM = {t[\"function\"][\"name\"]: t for t in json.l",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_bench.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_bench.py",
+        "ranges": [
+          "1-38"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-08-fg_chain_client.py",
+      "disposition": "evidence_only",
+      "component": "fg_chain_client.py (1 ficheros)",
+      "contract": "Grupo fg_chain_client.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Cliente de ENCADENADO para FunctionGemma en llama.cpp (bucle de orquestacion).  FunctionGemma emite UNA call por turno; el encadenado (call_1 -> result_1 -> call_2 ...) lo maneja este bucle: ejecuta la call, le devuelve el resultado como turno `tool`, y le pide la siguiente. El modelo (fine-tuneado con cadenas) decide la proxima call viendo el resultado. Para na cuando e",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_chain_client.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_chain_client.py",
+        "ranges": [
+          "1-87"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-09-fg_chat.py",
+      "disposition": "evidence_only",
+      "component": "fg_chat.py (1 ficheros)",
+      "contract": "Grupo fg_chat.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Relay one-shot para 'hablar' con FunctionGemma run9 por el pipeline REAL de Baxy:    query -> router semantico (acota 524->~10 tools) -> FunctionGemma elige -> (handler mock si hay). Uso: python fg_chat.py \"tu mensaje aca\"   (acepta 1+ mensajes como args separados).\"\"\" import sys, json import fg_router_ft as fr import fg_handlers ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_chat.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_chat.py",
+        "ranges": [
+          "1-38"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-10-fg_contam_probe.py",
+      "disposition": "evidence_only",
+      "component": "fg_contam_probe.py (1 ficheros)",
+      "contract": "Grupo fg_contam_probe.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Probe de CONTAMINACION arg-less: queries reales con VALOR extraible -> el modelo deberia poner el arg. Mide el sintoma que fg_argeval NO ve (gold vacio excluido) y que solo el test en vivo destapo (set_volume{} para 'subi el volumen a 40'). Da la tool correcta + distractores + no_tool en el subset (como el router real).\"\"\" import json, re, sys, urllib.request sys.stdout.",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_contam_probe.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_contam_probe.py",
+        "ranges": [
+          "1-55"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-11-fg_corrections_eval.py",
+      "disposition": "evidence_only",
+      "component": "fg_corrections_eval.py (1 ficheros)",
+      "contract": "Grupo fg_corrections_eval.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Mide las 142 correcciones de la semana sobre el sistema DESPLEGADO (encoder nuevo + KVA nuevo + FG champion). Evidencia antes de decidir reentrenar FG: ¿cuántos errores YA se arreglan con la cascada nueva? Para cada query: corre el pipeline real (gate -> router -> FG) y compara la FAMILIA del tool emitido vs encoder_top_family esperado. Reporta family-hit / no_tool / wro",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_corrections_eval.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_corrections_eval.py",
+        "ranges": [
+          "1-65"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-12-fg_diag.py",
+      "disposition": "evidence_only",
+      "component": "fg_diag.py (1 ficheros)",
+      "contract": "Grupo fg_diag.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Diagnostico de los 2 fallos del e2e: output CRUDO + si no_tool esta en candidatos.\"\"\" import json, sys, urllib.request import fg_router_ft as fr try: sys.stdout.reconfigure(encoding=\"utf-8\") except Exception: pass URL = \"http://localhost:8082/v1/chat/completions\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_diag.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_diag.py",
+        "ranges": [
+          "1-39"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-13-fg_diag2.py",
+      "disposition": "evidence_only",
+      "component": "fg_diag2.py (1 ficheros)",
+      "contract": "Grupo fg_diag2.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Aisla FORMATO: arma el prompt EXACTO de la eval (developer DEV + user + tools via apply_chat_template) y lo manda al GGUF por /completion raw. Si set_volume ahora trae args, el problema era el formato del prompt (faltaba el turno developer), no el modelo.\"\"\" import json, sys, urllib.request import fg_router_ft as fr from transformers import AutoTokenizer try: sys.stdout.",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_diag2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_diag2.py",
+        "ranges": [
+          "1-33"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-14-fg_e2e_eval.py",
+      "disposition": "evidence_only",
+      "component": "fg_e2e_eval.py (1 ficheros)",
+      "contract": "Grupo fg_e2e_eval.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"EVAL END-TO-END del sistema completo de ruteo de Baxy:    query -> [gate conocimiento-vs-accion] -> si CONOCIMIENTO: no_tool ; si no: router jerarquico -> FunctionGemma. Mide sobre held-out (fg_holdout.iter3) + trampas FRESCAS (entidades NUEVAS, no vistas en el training del gate):   - CONOCIMIENTO/no_tool -> deberia terminar en no_tool (gate O FG backstop)   - ACCION -> ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_e2e_eval.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_e2e_eval.py",
+        "ranges": [
+          "1-72"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-15-fg_e2e_test.py",
+      "disposition": "adapt_candidate",
+      "component": "fg_e2e_test.py (1 ficheros)",
+      "contract": "Grupo fg_e2e_test.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Test END-TO-END del champion epoch8 (GGUF Q8) por el pipeline REAL de Baxy:    query -> router semantico (acota 524 -> ~10 tools) -> FunctionGemma elige -> ejecuta handler.    Igual que fg_router_ft.py pero apuntando a llama-server (GGUF FT) en vez de Ollama fp16.\"\"\" import json, re, sys, time, urllib.request import fg_router_ft as fr   # reusa el FTRouter (encoder FT + ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "tests/",
+      "source_files": [
+        "fg_e2e_test.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_e2e_test.py",
+        "ranges": [
+          "1-76"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-16-fg_handlers.py",
+      "disposition": "evidence_only",
+      "component": "fg_handlers.py (1 ficheros)",
+      "contract": "Grupo fg_handlers.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Handlers REALES para el campo de prueba de FunctionGemma. Ejecutan de verdad sobre Windows (psutil / pycaw / screen_brightness_control). Patron: una tool = una funcion (single-purpose), que es lo que FunctionGemma rutea de forma fiable. Cada handler devuelve (result_dict, frase_para_el_usuario).\"\"\"  import os import subprocess",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_handlers.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_handlers.py",
+        "ranges": [
+          "1-180"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-17-fg_probe_broad.py",
+      "disposition": "evidence_only",
+      "component": "fg_probe_broad.py (1 ficheros)",
+      "contract": "Grupo fg_probe_broad.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Probe AMPLIO de extraccion de args sobre ~18 tools parametricas clave (del inventario real de Baxy), en es/en/pt. Encuentra TODAS las tools que omiten el arg (no solo las 3 ya medidas), para no dejar gaps antes de reentrenar. OK=arg correcto, V=tool ok pero VACIO, X=tool equivocada.\"\"\" import json, re, sys, urllib.request sys.stdout.reconfigure(encoding=\"utf-8\") URL = \"h",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_probe_broad.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_probe_broad.py",
+        "ranges": [
+          "1-83"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-18-fg_probe_knowledge.py",
+      "disposition": "evidence_only",
+      "component": "fg_probe_knowledge.py (1 ficheros)",
+      "contract": "Grupo fg_probe_knowledge.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Probe CONOCIMIENTO-vs-ACCION (baseline del mis-route reportado por Baxy): queries de CONOCIMIENTO/ conversacion (objetivo = no_tool) con subsets de tools de ACCION TENTADORAS (vision/contacts/ data_analysis/web/etc., lo que el encoder recupera para conocimiento). OK = elige no_tool. Reproduce: 'what is a linked list'->vision, 'contame de roma'->contacts, 'y cuanto mide'-",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_probe_knowledge.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_probe_knowledge.py",
+        "ranges": [
+          "1-55"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-19-fg_probe_multiling.py",
+      "disposition": "evidence_only",
+      "component": "fg_probe_multiling.py (1 ficheros)",
+      "contract": "Grupo fg_probe_multiling.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Probe MULTILINGUE de extraccion de args en tools parametricas (es/en/pt/fr/de/it). Identifica el set COMPLETO de tools que omiten el arg pese a estar en la query, por idioma (anti-regresion por idioma, CLAUDE.md). Cada caso: query con valor + tool correcta + distractores hermanos + no_tool. Mide tool-ok-con-args vs tool-ok-VACIO vs tool-equivocada.\"\"\" import json, re, sy",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_probe_multiling.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_probe_multiling.py",
+        "ranges": [
+          "1-71"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-20-fg_probe_notool.py",
+      "disposition": "evidence_only",
+      "component": "fg_probe_notool.py (1 ficheros)",
+      "contract": "Grupo fg_probe_notool.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Probe de ABSTENCION (no_tool) bajo presion de distractores. Mide el fallo conocido (SimpleToolHalluBench / When2Call): el SLM elige una tool tentadora en vez de no_tool para chitchat/conocimiento/no-accionable. Cada caso: query NO-accionable + subset de tools TENTADORAS (lo que el router semantico recupera) + no_tool SIEMPRE incluido. OK = elige no_tool.\"\"\" import json, ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_probe_notool.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_probe_notool.py",
+        "ranges": [
+          "1-63"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-21-fg_repl.py",
+      "disposition": "evidence_only",
+      "component": "fg_repl.py (1 ficheros)",
+      "contract": "Grupo fg_repl.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\" Campo de prueba interactivo de FunctionGemma. Hablale en lenguaje natural (\"cuanta ram tengo\") y mira:   1) que tool eligio el modelo y con que argumentos   2) el resultado REAL de ejecutar esa tool   3) la respuesta final al usuario ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_repl.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_repl.py",
+        "ranges": [
+          "1-117"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-22-fg_router.py",
+      "disposition": "evidence_only",
+      "component": "fg_router.py (1 ficheros)",
+      "contract": "Grupo fg_router.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\" Router para usar FunctionGemma con el catalogo COMPLETO de tools descompuestos.  Por que: 524 tools = ~68K tokens > contexto 32K -> overflow + el modelo deja de rutear. La forma correcta (recomendada por Google: usar FunctionGemma como router edge) es darle SOLO un subconjunto relevante. Aca se usa retrieval semantico: ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "fg_router.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_router.py",
+        "ranges": [
+          "1-177"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-23-fg_router_ft.py",
+      "disposition": "evidence_only",
+      "component": "fg_router_ft.py (1 ficheros)",
+      "contract": "Grupo fg_router_ft.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\" Router JERARQUICO para FunctionGemma sobre los 524 tools INDIVIDUALES, adaptado del router semantico de Baxy (encoder MiniLM-L12 fine-tuneado).  El router de Baxy mapea query -> FAMILIA compuesta (system, audio, ...) con recall ~0.95. Aca lo reusamos en 2 etapas para los tools descompuestos: ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/",
+      "source_files": [
+        "fg_router_ft.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_router_ft.py",
+        "ranges": [
+          "1-228"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-24-fg_threshold_curve.py",
+      "disposition": "evidence_only",
+      "component": "fg_threshold_curve.py (1 ficheros)",
+      "contract": "Grupo fg_threshold_curve.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Curva del threshold del gate conocimiento-vs-accion (e2e fiel, sin re-correr FG por punto). Pre-computa por query: P(conocimiento) del gate + decision de FG (si llegara). Luego barre el threshold:   decision(T) = no_tool si P(conoc)>=T, si no = decision de FG. Reporta, por T: ACCION preservada %, CONOCIMIENTO(trampas frescas)->no_tool %, CONOCIMIENTO(holdout)->no_tool %.",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "fg_threshold_curve.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "fg_threshold_curve.py",
+        "ranges": [
+          "1-59"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-25-finetune_llm-unsloth_compiled_cache-UnslothXPOTrainer.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/UnslothXPOTrainer.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/UnslothXPOTrainer.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/UnslothXPOTrainer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/UnslothXPOTrainer.py",
+        "ranges": [
+          "1-1428"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-26-finetune_llm-unsloth_compiled_cache-moe_utils.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/moe_utils.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/moe_utils.py: 1 archivos. Terminales leido PY # Unsloth Zoo - Utilities for Unsloth # Copyright 2023-present Daniel Han-Chen, Michael Han-Chen & the Unsloth team. All rights reserved. # # This program is free software: you can redistribute it and/or modify # it under the terms of the GNU Affero General Public License as published # by the Free Software Foundation, either version 3 of the License, or # (at your option) any later version. #",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/moe_utils.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/moe_utils.py",
+        "ranges": [
+          "1-1564"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-27-finetune_llm-unsloth_compiled_cache-unsloth_compiled_module_",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_gemma3.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_gemma3.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_gemma3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_gemma3.py",
+        "ranges": [
+          "1-1076"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-28-finetune_llm-unsloth_compiled_cache-unsloth_compiled_module_",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_siglip.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_siglip.py: 1 archivos. Terminales leido PY \"\"\" 2026.5.5 2026.5.10 5.5.0 0.24.0 __UNSLOTH_VERSIONING__ \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_siglip.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/unsloth_compiled_cache/unsloth_compiled_module_siglip.py",
+        "ranges": [
+          "1-443"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-29-finetune_llm-validate_dataset.py",
+      "disposition": "evidence_only",
+      "component": "finetune_llm/validate_dataset.py (1 ficheros)",
+      "contract": "Grupo finetune_llm/validate_dataset.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Validacion EXHAUSTIVA del dataset FG antes de entrenar. Chequea correctitud, fuga, duplicados, tools inventadas, args fuera de schema, balance no_tool, balance arg-less de las tools reparadas, cobertura por idioma, longitudes. Imprime PASS/FAIL por chequeo.\"\"\" import json, os, re, sys from collections import Counter from pathlib import Path sys.stdout.reconfigure(encodin",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "finetune_llm/validate_dataset.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "finetune_llm/validate_dataset.py",
+        "ranges": [
+          "1-103"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-30-kva_gate_infer.py",
+      "disposition": "evidence_only",
+      "component": "kva_gate_infer.py (1 ficheros)",
+      "contract": "Grupo kva_gate_infer.py: 1 archivos. Terminales leido PY # -*- coding: utf-8 -*- \"\"\"Inferencia del gate CONOCIMIENTO-vs-ACCION (artefacto kva_gate.json). Sub-ms (un dot product). Para enchufar en el router de Baxy ANTES de invocar a FunctionGemma:      from kva_gate_infer import KVAGate     gate = KVAGate(\"kva_gate.json\")          # carga 1 vez     emb = encoder.encode([query], normalize_embeddings=True)[0]   # el MISMO encoder MiniLM-L12-FT del router ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "kva_gate_infer.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "kva_gate_infer.py",
+        "ranges": [
+          "1-49"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "code_tests-398-functiongemma-31-sim_split.py",
+      "disposition": "evidence_only",
+      "component": "sim_split.py (1 ficheros)",
+      "contract": "Grupo sim_split.py: 1 archivos. Terminales leido PY \"\"\"Simulación del pipeline split de Baxy.  Pasos 1-5 MOCKEADOS (router, FunctionGemma, ejecución de tool, formateo del resultado). Paso 6 REAL: el modelo de HABLA (Gemma 4 E2B QAT Q4_K_XL en :8086) lee el resultado de la tool desde su contexto y redacta la respuesta natural al usuario.  Esto demuestra el corazón del split: los modelos NO se hablan entre sí; el runtime (este script) ejecuta la tool",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "sim_split.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "sim_split.py",
+        "ranges": [
+          "1-79"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=31 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-399-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-398-functiongemma.inspect.json"
+}

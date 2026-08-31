@@ -1,0 +1,19 @@
+batch=code_tests-476-baxy-baxy_tests
+hash_ok=17 drift=0 miss=0
+OK tests/test_turn_policy.py py_lines=9997 defs=493
+OK tests/test_turn_policy_e5_development.py py_lines=1092 defs=27
+OK tests/test_turn_policy_gate.py py_lines=1825 defs=68
+OK tests/test_turn_probe.py py_lines=161 defs=6
+OK tests/test_ufo_dataflow_word_source_r260.py py_lines=44 defs=2
+OK tests/test_validate_physical_wake_v17_program.py py_lines=132 defs=7
+OK tests/test_verify_turn_policy_e5_selective_gate.py py_lines=653 defs=12
+OK tests/test_veto_reach_v8.py py_lines=282 defs=9
+OK tests/test_voice_corrector.py py_lines=90 defs=7
+OK tests/test_voice_system_gate_contract.py py_lines=22 defs=2
+OK tests/test_wake_cascade.py py_lines=572 defs=35
+OK tests/test_wake_verifier.py py_lines=334 defs=18
+OK tests/test_wakeword_calibration.py py_lines=154 defs=5
+OK tests/test_wakeword_physical_room_gate.py py_lines=145 defs=14
+OK tests/test_white_collar_word_trace_source_r262.py py_lines=46 defs=2
+OK tests/test_windows_agent_arena_office_source_r258.py py_lines=33 defs=2
+OK tests/test_windowsworld_word_source_r268.py py_lines=61 defs=4

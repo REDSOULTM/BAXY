@@ -1,0 +1,23 @@
+batch=code_tests-467-baxy-baxy_src_baxy_mind
+hash_ok=21 drift=0 miss=0
+OK src/baxy_mind/llm.py py_lines=6968 defs=130
+OK src/baxy_mind/llm_transport.py py_lines=641 defs=27
+OK src/baxy_mind/phonetic_es.py py_lines=133 defs=2
+OK src/baxy_mind/planner.py py_lines=1319 defs=47
+OK src/baxy_mind/process_lifecycle.py py_lines=157 defs=8
+OK src/baxy_mind/protocol.py py_lines=155 defs=9
+OK src/baxy_mind/public_turn_corpus.py py_lines=365 defs=10
+OK src/baxy_mind/router.py py_lines=945 defs=44
+OK src/baxy_mind/router_worker.py py_lines=86 defs=4
+OK src/baxy_mind/semantic_family_arbiter.py py_lines=108 defs=6
+OK src/baxy_mind/skill_registry.py py_lines=339 defs=14
+OK src/baxy_mind/time_budget.py py_lines=41 defs=1
+OK src/baxy_mind/tools/atomic_output.py py_lines=52 defs=2
+OK src/baxy_mind/tools/build_bank.py py_lines=114 defs=5
+OK src/baxy_mind/tools/build_router_pool.py py_lines=67 defs=1
+OK src/baxy_mind/tools/extract_router_cases.py py_lines=265 defs=11
+OK src/baxy_mind/tools/frozen_files.py py_lines=90 defs=6
+OK src/baxy_mind/tools/router_bank_sources.py py_lines=401 defs=0
+OK src/baxy_mind/turn_evidence.py py_lines=1585 defs=73
+OK src/baxy_mind/turn_evidence_contracts.py py_lines=6 defs=0
+OK src/baxy_mind/turn_probe.py py_lines=412 defs=24

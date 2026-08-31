@@ -1,0 +1,27 @@
+batch=code_tests-411-baxy
+hash_ok=25 drift=0 miss=0
+OK experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/build/web_atoms-cbab6bc00af32595/out/named_entities.rs
+OK experiments/technology_tournament/score_round_a.py py_lines=268 defs=11
+OK experiments/temporal_grounding/benchmark_temporal_candidates.py py_lines=213 defs=3
+OK experiments/tests/test_cross_encoder_no_match.py py_lines=81 defs=2
+OK experiments/voice_latency/Baxy.RawAudioProbe/Baxy.RawAudioProbe.csproj
+OK experiments/voice_latency/Baxy.RawAudioProbe/Program.cs
+OK experiments/voice_latency/adapt_wav2vec2_hidden_wake_human_group_cv_v1.py py_lines=543 defs=16
+OK experiments/voice_latency/assemble_voxcpm2_livekit_corpus.py py_lines=251 defs=9
+OK experiments/voice_latency/assemble_wake_verifier_candidate_v1.py py_lines=197 defs=6
+OK experiments/voice_latency/audit_baxy_hyperspotter_fusion_product_candidate_v1.py py_lines=556 defs=14
+OK experiments/voice_latency/audit_ccby_wake_development_faster_whisper_v1.py py_lines=233 defs=7
+OK experiments/voice_latency/audit_ccby_wake_development_parakeet.py py_lines=221 defs=7
+OK experiments/voice_latency/audit_ccby_wake_development_whisper_v1.py py_lines=161 defs=6
+OK experiments/voice_latency/audit_livekit_negative_test_parakeet.py py_lines=313 defs=9
+OK experiments/voice_latency/audit_openslr_librispeech_retained_parakeet.py py_lines=350 defs=9
+OK experiments/voice_latency/audit_phoneme_teacher_cuda_product_parity_v1.py py_lines=366 defs=7
+OK experiments/voice_latency/audit_piper_wake_ipa.py py_lines=394 defs=11
+OK experiments/voice_latency/audit_raw_denoiser_rolling_wake_v1.py py_lines=317 defs=7
+OK experiments/voice_latency/audit_voxcpm2_gguf_pilot.py py_lines=516 defs=10
+OK experiments/voice_latency/audit_wake_scaf_human_localization_oracle_v1.py py_lines=267 defs=6
+OK experiments/voice_latency/audit_wake_ssl_ctc_ensemble_development_v1.py py_lines=295 defs=7
+OK experiments/voice_latency/audit_wav2vec2_hidden_wake_expanded_development_v1.py py_lines=271 defs=7
+OK experiments/voice_latency/audit_wav2vec2_hidden_wake_layer_sweep_expanded_v1.py py_lines=365 defs=7
+OK experiments/voice_latency/audit_wav2vec2_hidden_wake_product_scan_v1.py py_lines=375 defs=6
+OK experiments/voice_latency/audit_wav2vec2_hidden_wake_separability_v1.py py_lines=356 defs=12

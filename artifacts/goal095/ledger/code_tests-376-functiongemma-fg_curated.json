@@ -1,0 +1,38 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-376-functiongemma-fg_curated",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:37Z",
+  "closed_utc": "2026-08-31T02:46:38Z",
+  "estimated_tokens": 300000,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 1,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/curated.jsonl.BAK_precaceria_2026-06-05",
+      "sha256": "a2ec432a98be383c21d5296e0e9b8d4a0e6460add0bcb530c02fae7016cbf6bb",
+      "source_id": "functiongemma",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-373-functiongemma-fg_curated:finetune_llm/curated/curated.jsonl.BAK_precaceria_2026-06-05"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=1 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-377-functiongemma-fg_curated",
+  "next_prompt": "campaign:code_tests",
+  "inspect": null
+}

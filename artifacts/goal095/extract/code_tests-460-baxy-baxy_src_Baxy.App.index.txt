@@ -1,0 +1,28 @@
+batch=code_tests-460-baxy-baxy_src_Baxy.App
+hash_ok=26 drift=0 miss=0
+OK src/Baxy.App/MindRuntimeDiscovery.cs
+OK src/Baxy.App/MindSidecarClient.cs
+OK src/Baxy.App/MissionInput.cs
+OK src/Baxy.App/NaturalAudioRequestParser.cs
+OK src/Baxy.App/NaturalMemoryRequestParser.cs
+OK src/Baxy.App/NaturalSystemStatusRequestParser.cs
+OK src/Baxy.App/NoteDisambiguation.cs
+OK src/Baxy.App/OperationResponseProjection.cs
+OK src/Baxy.App/PendingNoteInteractionState.cs
+OK src/Baxy.App/PlannerExecutionSupport.cs
+OK src/Baxy.App/PreparedOperation.cs
+OK src/Baxy.App/Presentation/AppSurfaceCatalog.cs
+OK src/Baxy.App/Presentation/AppSurfaceNavigator.cs
+OK src/Baxy.App/Presentation/FieldLoadingSurface.xaml
+OK src/Baxy.App/Presentation/FieldLoadingSurface.xaml.cs
+OK src/Baxy.App/Presentation/MainWindowSurfacePresenter.cs
+OK src/Baxy.App/Properties/AssemblyInfo.cs
+OK src/Baxy.App/ShellTrace.cs
+OK src/Baxy.App/UserMessagePolicy.cs
+OK src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/Baxy.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/Baxy.runtimeconfig.json json_keys=['runtimeOptions']
+OK src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/DesktopKeyPress.ps1
+OK src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/SpotifyDesktopAutomation.ps1
+OK src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK src/Baxy.App/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.runtimeconfig.json json_keys=['runtimeOptions']
+OK src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/DesktopSelectAll.ps1

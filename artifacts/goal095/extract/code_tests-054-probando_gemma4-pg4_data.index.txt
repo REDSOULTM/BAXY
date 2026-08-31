@@ -1,0 +1,3 @@
+batch=code_tests-054-probando_gemma4-pg4_data
+hash_ok=1 drift=0 miss=0
+OK gemma4_agent/data/tool2vec_centroids.npz.bak_pre_v3corpus_2026-06-11

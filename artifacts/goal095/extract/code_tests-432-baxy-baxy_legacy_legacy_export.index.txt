@@ -1,0 +1,27 @@
+batch=code_tests-432-baxy-baxy_legacy_legacy_export
+hash_ok=25 drift=0 miss=0
+OK legacy/legacy_export/routing/context_router.py py_lines=224 defs=10
+OK legacy/legacy_export/routing/deictic_detector.py py_lines=178 defs=10
+OK legacy/legacy_export/routing/exemplar_router.py py_lines=227 defs=9
+OK legacy/legacy_export/routing/fg_router.py py_lines=683 defs=29
+OK legacy/legacy_export/routing/intent_router.py py_lines=989 defs=31
+OK legacy/legacy_export/routing/planner.py py_lines=1804 defs=32
+OK legacy/legacy_export/routing/reranker.py py_lines=98 defs=5
+OK legacy/legacy_export/routing/router.py py_lines=88 defs=0
+OK legacy/legacy_export/routing/semantic_router.py py_lines=628 defs=19
+OK legacy/legacy_export/support/chat.py py_lines=488 defs=14
+OK legacy/legacy_export/support/datetime_parse.py py_lines=132 defs=6
+OK legacy/legacy_export/support/evaluator.py py_lines=96 defs=4
+OK legacy/legacy_export/support/modes.py py_lines=435 defs=7
+OK legacy/legacy_export/support/personas.py py_lines=126 defs=4
+OK legacy/legacy_export/support/reasoning.py py_lines=552 defs=14
+OK legacy/legacy_export/tools_full/app_resolver.py py_lines=775 defs=27
+OK legacy/legacy_export/tools_full/domain_tools/__init__.py py_lines=3357 defs=42
+OK legacy/legacy_export/tools_full/domain_tools/accessibility.py py_lines=151 defs=4
+OK legacy/legacy_export/tools_full/domain_tools/audio_devices.py py_lines=321 defs=9
+OK legacy/legacy_export/tools_full/domain_tools/backup_sync.py py_lines=253 defs=6
+OK legacy/legacy_export/tools_full/domain_tools/bluetooth.py py_lines=71 defs=2
+OK legacy/legacy_export/tools_full/domain_tools/calendar.py py_lines=331 defs=10
+OK legacy/legacy_export/tools_full/domain_tools/contacts.py py_lines=438 defs=11
+OK legacy/legacy_export/tools_full/domain_tools/container.py py_lines=195 defs=8
+OK legacy/legacy_export/tools_full/domain_tools/creative_local.py py_lines=204 defs=10

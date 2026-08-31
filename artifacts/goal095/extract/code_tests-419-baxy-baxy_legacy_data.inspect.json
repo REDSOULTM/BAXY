@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-419-baxy-baxy_legacy_data",
+  "source_id": "baxy",
+  "source_root": "Programacion/BAXY",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "baxy_legacy_data",
+  "subsystems": [
+    "baxy_legacy_data"
+  ],
+  "files": [
+    {
+      "path": "legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model",
+      "queued_sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+      "size_queued": 5069051,
+      "exists": true,
+      "disk_sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+      "disk_size": 5069051,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model' exists on disk, but not in 'HEAD'\n"
+    }
+  ]
+}

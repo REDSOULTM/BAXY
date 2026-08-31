@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-405-baxy-baxy_exp_mind_router_spike",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:47:13Z",
+  "estimated_tokens": 297841,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 64,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/code_tests-405-baxy-baxy_exp_mind_router_spike.json",
+  "closed_utc": "2026-08-31T02:55:17Z"
+}

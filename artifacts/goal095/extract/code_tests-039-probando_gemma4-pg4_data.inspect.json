@@ -1,0 +1,26 @@
+{
+  "batch_id": "code_tests-039-probando_gemma4-pg4_data",
+  "source_id": "probando_gemma4",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 1,
+  "hash_ok": 1,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "pg4_data",
+  "subsystems": [
+    "pg4_data"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/data/router_exemplars.npz.bak_pre_periphrastic_2026-06-10",
+      "queued_sha256": "5ee264850a266277d74fbd81abc7df1fa1e1468a2362903b4db44f0395625d3c",
+      "size_queued": 2498233,
+      "exists": true,
+      "disk_sha256": "5ee264850a266277d74fbd81abc7df1fa1e1468a2362903b4db44f0395625d3c",
+      "disk_size": 2498233,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    }
+  ]
+}

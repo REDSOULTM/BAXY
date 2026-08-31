@@ -1,0 +1,166 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-449-baxy-baxy_legacy_tooling",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:49:01Z",
+  "closed_utc": "2026-08-31T02:49:02Z",
+  "estimated_tokens": 242893,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 11,
+  "subsystem": "baxy_legacy_tooling",
+  "subsystems": [
+    "baxy_legacy_tooling"
+  ],
+  "files": [
+    {
+      "path": "legacy/tooling/providers/spotify.py",
+      "sha256": "7d4a11507debf1d6ddf93bff2687c42aabf5802bec23301e3848ce233bf6bda6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-985"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_desktop.py",
+      "sha256": "8194c1f7892c205c73f4bcbf2d4a15b576214f578f22b8adf4c4b20a84a369b9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-961"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_desktop_windows.py",
+      "sha256": "fbf5b1780d27dd4a2f76a525f41e67513adab9775a7c3599806326cb5f654341",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-826"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_play.py",
+      "sha256": "ef08a6057ae195f5fbae31603cf2fce66c90de2931ad001b3cdabb19af6cfce8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-703"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_play_windows.py",
+      "sha256": "7e81d4477bd24296ae4a89116053ef70774754c3671334a147bb69ac289200e4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-347"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_search.py",
+      "sha256": "003b7c323baefadfed0a8e038dbb6d2b221464bc6eb4aa0eabe1e7071fbf6ecf",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-872"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_search_query.py",
+      "sha256": "8986c9990030787616ea489659c3c9483eb0d9ee37165862c5119b626d094d6d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-270"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_search_windows.py",
+      "sha256": "e2d56d878b6642540bd58a8d41f18655e4c115a24df15e02329a12aaae869d81",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3244"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/spotify_windows.py",
+      "sha256": "7de60ad95ffc212ed5bc2a0b54a394fdc196bae22c095f2921a0256912539ba6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1414"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/steam.py",
+      "sha256": "44a62b282ae4cb0e58f098eb20d29caf3fa9b86cfb9d75b5efc357eb73f79ca5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2117"
+      ]
+    },
+    {
+      "path": "legacy/tooling/providers/steam_catalog_snapshot.py",
+      "sha256": "3a99e8cfa3a8672818b05ea779fe4bdf1c6780e81ca17745b6f4a57c1bc6d186",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1449"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-449-baxy-baxy_legacy_tooling-01-legacy-tooling-providers",
+      "disposition": "reject_candidate",
+      "component": "legacy/tooling/providers (11 ficheros)",
+      "contract": "Grupo legacy/tooling/providers: 11 archivos. Terminales leido PY \"\"\"Conservative Spotify Desktop playback evidence for Tool Ecosystem v2.  This module contains no Spotify Web API integration and performs no action. It is the model-free evidence core for a future Windows Desktop provider.  Spotify playback is never inferred from a dispatched URI, a UI Automation click or handler output.  The only authority accepted here is a capability bound by trusted compositi",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/tooling/providers/spotify.py",
+        "legacy/tooling/providers/spotify_desktop.py",
+        "legacy/tooling/providers/spotify_desktop_windows.py",
+        "legacy/tooling/providers/spotify_play.py",
+        "legacy/tooling/providers/spotify_play_windows.py",
+        "legacy/tooling/providers/spotify_search.py",
+        "legacy/tooling/providers/spotify_search_query.py",
+        "legacy/tooling/providers/spotify_search_windows.py",
+        "legacy/tooling/providers/spotify_windows.py",
+        "legacy/tooling/providers/steam.py",
+        "legacy/tooling/providers/steam_catalog_snapshot.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/tooling/providers/spotify.py",
+        "ranges": [
+          "1-985"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=11 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-450-baxy-baxy_legacy_tooling",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-449-baxy-baxy_legacy_tooling.inspect.json"
+}

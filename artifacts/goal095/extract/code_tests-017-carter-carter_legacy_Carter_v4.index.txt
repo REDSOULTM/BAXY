@@ -1,0 +1,63 @@
+batch=code_tests-017-carter-carter_legacy_Carter_v4
+hash_ok=61 drift=0 miss=0
+OK legacy/Carter_v4/audit/runs/C9_v5_post_steam_audit.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/C9_v7_multimonitor.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/C9_v8_no_planner.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/bench540.pid
+OK legacy/Carter_v4/audit/runs/iterE_full540.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/iterF_full540.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/llama_server_T7.pid
+OK legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v1.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v10.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v6.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v7.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v8.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C01_v9.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C02_v1.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C02_v2.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C02_v3.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C03_v1.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C03_v2.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C03_v3.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C03_v4.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C04_v1.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C04_v2.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C04_v3.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C04_v4.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_C04_v5.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_smoke.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/matrix_smoke_v2.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/post_gemma4_migration.json json_keys=['branch', 'date_run', 'note', 'regression_baseline_qwen3', 'results', 'scope', 'total', 'what_was_actually_tested']
+OK legacy/Carter_v4/audit/runs/post_gemma4_sanity18.json json_keys=['results', 'summary']
+OK legacy/Carter_v4/audit/runs/smoke_001.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_002.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_003.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_004.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_005_c14_01.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_006_filesystem_chains.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_007_gui_safety.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_008_apps_web.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_008_chains.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_009_misiones_dev.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_010_multilang.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_011_regresion_safety.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_012_c14_11_recheck.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_013_conv.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_014_steam.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_015_tools.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/runs/smoke_016_hard_missions.json json_keys=['missing', 'results', 'ts']
+OK legacy/Carter_v4/audit/smoke_misiones.py py_lines=141 defs=3
+OK legacy/Carter_v4/audit/smoke_post_migration.py py_lines=219 defs=7
+OK legacy/Carter_v4/audit/spotcheck_real_session.py py_lines=123 defs=1
+OK legacy/Carter_v4/results/minimum_test_gemma_results.json json_keys=None
+OK legacy/Carter_v4/scripts/minimum_test_gemma.py py_lines=104 defs=1
+OK legacy/Carter_v4/scripts/smoke_gemma.py py_lines=95 defs=0
+OK legacy/Carter_v4/scripts/start_carter_llm.ps1
+OK legacy/Carter_v4/src/carter_v4/__init__.py py_lines=3 defs=0
+OK legacy/Carter_v4/src/carter_v4/adapters/__init__.py py_lines=117 defs=3
+OK legacy/Carter_v4/src/carter_v4/adapters/llamacpp.py py_lines=498 defs=11
+OK legacy/Carter_v4/src/carter_v4/adapters/ollama_xml.py py_lines=160 defs=3

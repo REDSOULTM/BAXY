@@ -1,0 +1,2045 @@
+{
+  "batch_id": "code_tests-380-functiongemma-fg_curated",
+  "source_id": "functiongemma",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 87,
+  "hash_ok": 87,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/holdout.jsonl.BAK",
+      "queued_sha256": "edba7b2bcb69555389799fce0e59da8c33aec468b43cff07049e884d0bcc6374",
+      "size_queued": 660577,
+      "exists": true,
+      "disk_sha256": "edba7b2bcb69555389799fce0e59da8c33aec468b43cff07049e884d0bcc6374",
+      "disk_size": 660577,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git"
+    },
+    {
+      "path": "finetune_llm/curated/multistep/_gen_ms_techmedia.py",
+      "queued_sha256": "73b06daa8149edb0ec3db38aa073c34edb42fa30d90a2975814fe358ca2b1b1d",
+      "size_queued": 14134,
+      "exists": true,
+      "disk_sha256": "73b06daa8149edb0ec3db38aa073c34edb42fa30d90a2975814fe358ca2b1b1d",
+      "disk_size": 14134,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "outline": {
+        "lines": 236,
+        "bytes": 14134,
+        "imports": [
+          "17:import json",
+          "18:import os"
+        ],
+        "defs": [
+          "23:def add(user_text, lang, tools, actions, reply):"
+        ],
+        "head": [
+          "# -*- coding: utf-8 -*-",
+          "\"\"\"",
+          "Genera ejemplos de fine-tuning de FLUJOS MULTI-PASO (encadenamiento real de tools)",
+          "para Gemma 4. 8 flujos x 6 ejemplos = 48, repartidos en 6 idiomas (es,en,pt,fr,de,it).",
+          "",
+          "Acciones verificadas contra el schema real del repo:",
+          "  media_edit:     trim, extract_audio, transcode, thumbnail",
+          "  creative_local: submit, wait, result",
+          "  backup_sync:    backup_create, verify",
+          "  developer:      run_tests, git_status",
+          "  container:      compose_up, compose_ps   (compose_ps = \"ps\" en contexto compose)",
+          "  database:       list_tables, query",
+          "  download:       fetch, hash",
+          "",
+          "Salida: ms_techmedia.jsonl (esquema EXACTO pedido por el usuario).",
+          "\"\"\"",
+          "import json",
+          "import os",
+          "",
+          "# Cada entrada: (user_text, lang, correct_tools, step_actions, correct_reply_style)",
+          "ROWS = []",
+          "",
+          "def add(user_text, lang, tools, actions, reply):",
+          "    assert len(tools) == len(actions), f\"len mismatch: {user_text}\"",
+          "    ROWS.append({",
+          "        \"user_text\": user_text,",
+          "        \"prev_text\": \"\",",
+          "        \"lang\": lang,",
+          "        \"correct_tools\": tools,",
+          "        \"also_valid\": [],",
+          "        \"n_steps\": len(tools),",
+          "        \"correct_reply_style\": reply,",
+          "        \"reply_is_template\": False,",
+          "        \"category\": \"encadenamiento\",",
+          "        \"personality_applies\": False,",
+          "        \"original_was_correct\": True,",
+          "        \"confidence\": 0.9,",
+          "        \"source\": \"synthetic_multistep\",",
+          "        \"project\": \"gemma4\",",
+          "        \"dataset_part\": \"multistep_flows\","
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_000.json",
+      "queued_sha256": "afb1659f7e0a2612cbfd27c3419b5fd10812f7fd06a7e77376997caf0fcb0e04",
+      "size_queued": 1059,
+      "exists": true,
+      "disk_sha256": "afb1659f7e0a2612cbfd27c3419b5fd10812f7fd06a7e77376997caf0fcb0e04",
+      "disk_size": 1059,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 44,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_001.json",
+      "queued_sha256": "4495aa4c735f00311bb51f1bdae6cdc9612ad202f14c5042690fc9c2aa7a6f71",
+      "size_queued": 2341,
+      "exists": true,
+      "disk_sha256": "4495aa4c735f00311bb51f1bdae6cdc9612ad202f14c5042690fc9c2aa7a6f71",
+      "disk_size": 2341,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 105,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_002.json",
+      "queued_sha256": "324c075416e1c5fee1e25c5e87f01fc653bae8b387199a958410fd069e49bedc",
+      "size_queued": 3470,
+      "exists": true,
+      "disk_sha256": "324c075416e1c5fee1e25c5e87f01fc653bae8b387199a958410fd069e49bedc",
+      "disk_size": 3470,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 159,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_003.json",
+      "queued_sha256": "fd7d964752bac7b390d271d106a7c1fdbace2e315d2f3093b4829bb60a77e0e2",
+      "size_queued": 3713,
+      "exists": true,
+      "disk_sha256": "fd7d964752bac7b390d271d106a7c1fdbace2e315d2f3093b4829bb60a77e0e2",
+      "disk_size": 3713,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 158,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_004.json",
+      "queued_sha256": "f030fe6ba4bc6beb66b3ba753fed3a8461788099ba9588334329f74e5aad7167",
+      "size_queued": 2628,
+      "exists": true,
+      "disk_sha256": "f030fe6ba4bc6beb66b3ba753fed3a8461788099ba9588334329f74e5aad7167",
+      "disk_size": 2628,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 119,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_005.json",
+      "queued_sha256": "cf693f1338671f247145f65122e0322cc879f536c74f4b8b2c9b5811a6016a02",
+      "size_queued": 2231,
+      "exists": true,
+      "disk_sha256": "cf693f1338671f247145f65122e0322cc879f536c74f4b8b2c9b5811a6016a02",
+      "disk_size": 2231,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 104,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_006.json",
+      "queued_sha256": "ab54587174b3bb6d5a25b8b8f5eabd2249cf0eb5bba5ddb89fe8817fc926a6cb",
+      "size_queued": 2733,
+      "exists": true,
+      "disk_sha256": "ab54587174b3bb6d5a25b8b8f5eabd2249cf0eb5bba5ddb89fe8817fc926a6cb",
+      "disk_size": 2733,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 115,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_007.json",
+      "queued_sha256": "b5ba1dca143530d0f9cfaf66a3bc01662d18820c9a789f6656ba669f4b17e61d",
+      "size_queued": 2332,
+      "exists": true,
+      "disk_sha256": "b5ba1dca143530d0f9cfaf66a3bc01662d18820c9a789f6656ba669f4b17e61d",
+      "disk_size": 2332,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 119,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_008.json",
+      "queued_sha256": "5972b8a53ce1e057222312c01381c6115354908bd57d02e5c14081d23bdaef64",
+      "size_queued": 1521,
+      "exists": true,
+      "disk_sha256": "5972b8a53ce1e057222312c01381c6115354908bd57d02e5c14081d23bdaef64",
+      "disk_size": 1521,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 70,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_009.json",
+      "queued_sha256": "04db890c4d096bb8c01c7b807e07717c66bd66f47c63ddc214eb71221f31e6c0",
+      "size_queued": 2253,
+      "exists": true,
+      "disk_sha256": "04db890c4d096bb8c01c7b807e07717c66bd66f47c63ddc214eb71221f31e6c0",
+      "disk_size": 2253,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 104,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_010.json",
+      "queued_sha256": "ee3832252cfaf800354663a0204b016f201295797aad91e0ab8cc20e08b14835",
+      "size_queued": 2772,
+      "exists": true,
+      "disk_sha256": "ee3832252cfaf800354663a0204b016f201295797aad91e0ab8cc20e08b14835",
+      "disk_size": 2772,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 112,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_011.json",
+      "queued_sha256": "818bf60ae2cc6d6ec0fb3cc3e4b0be9cbcd2947c21c27c4352de65ed300c7261",
+      "size_queued": 1809,
+      "exists": true,
+      "disk_sha256": "818bf60ae2cc6d6ec0fb3cc3e4b0be9cbcd2947c21c27c4352de65ed300c7261",
+      "disk_size": 1809,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 87,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_012.json",
+      "queued_sha256": "ed02faa624759f70d25ba5c8ad77bccd41325df9b50f76ab609410881ac9a408",
+      "size_queued": 2099,
+      "exists": true,
+      "disk_sha256": "ed02faa624759f70d25ba5c8ad77bccd41325df9b50f76ab609410881ac9a408",
+      "disk_size": 2099,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 89,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_013.json",
+      "queued_sha256": "4b7312a807195586c007e40c9fcec13c7b1bc985036ed5b44738807f238aefe6",
+      "size_queued": 3014,
+      "exists": true,
+      "disk_sha256": "4b7312a807195586c007e40c9fcec13c7b1bc985036ed5b44738807f238aefe6",
+      "disk_size": 3014,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 132,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_014.json",
+      "queued_sha256": "9c68386553ce04e88446db092ba210e217a6e9f53b5aa34ba163761423a92576",
+      "size_queued": 2388,
+      "exists": true,
+      "disk_sha256": "9c68386553ce04e88446db092ba210e217a6e9f53b5aa34ba163761423a92576",
+      "disk_size": 2388,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 114,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_015.json",
+      "queued_sha256": "f15d9a4f0e0e51eedcb0a6b50b18eefdc5cee17f333187e20486dbb7c88ce2c3",
+      "size_queued": 1905,
+      "exists": true,
+      "disk_sha256": "f15d9a4f0e0e51eedcb0a6b50b18eefdc5cee17f333187e20486dbb7c88ce2c3",
+      "disk_size": 1905,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 88,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_016.json",
+      "queued_sha256": "345162d5322f4fb2d409170023645c08807a5d588d37c6d05e08d130ef9ac826",
+      "size_queued": 2195,
+      "exists": true,
+      "disk_sha256": "345162d5322f4fb2d409170023645c08807a5d588d37c6d05e08d130ef9ac826",
+      "disk_size": 2195,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 95,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_017.json",
+      "queued_sha256": "a06431fb7b406205c5c9075f3add5a5e7968a478bfef567d6cd494b1c9a4c6e8",
+      "size_queued": 2404,
+      "exists": true,
+      "disk_sha256": "a06431fb7b406205c5c9075f3add5a5e7968a478bfef567d6cd494b1c9a4c6e8",
+      "disk_size": 2404,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 104,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_018.json",
+      "queued_sha256": "a8c4c0857fca1b78003d1a1bc6fa1ac50df798e830b6acb32e465863dd6eb40a",
+      "size_queued": 2035,
+      "exists": true,
+      "disk_sha256": "a8c4c0857fca1b78003d1a1bc6fa1ac50df798e830b6acb32e465863dd6eb40a",
+      "disk_size": 2035,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 84,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_019.json",
+      "queued_sha256": "76cacb563bcb0cb034087c5f3068d8503b86036b95362fe36eca9d80e58a990d",
+      "size_queued": 3371,
+      "exists": true,
+      "disk_sha256": "76cacb563bcb0cb034087c5f3068d8503b86036b95362fe36eca9d80e58a990d",
+      "disk_size": 3371,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 151,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_020.json",
+      "queued_sha256": "83a7946d9f1c419f18cc24f12760044855b407b012924f31e023dd392864f091",
+      "size_queued": 3211,
+      "exists": true,
+      "disk_sha256": "83a7946d9f1c419f18cc24f12760044855b407b012924f31e023dd392864f091",
+      "disk_size": 3211,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 146,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_021.json",
+      "queued_sha256": "4b9a04ca4370198b7be46226df676fb0ca3bcf0c0595b0966b5a78af2701080f",
+      "size_queued": 2552,
+      "exists": true,
+      "disk_sha256": "4b9a04ca4370198b7be46226df676fb0ca3bcf0c0595b0966b5a78af2701080f",
+      "disk_size": 2552,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_022.json",
+      "queued_sha256": "d2c14c936460b12ffbe71da58e02bd46ac58d5e066a39bead6370bc85a87c85e",
+      "size_queued": 1701,
+      "exists": true,
+      "disk_sha256": "d2c14c936460b12ffbe71da58e02bd46ac58d5e066a39bead6370bc85a87c85e",
+      "disk_size": 1701,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 80,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_023.json",
+      "queued_sha256": "c5ddedb1d5e4f49655aa8dd8b7bf70d61b418ad0499db57273244a330999f4d8",
+      "size_queued": 2430,
+      "exists": true,
+      "disk_sha256": "c5ddedb1d5e4f49655aa8dd8b7bf70d61b418ad0499db57273244a330999f4d8",
+      "disk_size": 2430,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 128,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_024.json",
+      "queued_sha256": "3ca7c7cbe97c5feafd5162670af30ee94dcfe108a7f8bde9826bc07a8839c7bc",
+      "size_queued": 2527,
+      "exists": true,
+      "disk_sha256": "3ca7c7cbe97c5feafd5162670af30ee94dcfe108a7f8bde9826bc07a8839c7bc",
+      "disk_size": 2527,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 128,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_025.json",
+      "queued_sha256": "4a4329fb54a7a992754942adca78d6cc48f76ad049642ce29976324fa09bf3c0",
+      "size_queued": 2078,
+      "exists": true,
+      "disk_sha256": "4a4329fb54a7a992754942adca78d6cc48f76ad049642ce29976324fa09bf3c0",
+      "disk_size": 2078,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 102,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_026.json",
+      "queued_sha256": "d376e1d8fc26ea098dc8c56dc7623be98705a9a4f3565eef8d816bb6956edd14",
+      "size_queued": 1883,
+      "exists": true,
+      "disk_sha256": "d376e1d8fc26ea098dc8c56dc7623be98705a9a4f3565eef8d816bb6956edd14",
+      "disk_size": 1883,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 87,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_027.json",
+      "queued_sha256": "53fe023bcbba58add06fb7250e515f05713b33700c4142cd4319cf2df5f3273c",
+      "size_queued": 2596,
+      "exists": true,
+      "disk_sha256": "53fe023bcbba58add06fb7250e515f05713b33700c4142cd4319cf2df5f3273c",
+      "disk_size": 2596,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_028.json",
+      "queued_sha256": "b44f919a256135d4a9562915fbbdc4b2b90c987431dbabb9c506e00a9715a8cf",
+      "size_queued": 2414,
+      "exists": true,
+      "disk_sha256": "b44f919a256135d4a9562915fbbdc4b2b90c987431dbabb9c506e00a9715a8cf",
+      "disk_size": 2414,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 107,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_029.json",
+      "queued_sha256": "e4071e3f4f078553cc452db501f29907c88054ad32258e15c6002caff8d4f00e",
+      "size_queued": 1513,
+      "exists": true,
+      "disk_sha256": "e4071e3f4f078553cc452db501f29907c88054ad32258e15c6002caff8d4f00e",
+      "disk_size": 1513,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 77,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_030.json",
+      "queued_sha256": "813a7fa52877ef1042e444627cf98e2eb7a7881d48f8d38bc274d74e0ae5ab41",
+      "size_queued": 2465,
+      "exists": true,
+      "disk_sha256": "813a7fa52877ef1042e444627cf98e2eb7a7881d48f8d38bc274d74e0ae5ab41",
+      "disk_size": 2465,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_031.json",
+      "queued_sha256": "9cebc80397497b520307b128df530f38bf0cd97a6fdee9c4274ef265d0c406c4",
+      "size_queued": 1544,
+      "exists": true,
+      "disk_sha256": "9cebc80397497b520307b128df530f38bf0cd97a6fdee9c4274ef265d0c406c4",
+      "disk_size": 1544,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 68,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_032.json",
+      "queued_sha256": "fd76f9a8d88959dfd92bf7988dd4be509d08b0dca7b65f29d93f9953b57678fc",
+      "size_queued": 1802,
+      "exists": true,
+      "disk_sha256": "fd76f9a8d88959dfd92bf7988dd4be509d08b0dca7b65f29d93f9953b57678fc",
+      "disk_size": 1802,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 87,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_033.json",
+      "queued_sha256": "f75212b6989f9a6db5fae2d875a41a1c50e4aae5c7a719275fe4c6be466f2e47",
+      "size_queued": 2095,
+      "exists": true,
+      "disk_sha256": "f75212b6989f9a6db5fae2d875a41a1c50e4aae5c7a719275fe4c6be466f2e47",
+      "disk_size": 2095,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 101,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_034.json",
+      "queued_sha256": "6d2ec4243b82f0b84e637d17f1b92896c5c3b8e489642ca2e953bb86cc7350be",
+      "size_queued": 1217,
+      "exists": true,
+      "disk_sha256": "6d2ec4243b82f0b84e637d17f1b92896c5c3b8e489642ca2e953bb86cc7350be",
+      "disk_size": 1217,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 49,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_035.json",
+      "queued_sha256": "0ffa92f9f56823ae7d2b5031e8107e98a044727156c23013a695a7884aa55495",
+      "size_queued": 1380,
+      "exists": true,
+      "disk_sha256": "0ffa92f9f56823ae7d2b5031e8107e98a044727156c23013a695a7884aa55495",
+      "disk_size": 1380,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 68,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_036.json",
+      "queued_sha256": "dc8d606fbb0170ef101ff9ab46dc37efef5c4eb24e7da6d2434e86dc51501856",
+      "size_queued": 2284,
+      "exists": true,
+      "disk_sha256": "dc8d606fbb0170ef101ff9ab46dc37efef5c4eb24e7da6d2434e86dc51501856",
+      "disk_size": 2284,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_037.json",
+      "queued_sha256": "b4f2da23c1d075c966df716f1a876f35a0227db2c8365374be15a14fdcfb838e",
+      "size_queued": 2392,
+      "exists": true,
+      "disk_sha256": "b4f2da23c1d075c966df716f1a876f35a0227db2c8365374be15a14fdcfb838e",
+      "disk_size": 2392,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 111,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_038.json",
+      "queued_sha256": "95f65c5507e738c0503ab2207dc767dfc7010beb81453717d4b01d28e8a36910",
+      "size_queued": 4123,
+      "exists": true,
+      "disk_sha256": "95f65c5507e738c0503ab2207dc767dfc7010beb81453717d4b01d28e8a36910",
+      "disk_size": 4123,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 172,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_039.json",
+      "queued_sha256": "70823fa016e035450ddc14f9a910b4eb5f61b86279765e93653ee89b292d777d",
+      "size_queued": 5001,
+      "exists": true,
+      "disk_sha256": "70823fa016e035450ddc14f9a910b4eb5f61b86279765e93653ee89b292d777d",
+      "disk_size": 5001,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 206,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_040.json",
+      "queued_sha256": "cd97cd14bdd47aa1df9f5e27ae5bb26467c6fd40ba4ce75b13795b8a0f89fa15",
+      "size_queued": 5100,
+      "exists": true,
+      "disk_sha256": "cd97cd14bdd47aa1df9f5e27ae5bb26467c6fd40ba4ce75b13795b8a0f89fa15",
+      "disk_size": 5100,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 206,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_041.json",
+      "queued_sha256": "5ad2de686c171780f8e235ada8442967014ce152c219a8484e2ccf5abc87e8c0",
+      "size_queued": 3670,
+      "exists": true,
+      "disk_sha256": "5ad2de686c171780f8e235ada8442967014ce152c219a8484e2ccf5abc87e8c0",
+      "disk_size": 3670,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 158,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_042.json",
+      "queued_sha256": "cb054a2496d1c4117b8ff6e2b4fcb50d704d295cc42c019410e45c1fc7ed8041",
+      "size_queued": 2629,
+      "exists": true,
+      "disk_sha256": "cb054a2496d1c4117b8ff6e2b4fcb50d704d295cc42c019410e45c1fc7ed8041",
+      "disk_size": 2629,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 119,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_043.json",
+      "queued_sha256": "d93b8e7cae1811515c45d49cd58e093467acc47c2f996e3c43a050c2c0027bf9",
+      "size_queued": 2523,
+      "exists": true,
+      "disk_sha256": "d93b8e7cae1811515c45d49cd58e093467acc47c2f996e3c43a050c2c0027bf9",
+      "disk_size": 2523,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 107,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_044.json",
+      "queued_sha256": "00d9fa25add961d721e5068db4d947f93655306165e0b0a4a4ec0ac94d39a2f1",
+      "size_queued": 2725,
+      "exists": true,
+      "disk_sha256": "00d9fa25add961d721e5068db4d947f93655306165e0b0a4a4ec0ac94d39a2f1",
+      "disk_size": 2725,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 122,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_045.json",
+      "queued_sha256": "d2f88b902328687bf7a9611f920a93eb9216b99cc6dc9773cd4b521bce828e26",
+      "size_queued": 2262,
+      "exists": true,
+      "disk_sha256": "d2f88b902328687bf7a9611f920a93eb9216b99cc6dc9773cd4b521bce828e26",
+      "disk_size": 2262,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 111,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_046.json",
+      "queued_sha256": "22a551609a8dc9af46dfcdf000b517c25129ce22c7a34ae6259650229e1b5e70",
+      "size_queued": 2549,
+      "exists": true,
+      "disk_sha256": "22a551609a8dc9af46dfcdf000b517c25129ce22c7a34ae6259650229e1b5e70",
+      "disk_size": 2549,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_047.json",
+      "queued_sha256": "8f1615df6f579ff0b4c925820cd8bd8b380e28d4d39e1e3c17580eabfb8e3a43",
+      "size_queued": 3237,
+      "exists": true,
+      "disk_sha256": "8f1615df6f579ff0b4c925820cd8bd8b380e28d4d39e1e3c17580eabfb8e3a43",
+      "disk_size": 3237,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 122,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_048.json",
+      "queued_sha256": "60eb7dcf1ba5b7834994f067c93f062d115a187005227fe5ea443f8ad3ba31fc",
+      "size_queued": 3077,
+      "exists": true,
+      "disk_sha256": "60eb7dcf1ba5b7834994f067c93f062d115a187005227fe5ea443f8ad3ba31fc",
+      "disk_size": 3077,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 122,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_049.json",
+      "queued_sha256": "ce1975576097b9ab6a75781f2e7882143c716b6522df0ed9affdd3f9217199dd",
+      "size_queued": 3090,
+      "exists": true,
+      "disk_sha256": "ce1975576097b9ab6a75781f2e7882143c716b6522df0ed9affdd3f9217199dd",
+      "disk_size": 3090,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 122,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_050.json",
+      "queued_sha256": "13c1b048a80606500505a5c66db23bb315770a8fce9d92cf73e340e389ab0da5",
+      "size_queued": 2788,
+      "exists": true,
+      "disk_sha256": "13c1b048a80606500505a5c66db23bb315770a8fce9d92cf73e340e389ab0da5",
+      "disk_size": 2788,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 114,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_051.json",
+      "queued_sha256": "fa679c045720f9645de732aa56fe9f6f884cf6fe62b06d30caa920236009333a",
+      "size_queued": 2292,
+      "exists": true,
+      "disk_sha256": "fa679c045720f9645de732aa56fe9f6f884cf6fe62b06d30caa920236009333a",
+      "disk_size": 2292,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 103,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_052.json",
+      "queued_sha256": "e73671e656c7ac37cec5627c7dc763caec1b253988c665e10d03b5f93e6bd3d8",
+      "size_queued": 3569,
+      "exists": true,
+      "disk_sha256": "e73671e656c7ac37cec5627c7dc763caec1b253988c665e10d03b5f93e6bd3d8",
+      "disk_size": 3569,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 158,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_053.json",
+      "queued_sha256": "b6778eec980a3486a23dc401157c78fd499d56e5b97c8520eb29b4f1f3524c27",
+      "size_queued": 2064,
+      "exists": true,
+      "disk_sha256": "b6778eec980a3486a23dc401157c78fd499d56e5b97c8520eb29b4f1f3524c27",
+      "disk_size": 2064,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_054.json",
+      "queued_sha256": "b04158da204236044296f2aea88cd35317bfb8d0245901703db93a0806f2e16a",
+      "size_queued": 4292,
+      "exists": true,
+      "disk_sha256": "b04158da204236044296f2aea88cd35317bfb8d0245901703db93a0806f2e16a",
+      "disk_size": 4292,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 188,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_055.json",
+      "queued_sha256": "4e795d8f48ea71daa7082ac7613ce654ba4194821ab73195354fde2081c26564",
+      "size_queued": 4289,
+      "exists": true,
+      "disk_sha256": "4e795d8f48ea71daa7082ac7613ce654ba4194821ab73195354fde2081c26564",
+      "disk_size": 4289,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 188,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_056.json",
+      "queued_sha256": "3aaece812dc150351817008ef14e65e07459deca0a352b028e416086aeae4626",
+      "size_queued": 2357,
+      "exists": true,
+      "disk_sha256": "3aaece812dc150351817008ef14e65e07459deca0a352b028e416086aeae4626",
+      "disk_size": 2357,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 106,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_057.json",
+      "queued_sha256": "cedc8fc5d3ec942eb52b420d90d7599bba47b0a8de916e97ee739dde7b6e370a",
+      "size_queued": 1988,
+      "exists": true,
+      "disk_sha256": "cedc8fc5d3ec942eb52b420d90d7599bba47b0a8de916e97ee739dde7b6e370a",
+      "disk_size": 1988,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 93,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_058.json",
+      "queued_sha256": "0523ba5eaf03992a4e01eb200d770574c4c9d93c18a01e9958ce20a77afcbf26",
+      "size_queued": 2724,
+      "exists": true,
+      "disk_sha256": "0523ba5eaf03992a4e01eb200d770574c4c9d93c18a01e9958ce20a77afcbf26",
+      "disk_size": 2724,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 122,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_059.json",
+      "queued_sha256": "4091e6fe666e5a17fcc4fc05fabb1e6f61eb8705464318e10944c39104de3827",
+      "size_queued": 2096,
+      "exists": true,
+      "disk_sha256": "4091e6fe666e5a17fcc4fc05fabb1e6f61eb8705464318e10944c39104de3827",
+      "disk_size": 2096,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 92,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_060.json",
+      "queued_sha256": "89f0836ba5407a3cd3f64d49e089b26208217a9c4288754f0620d56f6fd00250",
+      "size_queued": 2507,
+      "exists": true,
+      "disk_sha256": "89f0836ba5407a3cd3f64d49e089b26208217a9c4288754f0620d56f6fd00250",
+      "disk_size": 2507,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 112,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_061.json",
+      "queued_sha256": "04eaef9216cb31d22dadcc3af29d3ae56da162f87ded02f58abd99727a0d8266",
+      "size_queued": 3449,
+      "exists": true,
+      "disk_sha256": "04eaef9216cb31d22dadcc3af29d3ae56da162f87ded02f58abd99727a0d8266",
+      "disk_size": 3449,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 152,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_062.json",
+      "queued_sha256": "03aaa71cd5317b721d38546609b5f29a46ba3e695e1ea0bcbcd2fd13ca488378",
+      "size_queued": 2597,
+      "exists": true,
+      "disk_sha256": "03aaa71cd5317b721d38546609b5f29a46ba3e695e1ea0bcbcd2fd13ca488378",
+      "disk_size": 2597,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 115,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_063.json",
+      "queued_sha256": "f2f12d1aac367990cdce94ed3857a8256a3638eefa5f8678c993bf3192288a53",
+      "size_queued": 2257,
+      "exists": true,
+      "disk_sha256": "f2f12d1aac367990cdce94ed3857a8256a3638eefa5f8678c993bf3192288a53",
+      "disk_size": 2257,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 104,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_064.json",
+      "queued_sha256": "fd3ef9eb8710b77055c185b193e1ff537b36f8bf68cab2e935cf4156347777d2",
+      "size_queued": 2479,
+      "exists": true,
+      "disk_sha256": "fd3ef9eb8710b77055c185b193e1ff537b36f8bf68cab2e935cf4156347777d2",
+      "disk_size": 2479,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 106,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_065.json",
+      "queued_sha256": "d3e40fa7e8295410b88a50f08a21418e0eb9b5394324988bd243255844351857",
+      "size_queued": 2993,
+      "exists": true,
+      "disk_sha256": "d3e40fa7e8295410b88a50f08a21418e0eb9b5394324988bd243255844351857",
+      "disk_size": 2993,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_066.json",
+      "queued_sha256": "336cf23cfe0a40b445318f094c6e70b023d3be54f524c14d2aacb621e0360005",
+      "size_queued": 3019,
+      "exists": true,
+      "disk_sha256": "336cf23cfe0a40b445318f094c6e70b023d3be54f524c14d2aacb621e0360005",
+      "disk_size": 3019,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_067.json",
+      "queued_sha256": "19daa4277d733a6288c93441b97eddb469a9bf05d443009187664a5a7392b606",
+      "size_queued": 3003,
+      "exists": true,
+      "disk_sha256": "19daa4277d733a6288c93441b97eddb469a9bf05d443009187664a5a7392b606",
+      "disk_size": 3003,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 116,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_068.json",
+      "queued_sha256": "9b82edb5cefeb1346bff47222974eff62e05ba57dc853c116f3c623fc83a8d7e",
+      "size_queued": 3037,
+      "exists": true,
+      "disk_sha256": "9b82edb5cefeb1346bff47222974eff62e05ba57dc853c116f3c623fc83a8d7e",
+      "disk_size": 3037,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 128,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_069.json",
+      "queued_sha256": "60ae49cf88eabe4949145855aef6a50a42f6b90101607c695227b14e2684d2fa",
+      "size_queued": 3079,
+      "exists": true,
+      "disk_sha256": "60ae49cf88eabe4949145855aef6a50a42f6b90101607c695227b14e2684d2fa",
+      "disk_size": 3079,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 128,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_070.json",
+      "queued_sha256": "166f58a1f29650208de4ac59bfafcaa64975777ea9937299a8a9ccf97977183b",
+      "size_queued": 2876,
+      "exists": true,
+      "disk_sha256": "166f58a1f29650208de4ac59bfafcaa64975777ea9937299a8a9ccf97977183b",
+      "disk_size": 2876,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 123,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_071.json",
+      "queued_sha256": "888222a61534e4dec0c66dbedda992e4dd14fbd8486fe4bdabafac9615c1c84a",
+      "size_queued": 2082,
+      "exists": true,
+      "disk_sha256": "888222a61534e4dec0c66dbedda992e4dd14fbd8486fe4bdabafac9615c1c84a",
+      "disk_size": 2082,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_072.json",
+      "queued_sha256": "cc5d167bab64b4cff13226aa6161124add94bba0a36379b96668b01b23a0d5b8",
+      "size_queued": 1501,
+      "exists": true,
+      "disk_sha256": "cc5d167bab64b4cff13226aa6161124add94bba0a36379b96668b01b23a0d5b8",
+      "disk_size": 1501,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 67,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_073.json",
+      "queued_sha256": "e0d035f010eafda6f4ca4ee3d6d843cbbd0df420d207645e4015a0100ccd8162",
+      "size_queued": 2035,
+      "exists": true,
+      "disk_sha256": "e0d035f010eafda6f4ca4ee3d6d843cbbd0df420d207645e4015a0100ccd8162",
+      "disk_size": 2035,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_074.json",
+      "queued_sha256": "b4714610db62cdfd5c63ad1e14b3141dfdfaf702fef5e98ee094e8e0326b94e7",
+      "size_queued": 2124,
+      "exists": true,
+      "disk_sha256": "b4714610db62cdfd5c63ad1e14b3141dfdfaf702fef5e98ee094e8e0326b94e7",
+      "disk_size": 2124,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_075.json",
+      "queued_sha256": "8a1b7aacc24479544c312278863c715074719eaee3f5b8202da9b8622cdef313",
+      "size_queued": 3131,
+      "exists": true,
+      "disk_sha256": "8a1b7aacc24479544c312278863c715074719eaee3f5b8202da9b8622cdef313",
+      "disk_size": 3131,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 134,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_076.json",
+      "queued_sha256": "9708e1ee4576aa7b1e824106052106ac5dd2a08031cda7cb639801b705a58afc",
+      "size_queued": 2741,
+      "exists": true,
+      "disk_sha256": "9708e1ee4576aa7b1e824106052106ac5dd2a08031cda7cb639801b705a58afc",
+      "disk_size": 2741,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 119,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_077.json",
+      "queued_sha256": "8a8e1d395a73f907fb5a7bfd83961fa45eda82dec6382ef26427289b9c177767",
+      "size_queued": 2075,
+      "exists": true,
+      "disk_sha256": "8a8e1d395a73f907fb5a7bfd83961fa45eda82dec6382ef26427289b9c177767",
+      "disk_size": 2075,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 94,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_078.json",
+      "queued_sha256": "f0f0cc16f717042d4fb85be9774aaf60cb7bf6925639e4ec7171f274eb005b8c",
+      "size_queued": 2187,
+      "exists": true,
+      "disk_sha256": "f0f0cc16f717042d4fb85be9774aaf60cb7bf6925639e4ec7171f274eb005b8c",
+      "disk_size": 2187,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 102,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_079.json",
+      "queued_sha256": "c399c1869fe9da5545ae0f21cf9cce5b0cc044fbbea58d051213b96464b6824a",
+      "size_queued": 1804,
+      "exists": true,
+      "disk_sha256": "c399c1869fe9da5545ae0f21cf9cce5b0cc044fbbea58d051213b96464b6824a",
+      "disk_size": 1804,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 84,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_080.json",
+      "queued_sha256": "60a1e63d09ad92755c1d9647ac841269187632759e7f481dc44de11e5ba46d77",
+      "size_queued": 1955,
+      "exists": true,
+      "disk_sha256": "60a1e63d09ad92755c1d9647ac841269187632759e7f481dc44de11e5ba46d77",
+      "disk_size": 1955,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 92,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_081.json",
+      "queued_sha256": "394da70c2e40eeb44ba7bcb4b3a509ad6f1bbc058d45dc32e769ae306a33e20a",
+      "size_queued": 2169,
+      "exists": true,
+      "disk_sha256": "394da70c2e40eeb44ba7bcb4b3a509ad6f1bbc058d45dc32e769ae306a33e20a",
+      "disk_size": 2169,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 98,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_082.json",
+      "queued_sha256": "c6a0fe34665737a68be229c12134c4d3ccb6e12dad3e60a59cfbf34bff7e112b",
+      "size_queued": 2437,
+      "exists": true,
+      "disk_sha256": "c6a0fe34665737a68be229c12134c4d3ccb6e12dad3e60a59cfbf34bff7e112b",
+      "disk_size": 2437,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 110,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_083.json",
+      "queued_sha256": "3623cb69972eb075caf6eb54d7aa9eb321d87d27242e4943ef879a8f6c1c5bbb",
+      "size_queued": 2742,
+      "exists": true,
+      "disk_sha256": "3623cb69972eb075caf6eb54d7aa9eb321d87d27242e4943ef879a8f6c1c5bbb",
+      "disk_size": 2742,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 116,
+        "root_type": "list",
+        "n": 6,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    },
+    {
+      "path": "finetune_llm/curated/specs/batch_084.json",
+      "queued_sha256": "6cbf9e9bc6c778ece15e01a22629caafc7c6cb3f13b41c0b3c30420962404af5",
+      "size_queued": 701,
+      "exists": true,
+      "disk_sha256": "6cbf9e9bc6c778ece15e01a22629caafc7c6cb3f13b41c0b3c30420962404af5",
+      "disk_size": 701,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "no-git",
+      "json": {
+        "lines": 34,
+        "root_type": "list",
+        "n": 2,
+        "elem_keys": [
+          "description",
+          "family",
+          "name",
+          "params",
+          "target_new"
+        ]
+      }
+    }
+  ]
+}

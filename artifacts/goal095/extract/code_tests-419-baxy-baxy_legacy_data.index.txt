@@ -1,0 +1,3 @@
+batch=code_tests-419-baxy-baxy_legacy_data
+hash_ok=1 drift=0 miss=0
+OK legacy/data/router_encoder_ft9_torch/sentencepiece.bpe.model

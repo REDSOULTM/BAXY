@@ -1,0 +1,3 @@
+batch=code_tests-021-carter-carter_v2
+hash_ok=1 drift=0 miss=0
+OK Carter_v2/Carter_v2.rar

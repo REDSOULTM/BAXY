@@ -1,0 +1,6 @@
+batch=code_tests-428-baxy-baxy_legacy_gui
+hash_ok=4 drift=0 miss=0
+OK legacy/gui/server.py py_lines=6133 defs=231
+OK legacy/gui/session_security.py py_lines=500 defs=35
+OK legacy/gui/tkinter_gui.py py_lines=609 defs=30
+OK legacy/gui/ui_field/dist/assets/index-BEnlHwLF.css

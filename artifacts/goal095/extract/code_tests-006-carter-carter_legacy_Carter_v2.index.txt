@@ -1,0 +1,31 @@
+batch=code_tests-006-carter-carter_legacy_Carter_v2
+hash_ok=29 drift=0 miss=0
+OK legacy/Carter_v2/audit/runners/text_core_golden_matrix.py py_lines=230 defs=4
+OK legacy/Carter_v2/audit/runners/text_core_rc_gates.py py_lines=113 defs=3
+OK legacy/Carter_v2/audit/runners/text_core_soak_test.py py_lines=281 defs=2
+OK legacy/Carter_v2/audit/runners/tool_call_compatibility.py py_lines=494 defs=12
+OK legacy/Carter_v2/audit/runners/ultra_latency_gate.py py_lines=206 defs=2
+OK legacy/Carter_v2/audit/temp/_c3_strip.py py_lines=31 defs=0
+OK legacy/Carter_v2/audit/temp/run_text_closure_gate.py py_lines=183 defs=4
+OK legacy/Carter_v2/audit/temp/smoke_runner.py py_lines=131 defs=3
+OK legacy/Carter_v2/audit/temp/smoke_runner_fsmoke.py py_lines=63 defs=0
+OK legacy/Carter_v2/backups/F0_invariants.py.bak
+OK legacy/Carter_v2/backups/MEMORY.md.bak.20260430-190222
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db-shm shm parent_on_disk=True
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory.db-wal wal parent_on_disk=True
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/.probe_hardening_memory_debug.db
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/.probeall_memory.db
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/.smoke_F-SMOKE_memory.db
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_all_tools.py py_lines=2832 defs=107
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/objects/a9/68c567fd69737c747e88958b17f43d368c0fdb
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/objects/ca/be016afa2a5d2183a60121252bd527c23d16d9
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/git_sandbox/remote.git/refs/heads/main
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/probe-univ-code.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/probe-univ-multistep.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-app-1.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-app-2.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s15-data-1.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s21-resource-flow.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/universal_runs/s25-universal-intent.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']
+OK legacy/Carter_v2/backups/probe_archive_20260501-020549/probe_assets_runtime/visual_runs/s22b-visual-resume.json json_keys=['artifacts', 'completed_node_ids', 'failed_node_ids', 'graph', 'metadata', 'node_results', 'run_id', 'run_summary', 'schema_version', 'timestamp']

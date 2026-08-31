@@ -1,0 +1,79 @@
+batch=code_tests-337-probando_gemma4-pg4_scripts
+hash_ok=77 drift=0 miss=0
+OK scripts/_diag/_audit_fires.json json_keys=['click', 'destr', 'media', 'tests']
+OK scripts/_diag/_audit_nofire.json json_keys=['click_nofire', 'destr_nofire', 'media_nofire']
+OK scripts/_diag/_batch12.json json_keys=None
+OK scripts/_diag/_batch13_tmp.json json_keys=None
+OK scripts/_diag/_batch14.json json_keys=None
+OK scripts/_diag/_batch5_lote5.json json_keys=None
+OK scripts/_diag/_batch8_490_560.json json_keys=None
+OK scripts/_diag/_batch8_490_560_extract.json json_keys=None
+OK scripts/_diag/_battery_cu_full.py py_lines=96 defs=1
+OK scripts/_diag/_capture_lat.py py_lines=32 defs=0
+OK scripts/_diag/_capture_replies.py py_lines=37 defs=0
+OK scripts/_diag/_check_accessibility_boot.py py_lines=107 defs=7
+OK scripts/_diag/_dbg_gmail_turn.py py_lines=35 defs=1
+OK scripts/_diag/_diag_app_miss_turn_breakdown.py py_lines=105 defs=5
+OK scripts/_diag/_diag_app_open_miss.py py_lines=79 defs=0
+OK scripts/_diag/_diag_app_open_score_floor.py py_lines=73 defs=1
+OK scripts/_diag/_diag_audit_session_turns.py py_lines=99 defs=2
+OK scripts/_diag/_diag_browser_followup.py py_lines=42 defs=2
+OK scripts/_diag/_diag_bugA_messaging.py py_lines=98 defs=0
+OK scripts/_diag/_diag_bugB_antiregresion.py py_lines=57 defs=0
+OK scripts/_diag/_diag_bugB_router_gamestate.py py_lines=38 defs=0
+OK scripts/_diag/_diag_build_turn_dataset.py py_lines=114 defs=3
+OK scripts/_diag/_diag_carter_score_dist.py py_lines=107 defs=3
+OK scripts/_diag/_diag_carter_scores.py py_lines=49 defs=2
+OK scripts/_diag/_diag_chain.py py_lines=58 defs=1
+OK scripts/_diag/_diag_dump_history.py py_lines=62 defs=0
+OK scripts/_diag/_diag_empty_reply.py py_lines=74 defs=1
+OK scripts/_diag/_diag_exemplar_neighbors.py py_lines=49 defs=0
+OK scripts/_diag/_diag_filler_decide.py py_lines=48 defs=0
+OK scripts/_diag/_diag_finetune_dataset_eval.py py_lines=262 defs=5
+OK scripts/_diag/_diag_gemma_score_dist.py py_lines=107 defs=3
+OK scripts/_diag/_diag_guard1_on_real_dataset.py py_lines=62 defs=1
+OK scripts/_diag/_diag_guard1_stress.py py_lines=78 defs=1
+OK scripts/_diag/_diag_honesty.py py_lines=24 defs=0
+OK scripts/_diag/_diag_hunt_tanda.py py_lines=175 defs=3
+OK scripts/_diag/_diag_intent_domain_mismatch.py py_lines=49 defs=1
+OK scripts/_diag/_diag_latency_baseline.py py_lines=121 defs=3
+OK scripts/_diag/_diag_live_terse_cluster.py py_lines=132 defs=2
+OK scripts/_diag/_diag_media_fabricated.py py_lines=43 defs=1
+OK scripts/_diag/_diag_nav_asyndeton_leakage.py py_lines=46 defs=0
+OK scripts/_diag/_diag_noise_floor.py py_lines=196 defs=6
+OK scripts/_diag/_diag_non_site_hosts.py py_lines=106 defs=3
+OK scripts/_diag/_diag_precondition_sitefallback.py py_lines=39 defs=0
+OK scripts/_diag/_diag_probe_on_training.py py_lines=77 defs=2
+OK scripts/_diag/_diag_reflection_e2e.py py_lines=90 defs=1
+OK scripts/_diag/_diag_reflection_live.py py_lines=62 defs=3
+OK scripts/_diag/_diag_reminder_semantic.py py_lines=50 defs=0
+OK scripts/_diag/_diag_replay_logs.py py_lines=118 defs=2
+OK scripts/_diag/_diag_router_probe.py py_lines=84 defs=3
+OK scripts/_diag/_diag_site_resolver_live.py py_lines=61 defs=2
+OK scripts/_diag/_diag_strip_wake_live.py py_lines=69 defs=0
+OK scripts/_diag/_diag_traces_full_audit.py py_lines=100 defs=2
+OK scripts/_diag/_diag_verify_baxy_identity_live.py py_lines=60 defs=1
+OK scripts/_diag/_diag_verify_fixes_live.py py_lines=88 defs=1
+OK scripts/_diag/_diag_verify_ola2_live.py py_lines=92 defs=1
+OK scripts/_diag/_diag_visual_click_live.py py_lines=94 defs=3
+OK scripts/_diag/_diag_wake_carter_bylang.py py_lines=100 defs=4
+OK scripts/_diag/_diag_wake_heldout_validate.py py_lines=143 defs=5
+OK scripts/_diag/_diag_wake_neg_probe.py py_lines=107 defs=3
+OK scripts/_diag/_diag_wake_neg_volume.py py_lines=32 defs=0
+OK scripts/_diag/_diag_wake_predict_cost.py py_lines=50 defs=0
+OK scripts/_diag/_diag_wake_recall_probe.py py_lines=176 defs=4
+OK scripts/_diag/_diag_wake_strip_threshold.py py_lines=108 defs=2
+OK scripts/_diag/_diag_window_actual_loop.py py_lines=97 defs=3
+OK scripts/_diag/_dump_sysprompt.py py_lines=30 defs=1
+OK scripts/_diag/_flag_audit.py py_lines=104 defs=1
+OK scripts/_diag/_ftfail/_cov/_completitud_0.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_honestidad_0.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_honestidad_1.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_idioma_0.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_idioma_1.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_routing_0.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_routing_1.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_routing_2.json json_keys=None
+OK scripts/_diag/_ftfail/_cov/_routing_3.json json_keys=None
+OK scripts/_diag/_ftfail/_failmode_honestidad.json json_keys=None
+OK scripts/_diag/_ftfail/_failmode_identidad.json json_keys=None

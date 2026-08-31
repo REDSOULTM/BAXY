@@ -1,0 +1,30 @@
+batch=code_tests-429-baxy-baxy_legacy_gui
+hash_ok=28 drift=0 miss=0
+OK legacy/gui/ui_field/dist/assets/index-K92QG2Qw.js
+OK legacy/gui/ui_field/dist/index.html
+OK legacy/gui/ui_field/eslint.config.js
+OK legacy/gui/ui_field/index.html
+OK legacy/gui/ui_field/package.json json_keys=['dependencies', 'devDependencies', 'name', 'private', 'scripts', 'type', 'version']
+OK legacy/gui/ui_field/pnpm-lock.yaml
+OK legacy/gui/ui_field/src/App.tsx
+OK legacy/gui/ui_field/src/components/ActivityPanel.tsx
+OK legacy/gui/ui_field/src/components/BottomBar.tsx
+OK legacy/gui/ui_field/src/components/ConfirmationModal.tsx
+OK legacy/gui/ui_field/src/components/DocsPanel.tsx
+OK legacy/gui/ui_field/src/components/FieldCenter.tsx
+OK legacy/gui/ui_field/src/components/Icon.tsx
+OK legacy/gui/ui_field/src/components/LogoMark.tsx
+OK legacy/gui/ui_field/src/components/MemoryPanel.tsx
+OK legacy/gui/ui_field/src/components/NeuralGraph.tsx
+OK legacy/gui/ui_field/src/components/Panel.tsx
+OK legacy/gui/ui_field/src/components/ParticleCluster.tsx
+OK legacy/gui/ui_field/src/components/PrivateResultModal.tsx
+OK legacy/gui/ui_field/src/components/RoutineDraftModal.tsx
+OK legacy/gui/ui_field/src/components/Select.tsx
+OK legacy/gui/ui_field/src/components/SessionsPanel.tsx
+OK legacy/gui/ui_field/src/components/SkillsPanel.tsx
+OK legacy/gui/ui_field/src/components/Slider.tsx
+OK legacy/gui/ui_field/src/components/SubstratePanel.tsx
+OK legacy/gui/ui_field/src/components/TitleBar.tsx
+OK legacy/gui/ui_field/src/components/ToastHost.tsx
+OK legacy/gui/ui_field/src/components/Toggle.tsx

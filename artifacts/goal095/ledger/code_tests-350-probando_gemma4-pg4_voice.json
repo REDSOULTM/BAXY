@@ -1,0 +1,76 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-350-probando_gemma4-pg4_voice",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:46:30Z",
+  "closed_utc": "2026-08-31T02:46:31Z",
+  "estimated_tokens": 146163,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 2,
+  "subsystem": "pg4_voice",
+  "subsystems": [
+    "pg4_voice"
+  ],
+  "files": [
+    {
+      "path": "gemma4_agent/voice/models/livekit/baxy.onnx.bak_pre_it6_20260618",
+      "sha256": "7c2804961f9d48b6575fb3cebe914ddd5e6569f0641cbf7c3a307c50582630c6",
+      "source_id": "probando_gemma4",
+      "terminal": "duplicado_por_hash",
+      "ranges": [
+        "hash"
+      ],
+      "duplicate_of": "code_tests-349-probando_gemma4-pg4_voice:gemma4_agent/voice/models/livekit/baxy.onnx.bak_pre_it6_20260618"
+    },
+    {
+      "path": "gemma4_agent/voice/parakeet_stt.py",
+      "sha256": "566f321b4dcd5f6b48a5a2b82b28f39960eea04413e86ec897ab6b0a1d7278e4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-228"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-350-probando_gemma4-pg4_voice-01-gemma4_agent-voice-parakeet_stt.py",
+      "disposition": "evidence_only",
+      "component": "gemma4_agent/voice/parakeet_stt.py (1 ficheros)",
+      "contract": "Grupo gemma4_agent/voice/parakeet_stt.py: 1 archivos. Terminales leido PY \"\"\"STT via sherpa-onnx + Parakeet-TDT-0.6b-v3 (CPU, int8, greedy).  Motor candidato para reemplazar Whisper-small. Medido sobre VOZ REAL (scripts/stt_real_voice_eval.py, 2026-05-23):   - WER chileno (terceros)  : 0.044  vs Whisper 0.075  -> mejor base   - WER comandos (RED, n=84): 0.335  vs Whisper 0.445  -> mejor base   - latencia p50            : 71 ms  vs Whisper 1570 ms -> 20x más rápido   - N",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "gemma4_agent/voice/parakeet_stt.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "gemma4_agent/voice/parakeet_stt.py",
+        "ranges": [
+          "1-228"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=2 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-351-probando_gemma4-pg4_voice",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-350-probando_gemma4-pg4_voice.inspect.json"
+}

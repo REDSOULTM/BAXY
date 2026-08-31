@@ -1,0 +1,1117 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-416-baxy",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T02:47:56Z",
+  "closed_utc": "2026-08-31T02:47:59Z",
+  "estimated_tokens": 297374,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 30,
+  "subsystem": "baxy_exp_voice_latency",
+  "subsystems": [
+    "baxy_exp_voice_latency",
+    "baxy_exp_wake_validation",
+    "baxy_legacy_Experimentando",
+    "baxy_legacy_baxy.bat",
+    "baxy_legacy_computer_use"
+  ],
+  "files": [
+    {
+      "path": "experiments/voice_latency/train_mdtc_phoneme_distillation.py",
+      "sha256": "15f5e6b2ca1470f8002cd091b4e1b7c72d9b7455c5d47224d6064453d855320a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-507"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mdtc_phoneme_distillation_v2.py",
+      "sha256": "f1fdc0109cd1927b340e0c34b3584cdd95b2b7cf1199f3716e01bff99faa7081",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1601"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mdtc_phonetic_ctc_group_cv.py",
+      "sha256": "30d9bd546024d0075eebd0769b95e6811a178e7809e32affaa8d426ccc0375a8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-596"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_ctc_alignment_cnn_distillation_v15.py",
+      "sha256": "1bda14ed0aff605dd1d2a9122bee5873963bf9b12cf89557c95022d86e9040ab",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-613"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_hyperspotter_listwise_v2.py",
+      "sha256": "9249358f080af3e920f02d06f553ad86e825a5047894eefec3cb3dfd11a90c0a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-590"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_hyperspotter_spanish_v1.py",
+      "sha256": "b2e292590fe6d0fbdb9ec4cd200f4a307228d846432034127b43e53d2e7883f7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-457"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_hyperspotter_teacher_distillation_v3.py",
+      "sha256": "ebb4deb71d4d673c59eb1230030d5256750734480d36a7dbeb3f0b0a05ab8883",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-554"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_spanish_qbye_angular_prototypical_v1.py",
+      "sha256": "02467e0a5912c740ecc0a0f8a11681cff880bdf377dfeff7e1b586535a67569c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-661"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_spanish_qbye_similarity_cnn_v4.py",
+      "sha256": "5868e538cce8cfaa9b1dc543fdd8dd65f651c08feddc4bbe14d164e8a9f1d556",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-559"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_mswc_wake_scaf_embedding_v1.py",
+      "sha256": "94dd087342e6b21cfe379bf68a0636662ef76191d31135ed4b2105be51389b94",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-578"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_wav2vec2_hidden_wake_mil_head_v1.py",
+      "sha256": "5f724ef3ba108c2d0f592d893a02a9a1f48b36cca0e2cff2d7d3d2d423a27ba4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-421"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/train_wav2vec2_hidden_wake_scaf_embedding_v1.py",
+      "sha256": "df2e4b316f10d1504b3fc9710560f972189583638b53bf91104ddad8c0ea7f13",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-671"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py",
+      "sha256": "d228c0f2c965b066d3b1d7a3b627411e54c398a52e2c62364255948b77b9ecd6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-408"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py",
+      "sha256": "3a860ee0e9efda1940510a8d3fb613fa8af8e423265f69a92b643bbb45f4e5fd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-633"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py",
+      "sha256": "86bd8b972f3d8a26f718b4736a8eaccd70de560578d5e6039a1a8185c03774a8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-411"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/evaluate_score_gated_basic_rescue_v1.py",
+      "sha256": "fb932c09ac60e3db9470bcc74af0e1ef80ed3198e930bb99f3f24ffb77b9b388",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-445"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/evaluate_split_alias_ctc_guard_v1.py",
+      "sha256": "43238a15b475a3f872ac93a68b30d302c0306f3f2128d368fac4b45edd92d185",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-521"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/evaluate_split_alias_localized_qbt_v2.py",
+      "sha256": "b209a25f18831db3172ca1817bcd55bdb56f7350c1eab35adf89002fde64326a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-520"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/extract_opened_physical_wav2vec2_features_v1.py",
+      "sha256": "d2ba37c09c820dfae1a9febf8ba280af2df724b4de7d6bc2dd2a28c88a36240f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-343"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/train_baxy_phonetic_auxiliary_domain_loco_v2.py",
+      "sha256": "425afbcdcee538d0e2208ff342dbb641bdb7e8008706b41ddd8aa13cdca370f5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-514"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/train_baxy_phonetic_prosody_domain_loco_v1.py",
+      "sha256": "522e5a2487fc5ec4a196f4de9729142c79c2afa1472c0ade65cc79fc85c75001",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-652"
+      ]
+    },
+    {
+      "path": "experiments/wake_validation/validate_physical_wake_v17_program.py",
+      "sha256": "2c1f9aecd4207da62e8479b34a9c1ebaac792cc1a43ec18c3f94022a49863789",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-553"
+      ]
+    },
+    {
+      "path": "legacy/Experimentando/gemma4_unified.py",
+      "sha256": "59c70e2ff3b595cd14d41096173adbc7b035365ce942c3a31a022596f4351d5c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1167"
+      ]
+    },
+    {
+      "path": "legacy/Experimentando/run_baxy_gemma4_experiment.ps1",
+      "sha256": "773b4c7824bc49a14483cc9bd10144568c53e31747bd93e7337ad2ebfcdefc72",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1"
+      ]
+    },
+    {
+      "path": "legacy/Experimentando/run_baxy_gemma4_experiment.py",
+      "sha256": "d303dcd04cd7590d8bf1ab3fc99043a605887a5a2b17ac5206f42e938ce45428",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-127"
+      ]
+    },
+    {
+      "path": "legacy/baxy.bat",
+      "sha256": "a48fa3af5157241cc75e81aaf22c85e4751a966c13cf824dac326a4fe593355f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "misclassified"
+      ],
+      "exclusion_rule": "reclassified_not_source",
+      "parse_note": "extension o rotacion no es fuente ejecutable; 09.5.4 si es corpus"
+    },
+    {
+      "path": "legacy/computer_use/__init__.py",
+      "sha256": "f3382354691ae70c51051e667dd6de5d9e97aa7e7081f564a90b4996cdcdb08c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-15"
+      ]
+    },
+    {
+      "path": "legacy/computer_use/browser_cdp.py",
+      "sha256": "ef012520cacbcdc42cce38068500ec80766dc73c7e17656f022657cba735d778",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-626"
+      ]
+    },
+    {
+      "path": "legacy/computer_use/executor.py",
+      "sha256": "580dcd979682f69cb5a99d4d0b30748057edf752e426e5aa91ee2886c776749d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-93"
+      ]
+    },
+    {
+      "path": "legacy/computer_use/gui.py",
+      "sha256": "667d73c06493f04819e44e01ba419aea5d5c5320bde1f3d40ab62c6e01b005d6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-175"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "code_tests-416-baxy-01-experiments-voice_latency-train_mdtc_phoneme_distillation.py",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mdtc_phoneme_distillation.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mdtc_phoneme_distillation.py: 1 archivos. Terminales leido PY \"\"\"Distill the phoneme teacher into a tiny causal MDTC acoustic model.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import json from pathlib import Path",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mdtc_phoneme_distillation.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mdtc_phoneme_distillation.py",
+        "ranges": [
+          "1-507"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-02-experiments-voice_latency-train_mdtc_phoneme_distillation_v2",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mdtc_phoneme_distillation_v2.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mdtc_phoneme_distillation_v2.py: 1 archivos. Terminales leido PY \"\"\"Train and evaluate a causal tiny verifier from the lossless v2 teacher head.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import json import math",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mdtc_phoneme_distillation_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mdtc_phoneme_distillation_v2.py",
+        "ranges": [
+          "1-1601"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-03-experiments-voice_latency-train_mdtc_phonetic_ctc_group_cv.p",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mdtc_phonetic_ctc_group_cv.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mdtc_phonetic_ctc_group_cv.py: 1 archivos. Terminales leido PY \"\"\"Train and speaker-group cross-validate a tiny causal phonetic CTC verifier.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import json import math",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mdtc_phonetic_ctc_group_cv.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mdtc_phonetic_ctc_group_cv.py",
+        "ranges": [
+          "1-596"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-04-experiments-voice_latency-train_mswc_ctc_alignment_cnn_disti",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_ctc_alignment_cnn_distillation_v15.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_ctc_alignment_cnn_distillation_v15.py: 1 archivos. Terminales leido PY \"\"\"Distill the accepted teacher into a tiny temporal-phoneme CTC matcher.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import importlib.util import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_ctc_alignment_cnn_distillation_v15.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_ctc_alignment_cnn_distillation_v15.py",
+        "ranges": [
+          "1-613"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-05-experiments-voice_latency-train_mswc_hyperspotter_listwise_v",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_hyperspotter_listwise_v2.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_hyperspotter_listwise_v2.py: 1 archivos. Terminales leido PY \"\"\"Train HyperSpotter with multi-negative Spanish word ranking.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import importlib.machinery import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_hyperspotter_listwise_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_hyperspotter_listwise_v2.py",
+        "ranges": [
+          "1-590"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-06-experiments-voice_latency-train_mswc_hyperspotter_spanish_v1",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_hyperspotter_spanish_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_hyperspotter_spanish_v1.py: 1 archivos. Terminales leido PY \"\"\"Adapt the official HyperSpotter text-conditioned detector on Spanish MSWC.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import importlib.machinery import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_hyperspotter_spanish_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_hyperspotter_spanish_v1.py",
+        "ranges": [
+          "1-457"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-07-experiments-voice_latency-train_mswc_hyperspotter_teacher_di",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_hyperspotter_teacher_distillation_v3.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_hyperspotter_teacher_distillation_v3.py: 1 archivos. Terminales leido PY \"\"\"Distill the accepted cached teacher into the small HyperSpotter ranker.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import importlib.util import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_hyperspotter_teacher_distillation_v3.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_hyperspotter_teacher_distillation_v3.py",
+        "ranges": [
+          "1-554"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-08-experiments-voice_latency-train_mswc_spanish_qbye_angular_pr",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_spanish_qbye_angular_prototypical_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_spanish_qbye_angular_prototypical_v1.py: 1 archivos. Terminales leido PY \"\"\"Train an open-vocabulary angular-prototypical word embedding on MSWC.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone from importlib.metadata import version import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_spanish_qbye_angular_prototypical_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_spanish_qbye_angular_prototypical_v1.py",
+        "ranges": [
+          "1-661"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-09-experiments-voice_latency-train_mswc_spanish_qbye_similarity",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_spanish_qbye_similarity_cnn_v4.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_spanish_qbye_similarity_cnn_v4.py: 1 archivos. Terminales leido PY \"\"\"Train a frame-similarity CNN matcher on speaker-disjoint MSWC word pairs.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import hashlib import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_spanish_qbye_similarity_cnn_v4.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_spanish_qbye_similarity_cnn_v4.py",
+        "ranges": [
+          "1-559"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-10-experiments-voice_latency-train_mswc_wake_scaf_embedding_v1.",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_mswc_wake_scaf_embedding_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_mswc_wake_scaf_embedding_v1.py: 1 archivos. Terminales leido PY \"\"\"Train the SCAF wake embedding on real-word MSWC hidden features.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import importlib.util import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_mswc_wake_scaf_embedding_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_mswc_wake_scaf_embedding_v1.py",
+        "ranges": [
+          "1-578"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-11-experiments-voice_latency-train_wav2vec2_hidden_wake_mil_hea",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_wav2vec2_hidden_wake_mil_head_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_wav2vec2_hidden_wake_mil_head_v1.py: 1 archivos. Terminales leido PY \"\"\"Train a temporal multiple-instance wake head on frozen Wav2Vec2 features.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import hashlib import json",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_wav2vec2_hidden_wake_mil_head_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_wav2vec2_hidden_wake_mil_head_v1.py",
+        "ranges": [
+          "1-421"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-12-experiments-voice_latency-train_wav2vec2_hidden_wake_scaf_em",
+      "disposition": "evidence_only",
+      "component": "experiments/voice_latency/train_wav2vec2_hidden_wake_scaf_embedding_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/voice_latency/train_wav2vec2_hidden_wake_scaf_embedding_v1.py: 1 archivos. Terminales leido PY \"\"\"Train an attention embedding with Sub-center ArcFace on frozen SSL features.\"\"\"  from __future__ import annotations  import argparse from datetime import datetime, timezone import hashlib import importlib.util",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/voice_latency/train_wav2vec2_hidden_wake_scaf_embedding_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/voice_latency/train_wav2vec2_hidden_wake_scaf_embedding_v1.py",
+        "ranges": [
+          "1-671"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-13-experiments-wake_validation-evaluate_exclusive_expanded_rout",
+      "disposition": "adapt_candidate",
+      "component": "experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py: 1 archivos. Terminales leido PY \"\"\"Measure a lexical guard for the exclusive expanded wake route.  This development-only evaluator replays only records that an already-bound cascade report accepted through the log-Mel route.  It instruments which upstream models proposed the accepted window and asks whether detections that depend exclusively on the expanded physical upstream model also have a strict leading BAXY alias in Parakee",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py",
+        "ranges": [
+          "1-408"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-14-experiments-wake_validation-evaluate_hyperspotter_open_vocab",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py: 1 archivos. Terminales leido PY \"\"\"Measure HyperSpotter on opened BAXY wake corpora without touching runtime.  The program is intentionally research-only.  It validates a sealed binding, loads the upstream Lightning checkpoints with ``weights_only=True``, reads only the opened corpus WAV files named by their manifests, and retains no filename or transcript text in its result. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py",
+        "ranges": [
+          "1-633"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-15-experiments-wake_validation-evaluate_prosody_spectral_loco_d",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py: 1 archivos. Terminales leido PY \"\"\"Explore whether prosodic/spectral cues generalize across opened wake corpora.  This is a research-only diagnostic.  It performs leave-one-corpus-out (LOCO) evaluation, selects every operating threshold from the two training corpora, and never treats a compared model as a promotable candidate.  Results retain audio hashes and scores, but no filenames or transcript text. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py",
+        "ranges": [
+          "1-411"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-16-experiments-wake_validation-evaluate_score_gated_basic_rescu",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/evaluate_score_gated_basic_rescue_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/evaluate_score_gated_basic_rescue_v1.py: 1 archivos. Terminales leido PY \"\"\"Evaluate a score-gated ``basic`` wake confusion on opened development data.  The program deliberately cannot read the consumed physical v17 corpus.  It uses the already-opened endpoint-confusable physical corpus and the opened OpenSLR 100-hour negative screen to decide whether the manifest's existing phonetic-confusion score gate can safely cover a leading ``basic`` ASR token. Transcript text a",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/evaluate_score_gated_basic_rescue_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/evaluate_score_gated_basic_rescue_v1.py",
+        "ranges": [
+          "1-445"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-17-experiments-wake_validation-evaluate_split_alias_ctc_guard_v",
+      "disposition": "adapt_candidate",
+      "component": "experiments/wake_validation/evaluate_split_alias_ctc_guard_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/evaluate_split_alias_ctc_guard_v1.py: 1 archivos. Terminales leido PY \"\"\"Evaluate a frozen phoneme-CTC guard only on split lexical wake aliases.  The guard is deliberately narrower than a new wake classifier.  Existing routes remain unchanged.  Only a ``bounded_split_phonetic_alias`` proposal is allowed to survive when the frozen teacher independently emits an exact BAXY category path with the already-published 0.5 target-vs-confusable margin. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/evaluate_split_alias_ctc_guard_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/evaluate_split_alias_ctc_guard_v1.py",
+        "ranges": [
+          "1-521"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-18-experiments-wake_validation-evaluate_split_alias_localized_q",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/evaluate_split_alias_localized_qbt_v2.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/evaluate_split_alias_localized_qbt_v2.py: 1 archivos. Terminales leido PY \"\"\"Evaluate a localized CTC QbT margin for split lexical wake aliases.  V1 proved that an exact greedy teacher path is too strict.  This follow-up uses the already-published target-vs-confusable CTC recurrence and 0.5 margin, but scores only the leading two-word span that made Parakeet propose the split alias.  No other wake route can change. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/evaluate_split_alias_localized_qbt_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/evaluate_split_alias_localized_qbt_v2.py",
+        "ranges": [
+          "1-520"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-19-experiments-wake_validation-extract_opened_physical_wav2vec2",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/extract_opened_physical_wav2vec2_features_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/extract_opened_physical_wav2vec2_features_v1.py: 1 archivos. Terminales leido PY \"\"\"Extract sealed Wav2Vec2 and prosodic features from opened physical corpora.  The extractor is development-only. It validates every manifest and audio hash, forbids the consumed physical v17 corpus, writes no filenames or transcripts, and keeps the frozen teacher outside the product runtime. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/extract_opened_physical_wav2vec2_features_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/extract_opened_physical_wav2vec2_features_v1.py",
+        "ranges": [
+          "1-343"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-20-experiments-wake_validation-train_baxy_phonetic_auxiliary_do",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/train_baxy_phonetic_auxiliary_domain_loco_v2.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/train_baxy_phonetic_auxiliary_domain_loco_v2.py: 1 archivos. Terminales leido PY \"\"\"Train BAXY phonetic verifier with balanced synthetic hard negatives.  The opened physical outer fold remains untouched.  Synthetic positives and confusables are auxiliary fit data only; threshold calibration uses disjoint physical negatives from the two non-held corpora. \"\"\"  from __future__ import annotations",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/train_baxy_phonetic_auxiliary_domain_loco_v2.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/train_baxy_phonetic_auxiliary_domain_loco_v2.py",
+        "ranges": [
+          "1-514"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-21-experiments-wake_validation-train_baxy_phonetic_prosody_doma",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/train_baxy_phonetic_prosody_domain_loco_v1.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/train_baxy_phonetic_prosody_domain_loco_v1.py: 1 archivos. Terminales leido PY \"\"\"Train a BAXY-specific phonetic/prosodic discriminator on opened data.  Every outer fold leaves one complete physical corpus untouched.  Fit and calibration records are disjoint inside the other two corpora, and the score threshold is selected only from calibration negatives.  This is an opened development architecture screen, never a product or holdout claim. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/train_baxy_phonetic_prosody_domain_loco_v1.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/train_baxy_phonetic_prosody_domain_loco_v1.py",
+        "ranges": [
+          "1-652"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-22-experiments-wake_validation-validate_physical_wake_v17_progr",
+      "disposition": "evidence_only",
+      "component": "experiments/wake_validation/validate_physical_wake_v17_program.py (1 ficheros)",
+      "contract": "Grupo experiments/wake_validation/validate_physical_wake_v17_program.py: 1 archivos. Terminales leido PY \"\"\"Preregister and certify BAXY's combined physical wake v17 program.  The frozen cascade evaluator is authoritative for its branch.  This external supplement closes the preregistration gap around the endpoint and fusion branches without changing the wake tree, weights, thresholds, or audio selection before the reserved physical corpus is opened. \"\"\" ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6)",
+      "source_files": [
+        "experiments/wake_validation/validate_physical_wake_v17_program.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "experiments/wake_validation/validate_physical_wake_v17_program.py",
+        "ranges": [
+          "1-553"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-23-legacy-Experimentando-gemma4_unified.py",
+      "disposition": "evidence_only",
+      "component": "legacy/Experimentando/gemma4_unified.py (1 ficheros)",
+      "contract": "Grupo legacy/Experimentando/gemma4_unified.py: 1 archivos. Terminales leido PY from __future__ import annotations  import argparse import atexit import base64 import json import os import re",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Experimentando/gemma4_unified.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Experimentando/gemma4_unified.py",
+        "ranges": [
+          "1-1167"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-24-legacy-Experimentando-run_baxy_gemma4_experiment.ps1",
+      "disposition": "evidence_only",
+      "component": "legacy/Experimentando/run_baxy_gemma4_experiment.ps1 (1 ficheros)",
+      "contract": "Grupo legacy/Experimentando/run_baxy_gemma4_experiment.ps1: 1 archivos. Terminales leido",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Experimentando/run_baxy_gemma4_experiment.ps1"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Experimentando/run_baxy_gemma4_experiment.ps1",
+        "ranges": [
+          "1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-25-legacy-Experimentando-run_baxy_gemma4_experiment.py",
+      "disposition": "evidence_only",
+      "component": "legacy/Experimentando/run_baxy_gemma4_experiment.py (1 ficheros)",
+      "contract": "Grupo legacy/Experimentando/run_baxy_gemma4_experiment.py: 1 archivos. Terminales leido PY from __future__ import annotations  import os import sys import types from pathlib import Path from typing import Any, Optional ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Experimentando/run_baxy_gemma4_experiment.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Experimentando/run_baxy_gemma4_experiment.py",
+        "ranges": [
+          "1-127"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-26-legacy-computer_use-__init__.py",
+      "disposition": "evidence_only",
+      "component": "legacy/computer_use/__init__.py (1 ficheros)",
+      "contract": "Grupo legacy/computer_use/__init__.py: 1 archivos. Terminales leido PY \"\"\"computer_use — control de ventanas + input + UIA + OCR (exportado).  Piezas literales del proyecto anterior: sendinput.py (maquinaria SendInput CACHEADA — recrearla por llamada corrompía la cola de input, medido) y win_focus.py (foco confiable ALT+AttachThreadInput+UIA para UWP/WebView2). Encima: gui.py (keypress/type/click/screenshot/locate_text), windows.py, uia.py (árbol de accesibilidad) y ",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/computer_use/__init__.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/computer_use/__init__.py",
+        "ranges": [
+          "1-15"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-27-legacy-computer_use-browser_cdp.py",
+      "disposition": "evidence_only",
+      "component": "legacy/computer_use/browser_cdp.py (1 ficheros)",
+      "contract": "Grupo legacy/computer_use/browser_cdp.py: 1 archivos. Terminales leido PY \"\"\"Minimal Playwright/CDP bridge for the legacy streaming engine.  The synchronous Playwright API is thread-affine.  Earlier versions cached its process-wide handle and sessions in module globals, so a GUI request could create them on one thread and application shutdown could try to release them on another.  The bridge now owns every Playwright object on one lazy worker thread.  Application compos",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/computer_use/browser_cdp.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/computer_use/browser_cdp.py",
+        "ranges": [
+          "1-626"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-28-legacy-computer_use-executor.py",
+      "disposition": "evidence_only",
+      "component": "legacy/computer_use/executor.py (1 ficheros)",
+      "contract": "Grupo legacy/computer_use/executor.py: 1 archivos. Terminales leido PY \"\"\"Executor de computer_use — el `Callable[(tool, args) -> dict]` que esperan el motor de streaming y el flujo GUI-search de WhatsApp (mismo contrato del proyecto anterior).  Tools servidas:   window: focus / active / list   gui:    keypress / type / click / screenshot / locate_text   uia:    find",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/computer_use/executor.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/computer_use/executor.py",
+        "ranges": [
+          "1-93"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "code_tests-416-baxy-29-legacy-computer_use-gui.py",
+      "disposition": "evidence_only",
+      "component": "legacy/computer_use/gui.py (1 ficheros)",
+      "contract": "Grupo legacy/computer_use/gui.py: 1 archivos. Terminales leido PY \"\"\"Primitivas GUI de computer_use: keypress, type, click, screenshot, locate_text (OCR opcional).  Exportado del proyecto anterior (tools.py handlers keypress/type + ops_tools ocr_find_text), sobre los módulos literales sendinput.py / win_focus.py:  - keypress: SendKeys de .NET vía PowerShell (el \"method: sendkeys\" que el   flujo GUI-search del viejo usa con window-focus verificado antes).",
+      "dependencies": "snapshot 09.5.0 de la fuente hermana; no se ejecuta",
+      "historical_test": "Este lote es la evidencia; no reejecutado",
+      "limitations": "Tarjeta de checkpoint: provisional hasta 09.5.9. Cuerpos no se vuelcan.",
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/computer_use/gui.py"
+      ],
+      "failure_mechanism": "Empaquetado v1 por bytes/2 y/o acumulacion de capas en el linaje; duplicados se cubren por hash.",
+      "readme_vs_real": "Se afirma lo parseado o leido en inspect, no el README de la fuente.",
+      "invariant_risk": "Ninguna propuesta de este checkpoint se trasplanta; 09.5.9 decide. Catalogo tipado, verificacion y prosa por modelo no se rompen aqui.",
+      "duplicate_layers": "Misma pieza puede existir en Carter v2/v4, gemma4_agent y BAXY; se compara por owner actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/computer_use/gui.py",
+        "ranges": [
+          "1-175"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=30 drift=0 miss=0",
+  "next_code_tests_batch_id": "code_tests-417-baxy",
+  "next_prompt": "campaign:code_tests",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\code_tests-416-baxy.inspect.json"
+}

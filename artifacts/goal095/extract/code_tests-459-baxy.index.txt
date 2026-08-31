@@ -1,0 +1,30 @@
+batch=code_tests-459-baxy
+hash_ok=28 drift=0 miss=0
+OK scripts/test_source_quality.ps1
+OK scripts/train_turn_policy_e5_development.py py_lines=2802 defs=66
+OK scripts/verify_python_runtime_lock.py py_lines=250 defs=10
+OK scripts/verify_turn_policy_e5_selective_gate.py py_lines=1390 defs=29
+OK scripts/wake_validation_program_tree.py py_lines=65 defs=2
+OK src/Baxy.App/AgentFieldGraph.cs
+OK src/Baxy.App/App.xaml
+OK src/Baxy.App/App.xaml.cs
+OK src/Baxy.App/AssetManifestDiscovery.cs
+OK src/Baxy.App/Assets/field-native-bridge.js
+OK src/Baxy.App/AtomicFileReplacement.cs
+OK src/Baxy.App/Baxy.App.csproj
+OK src/Baxy.App/BoundedUtf8LineReader.cs
+OK src/Baxy.App/ConfirmationChallengeParser.cs
+OK src/Baxy.App/ConversationMessage.cs
+OK src/Baxy.App/CoreProcessClient.cs
+OK src/Baxy.App/DurablePlanStore.cs
+OK src/Baxy.App/DurableRetryStore.cs
+OK src/Baxy.App/FieldBridgeContract.cs
+OK src/Baxy.App/FieldTelemetrySampler.cs
+OK src/Baxy.App/FieldUiBridge.cs
+OK src/Baxy.App/HistoricalFieldOriginPolicy.cs
+OK src/Baxy.App/LocalJsonlSidecarProcess.cs
+OK src/Baxy.App/MainWindow.xaml
+OK src/Baxy.App/MainWindow.xaml.cs
+OK src/Baxy.App/MainWindowViewModel.cs
+OK src/Baxy.App/MemoryOperationProtection.cs
+OK src/Baxy.App/MemoryOperationResponseProjection.cs

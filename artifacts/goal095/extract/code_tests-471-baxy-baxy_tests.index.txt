@@ -1,0 +1,46 @@
+batch=code_tests-471-baxy-baxy_tests
+hash_ok=44 drift=0 miss=0
+OK tests/Baxy.Providers.Windows.Tests/LocalNoteStoreTests.cs
+OK tests/Baxy.Providers.Windows.Tests/LocalRoutineStoreTests.cs
+OK tests/Baxy.Providers.Windows.Tests/LocalTaskStoreTests.cs
+OK tests/Baxy.Providers.Windows.Tests/Memory/LocalMemoryExportWriterTests.cs
+OK tests/Baxy.Providers.Windows.Tests/Memory/LocalMemoryStoreTests.cs
+OK tests/Baxy.Providers.Windows.Tests/ProtectedJsonEnvelopeCodecTests.cs
+OK tests/Baxy.Providers.Windows.Tests/ProtectedPayloadDaclRepairTests.cs
+OK tests/Baxy.Providers.Windows.Tests/ProtectedPayloadWindowsTests.cs
+OK tests/Baxy.Providers.Windows.Tests/SteamLocalAdapterTests.cs
+OK tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsGpuStatusProbeTests.cs
+OK tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsGpuStatusProviderLiveTests.cs
+OK tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsGpuStatusProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessStatusProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsSystemStatusProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsApplicationOpenProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsCalculatorOpenProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsClipboardProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsIdentityProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsInstalledApplicationOpenProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsJournalAuthenticationKeyStoreTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsNetworkStatusProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsPathAttackTestSupport.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsScreenshotProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsTimeStatusProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs
+OK tests/Baxy.Providers.Windows.Tests/bin/Debug/net10.0-windows10.0.19041.0/Baxy.Providers.Windows.Tests.deps.json json_keys=['compilationOptions', 'libraries', 'runtimeTarget', 'targets']
+OK tests/Baxy.Providers.Windows.Tests/bin/Debug/net10.0-windows10.0.19041.0/Baxy.Providers.Windows.Tests.runtimeconfig.json json_keys=['runtimeOptions']
+OK tests/Baxy.Providers.Windows.Tests/bin/Debug/net10.0-windows10.0.19041.0/nunit_random_seed.tmp
+OK tests/Baxy.Providers.Windows.Tests/bin/Release/net10.0-windows10.0.19041.0/Baxy.Providers.Windows.Tests.runtimeconfig.json json_keys=['runtimeOptions']
+OK tests/Baxy.Providers.Windows.Tests/bin/Release/net10.0-windows10.0.19041.0/nunit_random_seed.tmp
+OK tests/Baxy.Setup.Tests/Baxy.Setup.Tests.csproj
+OK tests/Baxy.Setup.Tests/InstallationEngineTests.cs
+OK tests/Baxy.Setup.Tests/InstallationPointerSharingRaceTests.cs
+OK tests/Baxy.Setup.Tests/InstalledApplicationLauncherTests.cs
+OK tests/Baxy.Setup.Tests/OperationGatesTests.cs
+OK tests/Baxy.Setup.Tests/OwnedStartMenuShortcutTests.cs
+OK tests/Baxy.Setup.Tests/ProductOperationLeaseTests.cs
+OK tests/Baxy.Setup.Tests/ProductPackageVerifierTests.cs
+OK tests/Baxy.Setup.Tests/SetupCommandAndPathsTests.cs
+OK tests/Baxy.Setup.Tests/SetupHostCandidateVerifierTests.cs
+OK tests/Baxy.Setup.Tests/SetupProductLifecycleExecutorTests.cs
+OK tests/Baxy.Setup.Tests/SetupUninstallExecutorTests.cs
+OK tests/Baxy.Setup.Tests/StableSetupHostManagerTests.cs
+OK tests/Baxy.Setup.Tests/TestProductPackageFactory.cs

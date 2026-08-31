@@ -25,9 +25,17 @@ from scripts.goal095_docs_ledger import (
     load_json,
     queue_paths,
 )
+from scripts.goal095_code_campaign import write_campaign
 
 SCHEMA = "baxy.goal095.code-ledger.v1"
 KIND = "code_tests"
+OWNER_PROMPT = "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md"
+CAMPAIGN_CONTINUE = "campaign:code_tests"
+DOCS_PROMPT = "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md"
+EVIDENCE_PROMPT = "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md"
+ALLOWED_NEXT_PROMPTS = frozenset(
+    {CAMPAIGN_CONTINUE, DOCS_PROMPT, EVIDENCE_PROMPT}
+)
 TERMINALS = frozenset(
     {
         "leido",
@@ -94,6 +102,24 @@ def first_pending_code_tests(queue_ledger: dict[str, Any]) -> dict[str, Any] | N
     return None
 
 
+def claimed_code_tests(queue_ledger: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in queue_ledger["batches"]
+        if item.get("kind") == KIND and item.get("status") == "claimed"
+    ]
+
+
+def unit_next_prompt(queue_ledger: dict[str, Any], next_id: str | None) -> str:
+    if next_id:
+        return CAMPAIGN_CONTINUE
+    docs_pending = any(
+        item.get("kind") == "docs" and item.get("status") in {"pending", "claimed"}
+        for item in queue_ledger["batches"]
+    )
+    return DOCS_PROMPT if docs_pending else EVIDENCE_PROMPT
+
+
 def claim(
     repo: Path,
     batch_id: str | None = None,
@@ -103,22 +129,28 @@ def claim(
     batches_path, ledger_path, _summary_path = queue_paths(repo)
     batches = load_json(batches_path)
     queue_ledger = load_json(ledger_path)
-    pending = first_pending_code_tests(queue_ledger)
-    if pending is None:
-        raise RuntimeError("no pending code_tests batch")
-    if batch_id is None:
-        batch_id = pending["batch_id"]
-    if pending["batch_id"] != batch_id:
-        raise RuntimeError(
-            f"first pending code_tests is {pending['batch_id']}, not {batch_id}"
-        )
-    claimed = [
-        item for item in queue_ledger["batches"] if item.get("status") == "claimed"
-    ]
+    claimed = claimed_code_tests(queue_ledger)
+    claim_path_dir = repo / "artifacts" / "goal095" / "claims"
     if claimed:
         ids = [item["batch_id"] for item in claimed]
+        if batch_id is None:
+            batch_id = ids[0]
         if ids != [batch_id]:
             raise RuntimeError(f"another batch already claimed: {ids}")
+        existing = claim_path_dir / f"{batch_id}.json"
+        if existing.is_file():
+            write_campaign(repo, queue_ledger, batch_id)
+            return load_json(existing)
+    else:
+        pending = first_pending_code_tests(queue_ledger)
+        if pending is None:
+            raise RuntimeError("no pending code_tests batch")
+        if batch_id is None:
+            batch_id = pending["batch_id"]
+        if pending["batch_id"] != batch_id:
+            raise RuntimeError(
+                f"first pending code_tests is {pending['batch_id']}, not {batch_id}"
+            )
     batch = batch_from_batches(batches, batch_id)
     if batch["estimated_tokens"] > TOKEN_LIMIT:
         raise RuntimeError("batch exceeds token limit")
@@ -126,7 +158,8 @@ def claim(
     for item in queue_ledger["batches"]:
         if item["batch_id"] == batch_id:
             item["status"] = "claimed"
-            item["claimed_utc"] = now
+            item["claimed_utc"] = item.get("claimed_utc") or now
+            now = item["claimed_utc"]
     dump_json(ledger_path, queue_ledger)
     claim_record = {
         "schema": SCHEMA,
@@ -149,10 +182,8 @@ def claim(
         "source_head": source_head,
         "output": batch["output"],
     }
-    dump_json(
-        repo / "artifacts" / "goal095" / "claims" / f"{batch_id}.json",
-        claim_record,
-    )
+    dump_json(claim_path_dir / f"{batch_id}.json", claim_record)
+    write_campaign(repo, queue_ledger, batch_id)
     return claim_record
 
 
@@ -216,6 +247,8 @@ def validate_ledger(
             errors.append(f"{where} binary_format")
         if terminal in {"leido", "parseado_completo"} and not row.get("ranges"):
             errors.append(f"{where} {terminal} without ranges")
+    if ledger.get("next_prompt") not in ALLOWED_NEXT_PROMPTS:
+        errors.append("next_prompt must not relaunch 09.5.3")
     if seen != assigned:
         missing = assigned - seen
         extra = seen - assigned
@@ -293,6 +326,13 @@ def mark_queue_complete(
         raise RuntimeError(batch_id)
     queue_ledger["first_code_tests_batch_id"] = next_code_tests_batch_id
     dump_json(ledger_path, queue_ledger)
+    claim_path = repo / "artifacts" / "goal095" / "claims" / f"{batch_id}.json"
+    if claim_path.is_file():
+        claim_record = load_json(claim_path)
+        claim_record["status"] = "complete"
+        claim_record["closed_utc"] = now
+        dump_json(claim_path, claim_record)
+    write_campaign(repo, queue_ledger, next_code_tests_batch_id)
 
 
 def next_pending_code_tests(

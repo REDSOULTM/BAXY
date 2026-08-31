@@ -1,0 +1,37 @@
+batch=code_tests-454-baxy
+hash_ok=35 drift=0 miss=0
+OK legacy/voice/corrector.py py_lines=456 defs=9
+OK legacy/voice/ducking.py py_lines=176 defs=9
+OK legacy/voice/durable_output.py py_lines=308 defs=16
+OK legacy/voice/durable_piper_backend.py py_lines=288 defs=20
+OK legacy/voice/earcon.py py_lines=87 defs=5
+OK legacy/voice/echo_guard.py py_lines=78 defs=2
+OK legacy/voice/inventory.py py_lines=237 defs=3
+OK legacy/voice/loopback.py py_lines=228 defs=12
+OK legacy/voice/noise_calibration.py py_lines=221 defs=11
+OK legacy/voice/phonetic_es.py py_lines=133 defs=2
+OK legacy/voice/pipeline.py py_lines=2095 defs=80
+OK legacy/voice/piper_bundle.py py_lines=1796 defs=81
+OK legacy/voice/qwen_stt.py py_lines=267 defs=11
+OK legacy/voice/stt.py py_lines=246 defs=9
+OK legacy/voice/tts.py py_lines=2215 defs=81
+OK legacy/voice/vad.py py_lines=256 defs=11
+OK legacy/voice/wake_word.py py_lines=628 defs=22
+OK .editorconfig
+OK .gitattributes
+OK .gitignore
+OK Baxy.slnx
+OK Directory.Build.props
+OK Directory.Packages.props
+OK main.py py_lines=273 defs=14
+OK pylock.runtime-win-x64.toml
+OK pylock.test-win-x64.toml
+OK pytest.ini
+OK requirements-runtime-win-x64.in
+OK requirements-test-win-x64.in
+OK ruff.toml
+OK run_mvp.ps1
+OK scripts/__init__.py py_lines=1 defs=0
+OK scripts/assemble_mvp_catalog_execution_matrix.py py_lines=360 defs=8
+OK scripts/assemble_mvp_catalog_routing_matrix.py py_lines=244 defs=8
+OK scripts/asset_resolver.ps1
